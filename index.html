@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare</title>
+  </head>
+  <body>
+  
+  
+  
+  </body>
+  <script>
+	  var x = 0;
+	  var y = 0;
+	  const socket = new WebSocket('ws://localhost:3000');
+	  socket.addEventListener('open', function(event){
+		  console.log('Connected to wsws server');
+	  })
+	  
+	  socket.addEventListener('message', function(event){
+		  console.log('Message from server ', event.data);
+		  y = Date.now();
+		  z = y - x;
+		  console.log('roundtrip: ');
+		  console.log(z);
+	  })
+	  
+	  const sendMessage = () => {
+		  x = Date.now();
+		  socket.send('Hello from client1');
+	  }
+  </script>
+  </html>
