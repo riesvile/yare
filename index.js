@@ -32,7 +32,7 @@ wss.on('connection', function connection(ws) {
 
 
 
-app.get('/', (req, res) => res.send('Hello there!'))
+app.get('/', (req, res) => res.sendFile('index.html'));
 
 
 server.listen(3000, () => console.log('Listening on port :3000'))
