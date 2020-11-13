@@ -15,7 +15,7 @@ wss.on('connection', function connection(ws) {
 	ws.send('welcome!');
 	ws.on('message', function incoming(message) {
     console.log('received: %s', message);
-	for (i = 0; i < 1000000; i++){
+	for (i = 0; i < 100000000; i++){
 		x = i ** 2;
 	}
 	ws.send('x is ' + x + ' and your message: ' + message);
