@@ -15,7 +15,7 @@ wss.on('connection', function connection(ws) {
 	ws.send('welcome!');
 	ws.on('message', function incoming(message) {
     console.log('received: %s', message);
-	for (i = 0; i < 200000000; i++){
+	for (i = 0; i < 50; i++){
 		x = i ** 2;
 	}
 	ws.send('x is ' + x + ' and your message: ' + message);
@@ -35,4 +35,4 @@ wss.on('connection', function connection(ws) {
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 
 
-server.listen(3000, () => console.log('Listening on port :3000'))
+server.listen(80, () => console.log('Listening on port :80'))
