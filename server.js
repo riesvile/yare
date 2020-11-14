@@ -35,4 +35,4 @@ wss.on('connection', function connection(ws) {
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 
 
-server.listen(80, () => console.log('Listening on port :80'))
+server.listen(5000, () => console.log('Listening on port :5000'))
