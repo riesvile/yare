@@ -1,29 +1,10 @@
-
-//setup
-const express = require('express');
-const app = express();
-const server = require('http').createServer(app);
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ server });
-
-
 //global
-var game_tick = 100; // 1s
+
 var living_spirits = [];
 var move_queue = [];
 var move_queue_ids = [];
-var birth_queue = [];
 var player1_id = 'ab1';
-var player2_id = 'zx2';
-
-
-var render_data2 = {
-	'move': [],
-	'energize': [],
-	'death': [],
-	'birth': []
-}
-//var render_data = [[],[],[],[],[]];
+var player2_id = 'zx2'
 
 
 class Spirit {
@@ -72,11 +53,45 @@ class Spirit {
 				move_queue[entry_index] = [this, incr, target];
 				console.log('entry_index = ' + entry_index);
 			}
+			
 		}
+		
+		//animateMove(this, incr, target);
+		
+		//this.draw()
+		//this.position[0] = target[0] + 10;
+		//this.position[1] = target[1] + 10;
 	}
+	
+	update(incr){
+		this.draw();
+		this.position[0] = Number((this.position[0] + incr[0]).toFixed(3));
+		this.position[1] = Number((this.position[1] + incr[1]).toFixed(3));
+	}
+	
 	
 }
 
+class Structure {
+	constructor(id, type, position, size, sight){
+		this.id = id;
+		this.energy = Number.POSITIVE_INFINITY;
+		
+		this.sight = {
+			'friends': [sight.friends]
+		}
+		
+		
+		//const properties
+		this.type = type;
+		this.position = position;
+		this.size = size;
+		this.energy_capacity = Number.POSITIVE_INFINITY;
+		this.hp = Number.POSITIVE_INFINITY;
+		this.move_speed = 0;
+	}
+}
+//var incr = [];
 
 function is_in_sight(item1, item2, range = 10){
 	if (Math.abs(item1.position[0] - item2.position[0]) < range && Math.abs(item1.position[1] - item2.position[1]) < range){
@@ -86,6 +101,12 @@ function is_in_sight(item1, item2, range = 10){
 	}
 }
 
+
+function distance_nonrooted(pos1, pos2){
+//pos1 and pos2 are arrays ([x, y])
+
+	
+}
 
 function get_sight(){
 	var living_length = living_spirits.length;
@@ -107,26 +128,10 @@ function get_sight(){
 	}
 }
 
-
 function update_state(){
 	//after everything is calculated
 	
-		//render_data = [[],[],[],[],[]];
-		render_data2 = {
-			'move': [],
-			'energize': [],
-			'death': [],
-			'birth': []
-		}
-		
-		
-		//objects birth
-		birthlings = birth_queue.length;
-		for (i = 0; i < birthlings; i++){
-			render_data2.birth.push(birth_queue[i]);
-			birth_queue.splice(i, 1);
-		}
-		
+	setInterval(function () {
 		
 	    //objects move
 		moveables = move_queue.length;
@@ -150,27 +155,20 @@ function update_state(){
 			posY = move_queue[i][0].position[1];
 			targetX = move_queue[i][2][0];
 			targetY = move_queue[i][2][1];
-			
-			
-			//send to render_data (id, current position, increment)
-			//render_data[0].push(move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1]);
-			render_data2.move.push([move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1]]);
-						
-			
-			//remove when target reached
 			if (Math.abs(posX - targetX) <= 1 && Math.abs(posY - targetY) <= 1){
 				var rmv_index = move_queue_ids.indexOf(move_queue[i][0].id);
 				if (rmv_index >= 0) {
 				  move_queue_ids.splice(rmv_index, 1);
 				}
-				render_data2.move.push([move_queue[i][0].id, [targetX, targetY], [0,0]]);
-				//render_data[0].push(move_queue[i][0].id, [targetX, targetY], [0,0]);
 				move_queue[i][0].position = [targetX, targetY]
 				move_queue.splice(i, 1);
 				i--;
 				break;
 			}
 		}
+		
+		
+		
 		
 		//objects energize
 		
@@ -180,77 +178,57 @@ function update_state(){
 		
 		
 		
+		//objects birth
 		
 		
+	}, 10);
 }
+
+function animate(){
+	requestAnimationFrame(animate)
+	spirits.forEach((spirit) => {
+		spirit.move();
+	})
+}
+
+function moveSpirit(s, target){
+	requestAnimationFrame(function() {moveSpirit(s, target); });
+	s.move(target);
+}
+
+function animateMove(s, incr, target){
+	setTimeout(() => {
+	    requestAnimationFrame(function() {animateMove(s, incr, target); });
+	}, 1000 / 60);
+	
+	c.clearRect(0, 0, canvas.width, canvas.height);
+	s.update(incr);
+	spirit2.draw();
+	console.log('spirit position: [' + s.position[0] + ', ' + s.position[1] + ']');
+	console.log('increment = ' + incr);
+}
+
+
 
 
 var spirit1 = new Spirit('sp1', [200,206], 2, 10, player1_id);
 var spirit2 = new Spirit('sp2', [400,250], 20, 10, player1_id);
-var spirit3 = new Spirit('sp3', [500,230], 10, 10, player1_id);
-var spirit4 = new Spirit('sp4', [900,650], 20, 10, player1_id);
 
-birth_queue.push([spirit1, spirit2, spirit3, spirit4])
+var spirit3 = new Spirit('sp3', [150,120], 2, 10, player2_id);
+var spirit4 = new Spirit('sp4', [160,120], 2, 10, player1_id);
+var spirit5 = new Spirit('sp5', [9705,120], 2, 10, player1_id);
+var spirit6 = new Spirit('sp6', [170,120], 2, 10, player1_id);
 
+//spirit1.draw();
+//spirit2.draw();
 
+//spirits = [spirit1, spirit2];
 
+update_state();
 
+spirit1.move(spirit2.position)
+//spirit3.move(spirit2.position)
+//spirit4.move(spirit2.position)
+//spirit4.move(spirit6.position)
+//spirit4.move(spirit5.position)
 
-
-
-
-
-d1 = 0;
-d2 = 0;
-
-
-
-wss.on('connection', function connection(ws) {
-	console.log('new client connected');
-	ws.send('welcome!');
-	
-	
-	spirit1.move(spirit2.position);
-	spirit3.move(spirit2.position);
-	spirit4.move(spirit2.position);
-	
-	setInterval(function () {
-		update_state();
-		ws.send('sending render_data');	
-		ws.send(JSON.stringify(render_data2));
-		//ws.send(JSON.stringify(render_data));
-		//ws.send(render_data);
-		console.log(render_data2);
-		//var render_data = [[],[],[],[],[]];
-		
-	}, game_tick);
-	
-	
-	
-	ws.on('message', function incoming(message) {
-		d1 = process.hrtime();
-    	console.log('received: %s', message);
-		for (i = 0; i < 100000000; i++){
-			if (i < 5){
-				distanceHypot = i;
-			}
-		}
-		d2 = process.hrtime(d1);
-		taskDuration = (d2[0] * 1000000000 + d2[1]) / 1000000;
-		ws.send('distanceHypot is ' + distanceHypot + ' and it took ' + taskDuration);	
-  });
-
-});
-
-
-
-
-
-
-
-
-app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
-app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
-
-
-server.listen(5000, () => console.log('Listening on port :5000'))
