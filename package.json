@@ -4,6 +4,7 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.17.1",
+    "vm2": "^3.9.2",
     "ws": "^7.4.0"
   },
   "devDependencies": {},

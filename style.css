@@ -5,6 +5,7 @@ margin: 0;
 
 body {
 	background-color: #06080a;
+	font-family: Avenir, sans-serif;
 }
 
 #user_code_bg {
@@ -17,11 +18,42 @@ body {
 	z-index: 1000;
 }
 
+#editor_container {
+	background-color: transparent;
+	height: 100%;
+	width: 700px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+}
+
 #editor {
 	position: absolute;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
-	width: 640px;
+}
+
+#update_code {
+	width: 212px;
+	height: 67px;
+	background-color: #2a2e4e;
+	line-height: 67px;
+	position: fixed;
+	bottom: 28px;
+	left: 28px;
+	border-radius: 12px;
+	cursor: pointer;
+}
+
+#update_code span {
+	font-size: 14px;
+	font-weight: 500;
+	color: #f4f6f8;
+	letter-spacing: 1px;
+	text-align: center;
+	display: block;
+	padding-top: 1px;
 }

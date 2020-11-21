@@ -12,15 +12,23 @@
   </head>
   <body>
   <canvas></canvas>
+  <div id="editor_container">
   <div id="editor">
-function foo(items) {
-    var x = "All this is syntax highlighted";
-    return x;
-}
-	
-for (i = 0; i < 10; i++){
-	test = 5;
-}
+	spirit1.move(spirit2.position);
+	spirit2.move([800,750]);
+	spirit3.move(spirit2.position);
+	spirit4.move(spirit2.position);
+	spirit5.move(spirit2.position);
+	spirit6.move(spirit2.position);
+	spirit7.move(spirit4.position);
+	spirit8.move(spirit2.position);
+	spirit9.move(spirit2.position);
+	spirit10.move(spirit2.position);
+	spirit11.move(spirit2.position);
+	spirit12.move(spirit2.position);
+	spirit13.move(spirit2.position);
+  </div>
+  <div id="update_code"><span>UPDATE CODE</span></div>
   </div>
   
   </body>
@@ -53,7 +61,7 @@ for (i = 0; i < 10; i++){
 			 //}
 			 
 			 if (incoming.birth.length > 0){
-				 birth_queue = incoming.birth[0];
+				 birth_queue = incoming.birth;
 				 //console.log(birth_queue);
 			 } else {
 				 birth_queue = [];
@@ -81,6 +89,13 @@ for (i = 0; i < 10; i++){
 		  x = Date.now();
 		  socket.send('Hello from client1');
 	  }
+	  
+	  document.getElementById('update_code').addEventListener("click",function(e){
+		  console.log('clicked');
+		  user_code = editor.getValue();
+		  socket.send(user_code);
+	  },false);
+	  
   </script>
   <script src="./rendering.js"></script>
   </html>

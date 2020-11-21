@@ -1,3 +1,44 @@
+function user_code(){
+	//console.log('spirit_lookup');
+	//console.log(spirit_lookup);
+	vm.run(`
+	    console.log('sandboxxxx');
+		console.log(spirit_lookup);
+		spirit_lookup['sp1'].move([850,700])
+		spirit_lookup['sp2'].move([800,750])
+		//spirit1.move(spirit2.position);
+		//spirit2.move([800,750]);
+	`, 'vm.js');
+}
+
+function user_code(){
+	processTime1 = process.hrtime();
+	spirit1.move(spirit2.position);
+	spirit2.move([800,750]);
+	spirit3.move(spirit2.position);
+	spirit4.move(spirit2.position);
+	spirit5.move(spirit2.position);
+	spirit6.move(spirit2.position);
+	spirit7.move(spirit4.position);
+	spirit8.move(spirit2.position);
+	spirit9.move(spirit2.position);
+	spirit10.move(spirit2.position);
+	spirit11.move(spirit2.position);
+	spirit12.move(spirit2.position);
+	spirit13.move(spirit2.position);
+	
+
+	processTime2 = process.hrtime(processTime1);
+	processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
+	console.log('movement = ' + processTimeRes);
+	console.log('spirit4 position = ');
+	console.log(spirit4.position);
+}
+
+
+
+
+
 class Spirit {
 	constructor(id, position, size, energy, sight){
 		this.id = id
