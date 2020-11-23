@@ -1,9 +1,16 @@
 function user_code(){
-	try {
-		eval(player1_code);
-	} catch (error) {
-		console.error(error);
-	}
+	//try {
+	//	eval(player1_code);
+	//} catch (error) {
+	//	console.error(error);
+	//}
+	
+	
+	spirit1.move(spirit2.position);
+	spirit2.move([800,750]);
+	//spirit3.move(spirit2.position);
+	//spirit4.move(spirit2.position);
+	//spirit5.move(spirit2.position);
 }
 
 
@@ -67,6 +74,7 @@ class Spirit {
 		this.player_id = player;
 		
 		living_spirits.push(this);
+		birth_queue.push(this);
 		move_queue.push([this, [0,0], this.position]);
 	}
 	
@@ -112,7 +120,26 @@ class Spirit {
 }
 
 
-function is_in_sight(item1, item2, range = 10){
+function isCollision(item1, item2){
+  minDistance = (item1.size + item2.size) / 2;
+  var posX1 = item1.position[0];
+  var posY1 = item1.position[1];
+  var posX2 = item2.position[0];
+  var posY2 = item2.position[1];
+  
+  if (Math.abs(posX1 - posX2) >= minDistance){
+    return false;
+  } else {
+    if (Math.abs(posY1 - posY2) >= minDistance){
+      return false;
+    } else {
+      return true;
+    }
+  }
+  
+}
+
+function is_in_sight(item1, item2, range = 20){
 	if (Math.abs(item1.position[0] - item2.position[0]) < range && Math.abs(item1.position[1] - item2.position[1]) < range){
 		return true;
 	} else {
@@ -123,22 +150,38 @@ function is_in_sight(item1, item2, range = 10){
 
 function get_sight(){
 	var living_length = living_spirits.length;
+	for (h = 0; h < living_length; h++){
+	  living_spirits[h].sight = {
+			friends: [],
+			enemies: [],
+			structures: []
+		}
+	}
+	
 	for (i = 0; i < living_length; i++){
 		for (j = i+1; j < living_length; j++){
 			console.log(i + ', ' + j);
-			if (is_in_sight(living_spirits[i], living_spirits[j], 1000)){
+			if (is_in_sight(living_spirits[i], living_spirits[j])){
 				//maybe add distance stuff later
 				//distance_approx = distance_nonrooted(living_spirits[i].position, living_spirits[j].position);
 				//console.log('distance between ' + living_spirits[i].id + ' and ' + living_spirits[j].id + 'is ' + distance_approx);
-				if (living_spirits[j].player_id == player_id){
+				if (living_spirits[j].player_id == player1_id){
 					//is friend
-					living_spirits[i].sight.friends.push(living_spirits[j]);
-					living_spirits[j].sight.friends.push(living_spirits[i]);
+					living_spirits[i].sight.friends.push(living_spirits[j].id);
+					living_spirits[j].sight.friends.push(living_spirits[i].id);
 					
 				}
 			}
 		}
 	}
+}
+
+function justTest(){
+  console.log('just testing ----------');
+  console.log('Object.keys(spirit_lookup).length');
+  console.log(Object.keys(spirit_lookup).length);
+  console.log('spirit_lookup');
+  console.log(spirit_lookup);
 }
 
 
@@ -189,8 +232,9 @@ function update_state(){
 				var targetX = move_queue[i][2][0];
 				var targetY = move_queue[i][2][1];
 				
-				move_queue[i][0].position[0] += move_queue[i][1][0];
-				move_queue[i][0].position[1] += move_queue[i][1][1];
+				//basic pathfinding here? save position into obstacle_queue and then check against it?
+				move_queue[i][0].position[0] = Number((move_queue[i][0].position[0] + move_queue[i][1][0]).toFixed(5));
+				move_queue[i][0].position[1] = Number((move_queue[i][0].position[1] + move_queue[i][1][1]).toFixed(5));
 			
 				console.log('---');
 				console.log(move_queue[i][0].id);
@@ -199,6 +243,7 @@ function update_state(){
 				console.log(move_queue[i][2]);
 			
 				//render_data2.move.push([move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1], move_queue[i][2]]);
+				
 				render_data2.move.push([move_queue[i][0].id, [posX, posY], move_queue[i][1], move_queue[i][2]]);
 			}
 			
@@ -208,7 +253,12 @@ function update_state(){
 		
 		
 		
-		
+		//objects sight
+		//console.log('spirit_lookup[sp1].sight');
+		//console.log(spirit_lookup['sp1'].sight);
+		get_sight();
+		//console.log('spirit_lookup[sp1].sight');
+		//console.log(spirit_lookup['sp1'].sight);
 		
 		
 		//objects energize
@@ -226,18 +276,9 @@ function update_state(){
 
 var spirit1 = new Spirit('sp1', [200,206], 1, 10, player1_id);
 var spirit2 = new Spirit('sp2', [400,250], 1, 10, player1_id);
-var spirit3 = new Spirit('sp3', [500,230], 2, 10, player1_id);
+var spirit3 = new Spirit('sp3', [212,210], 1, 10, player1_id);
 var spirit4 = new Spirit('sp4', [900,650], 1, 10, player1_id);
-var spirit5 = new Spirit('sp5', [240,206], 1, 10, player1_id);
-
-birth_queue.push([spirit1,
-				  spirit2,
-				  spirit3,
-				  spirit4,
-	spirit5]);
-	
-
-	birth_queue = birth_queue.flat(1);
+var spirit5 = new Spirit('sp5', [210,208], 1, 10, player1_id);
 
 
 
