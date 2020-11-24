@@ -14,8 +14,11 @@
   <canvas></canvas>
   <div id="editor_container">
   <div id="editor">
-	spirit1.move(spirit2.position);
-	spirit2.move([800,750]);
+    spirit1.move(spirit4.position);
+	spirit2.move(spirit4.position);
+	spirit3.move(spirit4.position);
+	spirit4.move([900,700]);
+	spirit5.move(spirit4.position);
   </div>
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
   </div>
@@ -60,6 +63,10 @@
 				 move_queue = incoming.move;
 			 } else {
 				 move_queue = [];
+			 }
+			 
+			 if (incoming.error_msg.length > 0){
+				 console.log(incoming.error_msg);
 			 }
 				 
 				 

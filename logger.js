@@ -576,6 +576,25 @@ server.listen(5000, () => console.log('Listening on port :5000'))
 
 
 
+var spirit1 = new Spirit('sp1', [200,252], 1, 10, player1_id);
+var spirit2 = new Spirit('sp2', [208,226], 1, 10, player1_id);
+var spirit3 = new Spirit('sp3', [224,246], 1, 10, player1_id);
+var spirit4 = new Spirit('sp4', [400,450], 1, 10, player1_id);
+var spirit5 = new Spirit('sp5', [310,208], 1, 10, player1_id);
 
+var spirit6 = new Spirit('sp6', [200,256], 1, 10, player1_id);
+var spirit7 = new Spirit('sp7', [212,236], 1, 10, player1_id);
+var spirit8 = new Spirit('sp8', [227,266], 1, 10, player1_id);
+var spirit9 = new Spirit('sp9', [250,257], 1, 10, player1_id);
+var spirit10 = new Spirit('sp10', [298,266], 1, 10, player1_id);
+var spirit11 = new Spirit('sp11', [220,316], 1, 10, player1_id);
+var spirit12 = new Spirit('sp12', [190,246], 1, 10, player1_id);
+var spirit13 = new Spirit('sp13', [180,226], 1, 10, player1_id);
+var spirit14 = new Spirit('sp14', [240,190], 1, 10, player1_id);
+var spirit15 = new Spirit('sp15', [170,236], 1, 10, player1_id);
+var spirit16 = new Spirit('sp15', [150,266], 1, 10, player1_id);
+var spirit17 = new Spirit('sp16', [160,296], 1, 10, player1_id);
+var spirit18 = new Spirit('sp17', [298,166], 1, 10, player1_id);
+var spirit19 = new Spirit('sp18', [320,296], 1, 10, player1_id);
 
 

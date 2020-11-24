@@ -6,8 +6,24 @@ function user_code(){
 	//}
 	
 	
-	spirit1.move(spirit2.position);
-	spirit2.move([800,750]);
+	
+	
+	//spirit1.move(spirit2.position);
+	//for (i = 1; i < 18; i++){
+	//	spirits[i].move([i*10 + 600, i*10 + 200]);
+	//}
+	
+	try {
+		vm.run(player1_code, 'vm.js');
+	} catch (error){
+		console.error(error);
+	}
+	
+	//spirits[2].move([600,400]);
+	//spirits[4].move([700,400]);
+	console.log('s2');
+	//console.log(s2);
+	//console.log(spirits);
 	//spirit3.move(spirit2.position);
 	//spirit4.move(spirit2.position);
 	//spirit5.move(spirit2.position);
@@ -27,6 +43,7 @@ var game_tick = 1000; // 1s
 var base_speed = 10;
 var living_spirits = [];
 var spirit_lookup = {};
+var spirits = [];
 var move_queue = [];
 var move_queue_ids = [];
 var birth_queue = [];
@@ -39,18 +56,22 @@ var processTime1 = 0;
 var processTime2 = 0;
 var processTimeRes = 0;
 
+var user_error;
+
 var render_data2 = {
 	'move': [],
 	'energize': [],
 	'death': [],
-	'birth': []
+	'birth': [],
+	'error_msg': []
 }
 
-const {NodeVM} = require('vm2');
+const {VM} = require('vm2');
 var sandbox = {
-	spirit_lookup: spirit_lookup
+	player1_code: player1_code
 }
-const vm = new NodeVM({ sandbox });
+const vm = new VM({ sandbox });
+vm.freeze(spirits, 'spirits');
 //var render_data = [[],[],[],[],[]];
 
 class Spirit {
@@ -84,12 +105,17 @@ class Spirit {
 		
 	
 	move(target) {
+		//check that target is array, otherwise throw error
+		if (Array.isArray(target) == false){
+			user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
+			return
+		}
 		
 		var tarX = target[0];
 		var tarY = target[1];
 		var incr = [0, 0];
 		var entry_index = move_queue.findIndex(entry => entry[0]['id'] === this.id);
-		console.log('entry_index = ' + entry_index);
+		//console.log('entry_index = ' + entry_index);
 		
 				
 		if (Math.abs(target[0] - this.position[0]) < 0.6 && Math.abs(target[1] - this.position[1]) < 0.6){
@@ -114,14 +140,14 @@ class Spirit {
 		}
 		
 		move_queue[entry_index] = [this, incr, target];
-		
 	}
 	
 }
 
 
 function isCollision(item1, item2){
-  minDistance = (item1.size + item2.size) / 2;
+	//return false;
+  minDistance = (item1.size + item2.size);
   var posX1 = item1.position[0];
   var posY1 = item1.position[1];
   var posX2 = item2.position[0];
@@ -139,7 +165,7 @@ function isCollision(item1, item2){
   
 }
 
-function is_in_sight(item1, item2, range = 20){
+function is_in_sight(item1, item2, range = 100){
 	if (Math.abs(item1.position[0] - item2.position[0]) < range && Math.abs(item1.position[1] - item2.position[1]) < range){
 		return true;
 	} else {
@@ -160,7 +186,7 @@ function get_sight(){
 	
 	for (i = 0; i < living_length; i++){
 		for (j = i+1; j < living_length; j++){
-			console.log(i + ', ' + j);
+			//console.log(i + ', ' + j);
 			if (is_in_sight(living_spirits[i], living_spirits[j])){
 				//maybe add distance stuff later
 				//distance_approx = distance_nonrooted(living_spirits[i].position, living_spirits[j].position);
@@ -184,6 +210,10 @@ function justTest(){
   console.log(spirit_lookup);
 }
 
+function resolve_collision(){
+	
+}
+
 
 function update_state(){
 	//after everything is calculated
@@ -193,7 +223,8 @@ function update_state(){
 			'move': [],
 			'energize': [],
 			'death': [],
-			'birth': []
+			'birth': [],
+			'error_msg': []
 		}
 		
 		
@@ -224,7 +255,7 @@ function update_state(){
 			// THIS IS THE ONLY THING THAT MATTERS HERE, NO OTHER CALCULATIONS!
 			
 			// work with data only if there is movement
-			if ((move_queue[i][1][0] != 0) && (move_queue[i][1][1] != 0)){
+			if ((Math.abs(move_queue[i][1][0]) > 0) || (Math.abs(move_queue[i][1][1]) > 0)){
 				var posX = move_queue[i][0].position[0];
 				var posY = move_queue[i][0].position[1];
 				var incrX = move_queue[i][1][0];
@@ -233,14 +264,49 @@ function update_state(){
 				var targetY = move_queue[i][2][1];
 				
 				//basic pathfinding here? save position into obstacle_queue and then check against it?
+				
 				move_queue[i][0].position[0] = Number((move_queue[i][0].position[0] + move_queue[i][1][0]).toFixed(5));
 				move_queue[i][0].position[1] = Number((move_queue[i][0].position[1] + move_queue[i][1][1]).toFixed(5));
+				
+				potential_collisions = move_queue[i][0].sight.friends.length;
+				for (j = 0; j < potential_collisions; j++){
+					collidie = spirit_lookup[move_queue[i][0].sight.friends[j]]
+					if (isCollision(move_queue[i][0], collidie)){
+						//console.log('COLLISION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+						//move_queue[i][0].position[0]
+						var incrX_sign;
+						var incrY_sign;
+						(incrX > 0) ? incrX_sign = -1 : incrX_sign = 1;
+						(incrY > 0) ? incrY_sign = -1 : incrY_sign = 1;
+						
+						tempX = collidie.position[0] + (collidie.size + move_queue[i][0].size)*incrX_sign;
+						tempY = collidie.position[1] + (collidie.size + move_queue[i][0].size)*incrY_sign;
+						//collidie.position = [200,200];
+						
+						if (Math.abs(tempX - move_queue[i][0].position[0]) < Math.abs(tempY - move_queue[i][0].position[1])){
+							move_queue[i][0].position[0] = tempX;
+							move_queue[i][1][0] = move_queue[i][0].position[0] - posX;
+						} else {
+							move_queue[i][0].position[1] = tempY;
+							move_queue[i][1][1] = move_queue[i][0].position[1] - posY;
+						}
+						
+						//if (isCollision(move_queue[i][0], collidie)){
+						
+					}
+				}
+				
+				//console.log('move_queue[i][0].sight.friends');
+				//console.log(move_queue[i][0].sight.friends);
+				
+				//if (isCollision(move_queue[i], ))
+				
 			
-				console.log('---');
-				console.log(move_queue[i][0].id);
-				console.log(move_queue[i][0].position);
-				console.log(move_queue[i][1]);
-				console.log(move_queue[i][2]);
+				//console.log('---');
+				//console.log(move_queue[i][0].id);
+				//console.log(move_queue[i][0].position);
+				//console.log(move_queue[i][1]);
+				//console.log(move_queue[i][2]);
 			
 				//render_data2.move.push([move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1], move_queue[i][2]]);
 				
@@ -269,16 +335,25 @@ function update_state(){
 		
 		
 		
+		//errors
+		render_data2.error_msg = user_error;
+		user_error = '';
+		
 		
 		user_code();
+		processTime2 = process.hrtime(processTime1);
+		processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
+		console.log('calculated in = ' + processTimeRes);
 }
 
 
-var spirit1 = new Spirit('sp1', [200,206], 1, 10, player1_id);
-var spirit2 = new Spirit('sp2', [400,250], 1, 10, player1_id);
-var spirit3 = new Spirit('sp3', [212,210], 1, 10, player1_id);
-var spirit4 = new Spirit('sp4', [900,650], 1, 10, player1_id);
-var spirit5 = new Spirit('sp5', [210,208], 1, 10, player1_id);
+for (s = 1; s < 2000; s++){
+	global['s' + s] = new Spirit('s' + s, [200+s,252], 1, 10, player1_id);
+	spirits.push(global['s' + s]);
+}
+
+
+
 
 
 
@@ -302,12 +377,13 @@ wss.on('connection', function connection(ws) {
 	
 	
 	setInterval(function () {
+		processTime1 = process.hrtime();
 		update_state();
 		ws.send('sending render_data');	
 		ws.send(JSON.stringify(render_data2));
 		//ws.send(JSON.stringify(render_data));
 		//ws.send(render_data);
-		console.log(render_data2);
+		//console.log(render_data2);
 		//var render_data = [[],[],[],[],[]];
 		
 	}, game_tick);

@@ -69,7 +69,7 @@ class Spirit {
 }
 
 function render_state(){
-	//c.clearRect(0, 0, canvas.width, canvas.height);
+	c.clearRect(0, 0, canvas.width, canvas.height);
 	
 	
 	//objects birth
