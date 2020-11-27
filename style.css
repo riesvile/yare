@@ -8,6 +8,17 @@ body {
 	font-family: Avenir, sans-serif;
 }
 
+canvas#main_canvas, canvas#base_canvas {
+	transform: scale(1);
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+canvas#base_canvas {
+	z-index: 100;
+}
+
 #user_code_bg {
 	background-color: #000;
 	height: 100%;

@@ -5,28 +5,16 @@ function user_code(){
 	//	console.error(error);
 	//}
 	
-	
-	
-	
 	//spirit1.move(spirit2.position);
 	//for (i = 1; i < 18; i++){
 	//	spirits[i].move([i*10 + 600, i*10 + 200]);
 	//}
-	
 	try {
 		vm.run(player1_code, 'vm.js');
 	} catch (error){
 		console.error(error);
 	}
 	
-	//spirits[2].move([600,400]);
-	//spirits[4].move([700,400]);
-	console.log('s2');
-	//console.log(s2);
-	//console.log(spirits);
-	//spirit3.move(spirit2.position);
-	//spirit4.move(spirit2.position);
-	//spirit5.move(spirit2.position);
 }
 
 
@@ -39,8 +27,10 @@ const wss = new WebSocket.Server({ server });
 
 
 //global
+var started = 0;
 var game_tick = 1000; // 1s
-var base_speed = 10;
+var base_speed = 20;
+var stars = [];
 var living_spirits = [];
 var spirit_lookup = {};
 var spirits = [];
@@ -51,6 +41,8 @@ var player1_id = 'ab1';
 var player2_id = 'zx2';
 var player1_code;
 var player2_code;
+
+var star_zxq;
 
 var processTime1 = 0;
 var processTime2 = 0;
@@ -66,9 +58,16 @@ var render_data2 = {
 	'error_msg': []
 }
 
+var init_data = {
+	'units': [],
+	'stars': [],
+	'bases': []
+}
+
 const {VM} = require('vm2');
 var sandbox = {
-	player1_code: player1_code
+	player1_code: player1_code,
+	star_zxq: star_zxq
 }
 const vm = new VM({ sandbox });
 vm.freeze(spirits, 'spirits');
@@ -129,8 +128,8 @@ class Spirit {
 		} else {
 			
 			var angle = Math.atan2(target[1] - this.position[1], target[0] - this.position[0]);
-			incr[0] = (Math.round(Math.cos(angle) * 10000) / 10000) * base_speed;
-			incr[1] = (Math.round(Math.sin(angle) * 10000) / 10000) * base_speed;
+			incr[0] = Number(((Math.round(Math.cos(angle) * 10000) / 10000) * base_speed).toFixed(5));
+			incr[1] = Number(((Math.round(Math.sin(angle) * 10000) / 10000) * base_speed).toFixed(5));
 		
 			if ((Math.abs(tarX - this.position[0]) <= Math.abs(incr[0])) && (Math.abs(tarY - this.position[1]) <= Math.abs(incr[1]))){
 				incr[0] = tarX - this.position[0];
@@ -144,9 +143,40 @@ class Spirit {
 	
 }
 
+class Star {
+	constructor(id, position){
+		this.id = id
+		this.position = position;
+		this.size = 220;
+		this.structure_type = 'star';
+		//this.energy = energy;
+		
+		stars.push(this);
+	}
+}
+
+function initiate_world(ws){
+	init_data = {
+		'units': [],
+		'stars': [],
+		'bases': []
+	}
+	var all_spirits = living_spirits.length;
+	for (i = 0; i < all_spirits; i++){
+		init_data.units.push(living_spirits[i]);
+	}
+	
+	for (i = 0; i < stars.length; i++){
+		init_data.stars.push(stars[i]);
+	}
+	
+	console.log(init_data);
+	ws.send(JSON.stringify(init_data));
+}
+
 
 function isCollision(item1, item2){
-	//return false;
+	return false;
   minDistance = (item1.size + item2.size);
   var posX1 = item1.position[0];
   var posY1 = item1.position[1];
@@ -239,6 +269,7 @@ function update_state(){
 		
 	    //objects move
 		moveables = move_queue.length;
+		console.log('moveables = ' + moveables);
 		for (i = (moveables - 1); i >= 0; i--){
 			
 			//remove when target reached
@@ -253,6 +284,10 @@ function update_state(){
 			
 			//pos + incr
 			// THIS IS THE ONLY THING THAT MATTERS HERE, NO OTHER CALCULATIONS!
+			
+			if (Math.abs(move_queue[i][2][0] - move_queue[i][0].position[0]) < 0.6 && Math.abs(move_queue[i][2][1] - move_queue[i][0].position[1]) < 0.6){
+				move_queue[i][1] = [0,0];
+			}
 			
 			// work with data only if there is movement
 			if ((Math.abs(move_queue[i][1][0]) > 0) || (Math.abs(move_queue[i][1][1]) > 0)){
@@ -302,11 +337,11 @@ function update_state(){
 				//if (isCollision(move_queue[i], ))
 				
 			
-				//console.log('---');
-				//console.log(move_queue[i][0].id);
-				//console.log(move_queue[i][0].position);
-				//console.log(move_queue[i][1]);
-				//console.log(move_queue[i][2]);
+				console.log('---');
+				console.log(move_queue[i][0].id);
+				console.log(move_queue[i][0].position);
+				console.log(move_queue[i][1]);
+				console.log(move_queue[i][2]);
 			
 				//render_data2.move.push([move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1], move_queue[i][2]]);
 				
@@ -340,77 +375,72 @@ function update_state(){
 		user_error = '';
 		
 		
+		//broadcast to clients
+		wss.broadcast(JSON.stringify(render_data2));
+		
 		user_code();
 		processTime2 = process.hrtime(processTime1);
 		processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
 		console.log('calculated in = ' + processTimeRes);
+		user_error = 'calculated in = ' + processTimeRes;
+		
 }
 
 
-for (s = 1; s < 2000; s++){
-	global['s' + s] = new Spirit('s' + s, [200+s,252], 1, 10, player1_id);
+for (s = 1; s < 20; s++){
+	global['s' + s] = new Spirit('s' + s, [200+s*10,252], 10, 10, player1_id);
 	spirits.push(global['s' + s]);
 }
 
+star_zxq = new Star('star_zxq', [600, 500]);
 
 
 
 
 
-
-
-
-
-
-
-d1 = 0;
-d2 = 0;
-
+wss.broadcast = function broadcast(data) {
+    wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(data);
+        }
+    });
+};
 
 
 wss.on('connection', function connection(ws) {
 	console.log('new client connected');
-	ws.send('welcome!');
+	//ws.send('welcome!');
+	initiate_world(ws);
 	
+	ws.on('message', function incoming(message) {
+		d1 = process.hrtime();
+    	console.log('received: %s', message);
+		//player1_code = message;
+		player1_code = `all = spirits.length;
+	for (s = 0; s < all; s++){
+		global['s' + s] = spirits[s];
+	}` + message;
+  });
+
+});
+
+function game_start(){
 	user_code();
-	
-	
 	
 	setInterval(function () {
 		processTime1 = process.hrtime();
 		update_state();
-		ws.send('sending render_data');	
-		ws.send(JSON.stringify(render_data2));
+		//ws.send('sending render_data');	
+		//ws.send(JSON.stringify(render_data2));
 		//ws.send(JSON.stringify(render_data));
 		//ws.send(render_data);
 		//console.log(render_data2);
 		//var render_data = [[],[],[],[],[]];
 		
 	}, game_tick);
-	
-	
-	
-	ws.on('message', function incoming(message) {
-		d1 = process.hrtime();
-    	console.log('received: %s', message);
-		player1_code = message;
-		for (i = 0; i < 100000000; i++){
-			if (i < 5){
-				distanceHypot = i;
-			}
-		}
-		d2 = process.hrtime(d1);
-		taskDuration = (d2[0] * 1000000000 + d2[1]) / 1000000;
-		ws.send('distanceHypot is ' + distanceHypot + ' and it took ' + taskDuration);	
-  });
+}
 
-});
-
-
-
-
-
-
+game_start();
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
@@ -421,6 +451,8 @@ app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFi
 app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
 app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
 
+app.get('/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
+
 
 
 
@@ -428,3 +460,5 @@ app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(_
 
 
 server.listen(5000, () => console.log('Listening on port :5000'))
+
+

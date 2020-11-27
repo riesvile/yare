@@ -3,23 +3,17 @@
   <head>
     <title>yare</title>
 	<style>
-		canvas {
-			transform: scale(1);
-		}
 	</style>
 	<link rel="stylesheet" href="style.css">
 	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
-  <canvas></canvas>
+  <canvas id='main_canvas'></canvas>
+  <canvas id='base_canvas'></canvas>
   <div id="editor_container">
-  <div id="editor">
-    spirit1.move(spirit4.position);
-	spirit2.move(spirit4.position);
-	spirit3.move(spirit4.position);
-	spirit4.move([900,700]);
-	spirit5.move(spirit4.position);
-  </div>
+<div id="editor">
+s1.move([500,900])
+</div>
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
   </div>
   
@@ -33,8 +27,10 @@
 	  
 	  var x = 0;
 	  var y = 0;
-	  move_queue = [];
-	  birth_queue = [];
+	  var move_queue = [];
+	  var birth_queue = [];
+	  var units_queue = [];
+	  var stars_queue = [];
 	  const socket = new WebSocket('ws://localhost:5000'); // wss://yare.io:443
 	  //socket.binaryType = "arraybuffer";
 	  socket.addEventListener('open', function(event){
@@ -45,7 +41,6 @@
 		  try {
 			 incoming = JSON.parse(event.data);
 			 console.log(incoming);
-			 console.log(incoming.birth);
 			 
 			 //birthLen = incoming.birth.length;
 			 //for (i = 0; i < birthLen; i++){
@@ -71,8 +66,32 @@
 				 
 				 
 		  } catch (e) {
-		  	
+			  console.log(e);
 		  }
+		  
+		  //world_initiation
+		  try {
+	 		 if (incoming.units.length > 0){
+	 			 units_queue = incoming.units;
+	 			 console.log('units_queue');
+	 			 console.log(units_queue);
+	 		 } else {
+	 			 units_queue = [];
+	 		 }
+			 
+			 if (incoming.stars.length > 0){
+				 stars_queue = incoming.stars;
+	 			 console.log('stars_queue');
+	 			 console.log(stars_queue);
+			 }
+			 
+			 
+		  } catch (e) {
+			  console.log(e);
+		  }
+		  
+		 
+		  
   		 
   		  y = Date.now();
   		  z = y - x;
