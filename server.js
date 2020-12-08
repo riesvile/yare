@@ -1,3 +1,21 @@
+function randomString(length) {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
+
+function generateUniqueString() {
+    var timeStampo = String(new Date().getTime()),
+        i = 0,
+        out = '';
+
+    for (i = 0; i < timeStampo.length; i += 2) {
+        out += Number(timeStampo.substr(i, 2)).toString(36);
+    }
+
+    return (randomString(3) + out);
+}
+
+// --------------__---_-___
+
 function user_code(){
 	//try {
 	//	eval(player1_code);
@@ -26,6 +44,133 @@ const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 
 
+//connect to mongodb
+const mongoose = require('mongoose');
+const User = require('./users.js');
+const dbURI = 'mongodb+srv://levmiseri:02468a13579A@cluster0.us90f.mongodb.net/yare-io?retryWrites=true&w=majority'
+mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
+	.then((result) => console.log('connected to db'))
+	.catch((error) => console.log(error));
+
+
+// Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded({ extended: true }));
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
+
+// Access the parse results as request.body
+app.post('/validate', (req, res) => {
+	console.log(req.body);
+    console.log(req.body.user_name);
+    console.log(req.body.password);
+	
+	User.find({user_id: req.body.user_name})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+		        	data: "no such user"
+		        });
+			} else if (result[0]['passwrd'] == req.body.password){
+				//all good, update session id and prolong expiration date
+				session_id = generateUniqueString();
+		        var session_expire = new Date();
+		        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
+				console.log('date');
+				console.log(session_expire);
+				User.updateOne({user_id: req.body.user_name}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
+					.then((qq) => {
+						res.status(200).send({
+							username: result[0]['user_id'],
+				        	data: session_id
+				        });
+					});
+				
+			} else {
+				res.status(404).send({
+		        	data: "wrong password"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+app.post('/session', (req, res) => {
+	console.log(req.body);
+    console.log(req.body.user_name);
+    console.log(req.body.password);
+	
+	User.find({user_id: req.body.user_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+		        	data: "something went wrong"
+		        });
+			} else if (result[0]['session_id'] == req.body.session_id){
+				//all good, update session id and prolong expiration date
+				session_id = generateUniqueString();
+		        var session_expire = new Date();
+		        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
+				console.log('date');
+				console.log(session_expire);
+				User.updateOne({user_id: req.body.user_id}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
+					.then((qq) => {
+						res.status(200).send({
+							username: result[0]['user_id'],
+				        	data: session_id
+				        });
+					});
+				
+			} else {
+				res.status(404).send({
+		        	data: "expired session"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+
+app.get('/add-user', (req, res) => {
+	const user = new User({
+		user_id: 'test3',
+		passwrd: '15aa',
+		session_id: 'x',
+		session_expire: 1
+	});
+	
+	user.save()
+		.then((result) => {
+			res.send(result);
+			console.log('db result');
+			console.log(result);
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+app.get('/all', (req, res) => {
+	User.find(/*{session_expire: 16}*/)
+		.then((result) => {
+			res.send(result);
+			console.log('db result');
+			console.log(result);
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+})
+
+
 //global
 var started = 0;
 var game_tick = 1000; // 1s
@@ -33,9 +178,11 @@ var base_speed = 20;
 var stars = [];
 var living_spirits = [];
 var spirit_lookup = {};
+var star_lookup = {};
 var spirits = [];
 var move_queue = [];
 var move_queue_ids = [];
+var energize_queue = [];
 var birth_queue = [];
 var player1_id = 'ab1';
 var player2_id = 'zx2';
@@ -43,6 +190,9 @@ var player1_code;
 var player2_code;
 
 var star_zxq;
+
+//damage of energy. 'units' I guess?
+var energy_value = 1;
 
 var processTime1 = 0;
 var processTime2 = 0;
@@ -141,6 +291,15 @@ class Spirit {
 		move_queue[entry_index] = [this, incr, target];
 	}
 	
+	
+	energize(target) {
+		if (target == null){
+			target = this;
+		}
+		//this, this.energy, this.size, target)
+		energize_queue.push([this, target]);
+	}
+	
 }
 
 class Star {
@@ -175,6 +334,11 @@ function initiate_world(ws){
 }
 
 
+function get_distance(item1, item2){
+	return Math.hypot(item2[0]-item1[0], item2[1]-item1[1]);
+}
+
+
 function isCollision(item1, item2){
 	return false;
   minDistance = (item1.size + item2.size);
@@ -195,7 +359,7 @@ function isCollision(item1, item2){
   
 }
 
-function is_in_sight(item1, item2, range = 100){
+function is_in_sight(item1, item2, range = 500){
 	if (Math.abs(item1.position[0] - item2.position[0]) < range && Math.abs(item1.position[1] - item2.position[1]) < range){
 		return true;
 	} else {
@@ -229,16 +393,17 @@ function get_sight(){
 				}
 			}
 		}
+		
+		//stars
+		for (k = 0; k < stars.length; k++){
+			if (is_in_sight(living_spirits[i], stars[k])){
+				living_spirits[i].sight.structures.push(stars[k].id);
+			}
+		}
 	}
+	
 }
 
-function justTest(){
-  console.log('just testing ----------');
-  console.log('Object.keys(spirit_lookup).length');
-  console.log(Object.keys(spirit_lookup).length);
-  console.log('spirit_lookup');
-  console.log(spirit_lookup);
-}
 
 function resolve_collision(){
 	
@@ -336,13 +501,14 @@ function update_state(){
 				
 				//if (isCollision(move_queue[i], ))
 				
-			
+				/*
 				console.log('---');
 				console.log(move_queue[i][0].id);
 				console.log(move_queue[i][0].position);
 				console.log(move_queue[i][1]);
 				console.log(move_queue[i][2]);
-			
+				*/
+				
 				//render_data2.move.push([move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1], move_queue[i][2]]);
 				
 				render_data2.move.push([move_queue[i][0].id, [posX, posY], move_queue[i][1], move_queue[i][2]]);
@@ -358,12 +524,64 @@ function update_state(){
 		//console.log('spirit_lookup[sp1].sight');
 		//console.log(spirit_lookup['sp1'].sight);
 		get_sight();
-		//console.log('spirit_lookup[sp1].sight');
+		console.log('spirit_lookup[s1].sight');
+		console.log(spirit_lookup['s1'].sight);
 		//console.log(spirit_lookup['sp1'].sight);
 		
 		
 		//objects energize
-		
+		e_targets = energize_queue.length;
+		for (i = (e_targets - 1); i >= 0; i--){
+			//if origin == target —> attempt harvest from star
+			if (energize_queue[i][0] == energize_queue[i][1]){
+				for (j = 0; j < energize_queue[i][0].sight.structures.length; j++){
+					if (star_lookup[energize_queue[i][0].sight.structures[j]].structure_type == 'star'){
+						star_distance = get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position);
+						if (star_distance < 400){
+							console.log('harvesting');
+							energize_queue[i][0].energy += energy_value * energize_queue[i][0].size;
+							if (energize_queue[i][0].energy > energize_queue[i][0].energy_capacity) energize_queue[i][0].energy = energize_queue[i][0].energy_capacity;
+							//render energize: [origin, target, energy]
+							render_data2.energize.push([star_lookup[energize_queue[i][0].sight.structures[j]].id, energize_queue[i][0].id, energy_value * energize_queue[i][0].size]);
+						} else {
+							console.log('out of reach');
+						}
+						console.log(get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position) + ' far away');
+						console.log(energize_queue[i][0].energy);
+					}
+				}
+			}
+			
+			//if target is friend
+			else if (energize_queue[i][0].player_id == energize_queue[i][1].player_id){
+				target_distance = get_distance(energize_queue[i][0].position, energize_queue[i][1].position);
+				if (target_distance < 200){
+					if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
+						energize_queue[i][0].energy -= energy_value * energize_queue[i][0].size;
+						energize_queue[i][1].energy += energy_value * energize_queue[i][0].size;
+						if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
+						render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value * energize_queue[i][0].size]);
+					} else if (energize_queue[i][0].energy > 0){
+						render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][1].energy]);
+						energize_queue[i][1].energy += energize_queue[i][0].energy;
+						energize_queue[i][0].energy = 0;
+					} else {
+						console.log('no energy to give');
+					}
+					console.log('origin energy: ' + energize_queue[i][0].energy);
+					console.log('target energy: ' + energize_queue[i][1].energy);
+				}
+				
+			}
+			
+			
+			//if target is enemy
+			
+			
+			
+			
+			energize_queue.splice(i, 1);
+		}
 		
 		
 		//objects death
@@ -376,6 +594,7 @@ function update_state(){
 		
 		
 		//broadcast to clients
+		//console.log(JSON.stringify(render_data2))
 		wss.broadcast(JSON.stringify(render_data2));
 		
 		user_code();
@@ -387,13 +606,16 @@ function update_state(){
 }
 
 
+//map creation
+// -----------------
+
 for (s = 1; s < 20; s++){
-	global['s' + s] = new Spirit('s' + s, [200+s*10,252], 10, 10, player1_id);
+	global['s' + s] = new Spirit('s' + s, [200+s*10,252], 4, 10, player1_id);
 	spirits.push(global['s' + s]);
 }
 
 star_zxq = new Star('star_zxq', [600, 500]);
-
+star_lookup['star_zxq'] = star_zxq;
 
 
 
@@ -444,7 +666,11 @@ game_start();
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
+app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
+app.get('/game', (req, res) => res.sendFile(__dirname + '/game.html'));
 app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
+app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
+app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
 app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
 app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
 app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));

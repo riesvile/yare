@@ -21,6 +21,11 @@ var img = new Image();
 img.src = '/assets/game/innerSh1x.png';
 
 
+//flags
+
+var world_initiated = 0;
+
+
 
 class Spirit {
 	constructor(id, position, size, energy, player){
@@ -114,6 +119,14 @@ class Star {
 	}
 }
 
+function draw_energize(origin, target, energy_strength){
+	c.beginPath();
+	c.moveTo(origin[0], origin[1]);
+	c.lineTo(target[0], target[1]);
+	c.strokeStyle = '#fff';
+	c.stroke();
+}
+
 
 function drawInnerSh(teX, teY) {
 			c_base.drawImage(img, teX - 225, teY - 225);
@@ -138,15 +151,19 @@ function initiate_world(){
 		star_lookup[stars_queue[i].id].draw();
 	}
 	stars_queue = [];
+	world_initiated = 1;
 }
 
 function render_state(){
-	c.fillStyle = 'rgba(0,0,0,0.1)'
+	c.fillStyle = 'rgba(0,0,0,1)'
 	c.fillRect(0, 0, main_canvas.width, main_canvas.height);
 	//c.clearRect(0, 0, main_canvas.width, main_canvas.height);
 	
-	//world initiation
-	initiate_world();
+	//world initiation (page refresh)
+	if (world_initiated == 0 && units_queue.length > 0){
+		initiate_world();
+	}
+	
 	
 	
 	//objects birth
@@ -182,6 +199,16 @@ function render_state(){
 
 
 	//objects energize
+	for (i = 0; i < energize_queue.length; i++){
+		//draw_energize(energize_queue[i])
+		console.log('energize_queue[i]');
+		console.log(energize_queue[i]);
+		if (energize_queue[i][0].startsWith('star')) {
+			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+		} else {
+			draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+		}
+	}
 
 
 

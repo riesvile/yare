@@ -1,116 +1,28 @@
 <!doctype html>
 <html>
   <head>
-    <title>yare</title>
+    <title>yare.io</title>
 	<style>
 	</style>
 	<link rel="stylesheet" href="style.css">
-	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
-  <canvas id='main_canvas'></canvas>
-  <canvas id='base_canvas'></canvas>
-  <div id="editor_container">
-<div id="editor">
-s1.move([500,900])
-</div>
-  <a href="#" id="update_code"><span>UPDATE CODE</span></a>
-  </div>
+	  
+	  <h1>Sign in logic</h1>
+	  
+	  <p>if user is signed in, go to main profile page, if not, start tutorial (or, for now, show sign in form)</p>
+  
+	<form action="/validate" method="post" id="login_form">
+	  <input type="text" id="user_name" name="user[name]" placeholder="Username"><br>
+	  <input type="password" id="user_password" name="user[password]" placeholder="Password"><br>
+	  <input type="submit" value="Submit">
+	</form>
+  
+  
+  
   
   </body>
-  <script>
-	  var editor = ace.edit("editor");
-	  editor.setTheme("ace/theme/clouds_midnight");
-	  editor.session.setMode("ace/mode/javascript");
-	  editor.setFontSize(14);
-	  
-	  
-	  var x = 0;
-	  var y = 0;
-	  var move_queue = [];
-	  var birth_queue = [];
-	  var units_queue = [];
-	  var stars_queue = [];
-	  const socket = new WebSocket('ws://localhost:5000'); // wss://yare.io:443
-	  //socket.binaryType = "arraybuffer";
-	  socket.addEventListener('open', function(event){
-		  console.log('Connected to wsws server');
-	  })
-	  
-	  socket.addEventListener('message', function(event){
-		  try {
-			 incoming = JSON.parse(event.data);
-			 console.log(incoming);
-			 
-			 //birthLen = incoming.birth.length;
-			 //for (i = 0; i < birthLen; i++){
-			 //	birth_queue.push(incoming.birth[i]);
-			 //}
-			 
-			 if (incoming.birth.length > 0){
-				 birth_queue = incoming.birth;
-				 //console.log(birth_queue);
-			 } else {
-				 birth_queue = [];
-			 }
-			 
-			 if (incoming.move.length > 0){
-				 move_queue = incoming.move;
-			 } else {
-				 move_queue = [];
-			 }
-			 
-			 if (incoming.error_msg.length > 0){
-				 console.log(incoming.error_msg);
-			 }
-				 
-				 
-		  } catch (e) {
-			  console.log(e);
-		  }
-		  
-		  //world_initiation
-		  try {
-	 		 if (incoming.units.length > 0){
-	 			 units_queue = incoming.units;
-	 			 console.log('units_queue');
-	 			 console.log(units_queue);
-	 		 } else {
-	 			 units_queue = [];
-	 		 }
-			 
-			 if (incoming.stars.length > 0){
-				 stars_queue = incoming.stars;
-	 			 console.log('stars_queue');
-	 			 console.log(stars_queue);
-			 }
-			 
-			 
-		  } catch (e) {
-			  console.log(e);
-		  }
-		  
-		 
-		  
-  		 
-  		  y = Date.now();
-  		  z = y - x;
-  		  console.log('roundtrip: ');
-  		  console.log(z);
-		  
-	  });
-	  
-	  const sendMessage = () => {
-		  x = Date.now();
-		  socket.send('Hello from client1');
-	  }
-	  
-	  document.getElementById('update_code').addEventListener("click",function(e){
-		  console.log('clicked');
-		  user_code = editor.getValue();
-		  socket.send(user_code);
-	  },false);
-	  
-  </script>
+ 
   <script src="./rendering.js"></script>
+  <script src="./basics.js"></script>
   </html>

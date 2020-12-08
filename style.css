@@ -6,6 +6,7 @@ margin: 0;
 body {
 	background-color: #06080a;
 	font-family: Avenir, sans-serif;
+	color: #fff;
 }
 
 canvas#main_canvas, canvas#base_canvas {
@@ -17,6 +18,10 @@ canvas#main_canvas, canvas#base_canvas {
 
 canvas#base_canvas {
 	z-index: 100;
+}
+
+a {
+	color: #716Fd1;
 }
 
 #user_code_bg {
