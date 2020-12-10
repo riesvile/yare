@@ -4,8 +4,8 @@
     <title>yare</title>
 	<style>
 	</style>
-	<link rel="stylesheet" href="style.css">
-	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="../style.css">
+	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
   <canvas id='main_canvas'></canvas>
@@ -34,7 +34,7 @@ s1.energize(s1.position)
 	  var units_queue = [];
 	  var energize_queue = [];
 	  var stars_queue = [];
-	  const socket = new WebSocket('ws://localhost:5000'); // wss://yare.io:443
+	  const socket = new WebSocket('ws://localhost:5000/game/a3455'); // wss://yare.io:443
 	  //socket.binaryType = "arraybuffer";
 	  socket.addEventListener('open', function(event){
 		  console.log('Connected to wsws server');
@@ -111,15 +111,16 @@ s1.energize(s1.position)
 	  
 	  const sendMessage = () => {
 		  x = Date.now();
-		  socket.send('Hello from client1');
+		  socket.send('abdd7');
 	  }
 	  
 	  document.getElementById('update_code').addEventListener("click",function(e){
 		  console.log('clicked');
 		  user_code = editor.getValue();
-		  socket.send(user_code);
+		  socket.send(JSON.stringify({u_code: user_code,
+		  			   session_id: 'xyz'}));
 	  },false);
 	  
   </script>
-  <script src="./rendering.js"></script>
+  <script src="../rendering.js"></script>
   </html>
