@@ -28,11 +28,12 @@ var world_initiated = 0;
 
 
 class Spirit {
-	constructor(id, position, size, energy, player){
+	constructor(id, position, size, energy, player, color){
 		this.id = id
 		this.position = position;
 		this.size = size;
 		this.energy = energy;
+		this.color = color;
 		
 		this.sight = {
 			friends: [],
@@ -76,7 +77,7 @@ class Spirit {
 	draw() {
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c.fillStyle = "rgba(255, 0, 0, 1)";
+		c.fillStyle = this.color;
 		c.fill();
 	}
 	
@@ -137,7 +138,7 @@ function drawInnerSh(teX, teY) {
 function initiate_world(){
 	world_spirits = units_queue.length;
 	for (i = 0; i < world_spirits; i++){
-		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id);
+		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color);
 		spirit_lookup[units_queue[i].id].draw();
 		console.log(spirit_lookup[units_queue[i].id]);
 		//birth_queue.splice(i, 1);
@@ -169,7 +170,7 @@ function render_state(){
 	//objects birth
 	birthlings = birth_queue.length;
 	for (i = 0; i < birthlings; i++){
-		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id);
+		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color);
 		spirit_lookup[birth_queue[i].id].draw();
 		console.log(spirit_lookup[birth_queue[i].id]);
 		//birth_queue.splice(i, 1);
@@ -201,8 +202,8 @@ function render_state(){
 	//objects energize
 	for (i = 0; i < energize_queue.length; i++){
 		//draw_energize(energize_queue[i])
-		console.log('energize_queue[i]');
-		console.log(energize_queue[i]);
+		//console.log('energize_queue[i]');
+		//console.log(energize_queue[i]);
 		if (energize_queue[i][0].startsWith('star')) {
 			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
 		} else {

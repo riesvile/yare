@@ -34,7 +34,9 @@ s1.energize(s1.position)
 	  var units_queue = [];
 	  var energize_queue = [];
 	  var stars_queue = [];
-	  const socket = new WebSocket('ws://localhost:5000/game/a3455'); // wss://yare.io:443
+	  var tempURLThing = document.URL.replace('#', '');
+	  var game_id = /[^/]*$/.exec(tempURLThing)[0];
+	  const socket = new WebSocket('ws://localhost:5000/t1/' + game_id); // wss://yare.io:443
 	  //socket.binaryType = "arraybuffer";
 	  socket.addEventListener('open', function(event){
 		  console.log('Connected to wsws server');
@@ -114,12 +116,24 @@ s1.energize(s1.position)
 		  socket.send('abdd7');
 	  }
 	  
+	  function getCookie(name) {
+	      var nameEQ = name + "=";
+	      var ca = document.cookie.split(';');
+	      for(var i=0;i < ca.length;i++) {
+	          var c = ca[i];
+	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	      }
+	      return null;
+	  }
+	  
 	  document.getElementById('update_code').addEventListener("click",function(e){
 		  console.log('clicked');
 		  user_code = editor.getValue();
-		  socket.send(JSON.stringify({u_code: user_code,
-		  			   session_id: 'xyz'}));
+		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  },false);
+	  
+	  //session_id = abc
 	  
   </script>
   <script src="../rendering.js"></script>

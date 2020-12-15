@@ -74,3 +74,11 @@ a {
 	display: block;
 	padding-top: 1px;
 }
+
+#get_in {
+	display: none;
+	color: #0f0;
+}
+
+
+

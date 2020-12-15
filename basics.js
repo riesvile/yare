@@ -1,7 +1,13 @@
 //flags
 var active_session = 0;
+var game_id = '';
 
 if (getCookie('session_id') != null && getCookie('user_id') != null){
+	if (getCookie('user_id') == "anonymous"){
+		active_session = 1;
+		//load game by session_id
+	}
+	
 	if (active_session == 0){
 		fetch('/session', {
 		        method: "POST",
@@ -37,7 +43,104 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 		  active_session = 1;
 	}
 	
-	
+} else {
+	if (window.location.pathname.length <= 1) {
+		setCookie('user_id', 'anonymous');
+		setCookie('session_id', generateUniqueString(3), 1);
+		new_game();
+	}
+}
+
+function new_game(type){
+	fetch('/new-game', {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+	        user_id: getCookie('user_id'),
+	        session_id: getCookie('session_id'),
+			type: type
+	    })
+	}).then(response => response.json())
+      .then(response => {
+		  //redirect to game id
+		  console.log(response);
+		  game_id = response.g_id;
+		  if (response.meta == 'easy-bot'){
+		  	 window.location = './t1/' + response.g_id;
+		  } else if (response.meta == 'waiting for p2'){
+			  waiting_for_p2(response.g_id);
+		  }
+		  
+		 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+	  console.log(getCookie('user_id'));
+}
+
+function waiting_for_p2(g_id){
+	//interval – keep checking with server if p2 connected
+	console.log('waiting for player 2 for game' + g_id);
+	knockknock = setInterval(function(){
+		console.log('checking with server');
+		fetch('/check-status/' + g_id, {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        data: 'status check'
+		    })
+		}).then(response => response.json())
+	      .then(response => {
+			  //redirect to game id
+			  console.log(response);
+			  if (response.data == 'not yet'){
+				  console.log('still nothing');
+			  } else if (response.data == 'ready'){
+				  console.log('game is ready');
+				  document.getElementById("get_in").style.display = "block";
+			  }
+		  
+		 
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
+	}, 1000);
+}
+
+
+function get_in(){
+	fetch('/confirm-challenge/' + game_id, {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_id: getCookie('user_id'),
+		        session_id: getCookie('session_id'),
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  console.log(response);
+		  if (response.data == "start"){
+			  window.location = './t1/' + game_id;
+	  	
+		  } else {
+		  	  console.log("Something went wrong " + response.data);
+		  }
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
 }
 
 
@@ -50,6 +153,7 @@ function setCookie(name,value,days) {
     }
     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
+
 
 function getCookie(name) {
     var nameEQ = name + "=";
@@ -66,6 +170,21 @@ function eraseCookie(name) {
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+function randomString(length) {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
+
+function generateUniqueString(prefix) {
+    var timeStampo = String(new Date().getTime()),
+        i = 0,
+        out = '';
+
+    for (i = 0; i < timeStampo.length; i += 2) {
+        out += Number(timeStampo.substr(i, 2)).toString(36);
+    }
+
+    return (randomString(prefix) + out);
+}
 
 function logout() {
 	eraseCookie('user_id');

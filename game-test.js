@@ -1,13 +1,7 @@
-const { parentPort, workerData, isMainThread } = require("worker_threads");
 
-const mongoose = require('mongoose');
-const User = require('./models/users.js');
-const dbURI = 'mongodb+srv://levmiseri:02468a13579A@cluster0.us90f.mongodb.net/yare-io?retryWrites=true&w=majority'
-mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-	.then((result) => console.log('connected to db'))
-	.catch((error) => console.log(error));
 
 //initiate_world
+/*
 parentPort.on("message", message => {
   if (message.data == "initiate world") {
 	  console.log('hmm');
@@ -75,6 +69,8 @@ parentPort.on("message", message => {
   	
   }
 });
+
+*/
 
 function user_code(){
 	//try {
@@ -167,7 +163,7 @@ const vm2 = new VM({ sandbox2 });
 vm.freeze(spirits, 'spirits');
 vm2.freeze(spirits2, 'spirits');
 
-if (!isMainThread){
+//if (!isMainThread){
 	class Spirit {
 		constructor(id, position, size, energy, player, color){
 			this.id = id
@@ -325,8 +321,8 @@ if (!isMainThread){
 						living_spirits[j].sight.friends.push(living_spirits[i].id);
 					} else if (living_spirits[j].player_id == player2_id){
 						//is enemy
-						living_spirits[i].sight.enemy.push(living_spirits[j].id);
-						living_spirits[j].sight.enemy.push(living_spirits[i].id);
+						//living_spirits[i].sight.enemy.push(living_spirits[j].id);
+						//living_spirits[j].sight.enemy.push(living_spirits[i].id);
 					}
 				}
 			}
@@ -532,7 +528,9 @@ if (!isMainThread){
 		
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
-			parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData, meta: ''});
+			
+			//parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData, meta: ''});
+			
 			//wss.broadcast();
 		
 			user_code();
@@ -588,7 +586,7 @@ if (!isMainThread){
 	
 	
 	
-}
+	//}
 
 
 
