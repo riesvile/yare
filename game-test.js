@@ -316,13 +316,26 @@ vm2.freeze(spirits2, 'spirits');
 					//distance_approx = distance_nonrooted(living_spirits[i].position, living_spirits[j].position);
 					//console.log('distance between ' + living_spirits[i].id + ' and ' + living_spirits[j].id + 'is ' + distance_approx);
 					if (living_spirits[j].player_id == player1_id){
-						//is friend
-						living_spirits[i].sight.friends.push(living_spirits[j].id);
-						living_spirits[j].sight.friends.push(living_spirits[i].id);
+						if (living_spirits[i].player_id == player1_id){
+							//is friend
+							living_spirits[i].sight.friends.push(living_spirits[j].id);
+							living_spirits[j].sight.friends.push(living_spirits[i].id);
+						} else if (living_spirits[i].player_id == player2_id){
+							//is enemy
+							living_spirits[i].sight.enemies.push(living_spirits[j].id);
+							living_spirits[j].sight.enemies.push(living_spirits[i].id);
+						}
+						
 					} else if (living_spirits[j].player_id == player2_id){
-						//is enemy
-						//living_spirits[i].sight.enemy.push(living_spirits[j].id);
-						//living_spirits[j].sight.enemy.push(living_spirits[i].id);
+						if (living_spirits[i].player_id == player2_id){
+							//is friend
+							living_spirits[i].sight.friends.push(living_spirits[j].id);
+							living_spirits[j].sight.friends.push(living_spirits[i].id);
+						} else if (living_spirits[i].player_id == player1_id){
+							//is enemy
+							living_spirits[i].sight.enemies.push(living_spirits[j].id);
+							living_spirits[j].sight.enemies.push(living_spirits[i].id);
+						}
 					}
 				}
 			}
@@ -538,6 +551,8 @@ vm2.freeze(spirits2, 'spirits');
 			processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
 			console.log('calculated in = ' + processTimeRes);
 			user_error = 'calculated in = ' + processTimeRes;
+			console.log('living_spirits[36].sight');
+			console.log(living_spirits[36].sight);
 		
 	}
 
@@ -557,7 +572,6 @@ vm2.freeze(spirits2, 'spirits');
 
 	star_zxq = new Star('star_zxq', [600, 500]);
 	star_lookup['star_zxq'] = star_zxq;
-	
 	
 	
 	

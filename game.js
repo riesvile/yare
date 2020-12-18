@@ -139,6 +139,9 @@ var processTimeRes = 0;
 
 var user_error;
 
+var test_s1 = {};
+var test_s2 = {};
+
 var render_data2 = {
 	'move': [],
 	'energize': [],
@@ -156,16 +159,20 @@ var init_data = {
 const {VM} = require('vm2');
 var sandbox = {
 	player1_code: player1_code,
+	test_s1: test_s1,
 	star_zxq: star_zxq
 }
 var sandbox2 = {
 	player2_code: player2_code,
+	test_s2: test_s2,
 	star_zxq: star_zxq
 }
 const vm = new VM({ sandbox });
 const vm2 = new VM({ sandbox2 });
 vm.freeze(spirits, 'spirits');
+//vm.freeze(test_s1, 'test_s');
 vm2.freeze(spirits2, 'spirits');
+//vm2.freeze(test_s2, 'test_s');
 
 if (!isMainThread){
 	class Spirit {
@@ -204,6 +211,11 @@ if (!isMainThread){
 			if (Array.isArray(target) == false){
 				user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
 				return
+			} else {
+				if (target.length != 2){
+					user_error = '.move() argument must be an array with two items [x, y]. E.g. s1.move([100, 100]) or s1.move(s2.position)';
+					return
+				}
 			}
 		
 			var tarX = target[0];
@@ -239,6 +251,19 @@ if (!isMainThread){
 	
 	
 		energize(target) {
+			console.log('target = ');
+			console.log(target);
+			
+			try {
+				if (typeof target.id === 'string' || target.id instanceof String){
+					target = spirit_lookup[target.id]
+					console.log('it went here!!!!!!!!!!!!!');
+				}
+				//vm.run(player2_code, 'vm.js');
+			} catch (error){
+				console.error(error);
+			}
+			
 			if (target == null){
 				target = this;
 			}
@@ -320,13 +345,26 @@ if (!isMainThread){
 					//distance_approx = distance_nonrooted(living_spirits[i].position, living_spirits[j].position);
 					//console.log('distance between ' + living_spirits[i].id + ' and ' + living_spirits[j].id + 'is ' + distance_approx);
 					if (living_spirits[j].player_id == player1_id){
-						//is friend
-						living_spirits[i].sight.friends.push(living_spirits[j].id);
-						living_spirits[j].sight.friends.push(living_spirits[i].id);
+						if (living_spirits[i].player_id == player1_id){
+							//is friend
+							living_spirits[i].sight.friends.push({id: living_spirits[j].id, position: living_spirits[j].position});
+							living_spirits[j].sight.friends.push({id: living_spirits[i].id, position: living_spirits[i].position});
+						} else if (living_spirits[i].player_id == player2_id){
+							//is enemy
+							living_spirits[i].sight.enemies.push({id: living_spirits[j].id, position: living_spirits[j].position});
+							living_spirits[j].sight.enemies.push({id: living_spirits[i].id, position: living_spirits[i].position});
+						}
+						
 					} else if (living_spirits[j].player_id == player2_id){
-						//is enemy
-						living_spirits[i].sight.enemy.push(living_spirits[j].id);
-						living_spirits[j].sight.enemy.push(living_spirits[i].id);
+						if (living_spirits[i].player_id == player2_id){
+							//is friend
+							living_spirits[i].sight.friends.push({id: living_spirits[j].id, position: living_spirits[j].position});
+							living_spirits[j].sight.friends.push({id: living_spirits[i].id, position: living_spirits[i].position});
+						} else if (living_spirits[i].player_id == player1_id){
+							//is enemy
+							living_spirits[i].sight.enemies.push({id: living_spirits[j].id, position: living_spirits[j].position});
+							living_spirits[j].sight.enemies.push({id: living_spirits[i].id, position: living_spirits[i].position});
+						}
 					}
 				}
 			}
@@ -461,8 +499,8 @@ if (!isMainThread){
 			//console.log('spirit_lookup[sp1].sight');
 			//console.log(spirit_lookup['sp1'].sight);
 			get_sight();
-			//console.log('spirit_lookup[s1].sight');
-			//console.log(spirit_lookup['s1'].sight);
+			console.log('spirit_lookup[s1].sight');
+			console.log(spirit_lookup['s1'].sight);
 			//console.log(spirit_lookup['sp1'].sight);
 		
 		
@@ -513,6 +551,25 @@ if (!isMainThread){
 			
 			
 				//if target is enemy
+				else if (energize_queue[i][0].player_id != energize_queue[i][1].player_id){
+					target_distance = get_distance(energize_queue[i][0].position, energize_queue[i][1].position);
+					if (target_distance < 200){
+						if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
+							energize_queue[i][0].energy -= energy_value * energize_queue[i][0].size;
+							energize_queue[i][1].energy -= 2 * energy_value * energize_queue[i][0].size;
+							//if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
+							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * energy_value * energize_queue[i][0].size]);
+						} else if (energize_queue[i][0].energy > 0){
+							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * energize_queue[i][1].energy]);
+							energize_queue[i][1].energy -= 2 * energize_queue[i][0].energy;
+							energize_queue[i][0].energy = 0;
+						} else {
+							console.log('no energy to give');
+						}
+						console.log('origin energy: ' + energize_queue[i][0].energy);
+						console.log('target energy: ' + energize_queue[i][1].energy);
+					}				
+				}
 			
 			
 			
@@ -547,13 +604,18 @@ if (!isMainThread){
 	//map creation
 	// -----------------
 
+	
+	//add enemies to the same object (test_s1), but from living_spirits (doesn't contain .move(), .energize(), ...)
+
 	for (s = 1; s < 20; s++){
 		global['s' + s] = new Spirit('s' + s, [200+s*10,252], 4, 10, player1_id, player1_color);
+		test_s1['s' + s] = global['s' + s];
 		spirits.push(global['s' + s]);
 	}
 
 	for (q = 1; q < 20; q++){
 		global['q' + q] = new Spirit('q' + q, [600+q*10,452], 4, 10, player2_id, player2_color);
+		test_s2['q' + q] = global['q' + q];
 		spirits2.push(global['q' + q]);
 	}
 
