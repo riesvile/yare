@@ -598,3 +598,34 @@ var spirit18 = new Spirit('sp17', [298,166], 1, 10, player1_id);
 var spirit19 = new Spirit('sp18', [320,296], 1, 10, player1_id);
 
 
+
+
+
+
+
+
+
+if (living_spirits[j].player_id == player1_id){
+	if (living_spirits[i].player_id == player1_id){
+		//is friend
+		living_spirits[i].sight.friends.push({id: living_spirits[j].id, position: living_spirits[j].position});
+		living_spirits[j].sight.friends.push({id: living_spirits[i].id, position: living_spirits[i].position});
+	} else if (living_spirits[i].player_id == player2_id){
+		//is enemy
+		living_spirits[i].sight.enemies.push({id: living_spirits[j].id, position: living_spirits[j].position});
+		living_spirits[j].sight.enemies.push({id: living_spirits[i].id, position: living_spirits[i].position});
+	}
+	
+} else if (living_spirits[j].player_id == player2_id){
+	if (living_spirits[i].player_id == player2_id){
+		//is friend
+		living_spirits[i].sight.friends.push({id: living_spirits[j].id, position: living_spirits[j].position});
+		living_spirits[j].sight.friends.push({id: living_spirits[i].id, position: living_spirits[i].position});
+	} else if (living_spirits[i].player_id == player1_id){
+		//is enemy
+		living_spirits[i].sight.enemies.push({id: living_spirits[j].id, position: living_spirits[j].position});
+		living_spirits[j].sight.enemies.push({id: living_spirits[i].id, position: living_spirits[i].position});
+	}
+}
+
+

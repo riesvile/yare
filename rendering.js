@@ -1,3 +1,92 @@
+//Hello
+
+
+// ------
+// Pointer handling
+// ------
+
+var mousey = 0;
+var pointer_originX = 0;
+var pointer_originY = 0;
+var pointer_offsetX = 0;
+var pointer_offsetY = 0;
+var current_offsetX = 0;
+var current_offsetY = 0;
+var panning = 0;
+
+function offsetUpdate(){
+	
+	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
+	c_base.clearRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
+	
+	//c.fillStyle = 'rgba(6,8,100,0.1)';
+	c.clearRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
+	
+	
+	//c.setTransform(1, 0, 0, 1, 0, 0);
+	c_base.setTransform(1, 0, 0, 1, 0, 0);
+	c_base.translate(offsetX, offsetY);
+	//c.translate(offsetX, offsetY);
+	
+	//world_spirits = living_spirits.length;
+	//for (i = 0; i < world_spirits; i++){
+	//	spirit_lookup[living_spirits[i].id].draw();
+	//}
+	
+	world_stars = stars.length;
+	for (i = 0; i < world_stars; i++){
+		star_lookup[stars[i].id].draw();
+	}
+	
+	world_bases = bases.length;
+	for (i = 0; i < world_bases; i++){
+		console.log('base draw');
+		base_lookup[bases[i].id].draw();
+	}
+	
+	draw_grid();
+	
+}
+
+function onPointerDown(e){ 
+	console.log('mouse down');
+	mousey = 1;
+	pointer_originX = e.pageX;
+	pointer_originY = e.pageY;
+	current_offsetX = offsetX;
+	current_offsetY = offsetY;
+}
+function onPointerMove(e){
+	if (mousey == 1){
+		console.log('mouse moving');
+		panning = 1;
+		console.log(e.pageX + " / " + e.pageY);
+		
+		
+		pointer_offsetX = e.pageX - pointer_originX;
+		pointer_offsetY = e.pageY - pointer_originY;
+		
+		offsetX = pointer_offsetX + current_offsetX;
+		offsetY = pointer_offsetY + current_offsetY;
+		//offsetUpdate();
+	}
+}
+function onPointerUp(e){ 
+	console.log('mouse up');
+	mousey = 0;
+	panning = 0;
+}
+
+// Add event listeners
+document.addEventListener("pointerdown", onPointerDown, false);
+document.addEventListener("pointermove", onPointerMove, false);
+document.addEventListener("pointerup", onPointerUp, false);
+
+
+// ------
+// Game rendering
+// ------
+
 const main_canvas = document.getElementById('main_canvas');
 const base_canvas = document.getElementById('base_canvas');
 const c = main_canvas.getContext('2d');
@@ -9,13 +98,18 @@ base_canvas.height = innerHeight;
 c.scale (1, 1);
 c_base.scale (1, 1);
 
+var offsetX = 0;
+var offsetY = 0;
+
 var game_tick = 1000; // 1s
 var fps = 60;
 
 var living_spirits = [];
 var stars = [];
+var bases = [];
 var spirit_lookup = {};
 var star_lookup = {};
+var base_lookup = {};
 
 var img = new Image();
 img.src = '/assets/game/innerSh1x.png';
@@ -25,6 +119,16 @@ img.src = '/assets/game/innerSh1x.png';
 
 var world_initiated = 0;
 
+function draw_grid(){
+	for (i = 0; i < 100; i++){
+		for (j = 0; j < 100; j++){
+			c_base.beginPath();
+			c_base.arc(i*100, j*100, 1, 0, Math.PI * 2, false);
+			c_base.fillStyle = "rgba(244, 246, 248, 0.24)";
+			c_base.fill();
+		}
+	}
+}
 
 
 class Spirit {
@@ -74,6 +178,11 @@ class Spirit {
 		//this.draw();
 	}
 	
+	death() {
+		this.color = 'rgba(150, 90, 0)';
+		//this.hp = 0;
+	}
+	
 	draw() {
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
@@ -120,12 +229,48 @@ class Star {
 	}
 }
 
+class Base {
+	constructor(id, position, player){
+		this.id = id
+		this.position = position;
+		this.size = 40;
+		this.structure_type = 'base';
+		this.energy = 0;
+		this.sight = {
+			friends: [],
+			enemies: [],
+			structures: []
+		}
+		
+		this.hp = 1;
+		this.energy_capacity = 100;
+		this.player_id = player;
+		this.color = 'rgba(150, 90, 255)';
+		//this.energy = energy;
+	
+		bases.push(this);
+	}
+	
+	draw() {
+		c_base.beginPath();
+		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
+		c_base.fillStyle = this.color;
+		c_base.fill();
+	}
+}
+
+
+
 function draw_energize(origin, target, energy_strength){
 	c.beginPath();
 	c.moveTo(origin[0], origin[1]);
 	c.lineTo(target[0], target[1]);
 	c.strokeStyle = '#fff';
 	c.stroke();
+}
+
+function draw_death(spid){
+	console.log('drawing death');
 }
 
 
@@ -152,12 +297,41 @@ function initiate_world(){
 		star_lookup[stars_queue[i].id].draw();
 	}
 	stars_queue = [];
+	
+	world_bases = bases_queue.length;
+	for (i = 0; i < world_bases; i++){
+		console.log('base created');
+		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].player_id);
+		base_lookup[bases_queue[i].id].draw();
+	}
+	
+	draw_grid();
+	offsetUpdate();
+	
 	world_initiated = 1;
 }
 
 function render_state(){
-	c.fillStyle = 'rgba(0,0,0,1)'
-	c.fillRect(0, 0, main_canvas.width, main_canvas.height);
+	
+	//offsetX = offsetX + 1;
+	//offsetY = offsetY + 1;
+	
+	
+	c.fillStyle = 'rgba(6,8,10,1)';
+	//c.fillRect(0, 0, main_canvas.width, main_canvas.height);
+	c.fillRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
+	
+	c.setTransform(1, 0, 0, 1, 0, 0);
+	c.translate(offsetX, offsetY);
+	
+	if (panning == 1){
+		offsetUpdate();
+	}
+	
+	
+	
+	//c_base.fillStyle = 'rgba(6,8,10,1)'
+	//c_base.fillRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
 	//c.clearRect(0, 0, main_canvas.width, main_canvas.height);
 	
 	//world initiation (page refresh)
@@ -200,23 +374,45 @@ function render_state(){
 
 
 	//objects energize
+	
 	for (i = 0; i < energize_queue.length; i++){
 		//draw_energize(energize_queue[i])
 		//console.log('energize_queue[i]');
 		//console.log(energize_queue[i]);
 		if (energize_queue[i][0].startsWith('star')) {
 			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+		} else if (energize_queue[i][1].startsWith('base')) {
+			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
 		} else {
-			draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+			if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
+				draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+			} 
+			
 		}
 	}
 
 
 
 	//objects death
+	for (i = 0; i < death_queue.length; i++){
+		console.log(death_queue[i]);
+		if (death_queue[i].startsWith('base')){
+			var loser = base_lookup[death_queue[i]].player_id;
+			alert('game over, ' + loser + ' lost');
+		} else {
+			spirit_lookup[death_queue[i]].hp = 0;
+		
+			spirit_lookup[death_queue[i]].death();
+		}
+		//draw_death(death_queue[i]);
+		
+	}
+	death_queue = [];
 
 
-	console.log('ticks');
+
+	//console.log('ticks');
+	//console.log(spirit_lookup);
 	setTimeout(() => {
 	    requestAnimationFrame(render_state);
 	}); //game_tick?

@@ -482,13 +482,27 @@ wss.on('connection', function connection(ws, req) {
 				player1_code = `all = spirits.length;
 				for (s = 0; s < all; s++){
 					global['s' + s] = spirits[s];
-				}` + message['u_code'];
+				}
+				
+				global['base'] = Object.values(bases)[0];
+				global['enemy_base'] = Object.values(bases)[1];
+				global['star_zxq'] = stars['star_zxq'];
+				global['star_a1c'] = stars['star_a1c'];
+				
+				` + message['u_code'];
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id']);
 			} else if (message['u_id'] == active_games[g_id][2]){
 				player2_code = `all = spirits.length;
 				for (s = 0; s < all; s++){
 					global['s' + s] = spirits[s];
-				}` + message['u_code'];
+				}
+				
+				global['base'] = Object.values(bases)[1];
+				global['enemy_base'] = Object.values(bases)[0];
+				global['star_zxq'] = stars['star_zxq'];
+				global['star_a1c'] = stars['star_a1c'];
+				
+				` + message['u_code'];
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id']);
 			}
 		} catch (error) {

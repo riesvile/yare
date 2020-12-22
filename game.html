@@ -33,7 +33,9 @@ s1.energize(s1.position)
 	  var birth_queue = [];
 	  var units_queue = [];
 	  var energize_queue = [];
+	  var death_queue = [];
 	  var stars_queue = [];
+	  var bases_queue = [];
 	  var tempURLThing = document.URL.replace('#', '');
 	  var game_id = /[^/]*$/.exec(tempURLThing)[0];
 	  const socket = new WebSocket('ws://localhost:5000/t1/' + game_id); // wss://yare.io:443
@@ -71,6 +73,12 @@ s1.energize(s1.position)
 				 energize_queue = [];
 			 }
 			 
+			 if (incoming.death.length > 0){
+				 death_queue = incoming.death;
+			 } else {
+				 death_queue = [];
+			 }
+			 
 			 if (incoming.error_msg.length > 0){
 				 console.log(incoming.error_msg);
 			 }
@@ -94,6 +102,12 @@ s1.energize(s1.position)
 				 stars_queue = incoming.stars;
 	 			 console.log('stars_queue');
 	 			 console.log(stars_queue);
+			 }
+			 
+			 if (incoming.bases.length > 0){
+				 bases_queue = incoming.bases;
+	 			 console.log('bases_queue');
+	 			 console.log(bases_queue);
 			 }
 			 
 			 
