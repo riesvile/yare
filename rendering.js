@@ -40,7 +40,6 @@ function offsetUpdate(){
 	
 	world_bases = bases.length;
 	for (i = 0; i < world_bases; i++){
-		console.log('base draw');
 		base_lookup[bases[i].id].draw();
 	}
 	
@@ -49,22 +48,52 @@ function offsetUpdate(){
 }
 
 function onPointerDown(e){ 
+	e = e || window.event;
+	var el_id = (e.target || e.srcElement).id;
+	console.log('down id= ' + el_id);
+	if (el_id != 'base_canvas'){
+		return;
+	}
+	
+	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+	    var touch = evt.touches[0] || evt.changedTouches[0];
+	    x = touch.pageX;
+	    y = touch.pageY;
+		mousey = 1;
+	} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
+	    x = e.clientX;
+	    y = e.clientY;
+		if (e.which === 1){
+			mousey = 1;
+		}
+	}
+	
 	console.log('mouse down');
-	mousey = 1;
-	pointer_originX = e.pageX;
-	pointer_originY = e.pageY;
+	pointer_originX = x;
+	pointer_originY = y;
 	current_offsetX = offsetX;
 	current_offsetY = offsetY;
 }
 function onPointerMove(e){
+	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+	    var touch = evt.touches[0] || evt.changedTouches[0];
+	    x = touch.pageX;
+	    y = touch.pageY;
+	} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
+	    x = e.clientX;
+	    y = e.clientY;
+	}
+	
 	if (mousey == 1){
-		console.log('mouse moving');
+		//console.log('mouse moving');
 		panning = 1;
-		console.log(e.pageX + " / " + e.pageY);
+		//console.log(x + " / " + y);
 		
 		
-		pointer_offsetX = e.pageX - pointer_originX;
-		pointer_offsetY = e.pageY - pointer_originY;
+		pointer_offsetX = x - pointer_originX;
+		pointer_offsetY = y - pointer_originY;
 		
 		offsetX = pointer_offsetX + current_offsetX;
 		offsetY = pointer_offsetY + current_offsetY;
@@ -78,9 +107,39 @@ function onPointerUp(e){
 }
 
 // Add event listeners
-document.addEventListener("pointerdown", onPointerDown, false);
-document.addEventListener("pointermove", onPointerMove, false);
-document.addEventListener("pointerup", onPointerUp, false);
+document.addEventListener("touchstart", onPointerDown, false);
+document.addEventListener("touchmove", onPointerMove, false);
+document.addEventListener("touchend", onPointerUp, false);
+
+document.addEventListener("mousedown", onPointerDown, false);
+document.addEventListener("mousemove", onPointerMove, false);
+document.addEventListener("mouseup", onPointerUp, false);
+
+document.getElementById("editor_container").addEventListener("mouseenter", function(e) {
+	if (mousey != 1){
+		document.getElementById("editor_container").style.backgroundColor = "rgba(4, 6, 10, 0.2)";
+		document.getElementById("editor_container").style.backdropFilter = "blur(12px)";
+	}
+
+}, false);
+
+document.getElementById("editor_container").addEventListener("mousedown", function(e) {
+	if (mousey != 1){
+		document.getElementById("editor_container").style.backgroundColor = "rgba(4, 6, 10, 0.2)";
+		document.getElementById("editor_container").style.backdropFilter = "blur(12px)";
+	}
+
+}, false);
+
+document.getElementById("editor_container").addEventListener("mouseleave", function(e) {
+	if (mousey != 1){
+		document.getElementById("editor_container").style.backgroundColor = "rgba(4, 6, 10, 0)";
+		document.getElementById("editor_container").style.backdropFilter = "blur(0px)";
+	}
+
+}, false);
+
+
 
 
 // ------
@@ -110,6 +169,14 @@ var bases = [];
 var spirit_lookup = {};
 var star_lookup = {};
 var base_lookup = {};
+
+var player1_color;
+var player2_color;
+
+var colors = {};
+colors['color1'] = 'rgba(128,140,255,1)';
+colors['color2'] = 'rgba(232,97,97,1)';
+
 
 var img = new Image();
 img.src = '/assets/game/innerSh1x.png';
@@ -179,7 +246,7 @@ class Spirit {
 	}
 	
 	death() {
-		this.color = 'rgba(150, 90, 0)';
+		this.color = 'rgba(20, 20, 20)';
 		//this.hp = 0;
 	}
 	
@@ -204,7 +271,7 @@ class Star {
 	}
 	
 	draw() {
-		console.log('drawing star');
+		//console.log('drawing star');
 		c_base.beginPath();
 		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
 		c_base.fillStyle = "rgba(255, 255, 255, 0.2)";
@@ -230,10 +297,10 @@ class Star {
 }
 
 class Base {
-	constructor(id, position, player){
+	constructor(id, position, player, color){
 		this.id = id
 		this.position = position;
-		this.size = 40;
+		this.size = 24;
 		this.structure_type = 'base';
 		this.energy = 0;
 		this.sight = {
@@ -245,7 +312,7 @@ class Base {
 		this.hp = 1;
 		this.energy_capacity = 100;
 		this.player_id = player;
-		this.color = 'rgba(150, 90, 255)';
+		this.color = color;
 		//this.energy = energy;
 	
 		bases.push(this);
@@ -254,8 +321,9 @@ class Base {
 	draw() {
 		c_base.beginPath();
 		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c_base.fillStyle = this.color;
-		c_base.fill();
+		c_base.lineWidth = 2;
+		c_base.strokeStyle = this.color;
+		c_base.stroke();
 	}
 }
 
@@ -276,7 +344,7 @@ function draw_death(spid){
 
 function drawInnerSh(teX, teY) {
 			c_base.drawImage(img, teX - 225, teY - 225);
-			console.log('drawing image at ' + teX + ', ' + teY);
+			//console.log('drawing image at ' + teX + ', ' + teY);
 }
 
 
@@ -301,7 +369,7 @@ function initiate_world(){
 	world_bases = bases_queue.length;
 	for (i = 0; i < world_bases; i++){
 		console.log('base created');
-		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].player_id);
+		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].player_id, bases_queue[i].color);
 		base_lookup[bases_queue[i].id].draw();
 	}
 	

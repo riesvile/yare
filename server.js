@@ -59,6 +59,9 @@ function create_worker (game_id) {
 	  if (render_data.meta == 'initiate'){
 		  console.log('initiate world');
 		  connections[render_data.client].send(render_data.data);
+		  connections[render_data.client].send(JSON.stringify(code_temps));
+		  console.log("code_temps['player1']");
+		  console.log(JSON.stringify(code_temps));
 		  delete connections[render_data.client];
 	  } else if (render_data.meta == 'test'){
 		  console.log('testing');
@@ -93,8 +96,8 @@ function bot_game(req, res, pl_id){
 		p2_session_id: 'bot',
 		p1_shape: 'circles',
 		p2_shape: 'circles',
-		p1_color: '',
-		p2_color: '',
+		p1_color: 'color1',
+		p2_color: 'color2',
 		winner: '',
 		ranked: 0,
 		active: 1,
@@ -115,7 +118,6 @@ function bot_game(req, res, pl_id){
 
 function friend_challenge(req, res){
 	g_id = new_game(req.body.user_id, 0, init_status = 0.5);
-	create_worker(g_id);
 	res.status(200).send({
 		g_id: g_id,
 		meta: 'waiting for p2'
@@ -127,9 +129,9 @@ function friend_challenge(req, res){
 		p1_session_id: req.body.session_id,
 		p2_session_id: '',
 		p1_shape: 'circles',
-		p2_shape: '',
-		p1_color: '',
-		p2_color: '',
+		p2_shape: 'circles',
+		p1_color: 'color1',
+		p2_color: 'color2',
 		winner: '',
 		ranked: 0,
 		active: 1,
@@ -240,7 +242,7 @@ app.post('/session', (req, res) => {
 		        });
 			} else if (result[0]['session_id'] == req.body.session_id){
 				//all good, update session id and prolong expiration date
-				session_id = generateUniqueString();
+				session_id = generateUniqueString(3);
 		        var session_expire = new Date();
 		        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
 				console.log('date');
@@ -343,6 +345,14 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 		        });
 			
 			} else {
+				Game.updateOne({game_id: game_id_url}, {player2: req.body.user_id, p2_session_id: req.body.session_id}, {upsert: true})
+					.then((qq) => {
+						active_games[game_id_url][2] = req.body.user_id;
+						console.log('p2_session_id updated');
+						start_world(game_id_url);
+					});
+				
+				create_worker(game_id_url);
 				res.status(200).send({
 		        	data: "challenge connected"
 		        });
@@ -376,7 +386,6 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 					res.status(200).send({
 			        	data: "start"
 			        });
-					start_world(game_id_url);
 			
 				} else {
 					res.status(200).send({
@@ -405,6 +414,11 @@ var player1_session = 'abc';
 var player2_code;
 var player2_session = 'xyz';
 
+var player1_code_temp;
+var player2_code_temp;
+var code_temps = {};
+
+var tutorial = {};
 
 
 var processTime1 = 0;
@@ -479,9 +493,25 @@ wss.on('connection', function connection(ws, req) {
 				console.log(message['u_id']);
 			}
 			if (message['u_id'] == active_games[g_id][1]){
-				player1_code = `all = spirits.length;
-				for (s = 0; s < all; s++){
-					global['s' + s] = spirits[s];
+				code_temps['player1'] = message['u_code'];
+				player1_code = `
+				//all = spirits.length;
+				//for (s = 0; s < all; s++){
+				//	global['s' + s] = spirits[s];
+				//}
+				
+				var my_spirits = [];
+				
+				try {
+					var plyididid = Object.values(spirits)[0].player_id;
+				} catch(e) {
+				
+				}
+				
+				for (q = 0; q < (Object.keys(spirits)).length; q++){
+					if(spirits[Object.keys(spirits)[q]].hp > 0 && plyididid == spirits[Object.keys(spirits)[q]].player_id){
+						my_spirits.push(spirits[Object.keys(spirits)[q]]);
+					}
 				}
 				
 				global['base'] = Object.values(bases)[0];
@@ -492,9 +522,26 @@ wss.on('connection', function connection(ws, req) {
 				` + message['u_code'];
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id']);
 			} else if (message['u_id'] == active_games[g_id][2]){
-				player2_code = `all = spirits.length;
-				for (s = 0; s < all; s++){
-					global['s' + s] = spirits[s];
+				code_temps['player2'] = message['u_code'];
+				player2_code = `
+				//all = spirits.length;
+				//for (s = 0; s < all; s++){
+				//	global['s' + s] = spirits[s];
+				//}
+							
+				
+				var my_spirits = [];
+				
+				try {
+					var plyididid = Object.values(spirits)[0].player_id;
+				} catch(e) {
+				
+				}
+				
+				for (q = 0; q < (Object.keys(spirits)).length; q++){
+					if(spirits[Object.keys(spirits)[q]].hp > 0 && plyididid == spirits[Object.keys(spirits)[q]].player_id){
+						my_spirits.push(spirits[Object.keys(spirits)[q]]);
+					}
 				}
 				
 				global['base'] = Object.values(bases)[1];
@@ -538,6 +585,7 @@ app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
 app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
 app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
 app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
+app.get('/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
 app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
 app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
 app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));

@@ -22,6 +22,7 @@ canvas#base_canvas {
 
 a {
 	color: #716Fd1;
+	text-decoration: none;
 }
 
 #user_code_bg {
@@ -36,6 +37,7 @@ a {
 
 #editor_container {
 	background-color: transparent;
+	backdrop-filter: blur(0px);
 	height: 100%;
 	width: 700px;
 	position: fixed;
