@@ -248,6 +248,7 @@ class Spirit {
 	death() {
 		this.color = 'rgba(20, 20, 20)';
 		//this.hp = 0;
+		
 	}
 	
 	draw() {
@@ -329,12 +330,14 @@ class Base {
 
 
 
-function draw_energize(origin, target, energy_strength){
+function draw_energize(origin, target, energy_strength, color){
 	c.beginPath();
 	c.moveTo(origin[0], origin[1]);
 	c.lineTo(target[0], target[1]);
-	c.strokeStyle = '#fff';
+	c.strokeStyle = color;
+	c.globalAlpha = energy_strength/10 + 0.1;
 	c.stroke();
+	c.globalAlpha = 1;
 }
 
 function draw_death(spid){
@@ -448,12 +451,12 @@ function render_state(){
 		//console.log('energize_queue[i]');
 		//console.log(energize_queue[i]);
 		if (energize_queue[i][0].startsWith('star')) {
-			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
 		} else if (energize_queue[i][1].startsWith('base')) {
-			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
 		} else {
 			if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
-				draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2]);
+				draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
 			} 
 			
 		}

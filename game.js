@@ -31,8 +31,8 @@ parentPort.on("message", message => {
 			init_data.bases.push(bases[i]);
 		}
 		
-		init_data.players[0] = player1_id;
-		init_data.players[1] = player2_id;
+		init_data.players[0] = players['p1'];
+		init_data.players[1] = players['p2'];
 		
 		parentPort.postMessage({data: JSON.stringify(init_data), game_id: workerData, meta: 'initiate', client: message.client});
   } else if (message.data == "player code"){
@@ -82,8 +82,8 @@ parentPort.on("message", message => {
 		  }
 	  }
   } else if (message.data="start world"){
-	  player1_id = message.player1;
-	  player2_id = message.player2;
+	  players['p1'] = message.player1;
+	  players['p2'] = message.player2;
 	  Game.find({game_id: workerData})
 	  	.then((result) => {
 			console.log('p1_color');
@@ -110,6 +110,8 @@ function user_code(){
 	//for (i = 1; i < 18; i++){
 	//	spirits[i].move([i*10 + 600, i*10 + 200]);
 	//}
+	
+	
 	try {
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
@@ -124,12 +126,14 @@ function user_code(){
 		console.error(error);
 	}
 	
+	
+	
 }
 
 //global
 var started = 0;
 var game_tick = 1000; // 1s
-var base_speed = 10;
+var base_speed = 20;
 var stars = [];
 var bases = [];
 var living_spirits = [];
@@ -149,12 +153,14 @@ var star_a1c;
 var base1;
 var base2;
 
-var player1_id = 'ab1';
-var player2_id = 'zx2';
+
 var player1_code;
 var player1_session = '';
 var player2_code;
 var player2_session = '';
+var players = {};
+players['p1'] = 'ab1';
+players['p2'] = 'zx2';
 
 var colors = {};
 colors['player1'] = "rgba(255, 0, 0, 1)";
@@ -197,28 +203,50 @@ var init_data = {
 	'bases': []
 }
 
+var memory1 = {a: 150};
+var memory2 = {a: 155};
+
 const {VM} = require('vm2');
+
+
 var sandbox = {
-	player1_code: player1_code,
-	//base: base_lookup['base_' + player1_id],
-	//enemy_base: base_lookup['base_' + player2_id],
+	get_y(data) {
+	    return data;
+	},
+	console: console
+	//player1_code: player1_code,
+	//base: base_lookup['base_' + players['p1']],
+	//enemy_base: base_lookup['base_' + players['p2']],
 	//test_s1: test_s1,
-	star_zxq: star_zxq
-}
-var sandbox2 = {
-	player2_code: player2_code,
-	//base: base_lookup['base_' + player2_id],
-	//enemy_base: base_lookup['base_' + player1_id],
-	//test_s1: test_s2,
-	star_zxq: star_zxq
-}
-const vm = new VM({ sandbox });
-const vm2 = new VM({ sandbox2 });
+	//star_zxq: star_zxq
+};
+
+var sandboxx = {
+	get_y(data) {
+	    return data;
+	},
+	console: console
+	//player1_code: player1_code,
+	//base: base_lookup['base_' + players['p1']],
+	//enemy_base: base_lookup['base_' + players['p2']],
+	//test_s1: test_s1,
+	//star_zxq: star_zxq
+};
+
+
+//sandbox is the keyword, moron
+const vm = new VM({ timeout: 100, sandbox: {console: console, memory: memory1} });
+const vm2 = new VM({ timeout: 100, sandbox: {console: console, memory: memory2} });
+
+
 //vm.freeze(spirits, 'spirits');
+vm.freeze(players, 'players');
+//try creating and accessing a new spirit to check for freeze
 vm.freeze(pl1_units, 'spirits');
 vm.freeze(star_lookup, 'stars');
 vm.freeze(base_lookup, 'bases');
 //vm2.freeze(spirits2, 'spirits');
+vm2.freeze(players, 'players');
 vm2.freeze(pl2_units, 'spirits');
 vm2.freeze(star_lookup, 'stars');
 vm2.freeze(base_lookup, 'bases');
@@ -432,23 +460,23 @@ if (!isMainThread){
 					//maybe add distance stuff later
 					//distance_approx = distance_nonrooted(living_spirits[i].position, living_spirits[j].position);
 					//console.log('distance between ' + living_spirits[i].id + ' and ' + living_spirits[j].id + 'is ' + distance_approx);
-					if (living_spirits[j].player_id == player1_id){
-						if (living_spirits[i].player_id == player1_id){
+					if (living_spirits[j].player_id == players['p1']){
+						if (living_spirits[i].player_id == players['p1']){
 							//is friend
 							living_spirits[i].sight.friends.push(living_spirits[j].id);
 							living_spirits[j].sight.friends.push(living_spirits[i].id);
-						} else if (living_spirits[i].player_id == player2_id){
+						} else if (living_spirits[i].player_id == players['p2']){
 							//is enemy
 							living_spirits[i].sight.enemies.push(living_spirits[j].id);
 							living_spirits[j].sight.enemies.push(living_spirits[i].id);
 						}
 						
-					} else if (living_spirits[j].player_id == player2_id){
-						if (living_spirits[i].player_id == player2_id){
+					} else if (living_spirits[j].player_id == players['p2']){
+						if (living_spirits[i].player_id == players['p2']){
 							//is friend
 							living_spirits[i].sight.friends.push(living_spirits[j].id);
 							living_spirits[j].sight.friends.push(living_spirits[i].id);
-						} else if (living_spirits[i].player_id == player1_id){
+						} else if (living_spirits[i].player_id == players['p1']){
 							//is enemy
 							living_spirits[i].sight.enemies.push(living_spirits[j].id);
 							living_spirits[j].sight.enemies.push(living_spirits[i].id);
@@ -488,18 +516,18 @@ if (!isMainThread){
 		
 		
 			//objects birth
-			if (base_lookup['base_' + player1_id].energy >= 50){
+			if (base_lookup['base_' + players['p1']].energy >= 50){
 				top_s++;
-				global[player1_id + top_s] = new Spirit(player1_id + top_s, [1500, 600], 1, 10, player1_id, colors['player1']);
-				base_lookup['base_' + player1_id].energy -= 50;
-				global[player1_id + top_s].move([1400, 640]);
+				global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1500, 600], 1, 10, players['p1'], colors['player1']);
+				base_lookup['base_' + players['p1']].energy -= 50;
+				global[players['p1'] + top_s].move([1400, 640]);
 				console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 			}
-			if (base_lookup['base_' + player2_id].energy >= 50){
+			if (base_lookup['base_' + players['p2']].energy >= 50){
 				top_q++;
-				global[player2_id + top_q] = new Spirit(player2_id + top_q, [2900, 1200], 4, 10, player2_id, colors['player2']);
-				base_lookup['base_' + player2_id].energy -= 50;
-				global[player2_id + top_q].move([2860, 1160]);
+				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2900, 1200], 4, 10, players['p2'], colors['player2']);
+				base_lookup['base_' + players['p2']].energy -= 50;
+				global[players['p2'] + top_q].move([2860, 1160]);
 				console.log('spirit was born')
 			}
 				
@@ -715,11 +743,11 @@ if (!isMainThread){
 			//update vm sandbox objects
 			for (i = 0; i < living_spirits.length; i++){
 				spt = living_spirits[i];	
-				if (spt.player_id == player2_id){
+				if (spt.player_id == players['p2']){
 					pl2_units[spt.id] = spt;
 					var tempJSON = JSON.stringify(spt);
 					pl1_units[spt.id] = JSON.parse(tempJSON);
-				} else if (spt.player_id == player1_id) {
+				} else if (spt.player_id == players['p1']) {
 					pl1_units[spt.id] = spt;
 					var tempJSON = JSON.stringify(spt);
 					pl2_units[spt.id] = JSON.parse(tempJSON);
@@ -748,23 +776,23 @@ if (!isMainThread){
 		// -----------------
 
 		for (s = 1; s < 3; s++){
-			global[player1_id + s] = new Spirit(player1_id + s, [1300+s*10,480], 4, 10, player1_id, colors['player1']);
-			spirits.push(global[player1_id + s]);
+			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 10, players['p1'], colors['player1']);
+			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
 		for (q = 1; q < 3; q++){
-			global[player2_id + q] = new Spirit(player2_id + q, [2500+q*10,1520], 4, 10, player2_id, colors['player2']);
-			spirits2.push(global[player2_id + q]);
+			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 10, players['p2'], colors['player2']);
+			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
 		}
 	
 	
-		global['base_' + player1_id] = new Base('base_' + player1_id, [1500, 600], player1_id, colors['player1']);
-		global['base_' + player2_id] = new Base('base_' + player2_id, [2300, 1400], player2_id, colors['player2']);
+		global['base_' + players['p1']] = new Base('base_' + players['p1'], [1500, 600], players['p1'], colors['player1']);
+		global['base_' + players['p2']] = new Base('base_' + players['p2'], [2300, 1400], players['p2'], colors['player2']);
 	
-		base_lookup['base_' + player1_id] = global['base_' + player1_id];
-		base_lookup['base_' + player2_id] = global['base_' + player2_id];
+		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
+		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 	
 		star_zxq = new Star('star_zxq', [900, 800]);
 		star_lookup['star_zxq'] = star_zxq;

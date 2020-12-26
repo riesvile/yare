@@ -500,16 +500,12 @@ wss.on('connection', function connection(ws, req) {
 				//	global['s' + s] = spirits[s];
 				//}
 				
+				var this_player_id = players['p1'];
+				
 				var my_spirits = [];
 				
-				try {
-					var plyididid = Object.values(spirits)[0].player_id;
-				} catch(e) {
-				
-				}
-				
 				for (q = 0; q < (Object.keys(spirits)).length; q++){
-					if(spirits[Object.keys(spirits)[q]].hp > 0 && plyididid == spirits[Object.keys(spirits)[q]].player_id){
+					if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
 						my_spirits.push(spirits[Object.keys(spirits)[q]]);
 					}
 				}
@@ -528,18 +524,15 @@ wss.on('connection', function connection(ws, req) {
 				//for (s = 0; s < all; s++){
 				//	global['s' + s] = spirits[s];
 				//}
-							
+					
+				var this_player_id = players['p2'];		
 				
 				var my_spirits = [];
 				
-				try {
-					var plyididid = Object.values(spirits)[0].player_id;
-				} catch(e) {
 				
-				}
 				
 				for (q = 0; q < (Object.keys(spirits)).length; q++){
-					if(spirits[Object.keys(spirits)[q]].hp > 0 && plyididid == spirits[Object.keys(spirits)[q]].player_id){
+					if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
 						my_spirits.push(spirits[Object.keys(spirits)[q]]);
 					}
 				}
