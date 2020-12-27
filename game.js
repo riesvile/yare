@@ -1,5 +1,6 @@
 const { parentPort, workerData, isMainThread } = require("worker_threads");
 
+const util = require('util');
 const mongoose = require('mongoose');
 const User = require('./models/users.js');
 const Game = require('./models/newgame.js');
@@ -141,7 +142,6 @@ var spirit_lookup = {};
 var star_lookup = {};
 var base_lookup = {};
 var spirits = [];
-//player 2 test
 var spirits2 = [];
 var move_queue = [];
 var move_queue_ids = [];
@@ -189,12 +189,32 @@ var user_error;
 var test_s1 = {};
 var test_s2 = {};
 
+//var console1 = console;
+//var console2 = console;
+
+var log1 = [];
+var log2 = [];
+
+var console1 = {};
+var console2 = {};
+
+console1['log'] = function(stringo) {
+	log1.push(util.format(stringo));
+    return console.log.apply( console, arguments );
+};
+console2['log'] = function(stringo) {
+	log2.push(util.format(stringo));
+	return console.log.apply( console, arguments );
+};
+
 var render_data2 = {
 	'move': [],
 	'energize': [],
 	'death': [],
 	'birth': [],
-	'error_msg': []
+	'error_msg': [],
+	'console1': [],
+	'console2': []
 }
 
 var init_data = {
@@ -235,8 +255,8 @@ var sandboxx = {
 
 
 //sandbox is the keyword, moron
-const vm = new VM({ timeout: 100, sandbox: {console: console, memory: memory1} });
-const vm2 = new VM({ timeout: 100, sandbox: {console: console, memory: memory2} });
+const vm = new VM({ timeout: 100, sandbox: {console: console1, memory: memory1} });
+const vm2 = new VM({ timeout: 100, sandbox: {console: console2, memory: memory2} });
 
 
 //vm.freeze(spirits, 'spirits');
@@ -353,7 +373,10 @@ if (!isMainThread){
 				target = this;
 			}
 			//this, this.energy, this.size, target)
-			energize_queue.push([this, target]);
+			if (target.hp != 0){
+				energize_queue.push([this, target]);
+			}
+			
 		}
 		
 		
@@ -511,7 +534,9 @@ if (!isMainThread){
 				'energize': [],
 				'death': [],
 				'birth': [],
-				'error_msg': []
+				'error_msg': [],
+				'console1': [],
+				'console2': []
 			}
 		
 		
@@ -639,9 +664,10 @@ if (!isMainThread){
 		
 		
 			//objects energize
+			var energize_apply = [];
 			e_targets = energize_queue.length;
 			for (i = (e_targets - 1); i >= 0; i--){
-				if (energize_queue[i][1].hp == 0) break;
+				//if (energize_queue[i][1].hp == 0) break;
 				//if origin == target —> attempt harvest from star
 				if (energize_queue[i][0] == energize_queue[i][1]){
 					for (j = 0; j < energize_queue[i][0].sight.structures.length; j++){
@@ -684,26 +710,23 @@ if (!isMainThread){
 				
 				}
 			
-			
 				//if target is enemy
 				else if (energize_queue[i][0].player_id != energize_queue[i][1].player_id){
 					target_distance = get_distance(energize_queue[i][0].position, energize_queue[i][1].position);
+					var strength = 0;
 					if (target_distance < 200){
 						if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
-							energize_queue[i][0].energy -= energy_value * energize_queue[i][0].size;
-							energize_queue[i][1].energy -= 2 * energy_value * energize_queue[i][0].size;
-							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * energy_value * energize_queue[i][0].size]);
+							strength = energy_value * energize_queue[i][0].size;
+							energize_apply.push([energize_queue[i][0], strength * (-1)]);
+							energize_apply.push([energize_queue[i][1], strength * (-2)]);
+							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
 							//if below 0, kill
-							if (energize_queue[i][1].energy < 0){
-								death_queue.push(energize_queue[i][1]);
-							}
+							
 						} else if (energize_queue[i][0].energy > 0){
-							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * energize_queue[i][1].energy]);
-							energize_queue[i][1].energy -= 2 * energize_queue[i][0].energy;
-							energize_queue[i][0].energy = 0;
-							if (energize_queue[i][1].energy < 0){
-								death_queue.push(energize_queue[i][1]);
-							}
+							strength = energize_queue[i][0].energy;
+							energize_apply.push([energize_queue[i][0], strength * (-1)]);
+							energize_apply.push([energize_queue[i][1], strength * (-2)]);
+							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
 						} else {
 							console.log('no energy to give');
 						}
@@ -711,12 +734,23 @@ if (!isMainThread){
 						console.log('target energy: ' + energize_queue[i][1].energy);
 					}				
 				}
-			
-			
-			
-			
+				
 				energize_queue.splice(i, 1);
 			}
+			
+			e_applies = energize_apply.length;
+			for (i = (e_applies - 1); i >= 0; i--){
+				energize_apply[i][0].energy += energize_apply[i][1];
+			}
+			
+			for (i = (e_applies - 1); i >= 0; i--){
+				if (energize_apply[i][0].energy < 0){
+					death_queue.push(energize_apply[i][0]);
+				}
+				energize_apply.splice(i, 1);			
+			}
+			
+			
 		
 		
 			//objects death & vm sandbox objects update
@@ -725,6 +759,11 @@ if (!isMainThread){
 				console.log(death_queue[i].id + ' died');
 				death_queue[i].hp = 0;
 				render_data2.death.push(death_queue[i].id);
+				
+				//delete spirit_lookup[suid];
+				//var index = living_spirits.findIndex(x => x.id == death_queue[i].id);
+				//living_spirits.splice(index);
+				
 			
 				death_queue.splice(i, 1);
 			}
@@ -732,6 +771,8 @@ if (!isMainThread){
 		
 			//errors
 			render_data2.error_msg = user_error;
+			render_data2.console1 = log1;
+			render_data2.console2 = log2;
 			user_error = '';
 		
 		
@@ -754,7 +795,8 @@ if (!isMainThread){
 				}
 			}
 			
-			
+			log1 = [];
+			log2 = [];
 			
 			
 			
@@ -776,13 +818,13 @@ if (!isMainThread){
 		// -----------------
 
 		for (s = 1; s < 3; s++){
-			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 10, players['p1'], colors['player1']);
+			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 40, players['p1'], colors['player1']);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
 		for (q = 1; q < 3; q++){
-			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 10, players['p2'], colors['player2']);
+			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 40, players['p2'], colors['player2']);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
 		}

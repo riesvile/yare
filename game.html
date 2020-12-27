@@ -5,28 +5,57 @@
 	<style>
 	</style>
 	<meta name="viewport" content="width=device-width, minimum-scale=0.5, maximum-scale=0.5, user-scalable=0">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../colors.css">
 	<link rel="stylesheet" href="../style.css">
 	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
+  
+  <div id="hector">
+	  <h1 id="logo"><a href="#">yare<span class="logo_lowlight">.io</span></a></h1>
+	  <div class="menu">
+		  <a href="#" class="menu_link new_acc">New account</a>
+		  <a href="#" class="menu_link">Sign in</a>
+		  <a href="#" class="menu_link">Documentation</a>
+	  </div>
+  </div>
+	  
+	  
   <canvas id='main_canvas'></canvas>
   <canvas id='base_canvas'></canvas>
-  <div id="editor_container">
-<div id="editor">
-
-s1.move([500,900])
-s1.energize(s1.position)
-</div>
-  <a href="#" id="update_code"><span>UPDATE CODE</span></a>
+  
+  <div id="tutorial-infobox">
   </div>
+  
+  <div id="overlay"></div>
+  
+  <div id="tutorial">
+	  <div id="tutorial_wrap">
+	  	<p class="tutorial_text">yare.io is a game where you control your units&nbsp;(spirits) with JavaScript</p>
+		<p class="tutorial_text">Try typing <code><span class="tut_label bring_up" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(star_zxq.position)</code> into the code block below.
+		<p class="tutorial_text">You can hover over the code snippet above for more information about each part</p>
+	  </div>
+  </div>
+  
+  <div id="editor_container" class="tutorial_editor">
+	  <div id="editor">// Your code goes here</div>
+  </div>
+  <a href="#" id="update_code"><span>UPDATE CODE</span></a>
+  
+  
+  
+  
   
   </body>
   <script>
 	  var editor = ace.edit("editor");
 	  editor.setTheme("ace/theme/clouds_midnight");
 	  editor.session.setMode("ace/mode/javascript");
+	  editor.session.setOption("useWorker", false);
 	  editor.setFontSize(14);
+	  editor.setShowPrintMargin(false);
 	  
 	  
 	  var x = 0;
@@ -38,6 +67,7 @@ s1.energize(s1.position)
 	  var death_queue = [];
 	  var stars_queue = [];
 	  var bases_queue = [];
+	  var logs = [];
 	  var tempURLThing = document.URL.replace('#', '');
 	  var game_id = /[^/]*$/.exec(tempURLThing)[0];
 	  
@@ -87,6 +117,14 @@ s1.energize(s1.position)
 			 
 			 if (incoming.error_msg.length > 0){
 				 console.log(incoming.error_msg);
+			 }
+			 
+			 if (incoming.console1.length > 0){
+				 console.log(incoming.console1);
+			 }
+			 
+			 if (incoming.console2.length > 0){
+				 console.log(incoming.console2);
 			 }
 			 
 			

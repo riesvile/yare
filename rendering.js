@@ -246,7 +246,21 @@ class Spirit {
 	}
 	
 	death() {
-		this.color = 'rgba(20, 20, 20)';
+		var that = this;
+		var counter = 0;
+		var alpha = 10;
+		var interval = setInterval(function() {
+		    if (counter > 10) {
+				//var index = living_spirits.findIndex(x => x.id == that.id);
+				//living_spirits.splice(index);
+		        clearInterval(interval);
+		    }
+			that.size = that.size + (0.1 * that.size);
+			that.color = that.color.replace(/[^,]+(?=\))/, alpha/10);
+			counter++;
+			alpha--;
+		}, 16);
+		
 		//this.hp = 0;
 		
 	}
@@ -328,7 +342,26 @@ class Base {
 	}
 }
 
-
+function draw_death(id, size, color){
+	var spir = spirit_lookup[id];
+	var alpha = 100;
+	var sizee = size;
+	var colorr = color;
+	
+	
+	var interval = setInterval(function() {
+		c.beginPath();
+		c.arc(spir.position[0], spir.position[1], sizee, 0, Math.PI * 2, false);
+		c.fillStyle = colorr;
+		c.fill();
+		sizee++;
+	    if (sizee > 100) {
+	        clearInterval(interval);
+	    }
+	}, 16);
+	
+	
+}
 
 function draw_energize(origin, target, energy_strength, color){
 	c.beginPath();
@@ -340,9 +373,6 @@ function draw_energize(origin, target, energy_strength, color){
 	c.globalAlpha = 1;
 }
 
-function draw_death(spid){
-	console.log('drawing death');
-}
 
 
 function drawInnerSh(teX, teY) {
@@ -472,8 +502,12 @@ function render_state(){
 			alert('game over, ' + loser + ' lost');
 		} else {
 			spirit_lookup[death_queue[i]].hp = 0;
-		
+			//draw_death(spirit_lookup[death_queue[i]].id, spirit_lookup[death_queue[i]].size, spirit_lookup[death_queue[i]].color);
 			spirit_lookup[death_queue[i]].death();
+			
+			//delete spirit_lookup[suid];
+			//var index = living_spirits.findIndex(x => x.id == death_queue[i].id);
+			//living_spirits.splice(index);
 		}
 		//draw_death(death_queue[i]);
 		
