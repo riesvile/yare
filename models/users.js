@@ -10,6 +10,10 @@ const user_schema = new Schema({
 		type: String,
 		required: true,
 	},
+	rating: Number,
+	rating_stability: Number,
+	games_count: Number,
+	games_history: Array,
 	session_id: String,
 	session_expire: Number
 }, {timestamps: true});

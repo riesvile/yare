@@ -13,6 +13,7 @@ var pointer_offsetY = 0;
 var current_offsetX = 0;
 var current_offsetY = 0;
 var panning = 0;
+var disableSelection = 0;
 
 function offsetUpdate(){
 	
@@ -51,8 +52,15 @@ function onPointerDown(e){
 	e = e || window.event;
 	var el_id = (e.target || e.srcElement).id;
 	console.log('down id= ' + el_id);
+	
+	console.log(el_id);
 	if (el_id != 'base_canvas'){
 		return;
+	} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
+		console.log('thissisis');
+		disableSelection = 0;
+	} else {
+		disableSelection = 1;
 	}
 	
 	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
@@ -76,6 +84,7 @@ function onPointerDown(e){
 	current_offsetY = offsetY;
 }
 function onPointerMove(e){
+	console.log(disableSelection);
 	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
 	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
 	    var touch = evt.touches[0] || evt.changedTouches[0];
@@ -85,6 +94,11 @@ function onPointerMove(e){
 	    x = e.clientX;
 	    y = e.clientY;
 	}
+	
+	if (disableSelection == 1){
+		e.preventDefault();
+	}
+	
 	
 	if (mousey == 1){
 		//console.log('mouse moving');
@@ -104,6 +118,7 @@ function onPointerUp(e){
 	console.log('mouse up');
 	mousey = 0;
 	panning = 0;
+	disableSelection = 0;
 }
 
 // Add event listeners

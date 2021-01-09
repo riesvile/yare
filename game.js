@@ -39,7 +39,7 @@ parentPort.on("message", message => {
   } else if (message.data == "player code"){
 	  //check who's code it is here
 	  if (message.pl_num == "player1"){
-		  if (message.session_id == player1_session){
+		  if (message.session_id == player1_session || message.pl_id == 'anonymous'){
 		  	player1_code = message.pl_code;
 		  } else {
 		  	User.find({user_id: message.pl_id})

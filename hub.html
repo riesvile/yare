@@ -4,14 +4,138 @@
     <title>yare.io</title>
 	<style>
 	</style>
-	<link rel="stylesheet" href="style.css">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./colors.css">
+	<link rel="stylesheet" href="./style.css">
+	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./anime.min.js"></script>
   </head>
   <body>
+	  
+	  <div id="hector">
+		  <h1 id="logo"><a href="#">yare<span class="logo_lowlight">.io</span></a></h1>
+		  <div class="menu">
+			  <div class="menu_link" id="signed_in">username</div>
+		  </div>
+	  </div>
+	  
+	  <div id="content_hub_wrap">
+		  <div id="hub_menu">
+			  <a href="./newgame" id="hub_new_game">New game</a>
+			  <div id="hub_resume_game">
+				  <a href="#" id="hub_resume_link">Resume game</a>
+			      <span id="hub_resume_info"><span id="hub_resume_players">levmiseri vs koala</span> · non-ranked · <span id="hub_resume_resign">Resign</span>
+			  </div>
+			  <a href="#" id="hub_documentation">Documentation</a>
+			  <a href="#" id="hub_leaderboard">Leaderboard</a>
+			  <a href="#" id="hub_reddit">r/yaregame</a>
+		  </div>
+	  </div>
+	  
+	  
+	  
+		
+		
+		
+	  <div class="table">
+	  	<div class="row">
+			<div class="row_in">
+				<span class="table_game_date">10 min ago</span>
+				<div class="table_game_players">
+					<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
+					<span class="versus">vs</span>
+					<span class="table_player2"><span class="player2_shape"></span>koala</span>
+				</div>
+					
+				<span class="table_game_duration">30 min</span>
+				<span class="table_game_result result_win">Win</span>
+				<span class="table_game_eloresult">1957</span>
+			</div>
+		</div>
+	  	<div class="row">
+			<div class="row_in">
+				<span class="table_game_date">10 min ago</span>
+				<div class="table_game_players">
+					<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
+					<span class="versus">vs</span>
+					<span class="table_player2"><span class="player2_shape"></span>koala</span>
+				</div>
+					
+				<span class="table_game_duration">30 min</span>
+				<span class="table_game_result result_loss">Loss</span>
+				<span class="table_game_eloresult">1957</span>
+			</div>
+		</div>
+	  	<div class="row">
+			<div class="row_in">
+				<span class="table_game_date">10 min ago</span>
+				<div class="table_game_players">
+					<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
+					<span class="versus">vs</span>
+					<span class="table_player2"><span class="player2_shape"></span>koala</span>
+				</div>
+					
+				<span class="table_game_duration">30 min</span>
+				<span class="table_game_result result_win">Win</span>
+				<span class="table_game_eloresult">1957</span>
+			</div>
+		</div>
+	  	<div class="row">
+			<div class="row_in">
+				<span class="table_game_date">10 min ago</span>
+				<div class="table_game_players">
+					<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
+					<span class="versus">vs</span>
+					<span class="table_player2"><span class="player2_shape"></span>koala</span>
+				</div>
+					
+				<span class="table_game_duration">30 min</span>
+				<span class="table_game_result result_win">Win</span>
+				<span class="table_game_eloresult">1957</span>
+			</div>
+		</div>
+	  </div>
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  <!--
+		  
+	  <div class="profile_hub_extract">
+		  <span id="hub_username">levmiseri</span><br>
+		  <span id="user_hub_stats"><span id="user_hub_rank">#7</span> · <span id="user_hub_elo">1957 Elo</span> · <span id="hub_logout">Log out</span></span>
+	  </div>
+		  
+	
+	
+	<table class="hub_table">
+	  <tr>
+	    <td class="table_game_date">10 min ago</td>
+	    <td class="table_game_players">
+			<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
+			<span class="versus">vs</span>
+			<span class="table_player2"><span class="player2_shape"></span>koala</span>
+	    </td>
+	    <td class="table_game_duration">30 min</td>
+		<td class="table_game_result">Victory</td>
+		<td class="table_game_eloresult">1957</td>
+	  </tr>
+	  <tr>
+	  </tr>
+	</table>
+	
+	  
 	  
 	  <h1>User hub</h1>
 	  
 	  <a href="#" id="user_logout" onclick="logout()">Log out</a>
-	  <!--<a href="#" id="challenge" onclick="new_game('automatch')">Automatch</a>-->
+	  //<a href="#" id="challenge" onclick="new_game('automatch')">Automatch</a>
 	  <a href="#" id="challenge" onclick="new_game('easy-bot')">Automatch</a>
 	  <a href="#" id="challenge" onclick="new_game('challenge')">Challenge a friend</a>
   
@@ -19,9 +143,66 @@
   	  <span id="status_message">status</span>
 	  <a href="#" id="get_in" onclick="get_in()">Start game</a>
 	  
-  
+  	  -->
   </body>
- 
-  <script src="./rendering.js"></script>
-  <script src="./basics.js"></script>
+  
+  <script>
+	  
+	  function getCookie(name) {
+	      var nameEQ = name + "=";
+	      var ca = document.cookie.split(';');
+	      for(var i=0;i < ca.length;i++) {
+	          var c = ca[i];
+	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	      }
+	      return null;
+	  }
+	  
+	  function eraseCookie(name) {   
+	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	  }
+  
+	  if (getCookie('game_id') != null){
+  		fetch('/resume-game', {
+  		        method: "POST",
+  		        headers: {
+  		          Accept: "application/json",
+  		          "Content-Type": "application/json"
+  		        },
+  		        body: JSON.stringify({
+  			        user_id: getCookie('user_id'),
+  			        game_id: getCookie('game_id'),
+  			    })
+
+  	    }).then(response2 => response2.json())
+  	      .then(response2 => {
+  			  console.log(response2);
+			  if (response2.data == 'does not exist'){
+			  	console.log('Game does not exist anymore')
+			  } else if (response2.data == 'game not active'){
+				  console.log('game not active');
+				  eraseCookie('game_id');
+				  //TODO: show "CONTINUE" in the hub (+ maybe resign/end game)
+			  } else if (response2.data == 'game found'){
+				  console.log('game found');
+				  console.log(response2);
+				  document.getElementById('hub_new_game').style.display = 'none';
+				  document.getElementById('hub_resume_game').style.display = 'block';
+				 // TODO: check if (response2.p1 == signed_in user) and make string in the right order
+				  document.getElementById('hub_resume_players').innerHTML = response2.p1 + " <span class='resume_lowlight'>vs</span> " + response2.p2;
+				  
+			  }
+		  })
+		  .catch(error => {
+			  console.log(error);
+		  })
+	  }
+  
+  
+  
+  </script>
+  
+  <script src="../animations.js"></script>
+  <script src="../basics.js"></script>
   </html>

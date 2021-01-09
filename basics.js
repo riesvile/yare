@@ -5,6 +5,11 @@ var game_id = '';
 if (getCookie('session_id') != null && getCookie('user_id') != null){
 	if (getCookie('user_id') == "anonymous"){
 		active_session = 1;
+		if (window.location.pathname.length <= 1) {
+			setCookie('user_id', 'anonymous');
+			setCookie('session_id', generateUniqueString(3), 1);
+			new_game();
+		}
 		//load game by session_id
 	}
 	
@@ -28,12 +33,17 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 			  } else if (response.data == "something went wrong"){
 			  	
 			  } else {
+				  //TODO: This might not work
 				  setCookie('user_id', response.username);
 				  setCookie('session_id', response.data, 7);
 				  console.log('storing cookie');
+				  
 				  if (window.location.pathname.length <= 1) {
 				      window.location = './hub';
+				  } else {
+					  login_success(response.username);
 				  }
+				 
 			  }
 		  })
 	      .catch(err => {
@@ -69,7 +79,9 @@ function new_game(type){
 		  console.log(response);
 		  game_id = response.g_id;
 		  if (response.meta == 'easy-bot'){
-		  	 window.location = './t1/' + response.g_id;
+			 setCookie('game_id', game_id);
+		  	 window.location.href = './t1/' + response.g_id;
+			 //document.location.reload(true);
 		  } else if (response.meta == 'waiting for p2'){
 			  waiting_for_p2(response.g_id);
 		  }
@@ -133,6 +145,7 @@ function get_in(){
 		  console.log(response);
 		  if (response.data == "start"){
 			  window.location = './t1/' + game_id;
+			  location.reload();
 	  	
 		  } else {
 		  	  console.log("Something went wrong " + response.data);
@@ -198,20 +211,75 @@ function newgame() {
 
 
 
+try {
+	document.getElementById("login_form").addEventListener("submit", function(e){
+    
+	    e.preventDefault();    //stop form from submitting
+		wait_server();
 
-document.querySelector("#login_form").addEventListener("submit", function(e){
+		const url = '/validate';
+
+		var user_name = document.getElementById('user_name').value;
+		var user_password = document.getElementById('user_password').value;
+	
+	
+
+
+		fetch('/validate', {
+		        method: "POST",
+		        headers: {
+		          Accept: "application/json",
+		          "Content-Type": "application/json"
+		        },
+		        body: JSON.stringify({
+			        user_name: user_name,
+			        password: user_password,
+			    })
+
+	    }).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+			  if (response.data == "no such user"){
+		  		  console.log('does not exist');
+				  login_error('user does not exist');
+				  resume_client();
+			  } else if (response.data == "wrong password"){
+				  login_error('wrong password');
+				  resume_client();
+				  console.log('wrong pass');
+			  } else {
+				  setCookie('user_id', response.user_id);
+				  setCookie('session_id', response.data, 7);
+				  console.log('storing cookie');
+				  login_success(response.user_id);
+				  //window.location = './hub';
+			  }
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
+	  
+	});
+} catch (e) {
+	console.log(e);
+}
+
+function submit_test(){
+	console.log('submit teest');
+}
+
+
+document.getElementById("new_acc_form").addEventListener("submit", function(e){
     
     e.preventDefault();    //stop form from submitting
+	wait_server();
 
-	const url = '/validate';
+	const url = '/add-user';
 
-	var user_name = document.getElementById('user_name').value;
-	var user_password = document.getElementById('user_password').value;
-	
-	
+	var user_name = document.getElementById('new_user_name').value;
+	var user_password = document.getElementById('new_user_password').value;
 
-
-	fetch('/validate', {
+	fetch('/add-user', {
 	        method: "POST",
 	        headers: {
 	          Accept: "application/json",
@@ -225,15 +293,32 @@ document.querySelector("#login_form").addEventListener("submit", function(e){
     }).then(response => response.json())
       .then(response => {
 		  console.log(response);
-		  if (response.data == "no such user"){
-		  	
-		  } else if (response.data == "wrong password"){
-		  	
+		  if (response.data == "user created"){
+			  console.log('all good');
+			  setCookie('user_id', response.user_id);
+			  setCookie('session_id', response.session_id);
+			  login_success(response.user_id);
+		  } else if (response.data == "exists"){
+			  //console.log('user exists already');
+			  username_error('Sorry, this one is already taken');
+			  resume_client();
+		  } else if (response.data == "toolong"){
+			  username_error('Must be < 20 characters (yours is ' + response.data2 + ' characters)');
+			  resume_client();
+		  } else if (response.data == "tooshort"){
+			  username_error('Must be at least 3 characters long');
+			  resume_client();
+		  } else if (response.data == "special"){
+			  username_error('Only letters, numbers and underscore allowed');
+			  resume_client();
+		  } else if (response.data == "pass_empty"){
+			  password_error("Whatever you want, but at least 1 character");
+			  resume_client();
 		  } else {
 			  setCookie('user_id', response.username);
 			  setCookie('session_id', response.data, 7);
 			  console.log('storing cookie');
-			  window.location = './hub';
+			  //window.location = './hub';
 		  }
 	  })
       .catch(err => {

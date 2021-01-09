@@ -91,6 +91,14 @@ div.tutorial_editor {
 	color: #0f0;
 }
 
+input:focus {
+	outline: none;
+}
+
+.par_highlight {
+	color: rgba(242, 246, 250, 0.89);
+}
+
 
 /* ----- Header area ----- */
 
@@ -113,26 +121,60 @@ h1#logo {
 	color: rgba(242, 246, 250, 1);
 }
 
-.logo_lowlight {
-	color: rgba(242, 246, 250, 0.32);
+.logo_lowlight, .resume_lowlight {
+	color: rgba(242, 246, 250, 0.32) !important;
 }
 
 .menu {
 	text-align: right;
 	position: absolute;
 	right: 40px;
-	top: 44px;
+	top: 30px;
 }
 
-.menu a {
+.menu .menu_link {
 	font-weight: 500;
 	font-size: 14px;
+	line-height: 44px;
 	display: block;
 	float: left;
-	margin-left: 40px;
+	margin-left: 36px;
+	cursor: pointer;
 }
 
 .menu_link {
+	color: rgba(242, 246, 250, 0.69);
+}
+
+.menu_line {
+	display: block;
+    float: left;
+    width: 1px;
+    height: 40px;
+    background-color: rgba(242, 246, 250, 0.12);
+    margin-left: 30px;
+}
+
+#profile_links {
+	position: absolute;
+	top: 30px;
+	right: 40px;
+	z-index: 20000;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.profile_link {
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 44px;
+	text-align: right;
+	color: rgba(242, 246, 250, 1);
+	cursor: pointer;
+	display: block;
+}
+
+#log_out {
 	color: rgba(242, 246, 250, 0.69);
 }
 
@@ -140,11 +182,102 @@ h1#logo {
 	color: rgba(169, 212, 255, 1);
 }
 
+#new_account_wrap, #login_wrap {
+	color: rgba(242, 246, 250, 0.55);
+	font-size: 14px;
+	position: absolute;
+	top: 60px;
+	z-index: 20000;
+	opacity: 0;
+	display: none;
+}
+
+#new_account_wrap p {
+	width: 380px;
+	line-height: 26px;
+	font-size: 14px;
+	font-weight: 500;
+    margin-top: -8px;
+    margin-bottom: 20px;
+}
+
+#new_acc_form, #login_form {
+	z-index: 5;
+}
+
+#new_user_name, #new_user_password, #user_name, #user_password {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 500;
+	line-height: 68px;
+	font-size: 16px;
+	height: 66px;
+	padding-top: 2px;
+	padding-left: 28px;
+	border: 0;
+	border-radius: 8px;
+	background-color: rgba(52, 49, 60, 0.55);
+	color: rgba(242, 246, 250, 0.89);
+	width: 400px;
+	display: block;
+	margin-bottom: 12px;
+}
+
+#new_account, #signed_in {
+	margin-left: 30px;
+}
+
+#new_user_name:focus, #new_user_password:focus, #user_name:focus, #user_password:focus {
+	background-color: rgba(84, 80, 95, 0.55) !important;
+}
+
+#user_err_message, #password_err_message, #login_err_message {
+	position: absolute;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(223, 163, 163, 0.69);
+	opacity: 0;
+}
+
+#login_err_message {
+	margin-top: 8px;
+}
+
+input[type=submit] {
+	font-family: 'Montserrat', sans-serif;
+	background-color: transparent;
+	line-height: 48px;
+	font-size: 20px;
+	font-weight: 500;
+	color: rgba(133, 186, 234, 1);
+	border: none;
+	cursor: pointer;
+}
+
+#loader_new_acc, #loader_login {
+	width: 24px;
+	height: 24px;
+	display: block;
+	background: url('../assets/loader.gif');
+	background-size: cover;
+	position: absolute;
+	bottom: 11px;
+	opacity: 0;
+}
+
+#signed_in {
+	display: none;
+}
+
+
+
+
+
 /* ----- */
 
 /* ----- Tutorial ----- */
 
 #tutorial {
+	width: 750px;
 	margin-left: 40px;
 	margin-top: 120px;
 	position: relative;
@@ -156,11 +289,11 @@ h1#logo {
 }
 
 p.tutorial_text {
-	font-size: 24px;
+	font-size: 24px; /* 20px macbook */
 	font-weight: 500;
 	color: rgba(242, 246, 250, 0.86);
 	line-height: 36px;
-	width: 620px;
+	width: 620px; /* 560px macbook */
 	margin-top: 32px;
 }
 
@@ -175,18 +308,367 @@ p.tutorial_text {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0);
+	z-index: 10000;
+	backdrop-filter: blur(0px);
+	pointer-events: none;
 }
 
 /* ----- */
 
-/* ----- a ----- */
+/* ----- player hub ----- */
+
+#content_hub_wrap {
+	width: 68%;
+	margin-left: 16%;
+	margin-top: 44vh;
+	transform: translateY(-50%);
+}
+
+span#hub_username {
+	font-size: 20px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+}
+
+span#user_hub_stats {
+	font-size: 16px;
+	color: rgba(242, 246, 250, 0.55);
+	display: block;
+	margin-top: 8px;
+}
+
+span#hub_logout {
+	color: rgba(133, 186, 234, 0.69);
+	cursor: pointer;
+}
+
+span#hub_logout:hover {
+	color: rgba(159, 157, 232, 1);
+}
+
+#hub_menu {
+	margin-top: 132px;
+}
+
+#hub_menu a {
+	font-size: 40px;
+	font-weight: 600;
+	width: 360px;
+	color: rgba(133, 186, 234, 1);
+	display: block;
+	line-height: 68px;
+}
+
+#hub_menu a:hover {
+	color: rgba(253, 211, 180, 1);
+}
+
+#hub_menu #hub_documentation, #hub_menu #hub_leaderboard {
+	color: rgba(133, 186, 234, 0.55);
+}
+
+#hub_menu #hub_documentation:hover, #hub_menu #hub_leaderboard:hover, #hub_menu #hub_reddit:hover {
+	color: rgba(159, 157, 232, 1);
+}
+
+#hub_menu #hub_reddit {
+	font-size: 24px;
+	color: rgba(133, 186, 234, 0.55);
+	line-height: 56px;
+}
+
+#hub_resume_game {
+	display: none;
+}
+
+
+#hub_resume_info {
+	font-size: 20px;
+	color: rgba(242, 246, 250, 0.55);
+	padding-bottom: 20px;
+	display: block;
+}
+
+#hub_resume_players {
+	color: rgba(242, 246, 250, 0.82);
+}
+
+#hub_resume_resign {
+	color: rgba(234, 133, 133, 1) !important;
+	cursor: pointer;
+}
+
+#hub_resume_resign:hover {
+	color: rgba(255, 13, 53, 1) !important;
+}
 
 
 
 
 
+.table {
+	width: 100%;
+	margin-top: -80px;
+	padding-bottom: 100px;
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	position: absolute;
+	top: 90vh;
+}
+
+.hub_table tr{
+	width: 100%;
+	height: 80px;
+	position: relative;
+}
+
+.row {
+	width: 100%;
+	height: 80px;
+	position: relative;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.row_in {
+	width: 68%;
+	height: 80px;
+	margin-left: 16%;
+	display: flex;
+	align-items: center;
+}
+
+.row_in span {
+	
+}
+
+.table_game_date {
+	width: 120px;
+}
+
+.table_game_players {
+	
+}
+
+.table_player1, .table_player2 {
+	color: rgba(242, 246, 250, 1);
+}
+
+.table_game_duration {
+	margin-left: auto;
+	width: 120px;
+}
+
+.table_game_result {
+	width: 50px;
+}
+
+.result_win {
+	color: rgba(133, 234, 143, 1);
+}
+
+.result_loss {
+	color: rgba(234, 133, 133, 1);
+}
+
+.table_game_eloresult {
+	text-align: right;
+	width: 90px;
+}
 
 
+
+/* ----- */
+
+
+/* ----- */
+
+/* ----- new game ----- */
+
+#newgame_wrap {
+	width: 68%;
+	margin-left: 16%;
+	margin-top: 20vh;
+}
+
+#user_selections {
+	/* display: none; */
+}
+
+.deer_h {
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	margin-bottom: 8px;
+	clear: both;
+}
+
+.deer_p {
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.48);
+	margin-bottom: 28px;
+}
+
+.deer_p a {
+	color: rgba(133, 186, 234, 0.86);
+}
+
+
+#choose_shape_block {
+	margin-top: 28px;
+}
+
+.shape_block {
+	width: 20vw;
+	height: 140px;
+	background-color: rgba(242, 246, 250, 0.12);
+	border-radius: 12px;
+	position: relative;
+	float: left;
+	margin-right: 24px;
+	cursor: pointer;
+	box-sizing: border-box;
+	border: 4px transparent solid;
+}
+
+span.shape_name {
+	font-size: 24px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	position: absolute;
+	left: 24px;
+	bottom: 20px;
+}
+
+#shape_circles {
+	/*border: 4px rgba(128, 140, 255, 1) solid;*/
+}
+
+
+#choose_color_block {
+	clear: both;
+	padding-top: 48px;
+}
+
+#choose_color_block h2 {
+	margin-bottom: 24px;
+}
+
+.color_option {
+	width: 34px;
+	height: 34px;
+	border-radius: 32px;
+	border: 1px rgba(242, 246, 250, 0.32) solid;
+	float: left;
+	box-sizing: border-box;
+	position: relative;
+	margin-right: 16px;
+	cursor: pointer;
+}
+
+.color_option_active {
+	border-width: 2px;
+}
+
+#color_gblue, #color_purply, #color_redish, #color_yerange {
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 16px;
+}
+
+#color_gblue {
+	background-color: rgba(28, 196, 240, 1);
+}
+
+#color_purply {
+	background-color: rgba(128, 140, 255, 1);
+}
+
+#color_redish {
+	background-color: rgba(235, 119, 103, 1);
+}
+
+#color_yerange {
+	background-color: rgba(218, 183, 96, 1);
+}
+
+
+
+#start_area {
+	margin-top: 180px;
+	cursor: not-allowed;
+	opacity: 0.4;
+}
+
+#start_game_btn, #cancel_game_btn {
+	font-size: 16px;
+	font-weight: 500;
+	background-color: rgba(65, 63, 177, 1);
+	padding: 22px 53px;
+	display: inline-block;
+	border-radius: 8px;
+	float: left;
+}
+
+#cancel_game_btn {
+	background-color: rgba(128, 140, 255, 0.12);
+	color: rgba(242, 246, 250, 0.86);
+}
+
+#start_game_btn:hover {
+	background-color: rgba(85, 83, 197, 1);
+}
+
+span.game_or, span.cancel_or {
+	padding: 22px 12px 22px 24px;
+	display: inline-block;
+	float: left;
+	opacity: 0.32;
+}
+
+#challenge_friend_btn, #play_bot_btn {
+	padding: 22px 12px;
+	float: left;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+#challenge_friend_btn:hover {
+	color: rgba(133, 186, 234, 1);
+}
+
+
+/* ----- */
+
+
+#waiting_game {
+	opacity: 0;
+	display: none;
+}
+
+#waiting_for_opponent {
+	padding-bottom: 60px;
+	padding-top: 40px;
+	display: none;
+	opacity: 0;
+}
+
+#waiting_illu {
+	width: 64px;
+	height: 44px;
+	background-color: #ff0;
+	margin-bottom: 52px;
+}
+
+
+
+
+/* ----- */
 
 
 

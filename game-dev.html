@@ -1,56 +1,38 @@
 <!doctype html>
 <html>
   <head>
-    <title>yare.io</title>
+    <title>yare</title>
 	<style>
 	</style>
-	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<meta name="viewport" content="width=device-width, minimum-scale=0.5, maximum-scale=0.5, user-scalable=0">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../colors.css">
-	<link rel="stylesheet" href="../style.css">
-	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../anime.min.js"></script>
+	<link rel="stylesheet" href="./colors.css">
+	<link rel="stylesheet" href="./style.css">
+	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="anime.min.js"></script>
   </head>
   <body>
 	  
   <div id="new_account_wrap">
-	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+	  <!-- new account element -->
+	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off">
 	  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
-		  <span id="user_err_message">Something's wrong</span>
-	  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
-		  <span id="password_err_message">Something's wrong</span>
-		  <br>
-		   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
-	  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+	  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password"><br>
+		   <p><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
+	  	  <input type="submit" value="Create new account">  	
 	  </form>
-  </div>
-  
-  <div id="login_wrap">
-	  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
-	  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
-	  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
-		  <span id="login_err_message">Something's wrong</span>
-		  <br>
-	  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
-	  </form>
-  </div>
-  
-  <div id="profile_links">  
-	  	<a href="#" class="profile_link" id="hub_link">Profile hub</a>
-	  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
-	  	<a href="#" class="profile_link" id="log_out">Log out</a>
+	  
+	 
   </div>
   
   
   <div id="hector">
 	  <h1 id="logo"><a href="#">yare<span class="logo_lowlight">.io</span></a></h1>
 	  <div class="menu">
-		  <a href="#" class="menu_link">Documentation</a>
-		  <div class="menu_line"></div>
 		  <div class="menu_link new_acc" id="new_account">New account</div>
-		  <div class="menu_link" id="login">Log in</div>
-		  <div class="menu_link" id="signed_in">username</div>
+		  <div href="#" class="menu_link" id="login">Log in</div>
+		  <a href="#" class="menu_link">Documentation</a>
 	  </div>
   </div>
 	  
@@ -261,7 +243,7 @@
 	  //session_id = abc
 	  
   </script>
-  <script src="../animations.js"></script>
-  <script src="../rendering.js"></script>
-  <script src="../basics.js"></script>
+  <script src="./rendering.js"></script>
+  <script src="./basics.js"></script>
+  <script src="./animations.js"></script>
   </html>

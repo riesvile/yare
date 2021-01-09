@@ -14,6 +14,85 @@ function generateUniqueString(prefix) {
     return (randomString(prefix) + out);
 }
 
+// ----- automatching -----
+
+function games_paired(){
+	//players are matched, check server loads, redirect to the right server and start a game worker there
+}
+
+
+var game_pairs = [];
+var automatch_looking = [];
+
+//rewrite this entire stupidity later, you fucking moron. What were you even doing, the fuck?
+
+	setInterval(function(){
+		if(automatch_looking.length > 1){
+			for (i = 0; i < automatch_looking.length; i++){
+				//[user_id, rating, time_spent_in_queue, matched?]
+				var looker1 = automatch_looking[i];
+				var topCandidate = '';
+				
+				if (looker1[3] == 1) continue;
+				
+				for (j = i+1; j < automatch_looking.length; j++){
+					var looker2 = automatch_looking[j];
+					
+					console.log('lookers');
+					console.log(looker1);
+					console.log(looker2);
+					console.log(Math.abs(looker1[1] - looker2[1]));
+					
+					var rating_difference = Math.abs(looker1[1] - looker2[1])
+					
+					if (looker1[2] < 4100){
+						if (rating_difference < 100){
+							game_pairs.push([looker1[0], looker2[0]]);
+							looker1[3] = 1;
+							looker2[3] = 1;
+						}
+					} else if (looker1[2] < 8100){
+						if (rating_difference < 200){
+							game_pairs.push([looker1[0], looker2[0]]);
+							looker1[3] = 1;
+							looker2[3] = 1;
+						}
+					} else if (looker1[3] < 12100){
+						if (rating_difference < 300){
+							game_pairs.push([looker1[0], looker2[0]]);
+							looker1[3] = 1;
+							looker2[3] = 1;
+						}
+					} else {
+						if (rating_difference < 500){
+							game_pairs.push([looker1[0], looker2[0]]);
+							looker1[3] = 1;
+							looker2[3] = 1;
+						}
+					}
+				}
+			}
+			
+			//clearing out matched items from the automatch queue
+			for (i = automatch_looking.length - 1; i >= 0; i--){
+				if (automatch_looking[i][3] == 1){
+					automatch_looking.splice(i, 1);
+				}
+			}
+			
+			if (game_pairs.length > 0) {
+				console.log('paired players');
+				console.log(game_pairs);
+			}
+			
+		}
+		
+		console.log('automatch tick');
+		
+	}, 4000)
+	
+
+// -----
 // --------------__---_-___
 
 
@@ -22,14 +101,25 @@ function generateUniqueString(prefix) {
 //setup
 const express = require('express');
 const app = express();
+const crypto = require("crypto");
+const sha256 = hash_string => crypto.createHash('sha256').update(hash_string, 'utf8').digest('hex');
 const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
 var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
-//active games[game_id] = [status, player1_id, player2_id];
+//active games[game_id] = [status, player1_id, player2_id, server];
 var active_games = {};
+var server_occupancy = {
+	t1: 50,
+	t2: 50,
+	t3: 50,
+	d1: 50,
+	d2: 50,
+	d3: 50,
+	d4: 50
+};
 var connections = {};
 
 
@@ -150,6 +240,11 @@ function friend_challenge(req, res){
 	//redirect and wait for both players to connect
 }
 
+
+function automatch(req, res){
+	
+}
+
 // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: true }));
 
@@ -166,6 +261,20 @@ app.post('/new-game', (req, res) => {
 			bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'challenge'){
 			friend_challenge(req, res);
+		} else if (req.body.type == 'automatch'){
+			console.log('automatching...');
+			User.find({user_id: req.body.user_id})
+				.then((result) => {
+					console.log(result);
+					console.log('...auto match added');
+					automatch_looking.push([result[0].user_id, result[0].rating, 0, 0]);
+				})
+				.catch((error) => {
+					console.log(error);
+				})
+			
+			
+				
 		}
 	}
 });
@@ -201,9 +310,9 @@ app.post('/validate', (req, res) => {
 				res.status(404).send({
 		        	data: "no such user"
 		        });
-			} else if (result[0]['passwrd'] == req.body.password){
+			} else if (result[0]['passwrd'] == sha256(req.body.password)){
 				//all good, update session id and prolong expiration date
-				session_id = generateUniqueString();
+				session_id = generateUniqueString(3);
 		        var session_expire = new Date();
 		        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
 				console.log('date');
@@ -211,7 +320,7 @@ app.post('/validate', (req, res) => {
 				User.updateOne({user_id: req.body.user_name}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
 					.then((qq) => {
 						res.status(200).send({
-							username: result[0]['user_id'],
+							user_id: result[0]['user_id'],
 				        	data: session_id
 				        });
 					});
@@ -256,6 +365,9 @@ app.post('/session', (req, res) => {
 					});
 				
 			} else {
+				console.log('session ids:::');
+				console.log(result[0]['session_id']);
+				console.log(req.body.session_id);
 				res.status(404).send({
 		        	data: "expired session"
 		        });
@@ -266,24 +378,78 @@ app.post('/session', (req, res) => {
 		})
 });
 
+function isValid(str) {
+	return /^\w+$/.test(str);
+}
 
-app.get('/add-user', (req, res) => {
-	const user = new User({
-		user_id: 'test3',
-		passwrd: '15aa',
-		session_id: 'x',
-		session_expire: 1
-	});
+app.post('/add-user', (req, res) => {
+	console.log(req.body);
+    console.log(req.body.user_name);
+    console.log(req.body.password);
+	console.log(req.body.password.length);
 	
-	user.save()
-		.then((result) => {
-			res.send(result);
-			console.log('db result');
-			console.log(result);
-		})
-		.catch((error) => {
-			console.log(error);
-		})
+	if (req.body.user_name.length > 20){
+		res.status(200).send({
+        	data: "toolong",
+			data2: req.body.user_name.length
+        });
+	} else if (req.body.user_name.length < 3){
+		res.status(200).send({
+        	data: "tooshort"
+        });
+	} else if (isValid(req.body.user_name) != true){
+		res.status(200).send({
+        	data: "special"
+        });
+	} else if (req.body.password.length < 1){
+		console.log('password too short');
+		res.status(200).send({
+        	data: "pass_empty"
+        });
+	} else {
+		var session_id = generateUniqueString(3);
+	    var session_expire = new Date();
+	    session_expire = (session_expire.getTime() + (7*24*60*60*1000));
+	
+		const user = new User({
+			user_id: req.body.user_name,
+			passwrd: sha256(req.body.password),
+			rating: 1500,
+			rating_stability: 5,
+			games_count: 0,
+			session_id: session_id,
+			session_expire: session_expire
+		});
+	
+		User.find({user_id: req.body.user_name})
+			.then((result) => {
+				//res.send(result);
+				console.log('db result');
+				if (result.length == 0){
+					res.status(200).send({
+			        	data: "user created",
+						user_id: req.body.user_name,
+						session_id: session_id
+			        });
+					user.save()
+						.then((result) => {
+							console.log('user created');
+						})
+						.catch((error) => {
+							console.log(error);
+						})
+				
+				} else {
+					res.status(200).send({
+			        	data: "exists"
+			        });
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	}
+	
 });
 
 app.get('/all', (req, res) => {
@@ -404,6 +570,42 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 })
 
 
+app.post('/resume-game', (req, res) => {
+	console.log(req.body);
+    console.log(req.body.user_name);
+    console.log(req.body.password);
+	
+	Game.find({game_id: req.body.game_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+		        	data: "game not found"
+		        });
+			} else if (result[0].active == 1){
+				res.status(200).send({
+		        	data: "game found",
+					p1: result[0].player1,
+					p2: result[0].player2,
+					duration: result[0].duration
+		        });
+			} else if (result[0].active == 0){
+				res.status(200).send({
+		        	data: "game not active"
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "this should not happen"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+
 
 //global
 
@@ -491,8 +693,9 @@ wss.on('connection', function connection(ws, req) {
 			if (message['u_id'].length > 1){
 				console.log('code sent by');
 				console.log(message['u_id']);
+				console.log(active_games[g_id][1])
 			}
-			if (message['u_id'] == active_games[g_id][1]){
+			if (message['u_id'] == active_games[g_id][1] || active_games[g_id][1] == 'anonymous'){
 				code_temps['player1'] = message['u_code'];
 				player1_code = `
 				//all = spirits.length;
@@ -573,6 +776,8 @@ wss.on('connection', function connection(ws, req) {
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
 app.get('/game', (req, res) => res.sendFile(__dirname + '/game.html'));
+app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
+app.get('/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
 app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
 app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
 app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
@@ -583,7 +788,10 @@ app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/s
 app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
 app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
 app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
+app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
 
+
+app.get('/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
 app.get('/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
 
 
@@ -593,5 +801,5 @@ app.get('/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/a
 
 
 server.listen(5000, () => console.log('Listening on port :5000'))
-
+automatch();
 
