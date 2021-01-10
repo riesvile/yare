@@ -383,6 +383,66 @@ function wait_opponent_view(){
   
 }
 
+function code_copy_success(target){
+  	anime({
+  		targets: target,
+		color: ['rgba(133, 234, 143, 0.89)', 'rgba(118, 127, 136, 0.92)'],
+  		backgroundColor: ['rgba(133, 234, 143, 0.2)', 'rgba(118, 127, 136, 0.12)'],
+		borderColor: ['rgba(133, 234, 143, 0.55)', 'rgba(118, 127, 136, 0.48)'],
+  		easing: 'easeOutQuad',
+  		duration: 800
+  	});
+}
+
+
+function tut_start(){
+  	anime({
+  		targets: '#overlay_start',
+  		backgroundColor: 'rgba(0, 0, 0, 0)',
+  		easing: 'easeOutQuad',
+  		duration: 800
+  	});
+}
+
+function tut_show_box(){
+  	anime({
+  		targets: '#overlay',
+  		backgroundColor: 'rgba(0, 0, 0, 0.56)',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	anime({
+  		targets: '#tutorial_infobox',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 200
+	});
+}
+
+function tut_hide_box(){
+  	anime({
+  		targets: '#overlay',
+  		backgroundColor: 'rgba(0, 0, 0, 0)',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	anime({
+  		targets: '#tutorial_infobox',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 200
+	});
+}
+
+function tut_phase_success(){
+	anime({
+  		targets: '.tutorial_text',
+  		color: ['rgba(79, 228, 96, 0.92)', 'rgba(242, 246, 250, 0.86)'],
+  		easing: 'easeOutQuad',
+  		duration: 3000
+	});
+}
+
 
 // helper vars
 var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();

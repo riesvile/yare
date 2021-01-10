@@ -143,6 +143,10 @@ document.getElementById("editor_container").addEventListener("mousedown", functi
 		document.getElementById("editor_container").style.backgroundColor = "rgba(4, 6, 10, 0.2)";
 		document.getElementById("editor_container").style.backdropFilter = "blur(12px)";
 	}
+    if (tutorial_started == 0){
+	    tutorial_started = 1;
+	    tut_start();
+    }
 
 }, false);
 

@@ -1,0 +1,13 @@
+infobox_msg = {
+	spirit_reference: "<p class='info_h'>Reference to your spirit (an object).</p><p class='info_p'>In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>",
+	move_method: "<p class='info_h'>The move(<i>target</i>) method tells the spirit where to move to.</p><p class='info_p'><i>target</i> is an [x, y] array representing the x, y coordinates on the game board.</p>",
+	star_property_position: "<p class='info_h'>star_zxq is a reference to the big white-ish circle</p><p class='info_p'>Stars are a source of <i>energy</i>. You need <i>energy</i> for everything in this game. Attacking, defending and building new spirits, but more on that later.</p><p class='info_h'>position is a property of all objects in yare.io</p><p class='info_p'><i>[any_object]</i>.position returns an [x, y] array where x and y are the object's coordinates.</p>",
+	energize_method0: "<p class='info_h'>The energize(<i>target</i>) method is for transferring energy</p><p class='info_p'><i>target</i> is an object. If target is the same as origin, the spirit will attempt to harvest energy from a nearby star</p>",
+	energize_method: "<p class='info_h'>The energize(<i>target</i>) method is for transferring energy</p><p class='info_p'><i>target</i> is an object. If target is the same as origin, the spirit will attempt to harvest energy from a nearby star</p>",
+	energize_target_self: "<p class='info_h'>Since <i>target</i> here is the same object as the origin of the energy transfer (s1), the spirit will attempt to harvest energy from a nearby star.</p>"
+}
+
+tutorial_strings = {
+	p1: "<p id='tut_helper' class='tutorial_text'>Nicely done!</p><p id='tut_helper' class='tutorial_text'><code><span class='tut_label' id='energize_method0'>energize()</span></code> is the other important method in the game, it tells your spirit where to transfer energy.</p><p id='tut_helper' class='tutorial_text'>Add <code><span class='tut_label' id='spirit_reference'>s1</span><span class='tut_label' id='energize_method'>.energize</span>(<span class='tut_label' id='energize_target_self'>s1</span>)</code><span class='copy_code' code='s1.energize(s1);'>COPY</span> to your code. Hover over this snippet to learn more about what this does</p>",
+	p2: "text"
+	  }

@@ -35,7 +35,7 @@ parentPort.on("message", message => {
 		init_data.players[0] = players['p1'];
 		init_data.players[1] = players['p2'];
 		
-		parentPort.postMessage({data: JSON.stringify(init_data), game_id: workerData, meta: 'initiate', client: message.client});
+		parentPort.postMessage({data: JSON.stringify(init_data), game_id: workerData[0], meta: 'initiate', client: message.client});
   } else if (message.data == "player code"){
 	  //check who's code it is here
 	  if (message.pl_num == "player1"){
@@ -85,7 +85,7 @@ parentPort.on("message", message => {
   } else if (message.data="start world"){
 	  players['p1'] = message.player1;
 	  players['p2'] = message.player2;
-	  Game.find({game_id: workerData})
+	  Game.find({game_id: workerData[0]})
 	  	.then((result) => {
 			console.log('p1_color');
 			console.log(result[0].p1_color);
@@ -129,6 +129,11 @@ function user_code(){
 	
 	
 	
+}
+
+//tutorial
+if (workerData[1] == 'tutorial'){
+	var tutorial_phase = [0, 0, 0, 0, 0, 0];
 }
 
 //global
@@ -529,15 +534,30 @@ if (!isMainThread){
 		
 	
 			//render_data = [[],[],[],[],[]];
-			render_data2 = {
-				'move': [],
-				'energize': [],
-				'death': [],
-				'birth': [],
-				'error_msg': [],
-				'console1': [],
-				'console2': []
+			
+			if (workerData[1] == 'tutorial'){
+				render_data2 = {
+					'move': [],
+					'energize': [],
+					'death': [],
+					'birth': [],
+					'error_msg': [],
+					'console1': [],
+					'console2': [],
+					'tutorial': []
+				}
+			} else {
+				render_data2 = {
+					'move': [],
+					'energize': [],
+					'death': [],
+					'birth': [],
+					'error_msg': [],
+					'console1': [],
+					'console2': []
+				}
 			}
+			
 		
 		
 			//objects birth
@@ -583,6 +603,21 @@ if (!isMainThread){
 			
 				//pos + incr
 				// THIS IS THE ONLY THING THAT MATTERS HERE, NO OTHER CALCULATIONS!
+				
+				//tutorial
+				if (workerData[1] == 'tutorial'){
+					try {
+						console.log('tutorial, star position');
+						console.log(move_queue[0][2]);
+						if (move_queue[0][2][0] == 900 && move_queue[0][2][1] == 800){
+							console.log('tutorial phase 1 done');
+							tutorial_phase[0] = 1;
+						}
+					} catch (error){
+						console.log(error);
+					}
+					
+				}
 			
 				if (Math.abs(move_queue[i][2][0] - move_queue[i][0].position[0]) < 0.6 && Math.abs(move_queue[i][2][1] - move_queue[i][0].position[1]) < 0.6){
 					move_queue[i][1] = [0,0];
@@ -606,6 +641,8 @@ if (!isMainThread){
 					for (j = 0; j < potential_collisions; j++){
 						collidie = spirit_lookup[move_queue[i][0].sight.friends[j]]
 						if (isCollision(move_queue[i][0], collidie)){
+							//this is always false now, until you figure out how to do this
+							
 							//console.log('COLLISION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 							//move_queue[i][0].position[0]
 							var incrX_sign;
@@ -776,9 +813,14 @@ if (!isMainThread){
 			user_error = '';
 		
 		
+			//tutorial data update
+			if (workerData[1] == 'tutorial'){
+				render_data2.tutorial.push(tutorial_phase);
+			}
+		
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
-			parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData, meta: ''});
+			parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData[0], meta: ''});
 			//wss.broadcast();
 			
 			//update vm sandbox objects
@@ -808,6 +850,9 @@ if (!isMainThread){
 			user_error = 'calculated in = ' + processTimeRes;
 			
 			
+			//tutorial
+			
+			
 		
 	}
 	
@@ -817,13 +862,13 @@ if (!isMainThread){
 		//map creation
 		// -----------------
 
-		for (s = 1; s < 3; s++){
+		for (s = 1; s < 2; s++){
 			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 40, players['p1'], colors['player1']);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
-		for (q = 1; q < 3; q++){
+		for (q = 1; q < 2; q++){
 			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 40, players['p2'], colors['player2']);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;

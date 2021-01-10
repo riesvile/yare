@@ -16,8 +16,12 @@ canvas#main_canvas, canvas#base_canvas {
 	left: 0;
 }
 
+canvas#main_canvas {
+	z-index: -1;
+}
+
 canvas#base_canvas {
-	z-index: 100;
+
 }
 
 a {
@@ -281,7 +285,7 @@ input[type=submit] {
 	margin-left: 40px;
 	margin-top: 120px;
 	position: relative;
-	z-index: 2000;
+	/* z-index: 2000;*/
 }
 
 #tutorial_wrap {
@@ -301,7 +305,7 @@ p.tutorial_text {
 	position: relative;
 }
 
-#overlay {
+#overlay, #overlay_start {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -312,6 +316,69 @@ p.tutorial_text {
 	backdrop-filter: blur(0px);
 	pointer-events: none;
 }
+
+#overlay_start {
+	background-color: rgba(0, 0, 0, 0.69);
+	z-index: 0;
+}
+
+#tutorial_infobox {
+	position: absolute;
+	width: 416px;
+	background-color: rgba(42, 44, 48, 0.32);
+	backdrop-filter: blur(60px);
+	z-index: 1000000;
+	padding: 24px 28px 8px 28px;
+	font-size: 16px;
+	font-weight: 500;
+	border-radius: 12px;
+	opacity: 0;
+	display: none;
+	pointer-events: none;
+}
+
+.bring_up {
+	position: relative;
+	z-index: 999999;
+	color: rgba(242, 246, 250, 0.92);
+}
+
+.info_h {
+	color: rgba(242, 246, 250, 0.92);
+	line-height: 26px;
+	margin-bottom: 8px;
+}
+
+.info_p {
+	color: rgba(242, 246, 250, 0.69);
+	line-height: 26px;
+	margin-bottom: 16px;
+}
+
+.copy_code {
+	font-size: 11px;
+	letter-spacing: 2px;
+	vertical-align: middle;
+	cursor: pointer;
+	box-sizing: border-box;
+	padding: 4px 6px 4px 7px;
+	margin-left: 4px;
+	margin-right: 2px;
+	border: 1px solid rgba(118, 127, 136, 0.48);
+	color: rgba(118, 127, 136, 0.92);
+	background-color:rgba(118, 127, 136, 0.12);
+	border-radius: 8px;
+	font-weight: 600;
+	position: relative;
+	z-index: 99999;
+}
+
+.copy_code:hover {
+	border: 1px solid rgba(133, 141, 209, 0.55);
+	color: rgba(178, 177, 206, 0.92);
+	background-color: rgba(133, 141, 209, 0.12);
+}
+
 
 /* ----- */
 

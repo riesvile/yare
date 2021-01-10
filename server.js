@@ -111,10 +111,12 @@ var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
 //active games[game_id] = [status, player1_id, player2_id, server];
 var active_games = {};
-var server_occupancy = {
+var server_occupancy_tutorial = {
 	t1: 50,
 	t2: 50,
-	t3: 50,
+	t3: 50
+}
+var server_occupancy = {
 	d1: 50,
 	d2: 50,
 	d3: 50,
@@ -132,18 +134,19 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to db'))
 	.catch((error) => console.log(error));
 
-function new_game(pl1_id, pl2_id, init_status = 1) {
+function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1') {
 	var g_id = generateUniqueString(3);
-	active_games[g_id] = [0, 0, 0];
+	active_games[g_id] = [0, 0, 0, 0];
 	active_games[g_id][0] = init_status;
 	active_games[g_id][1] = pl1_id;
 	active_games[g_id][2] = pl2_id;
+	active_games[g_id][3] = server_id;
 	return g_id;
 }
 
 
-function create_worker (game_id) {
-  const worker = new Worker('./game.js', { workerData: game_id })
+function create_worker (game_id, game_type) {
+  const worker = new Worker('./game.js', { workerData: [game_id, game_type] })
   worker.on('error', (err) => { throw err })
   worker.on('message', (render_data) => {
 	  if (render_data.meta == 'initiate'){
@@ -169,9 +172,37 @@ function create_worker (game_id) {
 //create_worker('aatest');
 //createWorker('bbbtrs');
 
+function load_balancer(){
+	//logic for redirects to the right server????
+}
+
 function bot_game(req, res, pl_id){
-	g_id = new_game(pl_id, 'easy-bot');
-	create_worker(g_id);
+	//instead redirect to a game-server???
+	
+	//TODO: first assign a server to this game
+	var tut_servers = Object.keys(server_occupancy_tutorial);
+	var load_threshold = 40;
+	var chosen_server = 't3';
+	
+	for (i = 0; i < tut_servers.length; i++){
+		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
+			chosen_server = tut_servers[i];
+			server_occupancy_tutorial[chosen_server]--;
+			console.log(server_occupancy_tutorial);
+			console.log('chosen server = ' + chosen_server);
+			break;
+		}
+		if (i == (tut_servers.length - 1)){
+			console.log('all servers busy, increasing load');
+			load_threshold -= 10; 
+			i = -1;
+		}
+		
+	}
+	
+	
+	g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
+	create_worker(g_id, 'tutorial');
 	res.status(200).send({
 		g_id: g_id,
 		meta: 'easy-bot'
@@ -518,7 +549,7 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 						start_world(game_id_url);
 					});
 				
-				create_worker(game_id_url);
+				create_worker(game_id_url, 'nonranked');
 				res.status(200).send({
 		        	data: "challenge connected"
 		        });
@@ -710,6 +741,7 @@ wss.on('connection', function connection(ws, req) {
 				for (q = 0; q < (Object.keys(spirits)).length; q++){
 					if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
 						my_spirits.push(spirits[Object.keys(spirits)[q]]);
+						global['s' + (q+1)] = spirits[Object.keys(spirits)[q]];
 					}
 				}
 				
@@ -782,6 +814,7 @@ app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js')
 app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
 app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
 app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
+app.get('/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
 app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
 app.get('/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
 app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));

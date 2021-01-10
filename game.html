@@ -58,15 +58,20 @@
   <canvas id='main_canvas'></canvas>
   <canvas id='base_canvas'></canvas>
   
-  <div id="tutorial-infobox">
+  <div id="tutorial_infobox">
+	  
+		  <p class="info_h">Reference to your spirit (an object).</p>
+		  <p class="info_p">In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>
+	  
   </div>
   
   <div id="overlay"></div>
+  <div id="overlay_start"></div>
   
   <div id="tutorial">
 	  <div id="tutorial_wrap">
 	  	<p id="tut_helper" class="tutorial_text">yare.io is a game where you control your units&nbsp;(spirits) with JavaScript</p>
-		<p id="tut_helper" class="tutorial_text">Try typing <code><span class="tut_label bring_up" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(star_zxq.position)</code> into the code block below.
+		<p id="tut_helper" class="tutorial_text">Try typing <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position);">COPY</span> into the code block below<span class="copy_code" code="s2.move(star_zxq.position);">COPY</span>.
 		<p id="tut_helper" class="tutorial_text">You can hover over the code snippet above for more information about each part</p>
 	  </div>
   </div>
@@ -107,6 +112,12 @@
 	  
 	  var pla1 = '';
 	  var pla2 = '';
+	  
+	  var tutorial_started = 0;
+	  var tutorial_phase = 0;
+	  var tutorial_info_view = 0;
+	  var tut_helper_id = '';
+	  var tut_helper_phase = 0;
 	  
 	  const socket = new WebSocket('ws://localhost:5000/t1/' + game_id); // wss://yare.io:443
 	  //socket.binaryType = "arraybuffer";
@@ -160,6 +171,54 @@
 			 if (incoming.console2.length > 0){
 				 console.log(incoming.console2);
 			 }
+			 
+			 if (incoming.tutorial.length > 0){
+				 console.log('tutorial !!!!!!!!!!!!!!!!!!!');
+				 console.log(incoming.tutorial[0]);
+				 for (t = 0; t < incoming.tutorial[0].length; t++){
+					 if (incoming.tutorial[0][t] == 1){
+						 tutorial_phase = t + 1;
+						 console.log('tutorial phase = ' + tutorial_phase);
+					 }
+				 }
+			 }
+			 
+			 if (tutorial_started == 0){
+			 	
+			 }
+			 
+			 if (tut_helper_phase != tutorial_phase){
+				 tut_helper_phase = tutorial_phase;
+				 
+				 switch(tutorial_phase){
+					 case 0:
+						 break;
+					 case 1:
+						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p1'];
+						 tut_phase_success();
+						 break;
+					 default:
+						 console.log('tutorial defaulted');
+				 }
+				 
+			   	 code_elements = document.querySelectorAll('.tutorial_text code');
+			   	 for (ce = 0; ce < code_elements.length; ce++){
+			   		  code_elements[ce].addEventListener('mousemove', tutorial_box, false);
+			   		  code_elements[ce].addEventListener('mouseleave', tutorial_box_out, false);
+			   	 }
+				 
+			   	 copy_elements = document.getElementsByClassName('copy_code');
+			   	 for (ce = 0; ce < copy_elements.length; ce++){
+			   	  	copy_elements[ce].addEventListener('click', function(){
+			   			code_to_copy = this.getAttribute('code');
+			   			console.log('code_to_copy = ' + code_to_copy);
+			   			copyTextToClipboard(code_to_copy, this);
+			   	    }, false);
+			   	 }
+			 }
+			 
+			 
+			 
 			 
 			
 				 
@@ -260,7 +319,129 @@
 	  
 	  //session_id = abc
 	  
+	  
+	  
+	  
+	  //tutorial
+	  function copyTextToClipboard(text, target) {
+		  var copyTextArea = document.createElement("textarea");
+		  copyTextArea.style.position = 'fixed';
+		  copyTextArea.style.top = 0;
+		  copyTextArea.style.left = 0;
+		  copyTextArea.style.width = '2em';
+		  copyTextArea.style.height = '2em';
+		  copyTextArea.style.border = 'none';
+		  copyTextArea.style.outline = 'none';
+		  copyTextArea.style.boxShadow = 'none';
+		  copyTextArea.style.background = 'transparent';
+		  copyTextArea.value = text;
+		  document.body.appendChild(copyTextArea);
+		  copyTextArea.focus();
+		  copyTextArea.select();
+		  
+		  try {
+		      var successful = document.execCommand('copy');
+		      var msg = successful ? 'successful' : 'unsuccessful';
+		      code_copy_success(target);
+		    } catch (err) {
+		      console.log('Oops, unable to copy');
+		    }
+		
+		  document.body.removeChild(copyTextArea);
+	  }
+	  
+	  function tutorial_box(e){
+		  e = e || window.event;
+		  var el_id = (e.target || e.srcElement).id;
+		  var infoboxo = document.getElementById('tutorial_infobox');
+		  //console.log('over id= ' + el_id);
+		  
+		  if (tutorial_info_view == 0 && mousey != 1){
+			  tutorial_info_view = 1;
+			  tut_show_box();
+			  
+			  
+		  }
+		  
+		  if (el_id != tut_helper_id){
+			  tut_helper_id = el_id;
+			  var tut_items = document.querySelectorAll('.tut_label');
+			  for (ti = 0; ti < tut_items.length; ti++){
+				  tut_items[ti].classList.remove('bring_up');
+				  tut_items[ti].style.zIndex = 999999;
+			  }
+			  document.getElementById(el_id).classList.add('bring_up');
+			  el_rect = this.getBoundingClientRect();
+			  infoboxo.style.top = el_rect.top + 40 + 'px';
+			  infoboxo.style.left = el_rect.left - 20 + 'px';
+			  infoboxo.style.display = 'block';	  
+			  
+			  infoboxo.innerHTML = infobox_msg[el_id];
+			  
+			  /*
+			  switch(el_id){
+				  case 'spirit_reference':
+					  infoboxo.innerHTML = "<p class='info_h'>Reference to your spirit (an object).</p><p class='info_p'>In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>"
+					  console.log('spirit reference box');
+					  break;
+				  case 'move_method':
+					  infoboxo.innerHTML = "<p class='info_h'>The move(<i>target</i>) method tells the spirit where to move to.</p><p class='info_p'><i>target</i> is an [x, y] array representing the x, y coordinates on the game board.</p>"
+					  console.log('spirit reference box');
+					  break;
+				  case 'star_property_position':
+					  infoboxo.innerHTML = "<p class='info_h'>star_zxq is a reference to the big circle thing</p><p class='info_p'>Stars are a source of <i>energy</i>. You need <i>energy</i> for everything in this game. Attacking, defending and building new spirits, but more on that later.</p><p class='info_h'>position is a property of all objects in yare.io</p><p class='info_p'><i>[any_object]</i>.position returns an [x, y] array where x and y are the object's coordinates.</p>"
+					  console.log('spirit reference box');
+					  break;
+				  default:
+					  console.log('tut box id defaulted');
+			  }*/
+		  }
+		  
+		  
+		  
+		  //document.getElementById(el_id).classList.add('bring_up');
+		  
+	  }
+	  
+	  function tutorial_box_out(e){
+		  tutorial_info_view = 0;
+		  tut_helper_id = '';
+		  tut_hide_box();
+		  
+		  if (tutorial_started == 0){
+			  tutorial_started = 1;
+			  tut_start();
+		  }
+		  
+		  var tut_items = document.querySelectorAll('.tut_label');
+		  for (ti = 0; ti < tut_items.length; ti++){
+			  tut_items[ti].classList.remove('bring_up');
+			  tut_items[ti].style.zIndex = 0;
+		  }
+	  }
+	  
+	  
+	  code_elements = document.querySelectorAll('.tutorial_text code');
+	  for (ce = 0; ce < code_elements.length; ce++){
+		  code_elements[ce].addEventListener('mousemove', tutorial_box, false);
+		  code_elements[ce].addEventListener('mouseleave', tutorial_box_out, false);
+	  }
+	  
+	  
+	  
+	  copy_elements = document.getElementsByClassName('copy_code');
+	  for (ce = 0; ce < copy_elements.length; ce++){
+	  	copy_elements[ce].addEventListener('click', function(){
+			code_to_copy = this.getAttribute('code');
+			console.log('code_to_copy = ' + code_to_copy);
+			copyTextToClipboard(code_to_copy, this);
+	    }, false);
+	  }
+	  
+	  
+	  
   </script>
+  <script src="../tutorial_texts.js"></script>
   <script src="../animations.js"></script>
   <script src="../rendering.js"></script>
   <script src="../basics.js"></script>
