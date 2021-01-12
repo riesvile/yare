@@ -123,6 +123,7 @@ var server_occupancy = {
 	d4: 50
 };
 var connections = {};
+var this_server = 't1';
 
 
 //connect to mongodb
@@ -131,7 +132,7 @@ const User = require('./models/users.js');
 const Game = require('./models/newgame.js');
 const dbURI = 'mongodb+srv://levmiseri:02468a13579A@cluster0.us90f.mongodb.net/yare-io?retryWrites=true&w=majority'
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-	.then((result) => console.log('connected to db'))
+	.then((result) => console.log('connected to dbb'))
 	.catch((error) => console.log(error));
 
 function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1') {
@@ -202,15 +203,17 @@ function bot_game(req, res, pl_id){
 	
 	
 	g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
-	create_worker(g_id, 'tutorial');
+	
+
 	res.status(200).send({
 		g_id: g_id,
-		meta: 'easy-bot'
+		meta: 'easy-bot',
+		server: chosen_server
     });
-	
 	
 	const game = new Game({
 		game_id: g_id,
+		server: chosen_server,
 		player1: 'anonymous',
 		player2: 'easy-bot',
 		p1_session_id: req.body.session_id,
@@ -230,7 +233,6 @@ function bot_game(req, res, pl_id){
 		.then((result) => {
 			console.log('game saved to db');
 			console.log(result);
-			start_world(g_id);
 		})
 		.catch((error) => {
 			console.log(error);
@@ -500,15 +502,88 @@ app.get('/game/:game_id', (req, res) => {
 	res.sendFile(__dirname + '/game.html');
 });
 
-app.get('/t1/:game_id', (req, res) => {
+
+//game servers (change t1 to server's responsibility (d1, d2 ...))
+// ------
+// ------
+
+function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1') {
+	var g_id = generateUniqueString(3);
+	active_games[g_id] = [0, 0, 0, 0];
+	active_games[g_id][0] = init_status;
+	active_games[g_id][1] = pl1_id;
+	active_games[g_id][2] = pl2_id;
+	active_games[g_id][3] = server_id;
+	return g_id;
+}
+
+function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server){
+	create_worker(game_id, 'tutorial');
+	start_world(game_id);
+	active_games[g_id] = [0, 0, 0, 0];
+	active_games[g_id][0] = 1;
+	
+}
+
+app.get('/' + this_server + 'n/:game_id', (req, res) => {
+	game_id_url = req.params.game_id;
+	//if (active_games[game_id_url][0] == 1){
+	//	res.redirect('/t1/' + game_id_url);
+	//} else {
+		res.sendFile(__dirname + '/wait.html');
+		//}
+});
+
+app.post('/' + this_server + 'ns/:game_id', (req, res) => {
+	game_id_url = req.params.game_id;
+	console.log('finding game via mongoooooooooooooooooooose');
+	Game.find({game_id: game_id_url})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			console.log(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no game found"
+		        });
+			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
+				init_game(game_id_url, result[0]['player1'], result[0]['player2']);
+				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+					.then((qq) => {
+						console.log('game is ready');
+						res.status(200).send({
+				        	data: "game ready"
+				        });
+					});			
+			} else if (result[0]['active'] == 1 && result[0]['server'] == this_server){
+				console.log('game already active, redirect');
+				res.status(200).send({
+		        	data: "game already active"
+		        });				
+			} else {
+				res.status(404).send({
+		        	data: "something went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+
+app.get('/' + this_server + '/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
 	if (active_games[game_id_url][0] == 1){
 		res.sendFile(__dirname + '/game.html');
 	} else {
 		res.send(404);
 	}
-	
 });
+
+// ------
+// ------
+
 
 app.get('/challenge/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
@@ -559,7 +634,7 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 		.catch((error) => {
 			console.log(error);
 		})
-})
+});
 
 app.post('/confirm-challenge/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;

@@ -80,7 +80,7 @@ function new_game(type){
 		  game_id = response.g_id;
 		  if (response.meta == 'easy-bot'){
 			 setCookie('game_id', game_id);
-		  	 window.location.href = './t1/' + response.g_id;
+		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
 			 //document.location.reload(true);
 		  } else if (response.meta == 'waiting for p2'){
 			  waiting_for_p2(response.g_id);

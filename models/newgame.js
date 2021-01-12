@@ -13,6 +13,7 @@ const game_schema = new Schema({
 	player2: {
 		type: String
 	},
+	server: String,
 	p1_session_id: String,
 	p2_session_id: String,
 	p1_shape: String,
