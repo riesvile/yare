@@ -471,7 +471,7 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 app.get('/' + this_server + '/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
 	if (active_games[game_id_url][0] == 1){
-		res.sendFile(__dirname + '/game.html');
+		res.sendFile(__dirname + '/t1/game.html');
 	} else {
 		res.send(404);
 	}
