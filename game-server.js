@@ -399,12 +399,24 @@ app.get('/game/:game_id', (req, res) => {
 // ------
 // ------
 
+function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1') {
+	var g_id = generateUniqueString(3);
+	active_games[g_id] = [0, 0, 0, 0];
+	active_games[g_id][0] = init_status;
+	active_games[g_id][1] = pl1_id;
+	active_games[g_id][2] = pl2_id;
+	active_games[g_id][3] = server_id;
+	return g_id;
+}
+
 function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server){
 	create_worker(game_id, 'tutorial');
+	active_games[game_id] = [0, 0, 0, 0];
+	active_games[game_id][0] = 1;
+	active_games[game_id][1] = pla1;
+	active_games[game_id][2] = pla2;
+	active_games[game_id][3] = server_id;
 	start_world(game_id);
-	active_games[g_id] = [0, 0, 0, 0];
-	active_games[g_id][0] = 1;
-	
 }
 
 app.get('/' + this_server + 'n/:game_id', (req, res) => {
@@ -633,6 +645,7 @@ function initiate_world(ws, game_id){
 }
 
 function start_world(game_id){
+	console.log(active_games);
 	//starts the game
 	try {
 		workers[game_id].postMessage({data: "start world", player1: active_games[game_id][1], player2: active_games[game_id][2]});
