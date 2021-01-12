@@ -424,7 +424,7 @@ app.get('/' + this_server + 'n/:game_id', (req, res) => {
 	//if (active_games[game_id_url][0] == 1){
 	//	res.redirect('/' + this_server + '/' + game_id_url);
 	//} else {
-		res.sendFile(__dirname + '/wait.html');
+		res.sendFile(__dirname + '/t1/wait.html');
 		//}
 });
 
@@ -776,27 +776,27 @@ wss.on('connection', function connection(ws, req) {
 
 
 
-app.get('/t1/', (req, res) => res.sendFile(__dirname + '/index.html'));
-app.get('/t1/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
-app.get('/t1/game', (req, res) => res.sendFile(__dirname + '/game.html'));
-app.get('/t1/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
-app.get('/t1/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
-app.get('/t1/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
-app.get('/t1/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
-app.get('/t1/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
-app.get('/t1/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
-app.get('/t1/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
-app.get('/t1/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
-app.get('/t1/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
-app.get('/t1/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
-app.get('/t1/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
-app.get('/t1/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
-app.get('/t1/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
-app.get('/t1/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
+app.get('/t1/', (req, res) => res.sendFile(__dirname + '/t1/index.html'));
+app.get('/t1/hub', (req, res) => res.sendFile(__dirname + '/t1/hub.html'));
+app.get('/t1/game', (req, res) => res.sendFile(__dirname + '/t1/game.html'));
+app.get('/t1/newgame', (req, res) => res.sendFile(__dirname + '/t1/newgame.html'));
+app.get('/t1/animations.js', (req, res) => res.sendFile(__dirname + '/t1/animations.js'));
+app.get('/t1/rendering.js', (req, res) => res.sendFile(__dirname + '/t1/rendering.js'));
+app.get('/t1/basics.js', (req, res) => res.sendFile(__dirname + '/t1/basics.js'));
+app.get('/t1/challenge.js', (req, res) => res.sendFile(__dirname + '/t1/challenge.js'));
+app.get('/t1/loggedin.js', (req, res) => res.sendFile(__dirname + '/t1/loggedin.js'));
+app.get('/t1/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/t1/tutorial_texts.js'));
+app.get('/t1/style.css', (req, res) => res.sendFile(__dirname + '/t1/style.css'));
+app.get('/t1/colors.css', (req, res) => res.sendFile(__dirname + '/t1/colors.css'));
+app.get('/t1/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/t1/src-min-noconflict/ace.js'));
+app.get('/t1/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/t1/src-min-noconflict/theme-clouds_midnight.js'));
+app.get('/t1/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/t1/src-min-noconflict/mode-javascript.js'));
+app.get('/t1/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/t1/src-min-noconflict/worker-javascript.js'));
+app.get('/t1/anime.min.js', (req, res) => res.sendFile(__dirname + '/t1/anime.min.js'));
 
 
-app.get('/t1/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
-app.get('/t1/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
+app.get('/t1/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/t1/assets/loader.gif'));
+app.get('/t1/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/t1/assets/game/innerSh1x.png'));
 
 
 /*
