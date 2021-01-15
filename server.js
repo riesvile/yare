@@ -509,10 +509,12 @@ app.get('/game/:game_id', (req, res) => {
 
 function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server){
 	create_worker(game_id, 'tutorial');
+	active_games[game_id] = [0, 0, 0, 0];
+	active_games[game_id][0] = 1;
+	active_games[game_id][1] = pla1;
+	active_games[game_id][2] = pla2;
+	active_games[game_id][3] = server_id;
 	start_world(game_id);
-	active_games[g_id] = [0, 0, 0, 0];
-	active_games[g_id][0] = 1;
-	
 }
 
 app.get('/' + this_server + 'n/:game_id', (req, res) => {

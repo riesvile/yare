@@ -399,15 +399,6 @@ app.get('/game/:game_id', (req, res) => {
 // ------
 // ------
 
-function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1') {
-	var g_id = generateUniqueString(3);
-	active_games[g_id] = [0, 0, 0, 0];
-	active_games[g_id][0] = init_status;
-	active_games[g_id][1] = pl1_id;
-	active_games[g_id][2] = pl2_id;
-	active_games[g_id][3] = server_id;
-	return g_id;
-}
 
 function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server){
 	create_worker(game_id, 'tutorial');
@@ -775,27 +766,27 @@ wss.on('connection', function connection(ws, req) {
 });
 
 
-app.get('/t1/', (req, res) => res.sendFile(__dirname + '/index.html'));
-app.get('/t1/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
-app.get('/t1/game', (req, res) => res.sendFile(__dirname + '/game.html'));
-app.get('/t1/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
-app.get('/t1/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
-app.get('/t1/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
-app.get('/t1/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
-app.get('/t1/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
-app.get('/t1/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
-app.get('/t1/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
-app.get('/t1/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
-app.get('/t1/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
-app.get('/t1/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
-app.get('/t1/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
-app.get('/t1/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
-app.get('/t1/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
-app.get('/t1/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
+app.get('/t1a/', (req, res) => res.sendFile(__dirname + '/index.html'));
+app.get('/t1a/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
+app.get('/t1a/game', (req, res) => res.sendFile(__dirname + '/game.html'));
+app.get('/t1a/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
+app.get('/t1a/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
+app.get('/t1a/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
+app.get('/t1a/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
+app.get('/t1a/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
+app.get('/t1a/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
+app.get('/t1a/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
+app.get('/t1a/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
+app.get('/t1a/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
+app.get('/t1a/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
+app.get('/t1a/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
+app.get('/t1a/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
+app.get('/t1a/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
+app.get('/t1a/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
 
 
-app.get('/t1/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
-app.get('/t1/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
+app.get('/t1a/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
+app.get('/t1a/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
 
 
 

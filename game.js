@@ -701,6 +701,22 @@ if (!isMainThread){
 		
 		
 			//objects energize
+			
+			//tutorial
+			if (workerData[1] == 'tutorial'){
+				try {
+					console.log('tutorial, energy harvest');
+					console.log(energize_queue[0][0]);
+					if (energize_queue[0][0]){
+						console.log('tutorial phase 2 done');
+						tutorial_phase[0] = 1;
+					}
+				} catch (error){
+					console.log(error);
+				}
+			}
+			
+			
 			var energize_apply = [];
 			e_targets = energize_queue.length;
 			for (i = (e_targets - 1); i >= 0; i--){
@@ -711,6 +727,9 @@ if (!isMainThread){
 						if (star_lookup[energize_queue[i][0].sight.structures[j]].structure_type == 'star'){
 							star_distance = get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position);
 							if (star_distance < 200){
+								if (workerData[1] == 'tutorial'){
+									tutorial_phase[1] = 1;
+								}
 								console.log('harvesting');
 								energize_queue[i][0].energy += energy_value * energize_queue[i][0].size;
 								if (energize_queue[i][0].energy > energize_queue[i][0].energy_capacity) energize_queue[i][0].energy = energize_queue[i][0].energy_capacity;
@@ -863,7 +882,7 @@ if (!isMainThread){
 		// -----------------
 
 		for (s = 1; s < 2; s++){
-			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 40, players['p1'], colors['player1']);
+			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 0, players['p1'], colors['player1']);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
