@@ -124,6 +124,7 @@ var server_occupancy = {
 };
 var connections = {};
 var this_server = 't1';
+var this_server_type = 'tutorial';
 
 
 //connect to mongodb
@@ -485,6 +486,38 @@ app.post('/add-user', (req, res) => {
 	
 });
 
+app.post('/' + this_server + '/tutorial-signup', (req, res) => {
+
+	Game.find({game_id: req.body.game_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('dbdb result');
+			console.log(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no game found"
+		        });
+			} else if (result[0]['active'] == 1 && result[0]['player1'] == 'anonymous'){
+				Game.updateOne({game_id: req.body.game_id}, {player1: req.body.user_id}, {upsert: true})
+					.then((qq) => {
+						console.log('anonymous changed to ' + req.body.user_id);
+						res.status(200).send({
+				        	data: "updated"
+				        });
+					});	
+					workers[req.body.game_id].postMessage({data: "update anonymous", player1: req.body.user_id});
+			} else {
+				res.status(404).send({
+		        	data: "something went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+
+});
+
 app.get('/all', (req, res) => {
 	User.find({session_expire: {"$gte": 2}})
 		.then((result) => {
@@ -522,12 +555,16 @@ app.get('/' + this_server + 'n/:game_id', (req, res) => {
 	//if (active_games[game_id_url][0] == 1){
 	//	res.redirect('/' + this_server + '/' + game_id_url);
 	//} else {
-		res.sendFile(__dirname + '/wait.html');
-		//}
+	res.sendFile(__dirname + '/wait.html');
+	//}
+	
 });
 
 app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
+	
+	
+	
 	console.log('finding game via mongoooooooooooooooooooose');
 	Game.find({game_id: game_id_url})
 		.then((result) => {
@@ -571,7 +608,18 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 	if (active_games[game_id_url][0] == 1){
 		res.sendFile(__dirname + '/game.html');
 	} else {
-		res.send(404);
+		if (this_server_type == "tutorial" && active_games[game_id_url][0] == 0){
+			
+			console.log('game is being saved into db?? maybe??????????????????????????????????????');
+		
+		
+		} else {
+			res.send(404);
+		}
+		
+		
+		
+		
 	}
 });
 
@@ -688,7 +736,9 @@ app.post('/resume-game', (req, res) => {
 		        	data: "game found",
 					p1: result[0].player1,
 					p2: result[0].player2,
-					duration: result[0].duration
+					duration: result[0].game_duration,
+					server: result[0].server,
+					game_id: result[0].game_id
 		        });
 			} else if (result[0].active == 0){
 				res.status(200).send({
@@ -797,6 +847,7 @@ wss.on('connection', function connection(ws, req) {
 			}
 			if (message['u_id'] == active_games[g_id][1] || active_games[g_id][1] == 'anonymous'){
 				code_temps['player1'] = message['u_code'];
+				code_temps['player1_session'] = message['session_id'];
 				player1_code = `
 				//all = spirits.length;
 				//for (s = 0; s < all; s++){
@@ -823,6 +874,7 @@ wss.on('connection', function connection(ws, req) {
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id']);
 			} else if (message['u_id'] == active_games[g_id][2]){
 				code_temps['player2'] = message['u_code'];
+				code_temps['player2_session'] = message['session_id'];
 				player2_code = `
 				//all = spirits.length;
 				//for (s = 0; s < all; s++){

@@ -400,8 +400,51 @@ function tut_start(){
   		targets: '#overlay_start',
   		backgroundColor: 'rgba(0, 0, 0, 0)',
   		easing: 'easeOutQuad',
-  		duration: 800
+  		duration: 600
   	});
+	
+  	anime({
+  		targets: '#update_code',
+  		translateX: ['10vw', 0],
+		translateY: ['-20vh', 0],
+  		easing: 'easeOutQuad',
+  		duration: 600
+  	});
+	
+  	anime({
+  		targets: '#editor_container',
+  		translateX: ['10vw', 0],
+		translateY: ['50vh', '26vh'],
+		scale: [1.3, 1],
+  		easing: 'easeOutQuad',
+  		duration: 600
+  	});
+	
+  	anime({
+  		targets: '#tutorial_wrap',
+  		translateX: ['10vw', 0],
+		translateY: ['20vh', 0],
+		scale: [1.3, 1],
+  		easing: 'easeOutQuad',
+  		duration: 600
+  	});
+	
+	setTimeout(function(){
+		document.getElementById('tutorial_wrap').style.transform = 'inherit';
+		
+	}, 1000);
+}
+
+function load_start(){
+	setTimeout(function(){
+	  	anime({
+	  		targets: '#overlay_pre_start',
+	  		backgroundColor: 'rgba(0, 0, 0, 0)',
+	  		easing: 'easeInQuad',
+	  		duration: 800
+	  	});
+	}, 1000);
+  	
 }
 
 function tut_show_box(){

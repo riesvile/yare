@@ -37,7 +37,7 @@
   </div>
   
   <div id="profile_links">  
-	  	<a href="#" class="profile_link" id="hub_link">Profile hub</a>
+	  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
 	  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
 	  	<a href="#" class="profile_link" id="log_out">Log out</a>
   </div>
@@ -58,6 +58,8 @@
   <canvas id='main_canvas'></canvas>
   <canvas id='base_canvas'></canvas>
   
+  
+  
   <div id="tutorial_infobox">
 	  
 		  <p class="info_h">Reference to your spirit (an object).</p>
@@ -66,20 +68,21 @@
   </div>
   
   <div id="overlay"></div>
+  <div id="overlay_pre_start"></div>
   <div id="overlay_start"></div>
   
   <div id="tutorial">
 	  <div id="tutorial_wrap">
 	  	<p id="tut_helper" class="tutorial_text">yare.io is a game where you control your units&nbsp;(spirits) with JavaScript</p>
-		<p id="tut_helper" class="tutorial_text">Try typing <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position);">COPY</span> into the code block below<span class="copy_code" code="s2.move(star_zxq.position);">COPY</span>.
-		<p id="tut_helper" class="tutorial_text">You can hover over the code snippet above for more information about each part</p>
+		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position);">COPY</span> into the code block below.
+		<!-- <p id="tut_helper" class="tutorial_text">You can hover over the code snippet above for more information about each part</p> -->
 	  </div>
   </div>
   
   <div id="editor_container" class="tutorial_editor">
-	  <div id="editor">// Your code goes here
-	  
-	  </div>
+<div id="editor">// Your code goes here
+
+</div>
   </div>
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
   
@@ -88,6 +91,7 @@
   
   
   </body>
+  <script src="../animations.js"></script>
   <script>
 	  var editor = ace.edit("editor");
 	  editor.setTheme("ace/theme/clouds_midnight");
@@ -95,6 +99,9 @@
 	  editor.session.setOption("useWorker", false);
 	  editor.setFontSize(14);
 	  editor.setShowPrintMargin(false);
+	  editor.focus(); //To focus the ace editor
+	  var nqq = editor.getSession().getValue().split("\n").length; // To count total no. of lines
+	  editor.gotoLine(nqq); //Go to end of document
 	  
 	  
 	  var x = 0;
@@ -108,24 +115,31 @@
 	  var bases_queue = [];
 	  var logs = [];
 	  var tempURLThing = document.URL.replace('#', '');
-	  var game_id = /[^/]*$/.exec(tempURLThing)[0];
+	  var this_game_id = /[^/]*$/.exec(tempURLThing)[0];
+	  console.log(this_game_id);
 	  
 	  var pla1 = '';
 	  var pla2 = '';
 	  
+	  var game_type = 'tutorial';
 	  var tutorial_started = 0;
 	  var tutorial_phase = 0;
 	  var tutorial_info_view = 0;
 	  var tut_helper_id = '';
 	  var tut_helper_phase = 0;
 	  
-	  const socket = new WebSocket('ws://localhost:5000/t1/' + game_id); // wss://yare.io:443
+	  var this_server = 't1';
+	  
+	  load_start();
+	  
+	  const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  //socket.binaryType = "arraybuffer";
 	  socket.addEventListener('open', function(event){
 		  console.log('Connected to wsws server');
 	  })
 	  
 	  socket.addEventListener('message', function(event){
+		  tick_counter = 0;
 		  try {
 			 incoming = JSON.parse(event.data);
 			 console.log(incoming);
@@ -189,6 +203,7 @@
 			 
 			 if (tut_helper_phase != tutorial_phase){
 				 tut_helper_phase = tutorial_phase;
+				 var tut_wrap_edge = 0;
 				 
 				 switch(tutorial_phase){
 					 case 0:
@@ -201,9 +216,24 @@
 						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p2'];
 						 tut_phase_success();
 						 break;
+					 case 3:
+						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p3'];
+						 var ttexts = document.getElementsByClassName('tutorial_text');
+					   	 for (tt = 0; tt < ttexts.length; tt++){
+					   		  ttexts[tt].style.fontSize = '20px';
+							  ttexts[tt].style.lineHeight = '32px';
+					   	 }
+						 tut_phase_success();
+						 break;
 					 default:
 						 console.log('tutorial defaulted');
 				 }
+				 
+			 	 setTimeout(function(){
+					 tut_wrap_edge = document.getElementById('tutorial_wrap').getBoundingClientRect().bottom;
+					 document.getElementById('editor_container').style.top = tut_wrap_edge - 300 + "px";
+			 	 }, 100);
+				 
 				 
 			   	 code_elements = document.querySelectorAll('.tutorial_text code');
 			   	 for (ce = 0; ce < code_elements.length; ce++){
@@ -253,6 +283,8 @@
 	 			 console.log(bases_queue);
 			 }
 			 
+			 console.log('incoming =======================================');
+			 console.log(incoming);
 			 pla1 = incoming.players[0];
 			 pla2 = incoming.players[1];
 			 
@@ -271,12 +303,28 @@
  			 codecoming = JSON.parse(event.data);
  			 console.log('codecoming');
 			 console.log(codecoming);
-			 console.log(codecoming.player1);
 			 
+			 console.log('pla1 = ' + pla1);
+			 console.log('cookie.user_id = ' + getCookie('user_id'));
 	 		
 			 if (pla1 == getCookie('user_id')){
 				 if (codecoming.player1){
-				 	editor.setValue(codecoming.player1, 1);
+					 if (pla1 == "anonymous" && getCookie('session_id') == codecoming.player1_session){
+						 console.log('anonymous user oisjhfd oidjf iosdh fiodh giodfj giodfj giojhdfiog diohfg iodfhg iodfh giodf hgiodf hgiodhfgiodhf giodfh iog dfiogh ');
+						 editor.setValue(codecoming.player1, 1);
+						 console.log(editor.getValue().length);
+					 	 if (editor.getValue().length != 24){
+							 tutorial_started = 1;
+							 tut_start();
+					 	 }
+						 
+					 } else if (pla1 != "anonymous" && pla1 == getCookie('user_id')){
+					 	 editor.setValue(codecoming.player1, 1);
+					 	 if (editor.getValue().length != 24){
+							 tutorial_started = 1;
+							 tut_start();
+					 	 }
+					 }
 				 }
 			 } else if (pla2 == getCookie('user_id')){
 				if (codecoming.player2){
@@ -315,10 +363,50 @@
 	      return null;
 	  }
 	  
-	  document.getElementById('update_code').addEventListener("click",function(e){
-		  console.log('clicked');
+	  function tutorial_signup(nick) {
+		  console.log('this_game_id = ' + this_game_id);
+	  	fetch('/' + this_server + '/tutorial-signup', {
+	  	        method: "POST",
+	  	        headers: {
+	  	          Accept: "application/json",
+	  	          "Content-Type": "application/json"
+	  	        },
+	  	        body: JSON.stringify({
+	  		        user_id: nick,
+	  		        game_id: this_game_id
+	  		    })
+
+	      }).then(response => response.json())
+	        .then(response => {
+	  		  console.log(response);
+	  		  if (response.data == "no game found"){
+	  			  console.log('no game found');
+	  		  } else if (response.data == "updated"){
+	  			  //console.log('user exists already');
+	  			  console.log('anonymous updated')
+	  		  } else if (response.data == "something went wrong"){
+	  			  console.log('something went wrong');
+	  		  } else {
+				  console.log('strange case');
+	  		  }
+	  	  })
+	        .catch(err => {
+	  		  console.log(err);
+	  	  });
+	  }
+	  
+	  function update_code(){
 		  user_code = editor.getValue();
 		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
+	  }
+	  
+	  document.getElementById('update_code').addEventListener("click",function(e){
+		  if (tutorial_started == 0){
+			  tutorial_started = 1;
+			  tut_start();
+		  }
+		  console.log('clicked');
+		  update_code();
 	  },false);
 	  
 	  //session_id = abc
@@ -375,7 +463,7 @@
 				  tut_items[ti].style.zIndex = 999999;
 			  }
 			  document.getElementById(el_id).classList.add('bring_up');
-			  el_rect = this.getBoundingClientRect();
+			  el_rect = document.getElementById(el_id).getBoundingClientRect();
 			  infoboxo.style.top = el_rect.top + 40 + 'px';
 			  infoboxo.style.left = el_rect.left - 20 + 'px';
 			  infoboxo.style.display = 'block';	  
@@ -413,8 +501,8 @@
 		  tut_hide_box();
 		  
 		  if (tutorial_started == 0){
-			  tutorial_started = 1;
-			  tut_start();
+			  //tutorial_started = 1;
+			  //tut_start();
 		  }
 		  
 		  var tut_items = document.querySelectorAll('.tut_label');
@@ -446,7 +534,6 @@
 	  
   </script>
   <script src="../tutorial_texts.js"></script>
-  <script src="../animations.js"></script>
   <script src="../rendering.js"></script>
   <script src="../basics.js"></script>
   </html>

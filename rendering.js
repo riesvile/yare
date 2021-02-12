@@ -144,8 +144,8 @@ document.getElementById("editor_container").addEventListener("mousedown", functi
 		document.getElementById("editor_container").style.backdropFilter = "blur(12px)";
 	}
     if (tutorial_started == 0){
-	    tutorial_started = 1;
-	    tut_start();
+	//    tutorial_started = 1;
+	//    tut_start();
     }
 
 }, false);
@@ -181,6 +181,9 @@ var offsetY = 0;
 
 var game_tick = 1000; // 1s
 var fps = 60;
+var tick_counter = 0;
+var tick_counter_max = 0;
+var tick_counter_avg = 0;
 
 var living_spirits = [];
 var stars = [];
@@ -210,7 +213,7 @@ function draw_grid(){
 		for (j = 0; j < 100; j++){
 			c_base.beginPath();
 			c_base.arc(i*100, j*100, 1, 0, Math.PI * 2, false);
-			c_base.fillStyle = "rgba(244, 246, 248, 0.24)";
+			c_base.fillStyle = "rgba(244, 246, 248, 0.16)";
 			c_base.fill();
 		}
 	}
@@ -259,8 +262,8 @@ class Spirit {
 		//}
 		
 		
-		this.position[0] = origin[0] + (incr[0] / fps);
-		this.position[1] = origin[1] + (incr[1] / fps);
+		this.position[0] = origin[0] + (incr[0] / tick_counter_avg);
+		this.position[1] = origin[1] + (incr[1] / tick_counter_avg);
 		//this.draw();
 	}
 	
@@ -534,8 +537,16 @@ function render_state(){
 	death_queue = [];
 
 
-
+	tick_counter++;
+	if (tick_counter > tick_counter_max){
+		tick_counter_max = tick_counter;
+		//console.log('tick_counter_max = ' + tick_counter_max);
+	} else {
+		tick_counter_avg = tick_counter_max;
+		tick_counter_max = 0;
+	}
 	//console.log('ticks');
+	//console.log('tick_counter_avg = ' + tick_counter_avg);
 	//console.log(spirit_lookup);
 	setTimeout(() => {
 	    requestAnimationFrame(render_state);

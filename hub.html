@@ -189,6 +189,9 @@
 				  console.log(response2);
 				  document.getElementById('hub_new_game').style.display = 'none';
 				  document.getElementById('hub_resume_game').style.display = 'block';
+				  //document.getElementById('hub_resume_link').href = 'https://yare.io/' + response2.server + '/' + response2.game_id;
+				  document.getElementById('hub_resume_link').href = '/' + response2.server + '/' + response2.game_id;
+				  console.log('working?');
 				 // TODO: check if (response2.p1 == signed_in user) and make string in the right order
 				  document.getElementById('hub_resume_players').innerHTML = response2.p1 + " <span class='resume_lowlight'>vs</span> " + response2.p2;
 				  

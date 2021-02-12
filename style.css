@@ -50,12 +50,14 @@ code {
 	width: 800px;
 	position: fixed;
 	top: 100px;
-	left: 0;
+	left: 16px;
+	transform-origin: left top;
+    transform: translate(10vw, 50vh) scale(1.3);
 	z-index: 1000;
 }
 
 div.tutorial_editor {
-	top: 460px !important;
+	/* top: calc(300px + 24vh) !important;*/
 }
 
 #editor {
@@ -78,6 +80,8 @@ div.tutorial_editor {
 	cursor: pointer;
 	display: block;
 	z-index: 2000;
+	transform-origin: top left;
+	transform: translate(10vw, -20vh);
 }
 
 #update_code span {
@@ -289,14 +293,15 @@ input[type=submit] {
 }
 
 #tutorial_wrap {
-	
+	transform-origin: top left;
+	transform: translate(10vw, 20vh) scale(1.3);
 }
 
 p.tutorial_text {
 	font-size: 24px; /* 20px macbook */
 	font-weight: 500;
 	color: rgba(242, 246, 250, 0.86);
-	line-height: 36px;
+	line-height: 38px;
 	width: 620px; /* 560px macbook */
 	margin-top: 32px;
 }
@@ -305,7 +310,7 @@ p.tutorial_text {
 	position: relative;
 }
 
-#overlay, #overlay_start {
+#overlay, #overlay_start, #overlay_pre_start {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -318,8 +323,13 @@ p.tutorial_text {
 }
 
 #overlay_start {
-	background-color: rgba(0, 0, 0, 0.69);
+	background-color: rgba(0, 0, 0, 1);
 	z-index: 0;
+}
+
+#overlay_pre_start {
+	background-color: rgba(0, 0, 0, 1);
+	z-index: 9999;
 }
 
 #tutorial_infobox {

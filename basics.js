@@ -80,6 +80,7 @@ function new_game(type){
 		  game_id = response.g_id;
 		  if (response.meta == 'easy-bot'){
 			 setCookie('game_id', game_id);
+			 //window.location.href = './' + response.server + 'n/' + response.g_id;
 		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
 			 //document.location.reload(true);
 		  } else if (response.meta == 'waiting for p2'){
@@ -287,7 +288,7 @@ document.getElementById("new_acc_form").addEventListener("submit", function(e){
 	        },
 	        body: JSON.stringify({
 		        user_name: user_name,
-		        password: user_password,
+		        password: user_password
 		    })
 
     }).then(response => response.json())
@@ -295,9 +296,13 @@ document.getElementById("new_acc_form").addEventListener("submit", function(e){
 		  console.log(response);
 		  if (response.data == "user created"){
 			  console.log('all good');
+			  console.log('session_id = ' + getCookie('session_id'));
 			  setCookie('user_id', response.user_id);
 			  setCookie('session_id', response.session_id);
+			  tutorial_signup(response.user_id);
+			  console.log('session_id = ' + getCookie('session_id'));
 			  login_success(response.user_id);
+			  update_code();
 		  } else if (response.data == "exists"){
 			  //console.log('user exists already');
 			  username_error('Sorry, this one is already taken');

@@ -35,6 +35,10 @@ parentPort.on("message", message => {
 		init_data.players[0] = players['p1'];
 		init_data.players[1] = players['p2'];
 		
+		if (players_update['p1'] != 'old'){
+			init_data.players[0] = players_update['p1'];
+		}
+		
 		parentPort.postMessage({data: JSON.stringify(init_data), game_id: workerData[0], meta: 'initiate', client: message.client});
   } else if (message.data == "player code"){
 	  //check who's code it is here
@@ -82,7 +86,7 @@ parentPort.on("message", message => {
 		  		}) 
 		  }
 	  }
-  } else if (message.data="start world"){
+  } else if (message.data == "start world"){
 	  players['p1'] = message.player1;
 	  players['p2'] = message.player2;
 	  Game.find({game_id: workerData[0]})
@@ -96,7 +100,8 @@ parentPort.on("message", message => {
   		.catch((error) => {
   			console.log(error);
   		}) 
-	  
+  } else if (message.data == "update anonymous"){
+  	  players_update['p1'] = message.player1;
   }
 });
 
@@ -166,6 +171,8 @@ var player2_session = '';
 var players = {};
 players['p1'] = 'ab1';
 players['p2'] = 'zx2';
+var players_update = {};
+players_update['p1'] = 'old';
 
 var colors = {};
 colors['player1'] = "rgba(255, 0, 0, 1)";
@@ -290,6 +297,7 @@ if (!isMainThread){
 				enemies: [],
 				structures: []
 			}
+			this.qcollisions = [];
 		
 		
 			//const properties
@@ -440,6 +448,61 @@ if (!isMainThread){
 	function get_distance(item1, item2){
 		return Math.hypot(item2[0]-item1[0], item2[1]-item1[1]);
 	}
+	
+	function intersection(x0, y0, r0, x1, y1, r1) {
+	        var a, dx, dy, d, h, rx, ry;
+	        var x2, y2;
+
+	        /* dx and dy are the vertical and horizontal distances between
+	         * the circle centers.
+	         */
+	        dx = x1 - x0;
+	        dy = y1 - y0;
+
+	        /* Determine the straight-line distance between the centers. */
+	        d = Math.sqrt((dy*dy) + (dx*dx));
+
+	        /* Check for solvability. */
+	        if (d > (r0 + r1)) {
+	            /* no solution. circles do not intersect. */
+	            return false;
+	        }
+	        if (d < Math.abs(r0 - r1)) {
+	            /* no solution. one circle is contained in the other */
+	            return false;
+	        }
+
+	        /* 'point 2' is the point where the line through the circle
+	         * intersection points crosses the line between the circle
+	         * centers.  
+	         */
+
+	        /* Determine the distance from point 0 to point 2. */
+	        a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d) ;
+
+	        /* Determine the coordinates of point 2. */
+	        x2 = x0 + (dx * a/d);
+	        y2 = y0 + (dy * a/d);
+
+	        /* Determine the distance from point 2 to either of the
+	         * intersection points.
+	         */
+	        h = Math.sqrt((r0*r0) - (a*a));
+
+	        /* Now determine the offsets of the intersection points from
+	         * point 2.
+	         */
+	        rx = -dy * (h/d);
+	        ry = dx * (h/d);
+
+	        /* Determine the absolute intersection points. */
+	        var xi = x2 + rx;
+	        var xi_prime = x2 - rx;
+	        var yi = y2 + ry;
+	        var yi_prime = y2 - ry;
+
+	        return [xi, xi_prime, yi, yi_prime];
+	    }
 
 
 	function isCollision(item1, item2){
@@ -461,8 +524,14 @@ if (!isMainThread){
 	  }
   
 	}
+	
+	
+	
+	function isCollision(item1, item2){
+		
+	}
 
-	function is_in_sight(item1, item2, range = 500){
+	function is_in_sight(item1, item2, range = 400){
 		if (Math.abs(item1.position[0] - item2.position[0]) < range && Math.abs(item1.position[1] - item2.position[1]) < range){
 			return true;
 		} else {
@@ -478,7 +547,9 @@ if (!isMainThread){
 				friends: [],
 				enemies: [],
 				structures: []
-			}
+		  }
+		  living_spirits[h].qcollisions = [];
+			
 		}
 	
 		for (i = 0; i < living_length; i++){
@@ -493,6 +564,11 @@ if (!isMainThread){
 							//is friend
 							living_spirits[i].sight.friends.push(living_spirits[j].id);
 							living_spirits[j].sight.friends.push(living_spirits[i].id);
+							//collision-sight
+							if (is_in_sight(living_spirits[i], living_spirits[j], 80)){
+								living_spirits[i].qcollisions.push(living_spirits[j].id);
+								living_spirits[j].qcollisions.push(living_spirits[i].id);
+							}
 						} else if (living_spirits[i].player_id == players['p2']){
 							//is enemy
 							living_spirits[i].sight.enemies.push(living_spirits[j].id);
@@ -519,6 +595,17 @@ if (!isMainThread){
 					living_spirits[i].sight.structures.push(stars[k].id);
 				}
 			}
+			
+			//bases
+			for (l = 0; l < bases.length; l++){
+				if (is_in_sight(living_spirits[i], bases[l])){
+					living_spirits[i].sight.structures.push(bases[l].id);
+				}
+			}
+			
+			console.log('living_spirits[i].qcollisions');
+			console.log(living_spirits[i].qcollisions);
+			
 		}
 	
 	}
@@ -565,14 +652,14 @@ if (!isMainThread){
 				top_s++;
 				global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1500, 600], 1, 10, players['p1'], colors['player1']);
 				base_lookup['base_' + players['p1']].energy -= 50;
-				global[players['p1'] + top_s].move([1400, 640]);
+				global[players['p1'] + top_s].move([1300, 500]);
 				console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 			}
 			if (base_lookup['base_' + players['p2']].energy >= 50){
 				top_q++;
 				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2900, 1200], 4, 10, players['p2'], colors['player2']);
 				base_lookup['base_' + players['p2']].energy -= 50;
-				global[players['p2'] + top_q].move([2860, 1160]);
+				global[players['p2'] + top_q].move([2700, 1100]);
 				console.log('spirit was born')
 			}
 				
@@ -590,19 +677,6 @@ if (!isMainThread){
 			moveables = move_queue.length;
 			console.log('moveables = ' + moveables);
 			for (i = (moveables - 1); i >= 0; i--){
-			
-				//remove when target reached
-			
-				//posX = move_queue[i][0].position[0];
-				//posY = move_queue[i][0].position[1];
-				//incrX = move_queue[i][1][0];
-				//incrY = move_queue[i][1][1];
-				//posX = Number((posX + incrX).toFixed(3));
-				//posY = Number((posY + incrY).toFixed(3));
-			
-			
-				//pos + incr
-				// THIS IS THE ONLY THING THAT MATTERS HERE, NO OTHER CALCULATIONS!
 				
 				//tutorial
 				if (workerData[1] == 'tutorial'){
@@ -612,6 +686,9 @@ if (!isMainThread){
 						if (move_queue[0][2][0] == 900 && move_queue[0][2][1] == 800){
 							console.log('tutorial phase 1 done');
 							tutorial_phase[0] = 1;
+						} else if (move_queue[0][2][0] == 1500 && move_queue[0][2][1] == 600){
+							console.log('tutorial phase 3 done');
+							tutorial_phase[2] = 1;
 						}
 					} catch (error){
 						console.log(error);
@@ -639,7 +716,7 @@ if (!isMainThread){
 				
 					potential_collisions = move_queue[i][0].sight.friends.length;
 					for (j = 0; j < potential_collisions; j++){
-						collidie = spirit_lookup[move_queue[i][0].sight.friends[j]]
+						collidie = spirit_lookup[move_queue[i][0].sight.friends[j]];
 						if (isCollision(move_queue[i][0], collidie)){
 							//this is always false now, until you figure out how to do this
 							
@@ -661,11 +738,49 @@ if (!isMainThread){
 								move_queue[i][0].position[1] = tempY;
 								move_queue[i][1][1] = move_queue[i][0].position[1] - posY;
 							}
-						
-							//if (isCollision(move_queue[i][0], collidie)){
-						
+											
 						}
 					}
+					
+					var potential_structure_collisions = move_queue[i][0].sight.structures;
+					for (k = 0; k < potential_structure_collisions.length; k++){
+						console.log(' ------------------------------- structure potential collisions');
+						console.log(potential_structure_collisions[k]);
+						
+						
+						if (potential_structure_collisions[k].startsWith('star') == true){
+							var object_position = star_lookup[potential_structure_collisions[k]].position;
+							var min_distance = 100;
+						} else if (potential_structure_collisions[k].startsWith('base') == true){
+							var object_position = base_lookup[potential_structure_collisions[k]].position;
+							var min_distance = 50;
+						}	
+						var spirit_position = move_queue[i][0].position;
+						var spirit_before = [0,0];
+						spirit_before[0] = move_queue[i][0].position[0] - move_queue[i][1][0];
+						spirit_before[1] = move_queue[i][0].position[1] - move_queue[i][1][1];
+							
+						console.log('position now = ' + spirit_position);
+						console.log('position before = ' + spirit_before);
+						if (get_distance(spirit_position, object_position) < min_distance){
+							console.log('inside');
+							//intersection(x0, y0, r0, x1, y1, r1)
+							inter_points = intersection(spirit_before[0], spirit_before[1], base_speed, object_position[0], object_position[1], min_distance);
+							console.log('intersection points:');
+							console.log(inter_points);
+							
+							move_queue[i][0].position[0] = inter_points[0];
+							move_queue[i][0].position[1] = inter_points[2];
+							move_queue[i][1][0] = inter_points[0] - spirit_before[0];
+							move_queue[i][1][1] = inter_points[2] - spirit_before[1];
+						}
+							
+					}
+						
+						
+						//if (get_distance(move_queue[i][0], )
+						
+					
 				
 					//console.log('move_queue[i][0].sight.friends');
 					//console.log(move_queue[i][0].sight.friends);
@@ -685,7 +800,7 @@ if (!isMainThread){
 					render_data2.move.push([move_queue[i][0].id, [posX, posY], move_queue[i][1], move_queue[i][2]]);
 				}
 			
-			
+				
 						
 			}
 		
@@ -702,21 +817,6 @@ if (!isMainThread){
 		
 			//objects energize
 			
-			//tutorial
-			if (workerData[1] == 'tutorial'){
-				try {
-					console.log('tutorial, energy harvest');
-					console.log(energize_queue[0][0]);
-					if (energize_queue[0][0]){
-						console.log('tutorial phase 2 done');
-						tutorial_phase[0] = 1;
-					}
-				} catch (error){
-					console.log(error);
-				}
-			}
-			
-			
 			var energize_apply = [];
 			e_targets = energize_queue.length;
 			for (i = (e_targets - 1); i >= 0; i--){
@@ -724,7 +824,10 @@ if (!isMainThread){
 				//if origin == target —> attempt harvest from star
 				if (energize_queue[i][0] == energize_queue[i][1]){
 					for (j = 0; j < energize_queue[i][0].sight.structures.length; j++){
-						if (star_lookup[energize_queue[i][0].sight.structures[j]].structure_type == 'star'){
+						console.log('ilook here');
+						console.log(energize_queue[i][0].sight.structures[j]);
+						if ((energize_queue[i][0].sight.structures[j]).startsWith('star') == true){
+							console.log('its a star its a star its a star its a star its a star its a star its a star its a star');
 							star_distance = get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position);
 							if (star_distance < 200){
 								if (workerData[1] == 'tutorial'){
@@ -839,6 +942,7 @@ if (!isMainThread){
 		
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
+			console.log(render_data2);
 			parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData[0], meta: ''});
 			//wss.broadcast();
 			
@@ -854,6 +958,7 @@ if (!isMainThread){
 					var tempJSON = JSON.stringify(spt);
 					pl2_units[spt.id] = JSON.parse(tempJSON);
 				}
+				spt.move(spt.position);
 			}
 			
 			log1 = [];
@@ -881,13 +986,13 @@ if (!isMainThread){
 		//map creation
 		// -----------------
 
-		for (s = 1; s < 2; s++){
+		for (s = 1; s < 4; s++){
 			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 0, players['p1'], colors['player1']);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
-		for (q = 1; q < 2; q++){
+		for (q = 1; q < 4; q++){
 			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 40, players['p2'], colors['player2']);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
