@@ -130,18 +130,18 @@ document.addEventListener("mousedown", onPointerDown, false);
 document.addEventListener("mousemove", onPointerMove, false);
 document.addEventListener("mouseup", onPointerUp, false);
 
-document.getElementById("editor_container").addEventListener("mouseenter", function(e) {
+document.getElementById("panel").addEventListener("mouseenter", function(e) {
 	if (mousey != 1){
-		document.getElementById("editor_container").style.backgroundColor = "rgba(4, 6, 10, 0.2)";
-		document.getElementById("editor_container").style.backdropFilter = "blur(12px)";
+		document.getElementById("panel").style.backgroundColor = "rgba(8, 10, 16, 0.6)";
+		document.getElementById("panel").style.backdropFilter = "blur(12px)";
 	}
 
 }, false);
 
-document.getElementById("editor_container").addEventListener("mousedown", function(e) {
+document.getElementById("panel").addEventListener("mousedown", function(e) {
 	if (mousey != 1){
-		document.getElementById("editor_container").style.backgroundColor = "rgba(4, 6, 10, 0.2)";
-		document.getElementById("editor_container").style.backdropFilter = "blur(12px)";
+		document.getElementById("panel").style.backgroundColor = "rgba(8, 10, 16, 0.6)";
+		document.getElementById("panel").style.backdropFilter = "blur(12px)";
 	}
     if (tutorial_started == 0){
 	//    tutorial_started = 1;
@@ -150,10 +150,10 @@ document.getElementById("editor_container").addEventListener("mousedown", functi
 
 }, false);
 
-document.getElementById("editor_container").addEventListener("mouseleave", function(e) {
+document.getElementById("panel").addEventListener("mouseleave", function(e) {
 	if (mousey != 1){
-		document.getElementById("editor_container").style.backgroundColor = "rgba(4, 6, 10, 0)";
-		document.getElementById("editor_container").style.backdropFilter = "blur(0px)";
+		document.getElementById("panel").style.backgroundColor = "rgba(8, 10, 16, 0)";
+		document.getElementById("panel").style.backdropFilter = "blur(0px)";
 	}
 
 }, false);

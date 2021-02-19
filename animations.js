@@ -414,7 +414,7 @@ function tut_start(){
   	anime({
   		targets: '#editor_container',
   		translateX: ['10vw', 0],
-		translateY: ['50vh', '26vh'],
+		translateY: ['50vh', '0vh'],
 		scale: [1.3, 1],
   		easing: 'easeOutQuad',
   		duration: 600
@@ -429,9 +429,11 @@ function tut_start(){
   		duration: 600
   	});
 	
+	
+	
 	setTimeout(function(){
 		document.getElementById('tutorial_wrap').style.transform = 'inherit';
-		
+		document.getElementById('panel').classList.remove('panel_start');
 	}, 1000);
 }
 
@@ -450,7 +452,7 @@ function load_start(){
 function tut_show_box(){
   	anime({
   		targets: '#overlay',
-  		backgroundColor: 'rgba(0, 0, 0, 0.56)',
+  		backgroundColor: 'rgba(0, 0, 0, 0.24)',
   		easing: 'easeOutQuad',
   		duration: 200
   	});

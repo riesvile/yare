@@ -7,10 +7,10 @@
 	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../colors.css">
-	<link rel="stylesheet" href="../style.css">
-	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../anime.min.js"></script>
+	<link rel="stylesheet" href="./colors.css">
+	<link rel="stylesheet" href="./style.css">
+	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./anime.min.js"></script>
   </head>
   <body>
 	  
@@ -68,14 +68,7 @@
   </div>
   
   <div id="overlay"></div>
-  <div id="overlay_pre_start"></div>
   <div id="overlay_start"></div>
-  <div id="grad_top"></div>
-  
-  <div id="panel" class="panel_start">
-	
-	<!-- <div id="grad_bottom"></div> -->
-
   
   <div id="tutorial">
 	  <div id="tutorial_wrap">
@@ -89,11 +82,11 @@
 <div id="editor">// Your code goes here
 
 </div>
-  </div>  
-  
   </div>
-  
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
+  
+  
+  
   
   
   </body>
@@ -231,22 +224,13 @@
 					   	 }
 						 tut_phase_success();
 						 break;
-					 case 4:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p4'];
-						 var ttexts = document.getElementsByClassName('tutorial_text');
-					   	 for (tt = 0; tt < ttexts.length; tt++){
-					   		  ttexts[tt].style.fontSize = '20px';
-							  ttexts[tt].style.lineHeight = '32px';
-					   	 }
-						 tut_phase_success();
-						 break;
 					 default:
 						 console.log('tutorial defaulted');
 				 }
 				 
 			 	 setTimeout(function(){
 					 tut_wrap_edge = document.getElementById('tutorial_wrap').getBoundingClientRect().bottom;
-					 //document.getElementById('editor_container').style.top = tut_wrap_edge - 300 + "px";
+					 document.getElementById('editor_container').style.top = tut_wrap_edge - 300 + "px";
 			 	 }, 100);
 				 
 				 
@@ -548,7 +532,7 @@
 	  
 	  
   </script>
-  <script src="../tutorial_texts.js"></script>
-  <script src="../rendering.js"></script>
-  <script src="../basics.js"></script>
+  <script src="./tutorial_texts.js"></script>
+  <script src="./rendering.js"></script>
+  <script src="./basics.js"></script>
   </html>

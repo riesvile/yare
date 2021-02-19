@@ -119,6 +119,12 @@ function user_code(){
 	
 	
 	try {
+		if (workerData[1] == 'tutorial'){
+			if (player1_code.includes("activity")){
+				console.log('tutorial phase 4 done');
+				tutorial_phase[3] = 1;
+			}
+		}
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
@@ -650,16 +656,16 @@ if (!isMainThread){
 			//objects birth
 			if (base_lookup['base_' + players['p1']].energy >= 50){
 				top_s++;
-				global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1500, 600], 1, 10, players['p1'], colors['player1']);
+				global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1450, 600], 1, 10, players['p1'], colors['player1']);
 				base_lookup['base_' + players['p1']].energy -= 50;
-				global[players['p1'] + top_s].move([1300, 500]);
+				global[players['p1'] + top_s].move([1430, 600]);
 				console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 			}
 			if (base_lookup['base_' + players['p2']].energy >= 50){
 				top_q++;
-				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2900, 1200], 4, 10, players['p2'], colors['player2']);
+				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2950, 1200], 4, 10, players['p2'], colors['player2']);
 				base_lookup['base_' + players['p2']].energy -= 50;
-				global[players['p2'] + top_q].move([2700, 1100]);
+				global[players['p2'] + top_q].move([2970, 1100]);
 				console.log('spirit was born')
 			}
 				
