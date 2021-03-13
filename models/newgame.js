@@ -20,6 +20,8 @@ const game_schema = new Schema({
 	p2_shape: String,
 	p1_color: String,
 	p2_color: String,
+	p1_rating: Number,
+	p2_rating: Number,
 	winner: String,
 	ranked: Number,
 	active: Number,

@@ -132,7 +132,7 @@ document.addEventListener("mouseup", onPointerUp, false);
 
 document.getElementById("panel").addEventListener("mouseenter", function(e) {
 	if (mousey != 1){
-		document.getElementById("panel").style.backgroundColor = "rgba(8, 10, 16, 0.6)";
+		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
 		document.getElementById("panel").style.backdropFilter = "blur(12px)";
 	}
 
@@ -140,7 +140,7 @@ document.getElementById("panel").addEventListener("mouseenter", function(e) {
 
 document.getElementById("panel").addEventListener("mousedown", function(e) {
 	if (mousey != 1){
-		document.getElementById("panel").style.backgroundColor = "rgba(8, 10, 16, 0.6)";
+		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
 		document.getElementById("panel").style.backdropFilter = "blur(12px)";
 	}
     if (tutorial_started == 0){
@@ -152,7 +152,7 @@ document.getElementById("panel").addEventListener("mousedown", function(e) {
 
 document.getElementById("panel").addEventListener("mouseleave", function(e) {
 	if (mousey != 1){
-		document.getElementById("panel").style.backgroundColor = "rgba(8, 10, 16, 0)";
+		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0)";
 		document.getElementById("panel").style.backdropFilter = "blur(0px)";
 	}
 
@@ -406,6 +406,7 @@ function drawInnerSh(teX, teY) {
 function initiate_world(){
 	world_spirits = units_queue.length;
 	for (i = 0; i < world_spirits; i++){
+		if (units_queue[i].hp == 0) continue;
 		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color);
 		spirit_lookup[units_queue[i].id].draw();
 		console.log(spirit_lookup[units_queue[i].id]);

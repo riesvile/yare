@@ -168,6 +168,11 @@ function create_worker (game_id, game_type) {
 	  }
 	  
   })
+  worker.on('exit', (code) => {
+	  delete active_games[game_id];
+  });
+  
+  
   workers[game_id] = worker;
 }
 
@@ -223,6 +228,8 @@ function bot_game(req, res, pl_id){
 		p2_shape: 'circles',
 		p1_color: 'color1',
 		p2_color: 'color2',
+		p1_rating: 1000,
+		p2_rating: 100,
 		winner: '',
 		ranked: 0,
 		active: 0.5,
@@ -256,6 +263,8 @@ function friend_challenge(req, res){
 		p2_shape: 'circles',
 		p1_color: 'color1',
 		p2_color: 'color2',
+		p1_rating: 0,
+		p2_rating: 0,
 		winner: '',
 		ranked: 0,
 		active: 1,
@@ -605,15 +614,16 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 
 app.get('/' + this_server + '/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
-	if (active_games[game_id_url][0] == 1){
+	if (active_games[game_id_url] == undefined){
+		//add a simple page stating the result and stats of a game
+		console.log('game ended or does not exist');
+	} else if (active_games[game_id_url][0] == 1){
 		res.sendFile(__dirname + '/game.html');
 	} else {
 		if (this_server_type == "tutorial" && active_games[game_id_url][0] == 0){
-			
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
-		
-		
 		} else {
+			console.log('not sure what happened here');
 			res.send(404);
 		}
 		
@@ -937,6 +947,7 @@ app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js')
 app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
 app.get('/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
 app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
+app.get('/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
 app.get('/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
 app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
 app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
@@ -947,6 +958,8 @@ app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js')
 
 app.get('/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
 app.get('/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
+
+app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
 
 
 

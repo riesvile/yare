@@ -405,26 +405,26 @@ function tut_start(){
 	
   	anime({
   		targets: '#update_code',
-  		translateX: ['10vw', 0],
-		translateY: ['-20vh', 0],
+  		//translateX: ['10vw', 0],
+		//translateY: ['-20vh', 0],
   		easing: 'easeOutQuad',
   		duration: 600
   	});
 	
   	anime({
   		targets: '#editor_container',
-  		translateX: ['10vw', 0],
-		translateY: ['50vh', '0vh'],
-		scale: [1.3, 1],
+  		//translateX: ['10vw', 0],
+		//translateY: ['50vh', '0vh'],
+		//scale: [1.3, 1],
   		easing: 'easeOutQuad',
   		duration: 600
   	});
 	
   	anime({
   		targets: '#tutorial_wrap',
-  		translateX: ['10vw', 0],
-		translateY: ['20vh', 0],
-		scale: [1.3, 1],
+  		//translateX: ['10vw', 0],
+		//translateY: ['20vh', 0],
+		//scale: [1.3, 1],
   		easing: 'easeOutQuad',
   		duration: 600
   	});
