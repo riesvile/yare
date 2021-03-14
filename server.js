@@ -102,6 +102,7 @@ var automatch_looking = [];
 const express = require('express');
 const app = express();
 const crypto = require("crypto");
+const fetch = require('node-fetch');
 const sha256 = hash_string => crypto.createHash('sha256').update(hash_string, 'utf8').digest('hex');
 const server = require('http').createServer(app);
 const WebSocket = require('ws');
@@ -559,6 +560,29 @@ function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server
 	start_world(game_id);
 }
 
+function trigger_deactivation(){
+	fetch('/deactivate', {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+	        game_id: 'testing_this_will_be_game_id'
+	    })
+	}).then(response => response.json())
+      .then(response => {
+		  console.log(response);
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+}
+
+function deactivate_game(game_id){
+	console.log('here is deactivating happening');
+}
+
 app.get('/' + this_server + 'n/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
 	//if (active_games[game_id_url][0] == 1){
@@ -602,7 +626,7 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 		        });				
 			} else {
 				res.status(404).send({
-		        	data: "something went wrong"
+		        	data: "something went wrongg"
 		        });
 			}
 		})
@@ -632,6 +656,25 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 		
 	}
 });
+
+
+app.post('/deactivate', (req, res) => {
+	console.log('deactivating');
+	console.log(req.body.game_id);
+	deactivate_game(req.body.game_id);
+	
+	res.status(200).send({
+		data: 'done'
+    });
+	
+});
+
+
+app.get('/t2f/est', (req, res) => {
+	console.log('triggerting');
+	trigger_deactivation();	
+});
+
 
 // ------
 // ------
