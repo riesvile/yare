@@ -561,7 +561,7 @@ function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server
 }
 
 function trigger_deactivation(){
-	fetch('/deactivate', {
+	fetch('https://yare.io/deactivate', {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -671,7 +671,7 @@ app.post('/deactivate', (req, res) => {
 
 
 app.get('/t2f/est', (req, res) => {
-	console.log('triggerting');
+	console.log('triggerring');
 	trigger_deactivation();	
 });
 
