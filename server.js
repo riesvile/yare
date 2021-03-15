@@ -137,13 +137,16 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to dbb'))
 	.catch((error) => console.log(error));
 
-function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1') {
+function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1', pla1_shape = 0, pla2_shape = 0) {
 	var g_id = generateUniqueString(3);
 	active_games[g_id] = [0, 0, 0, 0];
 	active_games[g_id][0] = init_status;
 	active_games[g_id][1] = pl1_id;
 	active_games[g_id][2] = pl2_id;
 	active_games[g_id][3] = server_id;
+	//0=circle, 1=square, 2=triangle
+	active_games[g_id][4] = pla1_shape;
+	active_games[g_id][5] = pla2_shape;
 	return g_id;
 }
 
@@ -170,6 +173,7 @@ function create_worker (game_id, game_type) {
 	  
   })
   worker.on('exit', (code) => {
+	  trigger_deactivation(game_id);
 	  delete active_games[game_id];
   });
   
@@ -260,9 +264,9 @@ function friend_challenge(req, res){
 		player2: '',
 		p1_session_id: req.body.session_id,
 		p2_session_id: '',
-		p1_shape: 'circles',
+		p1_shape: req.body.user_shape,
 		p2_shape: 'circles',
-		p1_color: 'color1',
+		p1_color: req.body.user_color,
 		p2_color: 'color2',
 		p1_rating: 0,
 		p2_rating: 0,
@@ -550,37 +554,58 @@ app.get('/game/:game_id', (req, res) => {
 // ------
 // ------
 
-function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server){
+function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_shape = 0, pla2_shape = 0){
 	create_worker(game_id, 'tutorial');
 	active_games[game_id] = [0, 0, 0, 0];
 	active_games[game_id][0] = 1;
 	active_games[game_id][1] = pla1;
 	active_games[game_id][2] = pla2;
 	active_games[game_id][3] = server_id;
+	//0=circle, 1=square, 2=triangle
+	active_games[game_id][4] = pla1_shape;
+	active_games[game_id][5] = pla2_shape;
 	start_world(game_id);
 }
 
-function trigger_deactivation(){
-	fetch('https://yare.io/deactivate', {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-	        game_id: 'testing_this_will_be_game_id'
-	    })
-	}).then(response => response.json())
-      .then(response => {
-		  console.log(response);
-	  })
-      .catch(err => {
-		  console.log(err);
-	  });
+function trigger_deactivation(game_id){
+	try {
+		fetch('https://yare.io/deactivate', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        game_id: game_id
+		    })
+		}).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
+	} catch (error) {
+		console.log(error);
+	}
+	
 }
 
 function deactivate_game(game_id){
 	console.log('here is deactivating happening');
+	try {
+		var serv_id = active_games[game_id][3];
+		if (serv_id.startsWith('t')){
+			server_occupancy_tutorial[serv_id]++;
+		} else {
+			server_occupancy[serv_id]++;
+		}	
+		delete active_games[game_id];
+	} catch (error) {
+	  console.error(error);
+	}
+	
+	
 }
 
 app.get('/' + this_server + 'n/:game_id', (req, res) => {

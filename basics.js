@@ -158,7 +158,7 @@ function get_in(){
 }
 
 
-function setCookie(name,value,days) {
+function setCookie(name,value,days){
     var expires = "";
     if (days) {
         var date = new Date();
@@ -169,7 +169,7 @@ function setCookie(name,value,days) {
 }
 
 
-function getCookie(name) {
+function getCookie(name){
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
@@ -180,11 +180,11 @@ function getCookie(name) {
     return null;
 }
 
-function eraseCookie(name) {   
+function eraseCookie(name){   
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-function randomString(length) {
+function randomString(length){
     return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
 }
 
@@ -200,14 +200,18 @@ function generateUniqueString(prefix) {
     return (randomString(prefix) + out);
 }
 
-function logout() {
+function logout(){
 	eraseCookie('user_id');
 	eraseCookie('user_session');
 	window.location = '/';
 }
 
-function newgame() {
+function newgame(){
 	window.location = '/game';
+}
+
+function game_over(){
+	
 }
 
 

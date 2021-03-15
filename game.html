@@ -99,6 +99,11 @@
   <div id="switch_view" class="mobile_only"><span class="switch_ico">aa</span></div>
   </div>
   
+  <!--
+  <div id="game_over_block">
+	  <p class="game_result">You won</p>
+  </div>
+  -->
   
   
   </body>
@@ -139,6 +144,8 @@
 	  var tut_helper_id = '';
 	  var tut_helper_phase = 0;
 	  
+	  var energy_processed = {};
+	  
 	  var this_server = 't1';
 	  
 	  load_start();
@@ -150,7 +157,11 @@
 	  })
 	  
 	  socket.addEventListener('message', function(event){
+		  
+		  energy_processed = {};
+		  
 		  tick_counter = 0;
+		  
 		  try {
 			 incoming = JSON.parse(event.data);
 			 console.log(incoming);

@@ -201,7 +201,7 @@ colors['color2'] = 'rgba(232,97,97,1)';
 
 
 var img = new Image();
-img.src = '/assets/game/innerSh1x.png';
+//img.src = '/assets/game/innerSh1x.png';
 
 
 //flags
@@ -288,9 +288,21 @@ class Spirit {
 	}
 	
 	draw() {
+		var color_parts = this.color.match(/[.?\d]+/g);
+		var spirit_percent_energy = this.energy / this.energy_capacity;
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c.fillStyle = this.color;
+		if (this.size <= 2){
+			c.lineWidth = this.size / 2;
+		} else {
+			c.lineWidth = this.size / 4;
+		}
+		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (1.8 - (1 - (spirit_percent_energy/2))) + ')';
+		c.stroke();
+		
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], this.size * (spirit_percent_energy), 0, Math.PI * 2, false);
+		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] + ')';
 		c.fill();
 	}
 	
@@ -309,6 +321,8 @@ class Star {
 	
 	draw() {
 		//console.log('drawing star');
+		
+		
 		c_base.beginPath();
 		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
 		c_base.fillStyle = "rgba(255, 255, 255, 0.2)";
@@ -324,11 +338,31 @@ class Star {
 		c_base.fillStyle = "rgba(54, 195, 255, 0.02)";
 		c_base.fill();
 		
+		c_base.save();
+		c_base.beginPath();
+		c_base.arc(this.position[0], this.position[1], 225, 0, Math.PI * 2, false);
+		c_base.clip();
+		c_base.beginPath();
+		c_base.arc(this.position[0], this.position[1], 235, 0, Math.PI * 2, false);
+		c_base.fillStyle = "rgba(254, 15, 25, 0.2)";
+		//c_base.fill();
+		c_base.strokeStyle = 'rgba(255,255,255,1)';
+		c_base.shadowColor='rgba(205, 240, 250, 0.8)';
+		c_base.shadowBlur=100;
+		c_base.lineWidth = 10;
+		c_base.stroke();
+		c_base.shadowColor=null;
+		c_base.shadowBlur = null;
+		c_base.restore();
+		
+		
 		var teX = this.position[0];
 		var teY = this.position[1];
 		
+		
+		
 	    
-	    img.addEventListener('load', drawInnerSh(teX, teY), false);
+	    //img.addEventListener('load', drawInnerSh(teX, teY), false);
 		
 	}
 }
@@ -505,8 +539,16 @@ function render_state(){
 		//console.log(energize_queue[i]);
 		if (energize_queue[i][0].startsWith('star')) {
 			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
+			if (energy_processed[spirit_lookup[energize_queue[i][1]].id] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
+				spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+				energy_processed[spirit_lookup[energize_queue[i][1]].id] = 1;
+			}
 		} else if (energize_queue[i][1].startsWith('base')) {
 			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
+			if (energy_processed[spirit_lookup[energize_queue[i][0]].id] != 1){
+				spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+				energy_processed[spirit_lookup[energize_queue[i][0]].id] = 1;
+			}
 		} else {
 			if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
 				draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
@@ -523,6 +565,7 @@ function render_state(){
 		if (death_queue[i].startsWith('base')){
 			var loser = base_lookup[death_queue[i]].player_id;
 			alert('game over, ' + loser + ' lost');
+			game_over();
 		} else {
 			spirit_lookup[death_queue[i]].hp = 0;
 			//draw_death(spirit_lookup[death_queue[i]].id, spirit_lookup[death_queue[i]].size, spirit_lookup[death_queue[i]].color);

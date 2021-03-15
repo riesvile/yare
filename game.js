@@ -108,6 +108,8 @@ parentPort.on("message", message => {
   } else if (message.data == "start world"){
 	  players['p1'] = message.player1;
 	  players['p2'] = message.player2;
+	  players['p1_shape'] = message.player1_shape;
+	  players['p2_shape'] = message.player2_shape;
 	  Game.find({game_id: workerData[0]})
 	  	.then((result) => {
 			console.log('p1_color');
@@ -1032,7 +1034,7 @@ if (!isMainThread){
 							if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
 							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value * energize_queue[i][0].size]);
 						} else if (energize_queue[i][0].energy > 0){
-							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value/2 * energize_queue[i][0].size]);
+							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][0].energy]);
 							energize_queue[i][1].energy += energize_queue[i][0].energy;
 							energize_queue[i][0].energy = 0;
 						} else {
@@ -1145,6 +1147,7 @@ if (!isMainThread){
 									Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true})
 										.then((qq) => {
 											console.log('winner updated to ' + gameWinner);
+											process.exit(0);
 										});	
 								} else if (result[0]['ranked'] == 1){
 									
@@ -1238,7 +1241,6 @@ if (!isMainThread){
 			processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
 			console.log('calculated in = ' + processTimeRes);
 			user_error = 'calculated in = ' + processTimeRes;
-			console.log('new rating = ' + getNewRating(1600, 1700, 1));
 			
 			
 			//tutorial
