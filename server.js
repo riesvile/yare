@@ -118,10 +118,10 @@ var server_occupancy_tutorial = {
 	t3: 50
 }
 var server_occupancy = {
-	d1: 50,
-	d2: 50,
-	d3: 50,
-	d4: 50
+	d1: 20,
+	d2: 20,
+	d3: 20,
+	d4: 20
 };
 var connections = {};
 var this_server = 't1';
@@ -188,6 +188,25 @@ function load_balancer(){
 	//logic for redirects to the right server????
 }
 
+function get_color(color_name){
+	switch(color_name){
+		case 'gblue':
+			return 'color1';
+			break;
+		case 'purply':
+			return 'color2';
+			break;
+		case 'redish':
+			return 'color3';
+			break;
+		case 'yerange':
+			return 'color4';
+			break;
+		default:
+			return 'color1';
+	}
+}
+
 function bot_game(req, res, pl_id){
 	//instead redirect to a game-server???
 	
@@ -206,8 +225,12 @@ function bot_game(req, res, pl_id){
 		}
 		if (i == (tut_servers.length - 1)){
 			console.log('all servers busy, increasing load');
-			load_threshold -= 10; 
-			i = -1;
+			if (load_threshold <= 0){
+				console.log('maximum server capacity reached');
+			} else {
+				load_threshold -= 10; 
+				i = -1;
+			}
 		}
 		
 	}
@@ -253,26 +276,56 @@ function bot_game(req, res, pl_id){
 }
 
 function friend_challenge(req, res){
+	
+	var friend_servers = Object.keys(server_occupancy_tutorial);
+	var f_load_threshold = 10;
+	var f_chosen_server = 'd4';
+	var color_code = get_color(req.body.user_color);
+	
+	for (i = 0; i < friend_servers.length; i++){
+		if (server_occupancy[friend_servers[i]] > f_load_threshold){
+			f_chosen_server = friend_servers[i];
+			server_occupancy[chosen_server]--;
+			console.log(server_occupancy);
+			console.log('chosen server = ' + f_chosen_server);
+			break;
+		}
+		if (i == (friend_servers.length - 1)){
+			console.log('all servers busy, increasing load');
+			if (f_load_threshold <= 0){
+				console.log('maximum server capacity reached');
+			} else {
+				f_load_threshold -= 10; 
+				i = -1;
+			}
+			
+		}
+		
+	}
+	
 	g_id = new_game(req.body.user_id, 0, init_status = 0.5);
 	res.status(200).send({
 		g_id: g_id,
 		meta: 'waiting for p2'
     });
+		
 	const game = new Game({
 		game_id: g_id,
+		server: f_chosen_server,
 		player1: req.body.user_id,
 		player2: '',
 		p1_session_id: req.body.session_id,
 		p2_session_id: '',
 		p1_shape: req.body.user_shape,
 		p2_shape: 'circles',
-		p1_color: req.body.user_color,
+		p1_color: color_code,
+		//p1_color: req.body.user_color,
 		p2_color: 'color2',
 		p1_rating: 0,
 		p2_rating: 0,
 		winner: '',
 		ranked: 0,
-		active: 1,
+		active: 0.5,
 		game_duration: 0,
 		observers: 0
 	});

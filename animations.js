@@ -52,6 +52,27 @@ function dismiss_helper(){
 	dismiss_intent = 0;
 }
 
+function game_over_box(){
+	document.getElementById('game_over_block').style.display = 'block';
+	
+	anime({
+		targets: '#game_over_block',
+		opacity: [0, 1],
+		easing: 'easeOutQuad',
+		duration: 900
+	});
+	
+	anime({
+		targets: '#game_over_overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0.39)',
+		backdropFilter: 'blur(12px)',
+		easing: 'easeOutQuad',
+		duration: 900
+	});
+	
+	document.getElementById('game_over_block').style.pointerEvents = 'auto';
+}
+
 function new_account(){
 	account_creation = 1;
 	document.getElementById('new_account_wrap').style.display = 'block';
@@ -502,7 +523,9 @@ var dismiss_intent = 1;
 
 //document.getElementById('new_account').addEventListener('pointerdown', dismiss_helper, false);
 document.getElementById('new_account').addEventListener('click', new_account, false);
+document.getElementById('over_new_account').addEventListener('click', new_account, false);
 document.getElementById('login').addEventListener('click', login, false);
+document.getElementById('over_login').addEventListener('click', login, false);
 document.getElementById('log_out').addEventListener('click', logout, false);
 document.getElementById('overlay').addEventListener('click', dismissals, false);
 document.getElementById('signed_in').addEventListener('click', user_links, false);

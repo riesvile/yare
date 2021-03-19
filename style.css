@@ -46,6 +46,7 @@ code {
 	backdrop-filter: blur(0px);
 	height: calc(100% - 200px);
 	width: 800px;
+	position: relative;
 	/* position: fixed;
 	top: 100px;
 	left: 16px;
@@ -323,10 +324,95 @@ input[type=submit] {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	width: 400px;
-	height: 400px;
-	background-color: #f00;
+	z-index: 9999;
+	opacity: 0;
+	display: none;
 }
 
+.game_table {
+	width: 400px;
+	padding: 10px 0 10px 0;
+	border-top: 1px solid rgba(242, 246, 250, 0.1);
+	border-bottom: 1px solid rgba(242, 246, 250, 0.1);
+}
+
+.gt_row {
+	width: 100%;
+	height: 40px;
+	position: relative;
+}
+
+.gt_row_in {
+	top: 50%;
+	line-height: 40px;
+}
+
+#game_result {
+	font-size: 40px;
+	font-weight: 600;
+	margin-bottom: 20px;
+}
+
+#tutorial_over {
+	width: 520px;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 32px;
+	color: rgba(242, 246, 250, 0.69);
+	margin-bottom: 20px;
+}
+
+a#over_new_account {
+	margin-right: 40px;
+}
+
+a#over_login {
+	opacity: 0.69;
+}
+
+#ranked_nonranked {
+	font-size: 14px;
+	color: rgba(242, 246, 250, 0.55);
+	margin-top: 60px;
+	margin-bottom: 16px;
+}
+
+.player_shape {
+	float: left;
+	width: 12px;
+	height: 12px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: #7882dc;
+}
+
+.player_name {
+	float: left;
+	margin-left: 28px;
+	font-weight: 500;
+}
+
+.player_rating {
+	text-align: right;
+	font-family: Lucida Sans Typewriter,Lucida Console,monaco,Bitstream Vera Sans Mono,monospace; 
+	font-size: 14px;
+	font-feature-settings: 'tnum';
+	-webkit-font-feature-settings: 'tnum';
+	-moz-font-feature-settings: 'tnum';
+}
+
+
+a.game_over_link {
+	font-size: 20px;
+	font-weight: 500;
+	color: rgba(133, 186, 234, 1);
+	display: inline-block;
+}
+
+a#back_to_hub {
+	margin-top: 28px;
+}
 
 
 /* ----- */
@@ -360,7 +446,7 @@ p.tutorial_text {
 	position: relative;
 }
 
-#overlay, #overlay_start, #overlay_pre_start {
+#overlay, #overlay_start, #overlay_pre_start, #game_over_overlay {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -370,6 +456,12 @@ p.tutorial_text {
 	z-index: 10000;
 	backdrop-filter: blur(0px);
 	pointer-events: none;
+}
+
+#game_over_overlay {
+	z-index: 9998;
+	background-color: rgba(0, 0, 0, 0);
+	backdrop-filter: blur(0px);
 }
 
 #overlay_start {

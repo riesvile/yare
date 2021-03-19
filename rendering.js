@@ -208,6 +208,38 @@ var img = new Image();
 
 var world_initiated = 0;
 
+
+function game_over(winner){
+	//alert('game over, ' + winner + ' won');
+	
+	
+	if (tutorial_phase > 1){
+		//it's a tutorial game
+		document.getElementById('ranked_nonranked').innerHTML = 'Non-ranked';
+		document.getElementById('tutorial_over').style.display = 'block';
+		if (getCookie('user_id') == "anonymous"){
+			document.getElementById('over_new_account').style.display = 'inline-block';
+			document.getElementById('over_login').style.display = 'inline-block';
+			document.getElementById('back_to_hub').style.display = 'none';
+		} else {
+			pla1 = getCookie('user_id');
+			document.getElementById('over_new_account').style.display = 'none';
+			document.getElementById('over_login').style.display = 'none';
+			document.getElementById('back_to_hub').style.display = 'block';
+		}
+	} else {
+		document.getElementById('tutorial_over').style.display = 'none';
+		document.getElementById('game_result').innerHTML = winner + ' won';
+	}
+	
+	
+	
+	document.getElementById('player1_name').innerHTML = pla1;
+	document.getElementById('player2_name').innerHTML = pla2;
+	game_over_box();
+}
+
+
 function draw_grid(){
 	for (i = 0; i < 100; i++){
 		for (j = 0; j < 100; j++){
@@ -290,6 +322,7 @@ class Spirit {
 	draw() {
 		var color_parts = this.color.match(/[.?\d]+/g);
 		var spirit_percent_energy = this.energy / this.energy_capacity;
+		if (spirit_percent_energy < 0) spirit_percent_energy = 0;
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
 		if (this.size <= 2){
@@ -297,8 +330,11 @@ class Spirit {
 		} else {
 			c.lineWidth = this.size / 4;
 		}
-		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (1.8 - (1 - (spirit_percent_energy/2))) + ')';
-		c.stroke();
+		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] + 0.8 - (1 - (spirit_percent_energy/2))) + ')';
+		if (this.hp > 0){
+			c.stroke();
+		}
+		
 		
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], this.size * (spirit_percent_energy), 0, Math.PI * 2, false);
@@ -563,9 +599,15 @@ function render_state(){
 	for (i = 0; i < death_queue.length; i++){
 		console.log(death_queue[i]);
 		if (death_queue[i].startsWith('base')){
+			var winner = '';
 			var loser = base_lookup[death_queue[i]].player_id;
-			alert('game over, ' + loser + ' lost');
-			game_over();
+			if (loser == pla1){
+				winner = pla2;
+			} else {
+				winner = pla1;
+			}
+			//alert('game over, ' + winner + ' won');
+			game_over(winner, loser);
 		} else {
 			spirit_lookup[death_queue[i]].hp = 0;
 			//draw_death(spirit_lookup[death_queue[i]].id, spirit_lookup[death_queue[i]].size, spirit_lookup[death_queue[i]].color);

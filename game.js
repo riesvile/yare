@@ -32,12 +32,23 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 parentPort.on("message", message => {
   if (message.data == "initiate world") {
 	  console.log('hmm');
-		init_data = {
-			'units': [],
-			'stars': [],
-			'bases': [],
-			'players': []
-		}
+	  
+	    if (workerData[1] == 'tutorial'){
+			init_data = {
+				'units': [],
+				'stars': [],
+				'bases': [],
+				'players': [],
+				'tut': 1
+			}
+	    } else {
+			init_data = {
+				'units': [],
+				'stars': [],
+				'bases': [],
+				'players': []
+			}
+	    }
 		var all_spirits = living_spirits.length;
 		for (i = 0; i < all_spirits; i++){
 			init_data.units.push(living_spirits[i]);
@@ -268,6 +279,8 @@ colors['player2'] = "rgba(0, 100, 255, 1)";
 var color_palettes = {};
 color_palettes['color1'] = 'rgba(128,140,255,1)';
 color_palettes['color2'] = 'rgba(232,97,97,1)';
+color_palettes['color3'] = 'rgba(58,197,240,1)';
+color_palettes['color4'] = 'rgba(201,161,101,1)';
 
 var pl1_units = {};
 var pl2_units = {};
@@ -1122,8 +1135,8 @@ if (!isMainThread){
 									gameLoser = players['p1'];
 									loserRating = result[0]['p1_rating'];
 									
-									newWinnerRating = getNewRating(p2_rating, p1_rating, 1);
-									newLoserRating = getNewRating(p1_rating, p2_rating, 0);
+									newWinnerRating = getNewRating(winnerRating, loserRating, 1);
+									newLoserRating = getNewRating(loserRating, winnerRating, 0);
 									console.log('newWinnerRating');
 									console.log(newWinnerRating);
 									console.log('newLoserRating');

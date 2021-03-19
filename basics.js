@@ -210,9 +210,6 @@ function newgame(){
 	window.location = '/game';
 }
 
-function game_over(){
-	
-}
 
 
 
