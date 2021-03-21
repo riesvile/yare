@@ -241,6 +241,8 @@ function game_over(winner){
 	} else {
 		document.getElementById('tutorial_over').style.display = 'none';
 		document.getElementById('game_result').innerHTML = winner + ' won';
+		document.getElementById('over_new_account').style.display = 'none';
+		document.getElementById('over_login').style.display = 'none';
 	}
 	
 	

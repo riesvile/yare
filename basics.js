@@ -131,35 +131,6 @@ function waiting_for_p2(g_id){
 }
 
 
-function get_in(){
-	fetch('/confirm-challenge/' + game_id, {
-	        method: "POST",
-	        headers: {
-	          Accept: "application/json",
-	          "Content-Type": "application/json"
-	        },
-	        body: JSON.stringify({
-		        user_id: getCookie('user_id'),
-		        session_id: getCookie('session_id'),
-		    })
-
-    }).then(response => response.json())
-      .then(response => {
-		  console.log(response);
-		  if (response.data == "start"){
-			  window.location = './t1/' + game_id;
-			  location.reload();
-	  	
-		  } else {
-		  	  console.log("Something went wrong " + response.data);
-		  }
-	  })
-      .catch(err => {
-		  console.log(err);
-	  });
-}
-
-
 function setCookie(name,value,days){
     var expires = "";
     if (days) {

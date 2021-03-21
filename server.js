@@ -277,7 +277,7 @@ function bot_game(req, res, pl_id){
 
 function friend_challenge(req, res){
 	
-	var friend_servers = Object.keys(server_occupancy_tutorial);
+	var friend_servers = Object.keys(server_occupancy);
 	var f_load_threshold = 10;
 	var f_chosen_server = 'd4';
 	var color_code = get_color(req.body.user_color);
@@ -285,13 +285,13 @@ function friend_challenge(req, res){
 	for (i = 0; i < friend_servers.length; i++){
 		if (server_occupancy[friend_servers[i]] > f_load_threshold){
 			f_chosen_server = friend_servers[i];
-			server_occupancy[chosen_server]--;
+			server_occupancy[f_chosen_server]--;
 			console.log(server_occupancy);
 			console.log('chosen server = ' + f_chosen_server);
 			break;
 		}
 		if (i == (friend_servers.length - 1)){
-			console.log('all servers busy, increasing load');
+			console.log('all serverrrrrs busy, increasing load');
 			if (f_load_threshold <= 0){
 				console.log('maximum server capacity reached');
 			} else {
@@ -607,8 +607,8 @@ app.get('/game/:game_id', (req, res) => {
 // ------
 // ------
 
-function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_shape = 0, pla2_shape = 0){
-	create_worker(game_id, 'tutorial');
+function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_shape = 0, pla2_shape = 0, pla1_color = 'color1', pla2_color = 'color2', game_type = 'tutorial'){
+	create_worker(game_id, game_type);
 	active_games[game_id] = [0, 0, 0, 0];
 	active_games[game_id][0] = 1;
 	active_games[game_id][1] = pla1;
@@ -617,6 +617,8 @@ function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server
 	//0=circle, 1=square, 2=triangle
 	active_games[game_id][4] = pla1_shape;
 	active_games[game_id][5] = pla2_shape;
+	active_games[game_id][6] = pla1_color;
+	active_games[game_id][7] = pla2_color;
 	start_world(game_id);
 }
 
@@ -721,7 +723,7 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 			if (result.length == 0){
 				findAgain(req, res);
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2']);
+				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color']);
 				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is ready');
@@ -781,9 +783,6 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 			console.log('not sure what happened here');
 			res.send(404);
 		}
-		
-		
-		
 		
 	}
 });
@@ -931,10 +930,10 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 					.then((qq) => {
 						active_games[game_id_url][2] = req.body.user_id;
 						console.log('p2_session_id updated');
-						start_world(game_id_url);
+						//start_world(game_id_url);
 					});
 				
-				create_worker(game_id_url, 'nonranked');
+				//create_worker(game_id_url, 'nonranked');
 				res.status(200).send({
 		        	data: "challenge connected"
 		        });
@@ -966,7 +965,8 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 				} else if (result[0]['player1'] == req.body.user_id){
 					//start the game
 					res.status(200).send({
-			        	data: "start"
+			        	data: "start",
+						server: result[0]['server']
 			        });
 			
 				} else {
@@ -1199,6 +1199,135 @@ wss.on('connection', function connection(ws, req) {
 });
 
 
+
+/*
+
+
+app.get('/d1n/:game_id', (req, res) => {
+	game_id_url = req.params.game_id;
+	//if (active_games[game_id_url][0] == 1){
+	//	res.redirect('/' + d1 + '/' + game_id_url);
+	//} else {
+	res.sendFile(__dirname + '/wait.html');
+	//}
+	
+});
+
+function findAgain(req, res){
+	Game.find({game_id: game_id_url})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			console.log(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no game found"
+		        });
+			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
+				init_game(game_id_url, result[0]['player1'], result[0]['player2']);
+				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+					.then((qq) => {
+						console.log('game is ready');
+						res.status(200).send({
+				        	data: "game ready",
+							server: 'd1'
+				        });
+					});			
+			} else if (result[0]['active'] == 1 && result[0]['server'] == 'd1'){
+				console.log('game already active, redirect');
+				res.status(200).send({
+		        	data: "game already active",
+					server: 'd1'
+		        });				
+			} else {
+				res.status(404).send({
+		        	data: "something went wrongg"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+}
+
+app.post('/d1ns/:game_id', (req, res) => {
+	game_id_url = req.params.game_id;
+	
+		
+	console.log('finding game via mongoooooooooooooooooooose');
+	Game.find({game_id: game_id_url})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			console.log(result);
+			if (result.length == 0){
+				findAgain(req, res);
+			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
+				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape']);
+				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+					.then((qq) => {
+						console.log('game is ready');
+						res.status(200).send({
+				        	data: "game ready",
+							server: 'd1'
+				        });
+					});			
+			} else if (result[0]['active'] == 1 && result[0]['server'] == 'd1'){
+				console.log('game already active, redirect');
+				res.status(200).send({
+		        	data: "game already active",
+					server: 'd1'
+		        });				
+			} else {
+				res.status(404).send({
+		        	data: "something went wrongg"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+
+
+
+app.get('/d1/:game_id', (req, res) => {
+	game_id_url = req.params.game_id;
+	if (active_games[game_id_url] == undefined){
+		//add a simple page stating the result and stats of a game
+		console.log('game ended or does not exist');
+		Game.find({game_id: game_id_url})
+			.then((result) => {
+				//res.send(result);
+				console.log('dbdb result');
+				console.log(result);
+				if (result.length == 0){
+					res.sendFile(__dirname + '/nope.html');
+				} else if (result.length == 1){
+					res.sendFile(__dirname + '/game-status.html');
+				} else {
+					console.log('something went wrong');
+					res.sendFile(__dirname + '/nope.html');
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	} else if (active_games[game_id_url][0] == 1){
+		res.sendFile(__dirname + '/game.html');
+	} else {
+		if (this_server_type == "tutorial" && active_games[game_id_url][0] == 0){
+			console.log('game is being saved into db?? maybe??????????????????????????????????????');
+		} else {
+			console.log('not sure what happened here');
+			res.send(404);
+		}
+		
+	}
+});
+
+*/
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));

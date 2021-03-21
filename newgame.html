@@ -85,59 +85,13 @@
 		  </div>
 		  
 		  
-		  
 	  </div>
 	  
 	  
-	  
-		
-		
-		
-	 
-	  
-	  
-	  
-	  
-	  
-	  <!--
 		  
-	  <div class="profile_hub_extract">
-		  <span id="hub_username">levmiseri</span><br>
-		  <span id="user_hub_stats"><span id="user_hub_rank">#7</span> · <span id="user_hub_elo">1957 Elo</span> · <span id="hub_logout">Log out</span></span>
-	  </div>
-		  
-	
-	
-	<table class="hub_table">
-	  <tr>
-	    <td class="table_game_date">10 min ago</td>
-	    <td class="table_game_players">
-			<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
-			<span class="versus">vs</span>
-			<span class="table_player2"><span class="player2_shape"></span>koala</span>
-	    </td>
-	    <td class="table_game_duration">30 min</td>
-		<td class="table_game_result">Victory</td>
-		<td class="table_game_eloresult">1957</td>
-	  </tr>
-	  <tr>
-	  </tr>
-	</table>
-	
-	  
-	  
-	  <h1>User hub</h1>
-	  
-	  <a href="#" id="user_logout" onclick="logout()">Log out</a>
-	  //<a href="#" id="challenge" onclick="new_game('automatch')">Automatch</a>
-	  <a href="#" id="challenge" onclick="new_game('easy-bot')">Automatch</a>
-	  <a href="#" id="challenge" onclick="new_game('challenge')">Challenge a friend</a>
-  
-  	  <br>
-  	  <span id="status_message">status</span>
 	  <a href="#" id="get_in" onclick="get_in()">Start game</a>
 	  
-  	  -->
+  	  
   </body>
   
   <script>
@@ -395,6 +349,34 @@
 	  
 	  function challenge_friend(){
 		  console.log('challenge friend');	  	
+	  }
+	  
+	  function get_in(){
+	  	fetch('/confirm-challenge/' + game_id, {
+	  	        method: "POST",
+	  	        headers: {
+	  	          Accept: "application/json",
+	  	          "Content-Type": "application/json"
+	  	        },
+	  	        body: JSON.stringify({
+	  		        user_id: getCookie('user_id'),
+	  		        session_id: getCookie('session_id'),
+	  		    })
+
+	      }).then(response => response.json())
+	        .then(response => {
+	  		  console.log(response);
+	  		  if (response.data == "start"){
+	  			  window.location = './' + response.server + 'n/' + game_id;
+	  			  //location.reload();
+	  	
+	  		  } else {
+	  		  	  console.log("Something went wrong " + response.data);
+	  		  }
+	  	  })
+	        .catch(err => {
+	  		  console.log(err);
+	  	  });
 	  }
 	  
 	  
