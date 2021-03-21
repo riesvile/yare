@@ -29,7 +29,9 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 	      .then(response => {
 			  console.log(response);
 			  if (response.data == "expired session"){
-		  	
+			  	  eraseCookie('user_id');
+			  	  eraseCookie('user_session');
+		  		  window.location = './';
 			  } else if (response.data == "something went wrong"){
 			  	
 			  } else {
@@ -271,67 +273,73 @@ function submit_test(){
 }
 
 
-document.getElementById("new_acc_form").addEventListener("submit", function(e){
+try {
+	document.getElementById("new_acc_form").addEventListener("submit", function(e){
     
-    e.preventDefault();    //stop form from submitting
-	wait_server();
+	    e.preventDefault();    //stop form from submitting
+		wait_server();
 
-	const url = '/add-user';
+		const url = '/add-user';
 
-	var user_name = document.getElementById('new_user_name').value;
-	var user_password = document.getElementById('new_user_password').value;
+		var user_name = document.getElementById('new_user_name').value;
+		var user_password = document.getElementById('new_user_password').value;
 
-	fetch('/add-user', {
-	        method: "POST",
-	        headers: {
-	          Accept: "application/json",
-	          "Content-Type": "application/json"
-	        },
-	        body: JSON.stringify({
-		        user_name: user_name,
-		        password: user_password
-		    })
+		fetch('/add-user', {
+		        method: "POST",
+		        headers: {
+		          Accept: "application/json",
+		          "Content-Type": "application/json"
+		        },
+		        body: JSON.stringify({
+			        user_name: user_name,
+			        password: user_password
+			    })
 
-    }).then(response => response.json())
-      .then(response => {
-		  console.log(response);
-		  if (response.data == "user created"){
-			  console.log('all good');
-			  console.log('session_id = ' + getCookie('session_id'));
-			  setCookie('user_id', response.user_id);
-			  setCookie('session_id', response.session_id);
-			  tutorial_signup(response.user_id);
-			  console.log('session_id = ' + getCookie('session_id'));
-			  login_success(response.user_id);
-			  update_code();
-		  } else if (response.data == "exists"){
-			  //console.log('user exists already');
-			  username_error('Sorry, this one is already taken');
-			  resume_client();
-		  } else if (response.data == "toolong"){
-			  username_error('Must be < 20 characters (yours is ' + response.data2 + ' characters)');
-			  resume_client();
-		  } else if (response.data == "tooshort"){
-			  username_error('Must be at least 3 characters long');
-			  resume_client();
-		  } else if (response.data == "special"){
-			  username_error('Only letters, numbers and underscore allowed');
-			  resume_client();
-		  } else if (response.data == "pass_empty"){
-			  password_error("Whatever you want, but at least 1 character");
-			  resume_client();
-		  } else {
-			  setCookie('user_id', response.username);
-			  setCookie('session_id', response.data, 7);
-			  console.log('storing cookie');
-			  //window.location = './hub';
-		  }
-	  })
-      .catch(err => {
-		  console.log(err);
-	  });
+	    }).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+			  if (response.data == "user created"){
+				  console.log('all good');
+				  console.log('session_id = ' + getCookie('session_id'));
+				  setCookie('user_id', response.user_id);
+				  setCookie('session_id', response.session_id);
+				  tutorial_signup(response.user_id);
+				  console.log('session_id = ' + getCookie('session_id'));
+				  login_success(response.user_id);
+				  update_code();
+			  } else if (response.data == "exists"){
+				  //console.log('user exists already');
+				  username_error('Sorry, this one is already taken');
+				  resume_client();
+			  } else if (response.data == "toolong"){
+				  username_error('Must be < 20 characters (yours is ' + response.data2 + ' characters)');
+				  resume_client();
+			  } else if (response.data == "tooshort"){
+				  username_error('Must be at least 3 characters long');
+				  resume_client();
+			  } else if (response.data == "special"){
+				  username_error('Only letters, numbers and underscore allowed');
+				  resume_client();
+			  } else if (response.data == "pass_empty"){
+				  password_error("Whatever you want, but at least 1 character");
+				  resume_client();
+			  } else {
+				  setCookie('user_id', response.username);
+				  setCookie('session_id', response.data, 7);
+				  console.log('storing cookie');
+				  //window.location = './hub';
+			  }
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
 	  
-});
+	});
+} catch (error) {
+  console.error(error);
+}
+
+
 
 
 

@@ -14,6 +14,12 @@
   </head>
   <body>
 	  
+	  <div id="profile_links">  
+		  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
+		  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
+		  	<a href="#" class="profile_link" id="log_out">Log out</a>
+	  </div>
+	  
 	  <div id="hector">
 		  <h1 id="logo"><a href="#">yare<span class="logo_lowlight">.io</span></a></h1>
 		  <div class="menu">
@@ -35,7 +41,7 @@
 	  </div>
 	  
 	  
-	  
+	  <div id="overlay"></div>
 		
 		
 		
@@ -162,6 +168,34 @@
 	  function eraseCookie(name) {   
 	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 	  }
+	  
+	  if (getCookie('user_id') != null && getCookie('user_id') != 'anonymous'){
+		fetch('/populate-hub', {
+		        method: "POST",
+		        headers: {
+		          Accept: "application/json",
+		          "Content-Type": "application/json"
+		        },
+		        body: JSON.stringify({
+			        user_id: getCookie('user_id')
+			    })
+
+	    }).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+		  if (response.data == 'no results'){
+			  console.log('No games to show');
+		  } else {
+			  console.log('populate table');
+		  }
+	  })
+	  .catch(error => {
+		  console.log(error);
+	  })
+	  
+	  
+	  }
+	  
   
 	  if (getCookie('game_id') != null){
   		fetch('/resume-game', {

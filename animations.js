@@ -247,8 +247,15 @@ function un_error(){
 }
 
 function login_success(user_name){
-	document.getElementById('new_account').style.display = 'none';	
-	document.getElementById('login').style.display = 'none';
+	console.log('login success');
+	
+	try {
+		document.getElementById('new_account').style.display = 'none';	
+		document.getElementById('login').style.display = 'none';
+	} catch (error) {
+	  console.error(error);
+	}
+	
 	document.getElementById('signed_in').innerHTML = user_name;
 	document.getElementById('signed_in').style.display = 'block';
 	console.log('iodsjfoidsjf');
@@ -336,7 +343,7 @@ function resume_client(){
 function logout() {
 	eraseCookie('user_id');
 	eraseCookie('user_session');
-	window.location = '/';
+	window.location = './';
 }
 
 function user_links(){
@@ -511,8 +518,13 @@ function tut_phase_success(){
 
 
 // helper vars
-var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
-var login_pos = document.getElementById('login').getBoundingClientRect();
+try {
+	var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
+	var login_pos = document.getElementById('login').getBoundingClientRect();
+} catch (error) {
+  console.error(error);
+}
+
 //var new_acc_rect = document.getElementById('new_account').getBoundingClientRect();
 
 //flags
@@ -522,13 +534,32 @@ var dismiss_intent = 1;
 
 
 //document.getElementById('new_account').addEventListener('pointerdown', dismiss_helper, false);
-document.getElementById('new_account').addEventListener('click', new_account, false);
-document.getElementById('over_new_account').addEventListener('click', new_account, false);
-document.getElementById('login').addEventListener('click', login, false);
-document.getElementById('over_login').addEventListener('click', login, false);
-document.getElementById('log_out').addEventListener('click', logout, false);
+
+try {
+	document.getElementById('new_account').addEventListener('click', new_account, false);
+	document.getElementById('login').addEventListener('click', login, false);
+	
+} catch (error) {
+  console.error(error);
+}
+
+try {
+	document.getElementById('log_out').addEventListener('click', logout, false);
+} catch (error) {
+  console.error(error);
+}
+
+
 document.getElementById('overlay').addEventListener('click', dismissals, false);
 document.getElementById('signed_in').addEventListener('click', user_links, false);
+
+try {
+	document.getElementById('over_new_account').addEventListener('click', new_account, false);
+	document.getElementById('over_login').addEventListener('click', login, false);
+} catch (error) {
+  console.error(error);
+}
+
 
 window.addEventListener('resize', resizing);
 

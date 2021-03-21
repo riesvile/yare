@@ -135,6 +135,13 @@
   </body>
   <script src="../animations.js"></script>
   <script>
+	  window.onfocus = function() {
+		  socket.send('reinitiate');
+		  world_initiated = 0;
+	  };
+	  window.onblur = function() {
+	      focused = false;
+	  };
 	  var editor = ace.edit("editor");
 	  editor.setTheme("ace/theme/clouds_midnight");
 	  editor.session.setMode("ace/mode/javascript");
@@ -171,6 +178,7 @@
 	  var tut_helper_phase = 0;
 	  
 	  var energy_processed = {};
+	  var base_drawn = {};
 	  
 	  var this_server = 't1';
 	  
@@ -185,6 +193,7 @@
 	  socket.addEventListener('message', function(event){
 		  
 		  energy_processed = {};
+		  base_drawn = {};
 		  
 		  tick_counter = 0;
 		  

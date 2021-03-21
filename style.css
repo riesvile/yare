@@ -44,6 +44,7 @@ code {
 #editor_container {
 	background-color: transparent;
 	backdrop-filter: blur(0px);
+	-webkit-backdrop-filter: blur(0px);
 	height: calc(100% - 200px);
 	width: 800px;
 	position: relative;
@@ -318,7 +319,7 @@ input[type=submit] {
 
 /* ----- Game over ----- */
 
-#game_over_block {
+#game_over_block, #game_status_block {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -327,6 +328,11 @@ input[type=submit] {
 	z-index: 9999;
 	opacity: 0;
 	display: none;
+}
+
+#game_status_block {
+	display: block;
+	opacity: 1;
 }
 
 .game_table {
@@ -353,13 +359,17 @@ input[type=submit] {
 	margin-bottom: 20px;
 }
 
-#tutorial_over {
+#tutorial_over, #over_message {
 	width: 520px;
 	font-size: 20px;
 	font-weight: 500;
 	line-height: 32px;
 	color: rgba(242, 246, 250, 0.69);
 	margin-bottom: 20px;
+}
+
+#over_message {
+	display: none;
 }
 
 a#over_new_account {
@@ -455,6 +465,7 @@ p.tutorial_text {
 	background-color: rgba(0, 0, 0, 0);
 	z-index: 10000;
 	backdrop-filter: blur(0px);
+	-webkit-backdrop-filter: blur(0px);
 	pointer-events: none;
 }
 
@@ -462,6 +473,7 @@ p.tutorial_text {
 	z-index: 9998;
 	background-color: rgba(0, 0, 0, 0);
 	backdrop-filter: blur(0px);
+	-webkit-backdrop-filter: blur(0px);
 }
 
 #overlay_start {
@@ -479,6 +491,7 @@ p.tutorial_text {
 	width: 416px;
 	background-color: rgba(42, 44, 48, 0.32);
 	backdrop-filter: blur(60px);
+	-webkit-backdrop-filter: blur(60px);
 	z-index: 1000000;
 	padding: 24px 28px 8px 28px;
 	font-size: 16px;
@@ -888,11 +901,16 @@ span.game_or, span.cancel_or {
 	margin-bottom: 52px;
 }
 
-
-
-
 /* ----- */
 
+h1#pnf {
+	font-size: 20px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	position: absolute;
+	top: 40px;
+	left: 40px;
+}
 
 
 

@@ -185,14 +185,14 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		console.error(error);
+		//console.error(error);
 	}
 	
 	try {
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		console.error(error);
+		//console.error(error);
 	}
 	
 	
@@ -386,7 +386,7 @@ vm2.freeze(base_lookup, 'bases');
 
 if (!isMainThread){
 	class Spirit {
-		constructor(id, position, size, energy, player, color){
+		constructor(id, position, size, energy, player, color, cost){
 			this.id = id
 			this.position = position;
 			this.size = size;
@@ -406,6 +406,7 @@ if (!isMainThread){
 			this.move_speed = 1;
 			this.energy_capacity = size * 10;
 			this.player_id = player;
+			this.cost = cost;
 		
 			living_spirits.push(this);
 			birth_queue.push(this);
@@ -469,7 +470,7 @@ if (!isMainThread){
 	
 		energize(target) {
 			console.log('target = ');
-			console.log(target);
+			//console.log(target);
 			var entry_index2 = energize_queue.findIndex(entry2 => entry2[0]['id'] === this.id);
 			
 			try {
@@ -715,7 +716,7 @@ if (!isMainThread){
 			
 			
 			console.log('living_spirits[i].qcollisions');
-			console.log(living_spirits[i].qcollisions);
+			//console.log(living_spirits[i].qcollisions);
 			
 		}
 		
@@ -751,8 +752,8 @@ if (!isMainThread){
 	function update_state(){
 		//after everything is calculated
 		
-	console.log(player2_code);
-	console.log('player2_code');
+	//console.log(player2_code);
+	//console.log('player2_code');
 			//render_data = [[],[],[],[],[]];
 			
 			if (workerData[1] == 'tutorial'){
@@ -783,8 +784,8 @@ if (!isMainThread){
 			//objects birth
 			if (base_lookup['base_' + players['p1']].energy >= 100){
 				top_s++;
-				global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1450, 600], 1, 10, players['p1'], colors['player1']);
-				base_lookup['base_' + players['p1']].energy -= 50;
+				global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1450, 600], 1, 10, players['p1'], colors['player1'], 100);
+				base_lookup['base_' + players['p1']].energy -= 100;
 				global[players['p1'] + top_s].move([1430, 600]);
 				console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 				if (workerData[1] == 'tutorial'){
@@ -794,8 +795,8 @@ if (!isMainThread){
 			}
 			if (base_lookup['base_' + players['p2']].energy >= 30){
 				top_q++;
-				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2350, 1400], 1, 10, players['p2'], colors['player2']);
-				base_lookup['base_' + players['p2']].energy -= 50;
+				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2350, 1400], 1, 10, players['p2'], colors['player2'], 30);
+				base_lookup['base_' + players['p2']].energy -= 30;
 				global[players['p2'] + top_q].move([2380, 1400]);
 				console.log('spirit was born')
 			}
@@ -812,7 +813,7 @@ if (!isMainThread){
 		
 		    //objects move
 			moveables = move_queue.length;
-			console.log('moveables = ' + moveables);
+			//console.log('moveables = ' + moveables);
 			for (i = (moveables - 1); i >= 0; i--){
 				if (move_queue[i][0].hp == 0) continue;
 				
@@ -820,7 +821,7 @@ if (!isMainThread){
 				if (workerData[1] == 'tutorial'){
 					try {
 						console.log('tutorial, star position');
-						console.log(move_queue[0][2]);
+						//console.log(move_queue[0][2]);
 						if (move_queue[0][2][0] == 900 && move_queue[0][2][1] == 800){
 							console.log('tutorial phase 1 done');
 							tutorial_phase[0] = 1;
@@ -883,7 +884,7 @@ if (!isMainThread){
 					var potential_structure_collisions = move_queue[i][0].sight.structures;
 					for (k = 0; k < potential_structure_collisions.length; k++){
 						console.log(' ------------------------------- structure potential collisions');
-						console.log(potential_structure_collisions[k]);
+						//console.log(potential_structure_collisions[k]);
 						
 						
 						if (potential_structure_collisions[k].startsWith('star') == true){
@@ -1269,13 +1270,13 @@ if (!isMainThread){
 		// -----------------
 
 		for (s = 1; s < 2; s++){
-			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 0, players['p1'], colors['player1']);
+			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 0, players['p1'], colors['player1'], 100);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
 		for (q = 1; q < 2; q++){
-			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 0, players['p2'], colors['player2']);
+			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 0, players['p2'], colors['player2'], 100);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
 		}

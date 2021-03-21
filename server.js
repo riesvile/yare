@@ -671,12 +671,7 @@ app.get('/' + this_server + 'n/:game_id', (req, res) => {
 	
 });
 
-app.post('/' + this_server + 'ns/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	
-	
-	
-	console.log('finding game via mongoooooooooooooooooooose');
+function findAgain(req, res){
 	Game.find({game_id: game_id_url})
 		.then((result) => {
 			//res.send(result);
@@ -711,7 +706,48 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 		.catch((error) => {
 			console.log(error);
 		})
+}
+
+app.post('/' + this_server + 'ns/:game_id', (req, res) => {
+	game_id_url = req.params.game_id;
+	
+	
+	console.log('finding game via mongoooooooooooooooooooose');
+	Game.find({game_id: game_id_url})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			console.log(result);
+			if (result.length == 0){
+				findAgain(req, res);
+			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
+				init_game(game_id_url, result[0]['player1'], result[0]['player2']);
+				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+					.then((qq) => {
+						console.log('game is ready');
+						res.status(200).send({
+				        	data: "game ready",
+							server: this_server
+				        });
+					});			
+			} else if (result[0]['active'] == 1 && result[0]['server'] == this_server){
+				console.log('game already active, redirect');
+				res.status(200).send({
+		        	data: "game already active",
+					server: this_server
+		        });				
+			} else {
+				res.status(404).send({
+		        	data: "something went wrongg"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
 });
+
+
 
 
 app.get('/' + this_server + '/:game_id', (req, res) => {
@@ -719,6 +755,23 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 	if (active_games[game_id_url] == undefined){
 		//add a simple page stating the result and stats of a game
 		console.log('game ended or does not exist');
+		Game.find({game_id: game_id_url})
+			.then((result) => {
+				//res.send(result);
+				console.log('dbdb result');
+				console.log(result);
+				if (result.length == 0){
+					res.sendFile(__dirname + '/nope.html');
+				} else if (result.length == 1){
+					res.sendFile(__dirname + '/game-status.html');
+				} else {
+					console.log('something went wrong');
+					res.sendFile(__dirname + '/nope.html');
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
 	} else if (active_games[game_id_url][0] == 1){
 		res.sendFile(__dirname + '/game.html');
 	} else {
@@ -733,6 +786,90 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 		
 		
 	}
+});
+
+app.post('/gameinfo', (req, res) => {
+
+	Game.find({game_id: req.body.game_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('dbdb result');
+			console.log(result);
+			console.log(result[0]['active']);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no game found"
+		        });
+			} else if (result[0]['active'] == 1){
+				res.status(200).send({
+		        	data: "corrupted",
+					server: result[0]['server'],
+					ranked: result[0]['ranked'],
+					p1: result[0]['player1'],
+					p1_shape: result[0]['p1_shape'],
+					p1_color: result[0]['p1_color'],
+					p1_rating: result[0]['p1_rating'],
+					p2: result[0]['player2'],
+					p2_shape: result[0]['p2_shape'],
+					p2_color: result[0]['p2_color'],
+					p2_rating: result[0]['p2_rating'],
+					c_day: result[0]['createdAt']
+		        });
+			} else if (result[0]['active'] == 0){
+				res.status(200).send({
+		        	data: "finished",
+					server: result[0]['server'],
+					ranked: result[0]['ranked'],
+					winner: result[0]['winner'],
+					p1: result[0]['player1'],
+					p1_shape: result[0]['p1_shape'],
+					p1_color: result[0]['p1_color'],
+					p1_rating: result[0]['p1_rating'],
+					p2: result[0]['player2'],
+					p2_shape: result[0]['p2_shape'],
+					p2_color: result[0]['p2_color'],
+					p2_rating: result[0]['p2_rating'],
+					c_day: result[0]['createdAt']
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "something went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+
+});
+
+
+app.post('/populate-hub', (req, res) => {
+
+	Game.find({$or:[{player1: req.body.user_id},{player2: req.body.user_id}]})
+		.sort({updatedAt:'desc'})
+		.limit(10)
+		.exec()
+		.then((result) => {
+			//res.send(result);
+			console.log('dbdbdb result');
+			console.log(result);
+			console.log(result[0]);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no results"
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "populate",
+					stream: result
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+
 });
 
 
@@ -965,9 +1102,16 @@ wss.on('connection', function connection(ws, req) {
 	
 	ws.on('message', function incoming(message) {
 		d1 = process.hrtime();
-		message = JSON.parse(message);
 		console.log('message');
-    	console.log('received: %s', message);
+		console.log('received: ' + message);
+		if (message == 'reinitiate'){
+			console.log('reinitiating the world for g_id = ' + g_id);
+			initiate_world(ws.client_id, g_id);
+		} else {
+			message = JSON.parse(message);
+			console.log('message');
+	    	console.log('received: %s', message);
+		}
 		connections[ws.client_id] = ws;
 		//player1_code = message;
 		try {
@@ -1081,6 +1225,8 @@ app.get('/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/lo
 app.get('/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
 
 app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
+app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
+app.get('/nope', (req, res) => res.sendFile(__dirname + '/nope.html'));
 
 
 

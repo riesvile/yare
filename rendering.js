@@ -15,6 +15,17 @@ var current_offsetY = 0;
 var panning = 0;
 var disableSelection = 0;
 
+function baseOffsetUpdate(){
+	world_bases = bases.length;
+	for (i = 0; i < world_bases; i++){
+		c_base.clearRect(base_lookup[bases[i].id].position[0] - 40, base_lookup[bases[i].id].position[1] - 40, base_lookup[bases[i].id].position[0] + 40, base_lookup[bases[i].id].position[0] + 40);
+		base_lookup[bases[i].id].draw();
+	}
+	
+	//draw_grid();
+}
+
+
 function offsetUpdate(){
 	
 	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
@@ -39,10 +50,10 @@ function offsetUpdate(){
 		star_lookup[stars[i].id].draw();
 	}
 	
-	world_bases = bases.length;
-	for (i = 0; i < world_bases; i++){
-		base_lookup[bases[i].id].draw();
-	}
+	//world_bases = bases.length;
+	//for (i = 0; i < world_bases; i++){
+	//	base_lookup[bases[i].id].draw();
+	//}
 	
 	draw_grid();
 	
@@ -338,7 +349,7 @@ class Spirit {
 		
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], this.size * (spirit_percent_energy), 0, Math.PI * 2, false);
-		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] + ')';
+		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy * 10) + ')';
 		c.fill();
 	}
 	
@@ -404,12 +415,12 @@ class Star {
 }
 
 class Base {
-	constructor(id, position, player, color){
+	constructor(id, position, energy, player, color){
 		this.id = id
 		this.position = position;
-		this.size = 24;
+		this.size = 20;
 		this.structure_type = 'base';
-		this.energy = 0;
+		this.energy = energy;
 		this.sight = {
 			friends: [],
 			enemies: [],
@@ -426,10 +437,55 @@ class Base {
 	}
 	
 	draw() {
+		var color_parts = this.color.match(/[.?\d]+/g);
+		//logic on slowing down production when amount of spirits > x
+		var new_when = 100;
+		if(1 == 1){
+			new_when = 100;
+		}
+		var production_percent = this.energy / new_when;
+		
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
+		c.lineWidth = 4;
+		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.69 + ')';
+		c.stroke();
+		
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], (this.size + 10), 0, Math.PI * 2, false);
+		c.lineWidth = 2;
+		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.49 + ')';
+		c.stroke();
+		
+		
+		var r_start_angle = -90 / 360 * 2 * Math.PI; 
+		var r_end_angle = ((360 * production_percent - 90) / 360) * 2 * Math.PI; 
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], (this.size + 10), r_start_angle, r_end_angle, false);
+		//console.log('production_percent');
+		//console.log(production_percent);
+		c.lineWidth = 2;
+		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.69 + ')';
+		c.stroke();
+	}
+	
+	
+	charge() {
+		var color_parts = this.color.match(/[.?\d]+/g);
+		//logic on slowing down production when amount of spirits > x
+		var new_when = 100;
+		if(1 == 1){
+			new_when = 100;
+		}
+		var production_percent = this.energy / new_when;
+		var new_angle = Math.PI * 2 * production_percent
+		
 		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
+		c_base.arc(this.position[0], this.position[1], (this.size + 10), Math.PI * 1.5 + (new_angle), Math.PI * 2 * production_percent, false);
+		console.log('production_percent');
+		console.log(production_percent);
 		c_base.lineWidth = 2;
-		c_base.strokeStyle = this.color;
+		c_base.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.5 + ')';
 		c_base.stroke();
 	}
 }
@@ -474,6 +530,13 @@ function drawInnerSh(teX, teY) {
 
 
 function initiate_world(){
+	spirit_lookup = {};
+	star_lookup = {};
+	base_lookup = {};
+	living_spirits = [];
+	stars = [];
+	bases = [];
+	
 	world_spirits = units_queue.length;
 	for (i = 0; i < world_spirits; i++){
 		if (units_queue[i].hp == 0) continue;
@@ -495,7 +558,7 @@ function initiate_world(){
 	world_bases = bases_queue.length;
 	for (i = 0; i < world_bases; i++){
 		console.log('base created');
-		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].player_id, bases_queue[i].color);
+		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].energy,  bases_queue[i].player_id, bases_queue[i].color);
 		base_lookup[bases_queue[i].id].draw();
 	}
 	
@@ -541,6 +604,12 @@ function render_state(){
 		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color);
 		spirit_lookup[birth_queue[i].id].draw();
 		console.log(spirit_lookup[birth_queue[i].id]);
+		
+		for (j = 0; j<bases.length; j++){
+			if (bases[j].player_id == birth_queue[i].player_id) bases[j].energy -= birth_queue[i].cost;
+			console.log('bases.length = ' + bases.length);
+			console.log('bases[' + j + '].player_id = ' + bases[j].player_id);
+		}
 		//birth_queue.splice(i, 1);
 	}
 	birth_queue = [];
@@ -560,6 +629,14 @@ function render_state(){
 		spirit_lookup[living_spirits[i].id].draw();
 	}
 	
+	world_bases = bases.length;
+	for (i = 0; i < world_bases; i++){
+		//if (base_drawn[base_lookup[bases[i].id]] != 1){
+			base_lookup[bases[i].id].draw();
+		//	base_drawn[base_lookup[bases[i].id]] = 1;
+		//}
+	}
+	
 	
 	//structures
 	//for (i = 0; i < stars.length; i++){
@@ -575,15 +652,20 @@ function render_state(){
 		//console.log(energize_queue[i]);
 		if (energize_queue[i][0].startsWith('star')) {
 			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
-			if (energy_processed[spirit_lookup[energize_queue[i][1]].id] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
+			if (energy_processed[energize_queue[i][1]] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
 				spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-				energy_processed[spirit_lookup[energize_queue[i][1]].id] = 1;
+				energy_processed[energize_queue[i][1]] = 1;
 			}
 		} else if (energize_queue[i][1].startsWith('base')) {
 			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
-			if (energy_processed[spirit_lookup[energize_queue[i][0]].id] != 1){
+			if (energy_processed[energize_queue[i][0]] != 1){
 				spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
-				energy_processed[spirit_lookup[energize_queue[i][0]].id] = 1;
+				base_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+				//base_lookup[energize_queue[i][1]].draw();
+				energy_processed[energize_queue[i][0]] = 1;
+				//console.log('base energy');
+				//console.log(base_lookup[energize_queue[i][1]].energy);
+				//baseOffsetUpdate();
 			}
 		} else {
 			if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
