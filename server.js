@@ -684,7 +684,7 @@ function findAgain(req, res){
 		        	data: "no game found"
 		        });
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2']);
+				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color']);
 				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is ready');
@@ -952,6 +952,34 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 		//access mongoose and update game document
 		active_games[game_id_url][2] = req.body.user_id;
 		active_games[game_id_url][0] = 1;
+		
+		Game.find({game_id: game_id_url})
+			.then((result) => {
+				//res.send(result);
+				console.log('updating p2 in db');
+				if (result.length == 0){
+					res.status(404).send({
+			        	data: "no game found"
+			        });
+				} else {
+					Game.updateOne({game_id: game_id_url}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_shape: 'circles', p2_color: 'color4'}, {upsert: true})
+						.then((qq) => {
+							active_games[game_id_url][2] = req.body.user_id;
+							console.log('p2_details updated');
+							//start_world(game_id_url);
+						});
+				
+					//create_worker(game_id_url, 'nonranked');
+					res.status(200).send({
+			        	data: "waiting for p1 to start"
+			        });
+					//active_games[game_id_url] = 1;
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		
 	} else if (active_games[game_id_url][0] == 1){
 		//if player1 confirming, redirect to game and start it (allow code change)
 		Game.find({game_id: game_id_url})
@@ -1063,7 +1091,7 @@ function initiate_world(ws, game_id){
 function start_world(game_id){
 	//starts the game
 	try {
-		workers[game_id].postMessage({data: "start world", player1: active_games[game_id][1], player2: active_games[game_id][2]});
+		workers[game_id].postMessage({data: "start world", player1: active_games[game_id][1], player2: active_games[game_id][2], p1_shape: active_games[game_id][4], p2_shape: active_games[game_id][5], p1_color: active_games[game_id][6], p2_color: active_games[game_id][7]});
 	} catch (error) {
 	  console.error(error);
 	}
@@ -1160,11 +1188,11 @@ wss.on('connection', function connection(ws, req) {
 				
 				var my_spirits = [];
 				
-				
-				
 				for (q = 0; q < (Object.keys(spirits)).length; q++){
 					if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
 						my_spirits.push(spirits[Object.keys(spirits)[q]]);
+						//it is s2 here you moron
+						global['s' + (q+1)] = spirits[Object.keys(spirits)[q]];
 					}
 				}
 				
@@ -1200,7 +1228,7 @@ wss.on('connection', function connection(ws, req) {
 
 
 
-/*
+
 
 
 app.get('/d1n/:game_id', (req, res) => {
@@ -1224,7 +1252,7 @@ function findAgain(req, res){
 		        	data: "no game found"
 		        });
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2']);
+				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
 				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is ready');
@@ -1263,7 +1291,7 @@ app.post('/d1ns/:game_id', (req, res) => {
 			if (result.length == 0){
 				findAgain(req, res);
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape']);
+				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
 				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is ready');
@@ -1327,7 +1355,7 @@ app.get('/d1/:game_id', (req, res) => {
 	}
 });
 
-*/
+
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));

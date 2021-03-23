@@ -32,6 +32,7 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 parentPort.on("message", message => {
   if (message.data == "initiate world") {
 	  console.log('hmm');
+	  console.log(workerData);
 	  
 	    if (workerData[1] == 'tutorial'){
 			init_data = {
@@ -119,15 +120,20 @@ parentPort.on("message", message => {
   } else if (message.data == "start world"){
 	  players['p1'] = message.player1;
 	  players['p2'] = message.player2;
-	  players['p1_shape'] = message.player1_shape;
-	  players['p2_shape'] = message.player2_shape;
+	  players['p1_shape'] = message.p1_shape;
+	  players['p2_shape'] = message.p2_shape;
+	  colors['player1'] = color_palettes[message.p1_color];
+	  colors['player2'] = color_palettes[message.p2_color];
+	  console.log('game started');
+	  console.log(players);
+	  console.log(colors);
+	  game_start();
+	  
 	  Game.find({game_id: workerData[0]})
 	  	.then((result) => {
 			console.log('p1_color');
 			console.log(result[0].p1_color);
-			colors['player1'] = color_palettes[result[0].p1_color];
-			colors['player2'] = color_palettes[result[0].p2_color];
-			game_start();
+			
 			
 			
 			User.find({user_id: players['p1']})
@@ -185,14 +191,14 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		//console.error(error);
+		console.error(error);
 	}
 	
 	try {
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		//console.error(error);
+		console.error(error);
 	}
 	
 	
@@ -233,7 +239,7 @@ players_update['p1'] = 'old';
 
 //tutorial
 if (workerData[1] == 'tutorial'){
-	var tutorial_phase = [0, 0, 0, 0, 0, 0];
+	var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 	var tutorial_flag1 = 0;
 	
 	player2_code = `
@@ -296,6 +302,7 @@ var energy_value = 1;
 var processTime1 = 0;
 var processTime2 = 0;
 var processTimeRes = 0;
+var game_finished = 0;
 
 var user_error;
 
@@ -488,6 +495,18 @@ if (!isMainThread){
 			if (target == null){
 				target = this;
 			}
+			
+			if (workerData[1] == 'tutorial'){
+				try {
+					if (target.id == 'easy-bot2'){
+						console.log('tutorial phase 7 done');
+						tutorial_phase[6] = 1;
+					}
+				} catch (error){
+					console.log(error);
+				}
+			}
+			
 			//this, this.energy, this.size, target)
 			if (target.hp != 0){
 				if (entry_index2 == -1){
@@ -1096,7 +1115,8 @@ if (!isMainThread){
 			for (i = (e_applies - 1); i >= 0; i--){
 				if (energize_apply[i][0].energy < 0){
 					death_queue.push(energize_apply[i][0]);
-					if (energize_apply[i][0].structure_type == 'base'){
+					if (energize_apply[i][0].structure_type == 'base' && game_finished != 1){
+						game_finished = 1;
 						console.log('GAME OVER');
 						console.log('GAME OVER');
 						console.log('GAME OVER');
@@ -1199,6 +1219,17 @@ if (!isMainThread){
 			deaths = death_queue.length;
 			for (i = (deaths - 1); i >= 0; i--){
 				console.log(death_queue[i].id + ' died');
+				if (workerData[1] == 'tutorial'){
+					try {
+						if (death_queue[i].id == 'easy-bot2'){
+							console.log('tutorial phase 8 done');
+							tutorial_phase[7] = 1;
+						}
+					} catch (error){
+						console.log(error);
+					}
+				}
+				
 				death_queue[i].hp = 0;
 				render_data2.death.push(death_queue[i].id);
 				
