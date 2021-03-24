@@ -137,7 +137,7 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to dbb'))
 	.catch((error) => console.log(error));
 
-function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd1', pla1_shape = 0, pla2_shape = 0) {
+function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd4', pla1_shape = 0, pla2_shape = 0) {
 	var g_id = generateUniqueString(3);
 	active_games[g_id] = [0, 0, 0, 0];
 	active_games[g_id][0] = init_status;
@@ -208,9 +208,7 @@ function get_color(color_name){
 }
 
 function bot_game(req, res, pl_id){
-	//instead redirect to a game-server???
 	
-	//TODO: first assign a server to this game
 	var tut_servers = Object.keys(server_occupancy_tutorial);
 	var load_threshold = 40;
 	var chosen_server = 't3';
@@ -275,6 +273,72 @@ function bot_game(req, res, pl_id){
 		})
 }
 
+function medium_bot_game(req, res, pl_id){
+	
+	var tut_servers = Object.keys(server_occupancy_tutorial);
+	var load_threshold = 40;
+	var chosen_server = 'd1';
+	
+	/*
+	for (i = 0; i < tut_servers.length; i++){
+		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
+			chosen_server = tut_servers[i];
+			server_occupancy_tutorial[chosen_server]--;
+			console.log(server_occupancy_tutorial);
+			console.log('chosen server = ' + chosen_server);
+			break;
+		}
+		if (i == (tut_servers.length - 1)){
+			console.log('all servers busy, increasing load');
+			if (load_threshold <= 0){
+				console.log('maximum server capacity reached');
+			} else {
+				load_threshold -= 10; 
+				i = -1;
+			}
+		}
+		
+	}*/
+	
+	g_id = new_game(pl_id, 'medium-bot', 1, chosen_server);
+	
+
+	res.status(200).send({
+		g_id: g_id,
+		meta: 'medium-bot',
+		server: chosen_server
+    });
+	
+	const game = new Game({
+		game_id: g_id,
+		server: chosen_server,
+		player1: req.body.user_id,
+		player2: 'medium-bot',
+		p1_session_id: req.body.session_id,
+		p2_session_id: 'bot',
+		p1_shape: 'circles',
+		p2_shape: 'circles',
+		p1_color: 'color1',
+		p2_color: 'color2',
+		p1_rating: 1000,
+		p2_rating: 100,
+		winner: '',
+		ranked: 0,
+		active: 0.5,
+		game_duration: 0,
+		observers: 0
+	});
+	
+	game.save()
+		.then((result) => {
+			console.log('game saved to db');
+			console.log(result);
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+}
+
 function friend_challenge(req, res){
 	
 	var friend_servers = Object.keys(server_occupancy);
@@ -303,7 +367,7 @@ function friend_challenge(req, res){
 		
 	}
 	
-	g_id = new_game(req.body.user_id, 0, init_status = 0.5);
+	g_id = new_game(req.body.user_id, 0, init_status = 0.5, f_chosen_server);
 	res.status(200).send({
 		g_id: g_id,
 		meta: 'waiting for p2'
@@ -360,6 +424,8 @@ app.post('/new-game', (req, res) => {
 	} else {
 		if (req.body.type == 'easy-bot'){
 			bot_game(req, res, req.body.user_id);
+		} else if (req.body.type == 'medium-bot'){
+			medium_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'challenge'){
 			friend_challenge(req, res);
 		} else if (req.body.type == 'automatch'){
@@ -384,12 +450,16 @@ app.post('/check-status/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
 	if (active_games[game_id_url][0] == 0.5){
 		res.status(200).send({
+			player1: active_games[game_id_url][1],
 			player2: '',
+			server: active_games[game_id_url][3],
 			data: 'not yet'
         });
 	} else if (active_games[game_id_url][0] == 1){
 		res.status(200).send({
+			player1: active_games[game_id_url][1],
 			player2: active_games[game_id_url][2],
+			server: active_games[game_id_url][3],
 			data: 'ready'
         });
 	} else {
@@ -962,7 +1032,7 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 			        	data: "no game found"
 			        });
 				} else {
-					Game.updateOne({game_id: game_id_url}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_shape: 'circles', p2_color: 'color4'}, {upsert: true})
+					Game.updateOne({game_id: game_id_url}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_shape: req.body.user_shape, p2_color: get_color(req.body.user_color)}, {upsert: true})
 						.then((qq) => {
 							active_games[game_id_url][2] = req.body.user_id;
 							console.log('p2_details updated');
@@ -971,7 +1041,8 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 				
 					//create_worker(game_id_url, 'nonranked');
 					res.status(200).send({
-			        	data: "waiting for p1 to start"
+			        	data: "waiting for p1 to start",
+						server: active_games[game_id_url][3]
 			        });
 					//active_games[game_id_url] = 1;
 				}

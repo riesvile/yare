@@ -67,7 +67,7 @@
 			<h2 class="deer_h" id="waiting_head_text">Looking for an opponent</h2>
 			<p class="deer_p" id="waiting_secondary_text">Average time: 1 minute</p>
 		</div>
-		  
+				  
 		  
 		  
 		  
@@ -81,6 +81,13 @@
 				  <a href="./hub" id="cancel_game_btn">Cancel</a>
 				  <span class="cancel_or">or</span>
 				  <div id="play_bot_btn">Play a bot instead</div>
+			  </div>
+			  
+			  <div id="waiting_challenge">
+				  <p class="deer_p">Share this link with your friend</p>
+				  <p class="challenge_link" id="ch_link"></p>
+				  <span class='copy_code' id='friend_link' code=''>COPY LINK</span>
+				  <a href="./hub" id="cancel_challenge_btn">Cancel challenge</a>
 			  </div>
 		  </div>
 		  
@@ -109,6 +116,42 @@
 	  
 	  function eraseCookie(name) {   
 	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	  }
+
+	  function copyTextToClipboard(text, target) {
+		  var copyTextArea = document.createElement("textarea");
+		  copyTextArea.style.position = 'fixed';
+		  copyTextArea.style.top = 0;
+		  copyTextArea.style.left = 0;
+		  copyTextArea.style.width = '2em';
+		  copyTextArea.style.height = '2em';
+		  copyTextArea.style.border = 'none';
+		  copyTextArea.style.outline = 'none';
+		  copyTextArea.style.boxShadow = 'none';
+		  copyTextArea.style.background = 'transparent';
+		  copyTextArea.value = text;
+		  document.body.appendChild(copyTextArea);
+		  copyTextArea.focus();
+		  copyTextArea.select();
+		  
+		  try {
+		      var successful = document.execCommand('copy');
+		      var msg = successful ? 'successful' : 'unsuccessful';
+		      code_copy_success(target);
+		    } catch (err) {
+		      console.log('Oops, unable to copy');
+		    }
+		
+		  document.body.removeChild(copyTextArea);
+	  }
+	  
+	  copy_elements = document.getElementsByClassName('copy_code');
+	  for (ce = 0; ce < copy_elements.length; ce++){
+	  	copy_elements[ce].addEventListener('click', function(){
+			code_to_copy = this.getAttribute('code');
+			console.log('code_to_copy = ' + code_to_copy);
+			copyTextToClipboard(code_to_copy, this);
+	    }, false);
 	  }
 
 
@@ -310,7 +353,12 @@
 	  
 	  function start_game(type){
 		console.log('start game');
-		wait_opponent_view();
+		if (type == 'challenge'){
+			wait_challenge_view();
+		} else {
+			wait_opponent_view();
+		}
+		
 		  
 	  	fetch('/new-game', {
 	          method: "POST",
@@ -331,10 +379,12 @@
 	  		  console.log(response);
 	  		  game_id = response.g_id;
 	  		  if (response.meta == 'easy-bot'){
-	  			 setCookie('game_id', game_id);
+	  			 //setCookie('game_id', game_id);
 	  		  	 window.location.href = './t1/' + response.g_id;
 	  			 //document.location.reload(true);
-	  		  } else if (response.meta == 'waiting for p2'){
+	  		  } else if (response.meta == 'medium-bot'){
+			  	  window.location.href = './' + response.server + 'n/' + response.g_id;
+		  	  } else if (response.meta == 'waiting for p2'){
 	  			  waiting_for_p2(response.g_id);
 	  		  }
 		  
@@ -394,6 +444,7 @@
 	  
 	  document.getElementById('start_game_btn').addEventListener('click', start_game.bind(null, 'automatch'), false);
 	  document.getElementById('challenge_friend_btn').addEventListener('click', start_game.bind(null, 'challenge'), false);
+	  document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
 	  
 	  gblue_el.addEventListener('click', color_selection.bind(null, 'gblue'), false);
 	  purply_el.addEventListener('click', color_selection.bind(null, 'purply'), false);

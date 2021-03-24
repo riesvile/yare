@@ -82,13 +82,14 @@
   <div id="tutorial">
 	  <div id="tutorial_wrap">
 	  	<p id="tut_helper" class="tutorial_text">yare.io is a game where you control your units&nbsp;(spirits) with JavaScript</p>
-		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position);">COPY</span> into the code block below.
+		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position);">COPY</span> into the code block below and press <span id="send_intro">SEND CODE</span>.
 		<!-- <p id="tut_helper" class="tutorial_text">You can hover over the code snippet above for more information about each part</p> -->
 	  </div>
   </div>
   
   <div id="editor_container" class="tutorial_editor">
 <div id="editor">// Your code goes here
+// Activate it by pressing the button bellow or with SHIFT+ENTER
 
 </div>
   </div>  
@@ -97,6 +98,7 @@
   
   <div id="update_switch_wrapper">
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
+  <div id="shortcut_info">SHIFT + ENTER</div>
   <div id="switch_view" class="mobile_only"><span class="switch_ico">aa</span></div>
   </div>
   
@@ -152,6 +154,12 @@
 	  var nqq = editor.getSession().getValue().split("\n").length; // To count total no. of lines
 	  editor.gotoLine(nqq); //Go to end
 	  
+	  editor.commands.addCommand({
+	      name: "update_code",
+	      exec: function() {update_code();},
+	      bindKey: {mac: "shift-enter", win: "shift-enter"}
+	  })
+	  
 	  
 	  var x = 0;
 	  var y = 0;
@@ -171,6 +179,7 @@
 	  var pla2 = '';
 	  
 	  var game_type = '';
+	  var game_active = 1;
 	  var tutorial_started = 0;
 	  var tutorial_phase = 0;
 	  var tutorial_info_view = 0;
@@ -179,165 +188,174 @@
 	  
 	  var energy_processed = {};
 	  var base_drawn = {};
+	  var elapsed = 0;
+	  var prev = 0;
+	  
 	  
 	  var this_server = 't1';
 	  
 	  load_start();
 	  
-	  const socket = new WebSocket('wss://yare.io:443' + this_server + '/' + this_game_id); // wss://yare.io:443
-	  //socket.binaryType = "arraybuffer";
-	  socket.addEventListener('open', function(event){
-		  console.log('Connected to wsws server');
-	  })
+	  var socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
-	  socket.addEventListener('message', function(event){
+	  function connectSocket(){
 		  
-		  energy_processed = {};
-		  base_drawn = {};
+		  socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 		  
-		  tick_counter = 0;
+		  //socket.binaryType = "arraybuffer";
+		  socket.addEventListener('open', function(event){
+			  console.log('Connected to wsws server');
+		  })
+	  
+		  socket.addEventListener('message', function(event){
 		  
-		  try {
-			 incoming = JSON.parse(event.data);
-			 console.log(incoming);
+			  energy_processed = {};
+			  base_drawn = {};
+		  
+			  tick_counter = 0;
+			  elapsed = 0;
+		  
+			  try {
+				 incoming = JSON.parse(event.data);
+				 //console.log(incoming);
 			 
-			 //birthLen = incoming.birth.length;
-			 //for (i = 0; i < birthLen; i++){
-			 //	birth_queue.push(incoming.birth[i]);
-			 //}
+				 //birthLen = incoming.birth.length;
+				 //for (i = 0; i < birthLen; i++){
+				 //	birth_queue.push(incoming.birth[i]);
+				 //}
 			 
-			 if (incoming.birth.length > 0){
-				 birth_queue = incoming.birth;
-				 //console.log(birth_queue);
-			 } else {
-				 birth_queue = [];
-			 }
+				 if (incoming.birth.length > 0){
+					 birth_queue = incoming.birth;
+					 //console.log(birth_queue);
+				 } else {
+					 birth_queue = [];
+				 }
 			 
-			 if (incoming.move.length > 0){
-				 move_queue = incoming.move;
-			 } else {
-				 move_queue = [];
-			 }
+				 if (incoming.move.length > 0){
+					 move_queue = incoming.move;
+				 } else {
+					 move_queue = [];
+				 }
 			 
-			 if (incoming.energize.length > 0){
-				 energize_queue = incoming.energize;
-			 } else {
-				 energize_queue = [];
-			 }
+				 if (incoming.energize.length > 0){
+					 energize_queue = incoming.energize;
+				 } else {
+					 energize_queue = [];
+				 }
 			 
-			 if (incoming.death.length > 0){
-				 death_queue = incoming.death;
-			 } else {
-				 death_queue = [];
-			 }
+				 if (incoming.death.length > 0){
+					 death_queue = incoming.death;
+				 } else {
+					 death_queue = [];
+				 }
 			 
-			 if (incoming.error_msg.length > 0){
-				 console.log(incoming.error_msg);
-			 }
+				 if (incoming.error_msg.length > 0){
+					 //console.log(incoming.error_msg);
+				 }
 			 
-			 if (incoming.console1.length > 0){
-				 console.log(incoming.console1);
-			 }
+				 if (incoming.console1.length > 0){
+					 //console.log(incoming.console1);
+				 }
 			 
-			 if (incoming.console2.length > 0){
-				 console.log(incoming.console2);
-			 }
+				 if (incoming.console2.length > 0){
+					 //console.log(incoming.console2);
+				 }
 			 
-			 if (incoming.tutorial.length > 0){
-				 console.log('tutorial !!!!!!!!!!!!!!!!!!!');
-				 console.log(incoming.tutorial[0]);
-				 for (t = 0; t < incoming.tutorial[0].length; t++){
-					 if (incoming.tutorial[0][t] == 1){
-						 tutorial_phase = t + 1;
-						 console.log('tutorial phase = ' + tutorial_phase);
+				 if (incoming.tutorial.length > 0){
+					 //console.log('tutorial !!!!!!!!!!!!!!!!!!!');
+					 //console.log(incoming.tutorial[0]);
+					 for (t = 0; t < incoming.tutorial[0].length; t++){
+						 if (incoming.tutorial[0][t] == 1){
+							 tutorial_phase = t + 1;
+							 //console.log('tutorial phase = ' + tutorial_phase);
+						 }
 					 }
 				 }
-			 }
 			 
-			 if (tutorial_started == 0){
+				 if (tutorial_started == 0){
 			 	
-			 }
-			 
-			 if (tut_helper_phase != tutorial_phase){
-				 tut_helper_phase = tutorial_phase;
-				 var tut_wrap_edge = 0;
-				 
-				 switch(tutorial_phase){
-					 case 0:
-						 break;
-					 case 1:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p1'];
-						 tut_phase_success();
-						 break;
-					 case 2:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p2'];
-						 tut_phase_success();
-						 break;
-					 case 3:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p3'];
-						 var ttexts = document.getElementsByClassName('tutorial_text');
-					   	 for (tt = 0; tt < ttexts.length; tt++){
-					   		  ttexts[tt].style.fontSize = '20px';
-							  ttexts[tt].style.lineHeight = '32px';
-					   	 }
-						 tut_phase_success();
-						 break;
-					 case 4:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p4'];
-						 var ttexts = document.getElementsByClassName('tutorial_text');
-						 tut_phase_success();
-						 break;
-					 case 5:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p5'];
-						 tut_phase_success();
-						 break;
-					 case 6:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p6'];
-						 var ttexts = document.getElementsByClassName('tutorial_text');
-					   	 for (tt = 0; tt < ttexts.length; tt++){
-					   		  ttexts[tt].style.fontSize = '20px';
-							  ttexts[tt].style.lineHeight = '32px';
-					   	 }
-						 tut_phase_success();
-						 break;
-					 case 7:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p7'];
-						 tut_phase_success();
-						 break;
-					 case 8:
-						 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p8'];
-						 var ttexts = document.getElementsByClassName('tutorial_text');
-					   	 for (tt = 0; tt < ttexts.length; tt++){
-					   		  ttexts[tt].style.fontSize = '20px';
-							  ttexts[tt].style.lineHeight = '32px';
-					   	 }
-						 tut_phase_success();
-						 break;
-					 default:
-						 console.log('tutorial defaulted');
 				 }
+			 
+				 if (tut_helper_phase != tutorial_phase){
+					 tut_helper_phase = tutorial_phase;
+					 var tut_wrap_edge = 0;
 				 
-			 	 setTimeout(function(){
-					 tut_wrap_edge = document.getElementById('tutorial_wrap').getBoundingClientRect().bottom;
-					 //document.getElementById('editor_container').style.top = tut_wrap_edge - 300 + "px";
-			 	 }, 100);
+					 switch(tutorial_phase){
+						 case 0:
+							 break;
+						 case 1:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p1'];
+							 tut_phase_success();
+							 break;
+						 case 2:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p2'];
+							 tut_phase_success();
+							 break;
+						 case 3:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p3'];
+							 var ttexts = document.getElementsByClassName('tutorial_text');
+						   	 for (tt = 0; tt < ttexts.length; tt++){
+						   		  ttexts[tt].style.fontSize = '20px';
+								  ttexts[tt].style.lineHeight = '32px';
+						   	 }
+							 tut_phase_success();
+							 break;
+						 case 4:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p4'];
+							 var ttexts = document.getElementsByClassName('tutorial_text');
+							 tut_phase_success();
+							 break;
+						 case 5:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p5'];
+							 tut_phase_success();
+							 break;
+						 case 6:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p6'];
+							 var ttexts = document.getElementsByClassName('tutorial_text');
+						   	 for (tt = 0; tt < ttexts.length; tt++){
+						   		  ttexts[tt].style.fontSize = '20px';
+								  ttexts[tt].style.lineHeight = '32px';
+						   	 }
+							 tut_phase_success();
+							 break;
+						 case 7:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p7'];
+							 tut_phase_success();
+							 break;
+						 case 8:
+							 document.getElementById('tutorial_wrap').innerHTML = tutorial_strings['p8'];
+							 var ttexts = document.getElementsByClassName('tutorial_text');
+						   	 for (tt = 0; tt < ttexts.length; tt++){
+						   		  ttexts[tt].style.fontSize = '20px';
+								  ttexts[tt].style.lineHeight = '32px';
+						   	 }
+							 tut_phase_success();
+							 break;
+						 default:
+							 console.log('tutorial defaulted');
+					 }
+				 
+				 	 setTimeout(function(){
+						 tut_wrap_edge = document.getElementById('tutorial_wrap').getBoundingClientRect().bottom;
+						 //document.getElementById('editor_container').style.top = tut_wrap_edge - 300 + "px";
+				 	 }, 100);
 				 
 				 
-			   	 code_elements = document.querySelectorAll('.tutorial_text code');
-			   	 for (ce = 0; ce < code_elements.length; ce++){
-			   		  code_elements[ce].addEventListener('mousemove', tutorial_box, false);
-			   		  code_elements[ce].addEventListener('mouseleave', tutorial_box_out, false);
-			   	 }
+				   	 code_elements = document.querySelectorAll('.tutorial_text code');
+				   	 for (ce = 0; ce < code_elements.length; ce++){
+				   		  code_elements[ce].addEventListener('mousemove', tutorial_box, false);
+				   		  code_elements[ce].addEventListener('mouseleave', tutorial_box_out, false);
+				   	 }
 				 
-			   	 copy_elements = document.getElementsByClassName('copy_code');
-			   	 for (ce = 0; ce < copy_elements.length; ce++){
-			   	  	copy_elements[ce].addEventListener('click', function(){
-			   			code_to_copy = this.getAttribute('code');
-			   			console.log('code_to_copy = ' + code_to_copy);
-			   			copyTextToClipboard(code_to_copy, this);
-			   	    }, false);
-			   	 }
-			 }
+				   	 copy_elements = document.getElementsByClassName('copy_code');
+				   	 for (ce = 0; ce < copy_elements.length; ce++){
+				   	  	copy_elements[ce].addEventListener('click', function(){
+				   			code_to_copy = this.getAttribute('code');
+				   			//console.log('code_to_copy = ' + code_to_copy);
+				   			copyTextToClipboard(code_to_copy, this);
+				   	    }, false);
+				   	 }
+				 }
 			 
 			 
 			 
@@ -345,113 +363,121 @@
 			
 				 
 				 
-		  } catch (e) {
-			  console.log(e);
-		  }
+			  } catch (e) {
+				  //console.log(e);
+			  }
 		  
-		  //world_initiation
-		  try {
-	 		 if (incoming.units.length > 0){
-	 			 units_queue = incoming.units;
-	 			 console.log('units_queue');
-	 			 console.log(units_queue);
-	 		 } else {
-	 			 units_queue = [];
-	 		 }
+			  //world_initiation
+			  try {
+		 		 if (incoming.units.length > 0){
+		 			 units_queue = incoming.units;
+		 			 //console.log('units_queue');
+		 			 //console.log(units_queue);
+		 		 } else {
+		 			 units_queue = [];
+		 		 }
 			 
-			 if (incoming.stars.length > 0){
-				 stars_queue = incoming.stars;
-	 			 console.log('stars_queue');
-	 			 console.log(stars_queue);
-			 }
-			 
-			 if (incoming.bases.length > 0){
-				 bases_queue = incoming.bases;
-	 			 console.log('bases_queue');
-	 			 console.log(bases_queue);
-			 }
-			 
-			 console.log('incoming.tut');
-			 console.log(incoming.tut);
-			 
-			 if (incoming.tut == 1){
-				 game_type = 'tutorial';
-			 } else {
-				 game_type = 'real';
-				 document.getElementById('logo').style.display = 'none';
-				 document.getElementById('grad_top').style.opacity = '0.69';
-				 document.getElementById('overlay_pre_start').style.display = 'none';
-				 document.getElementById('overlay_start').style.display = 'none';
-				 document.getElementById('tutorial').style.display = 'none';
-				 document.getElementById('editor_container').style.position = 'fixed';
-				 document.getElementById('editor_container').style.top = '20px';
-				 
-				 document.getElementById('panel').classList.remove("panel_start");
-			 }
-			 
-			 console.log('incoming =======================================');
-			 console.log(incoming);
-			 pla1 = incoming.players[0];
-			 pla2 = incoming.players[1];
-			 
-			 console.log('playersrsrsr');
-			 console.log(pla1);
-			 
-			 
-		  } catch (e) {
-			  console.log(e);
-		  }
-		  
-		  
-		  //code_update
-		  
-		  try {
- 			 codecoming = JSON.parse(event.data);
- 			 console.log('codecoming');
-			 console.log(codecoming);
-			 
-			 console.log('pla1 = ' + pla1);
-			 console.log('cookie.user_id = ' + getCookie('user_id'));
-	 		
-			 if (pla1 == getCookie('user_id')){
-				 if (codecoming.player1){
-					 if (pla1 == "anonymous" && getCookie('session_id') == codecoming.player1_session){
-						 console.log('anonymous user oisjhfd oidjf iosdh fiodh giodfj giodfj giojhdfiog diohfg iodfhg iodfh giodf hgiodf hgiodhfgiodhf giodfh iog dfiogh ');
-						 editor.setValue(codecoming.player1, 1);
-						 console.log(editor.getValue().length);
-					 	 if (editor.getValue().length != 24){
-							 tutorial_started = 1;
-							 tut_start();
-					 	 }
-						 
-					 } else if (pla1 != "anonymous" && pla1 == getCookie('user_id')){
-					 	 editor.setValue(codecoming.player1, 1);
-					 	 if (editor.getValue().length != 24){
-							 tutorial_started = 1;
-							 tut_start();
-					 	 }
-					 }
+				 if (incoming.stars.length > 0){
+					 stars_queue = incoming.stars;
+		 			 //console.log('stars_queue');
+		 			 //console.log(stars_queue);
 				 }
-			 } else if (pla2 == getCookie('user_id')){
-				if (codecoming.player2){
-			 		editor.setValue(codecoming.player2, 1);
-				}
-			 }
+			 
+				 if (incoming.bases.length > 0){
+					 bases_queue = incoming.bases;
+		 			 //console.log('bases_queue');
+		 			 //console.log(bases_queue);
+				 }
+			 
+				 //console.log('incoming.tut');
+				 //console.log(incoming.tut);
+			 
+				 if (incoming.tut == 1){
+					 game_type = 'tutorial';
+					 if (tutorial_started == 0){
+					 	document.getElementById('update_code').innerHTML = "<span>SEND CODE</span>";
+					 }
+					 
+				 } else {
+					 game_type = 'real';
+					 document.getElementById('logo').style.display = 'none';
+					 document.getElementById('grad_top').style.opacity = '0.69';
+					 document.getElementById('overlay_pre_start').style.display = 'none';
+					 document.getElementById('overlay_start').style.display = 'none';
+					 document.getElementById('tutorial').style.display = 'none';
+					 document.getElementById('editor_container').style.position = 'fixed';
+					 document.getElementById('editor_container').style.top = '20px';
+				 
+					 document.getElementById('panel').classList.remove("panel_start");
+				 }
+			 
+				 //console.log('incoming =======================================');
+				 //console.log(incoming);
+				 pla1 = incoming.players[0];
+				 pla2 = incoming.players[1];
+			 
+				 //console.log('playersrsrsr');
+				 //console.log(pla1);
 			 
 			 
-		  } catch (e) {
-			  console.log(e);
-		  }
+			  } catch (e) {
+				  //console.log(e);
+			  }
+		  
+		  
+			  //code_update
+		  
+			  try {
+	 			 codecoming = JSON.parse(event.data);
+	 			 //console.log('codecoming');
+				 //console.log(codecoming);
+			 
+				 //console.log('pla1 = ' + pla1);
+				 //console.log('cookie.user_id = ' + getCookie('user_id'));
+	 		
+				 if (pla1 == getCookie('user_id')){
+					 if (codecoming.player1){
+						 if (pla1 == "anonymous" && getCookie('session_id') == codecoming.player1_session){
+							 //console.log('anonymous user oisjhfd oidjf iosdh fiodh giodfj giodfj giojhdfiog diohfg iodfhg iodfh giodf hgiodf hgiodhfgiodhf giodfh iog dfiogh ');
+							 editor.setValue(codecoming.player1, 1);
+							 //console.log(editor.getValue().length);
+						 	 if (editor.getValue().length != 24){
+								 tutorial_started = 1;
+								 tut_start();
+						 	 }
+						 
+						 } else if (pla1 != "anonymous" && pla1 == getCookie('user_id')){
+						 	 editor.setValue(codecoming.player1, 1);
+						 	 if (editor.getValue().length != 24){
+								 tutorial_started = 1;
+								 tut_start();
+						 	 }
+						 }
+					 }
+				 } else if (pla2 == getCookie('user_id')){
+					if (codecoming.player2){
+				 		editor.setValue(codecoming.player2, 1);
+					}
+				 }
+			 
+			 
+			  } catch (e) {
+				  //console.log(e);
+			  }
 		  
 		 
 		  
   		 
-  		  y = Date.now();
-  		  z = y - x;
-  		  console.log('roundtrip: ');
-  		  console.log(z);
+	  		  y = Date.now();
+	  		  z = y - x;
+	  		  //console.log('roundtrip: ');
+	  		  //console.log(z);
 		  
-	  });
+		  });
+	  }
+	  
+	  connectSocket();
+	  
 	  
 	  const sendMessage = () => {
 		  x = Date.now();
@@ -502,16 +528,18 @@
 	  }
 	  
 	  function update_code(){
+		  update_success();
+		  if (tutorial_started == 0){
+			  tutorial_started = 1;
+			  document.getElementById('update_code').innerHTML = "<span>UPDATE CODE</span>";
+			  tut_start();
+		  }
+		  console.log('clicked');
 		  user_code = editor.getValue();
 		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  }
 	  
 	  document.getElementById('update_code').addEventListener("click",function(e){
-		  if (tutorial_started == 0){
-			  tutorial_started = 1;
-			  tut_start();
-		  }
-		  console.log('clicked');
 		  update_code();
 	  },false);
 	  
@@ -557,8 +585,6 @@
 		  if (tutorial_info_view == 0 && mousey != 1){
 			  tutorial_info_view = 1;
 			  tut_show_box();
-			  
-			  
 		  }
 		  
 		  if (el_id != tut_helper_id){
@@ -636,6 +662,9 @@
 	    }, false);
 	  }
 	  
+	  
+	  document.getElementById('send_intro').addEventListener('mouseenter', highlight_update_btn, false);
+	  document.getElementById('send_intro').addEventListener('mouseleave', nolight_update_btn, false);
 	  
 	  
   </script>

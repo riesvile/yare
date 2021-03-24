@@ -1,6 +1,7 @@
 //flags
 var active_session = 0;
 var game_id = '';
+var link_filled = 0;
 
 if (getCookie('session_id') != null && getCookie('user_id') != null){
 	if (getCookie('user_id') == "anonymous"){
@@ -81,10 +82,12 @@ function new_game(type){
 		  console.log(response);
 		  game_id = response.g_id;
 		  if (response.meta == 'easy-bot'){
-			 setCookie('game_id', game_id);
+			 //setCookie('game_id', game_id);
 			 //window.location.href = './' + response.server + 'n/' + response.g_id;
 		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
 			 //document.location.reload(true);
+		  } else if (response.meta == 'medium-bot'){
+			  window.location.href = './' + response.server + 'n/' + response.g_id;
 		  } else if (response.meta == 'waiting for p2'){
 			  waiting_for_p2(response.g_id);
 		  }
@@ -115,11 +118,18 @@ function waiting_for_p2(g_id){
 	      .then(response => {
 			  //redirect to game id
 			  console.log(response);
+			  if (link_filled == 0){
+				  link_filled = 1;
+				  document.getElementById('ch_link').innerHTML = 'https://yare.io/challenge/' + g_id;
+				  document.getElementById('friend_link').setAttribute('code', 'https://yare.io/challenge/' + g_id);
+			  }
+			  
 			  if (response.data == 'not yet'){
 				  console.log('still nothing');
 			  } else if (response.data == 'ready'){
 				  console.log('game is ready');
-				  document.getElementById("get_in").style.display = "block";
+				  //document.getElementById("get_in").style.display = "block";
+				  window.location = './' + response.server + 'n/' + game_id;
 			  }
 		  
 		 

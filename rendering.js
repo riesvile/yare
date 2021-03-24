@@ -62,9 +62,9 @@ function offsetUpdate(){
 function onPointerDown(e){ 
 	e = e || window.event;
 	var el_id = (e.target || e.srcElement).id;
-	console.log('down id= ' + el_id);
+	//console.log('down id= ' + el_id);
 	
-	console.log(el_id);
+	//console.log(el_id);
 	if (el_id != 'base_canvas'){
 		return;
 	} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
@@ -95,7 +95,7 @@ function onPointerDown(e){
 	current_offsetY = offsetY;
 }
 function onPointerMove(e){
-	console.log(disableSelection);
+	//console.log(disableSelection);
 	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
 	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
 	    var touch = evt.touches[0] || evt.changedTouches[0];
@@ -250,6 +250,7 @@ function game_over(winner){
 	document.getElementById('player1_name').innerHTML = pla1;
 	document.getElementById('player2_name').innerHTML = pla2;
 	game_over_box();
+	game_active = 0;
 }
 
 
@@ -283,6 +284,7 @@ class Spirit {
 		this.hp = 1;
 		this.move_speed = 1;
 		this.energy_capacity = size * 10;
+		this.player_id = player;
 		//this.player_id = player; set up later
 		living_spirits.push(this);
 	}
@@ -307,8 +309,11 @@ class Spirit {
 		//}
 		
 		
-		this.position[0] = origin[0] + (incr[0] / tick_counter_avg);
-		this.position[1] = origin[1] + (incr[1] / tick_counter_avg);
+		this.position[0] = origin[0] + (incr[0] * (elapsed / 1000));
+		this.position[1] = origin[1] + (incr[1] * (elapsed / 1000));
+		
+		//this.position[0] = origin[0] + (incr[0] / tick_counter_avg);
+		//this.position[1] = origin[1] + (incr[1] / tick_counter_avg);
 		//this.draw();
 	}
 	
@@ -343,17 +348,19 @@ class Spirit {
 		} else {
 			c.lineWidth = this.size / 4;
 		}
-		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] + 0.8 - (1 - (spirit_percent_energy/2))) + ')';
-		if (this.hp > 0){
+		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.8) + ')';
+		//if (this.hp > 0){
 			c.stroke();
-		}
+		//}
 		
 		
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], this.size * (spirit_percent_energy), 0, Math.PI * 2, false);
-		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy * 10) + ')';
+		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
 		c.fill();
 	}
+	
+	//color_parts[3] * (spirit_percent_energy/2 + 0.69)
 	
 }
 
@@ -570,7 +577,12 @@ function initiate_world(){
 	world_initiated = 1;
 }
 
-function render_state(){
+function render_state(timestamp){
+	
+	elapsed = timestamp - prev;
+	prev = timestamp;
+	
+	//console.log(elapsed);
 	
 	//offsetX = offsetX + 1;
 	//offsetY = offsetY + 1;
@@ -609,8 +621,8 @@ function render_state(){
 		
 		for (j = 0; j<bases.length; j++){
 			if (bases[j].player_id == birth_queue[i].player_id) bases[j].energy -= birth_queue[i].cost;
-			console.log('bases.length = ' + bases.length);
-			console.log('bases[' + j + '].player_id = ' + bases[j].player_id);
+			//console.log('bases.length = ' + bases.length);
+			//console.log('bases[' + j + '].player_id = ' + bases[j].player_id);
 		}
 		//birth_queue.splice(i, 1);
 	}
@@ -661,17 +673,48 @@ function render_state(){
 		} else if (energize_queue[i][1].startsWith('base')) {
 			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
 			if (energy_processed[energize_queue[i][0]] != 1){
-				spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
-				base_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-				//base_lookup[energize_queue[i][1]].draw();
-				energy_processed[energize_queue[i][0]] = 1;
-				//console.log('base energy');
-				//console.log(base_lookup[energize_queue[i][1]].energy);
-				//baseOffsetUpdate();
+				if (spirit_lookup[energize_queue[i][0]].player_id != base_lookup[energize_queue[i][1]].player_id){
+					spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+					base_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
+					//base_lookup[energize_queue[i][1]].draw();
+					energy_processed[energize_queue[i][0]] = 1;
+					//console.log('base energy');
+					//console.log(base_lookup[energize_queue[i][1]].energy);
+					//baseOffsetUpdate();
+				} else {
+					spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+					base_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+					//base_lookup[energize_queue[i][1]].draw();
+					energy_processed[energize_queue[i][0]] = 1;
+					//console.log('base energy');
+					//console.log(base_lookup[energize_queue[i][1]].energy);
+					//baseOffsetUpdate();
+				}
+				
+				
 			}
 		} else {
 			if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
 				draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
+				if (energy_processed[energize_queue[i][0]] != 1){
+					if (spirit_lookup[energize_queue[i][0]].player_id != spirit_lookup[energize_queue[i][1]].player_id){
+						spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
+						spirit_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
+						//base_lookup[energize_queue[i][1]].draw();
+						energy_processed[energize_queue[i][0]] = 1;
+						//console.log('base energy');
+						//console.log(base_lookup[energize_queue[i][1]].energy);
+						//baseOffsetUpdate();
+					} else {
+						spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+						spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+						//base_lookup[energize_queue[i][1]].draw();
+						energy_processed[energize_queue[i][0]] = 1;
+						//console.log('base energy');
+						//console.log(base_lookup[energize_queue[i][1]].energy);
+						//baseOffsetUpdate();
+					}
+				}
 			} 
 			
 		}

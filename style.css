@@ -68,18 +68,22 @@ div.tutorial_editor {
 	left: 0;
 }
 
-#update_code {
-	width: 212px;
-	height: 67px;
-	background-color: #2a2e4e;
-	line-height: 67px;
+#update_switch_wrapper {
 	position: fixed;
 	bottom: 28px;
 	left: 28px;
+}
+
+#update_code {
+	width: 212px;
+	height: 67px;
+	background-color: rgba(42, 46, 78, 1);
+	line-height: 67px;
 	border-radius: 12px;
 	cursor: pointer;
 	display: block;
 	z-index: 2000;
+	float: left;
 	/*transform-origin: top left;
 	transform: translate(10vw, -20vh);*/
 }
@@ -87,11 +91,30 @@ div.tutorial_editor {
 #update_code span {
 	font-size: 14px;
 	font-weight: 500;
-	color: #f4f6f8;
+	color: rgba(242, 246, 250, 0.92);
 	letter-spacing: 1px;
 	text-align: center;
 	display: block;
 	padding-top: 1px;
+}
+
+#shortcut_info {
+	width: 200px;
+	height: 67px;
+	font-size: 14px;
+	font-weight: 500;
+	letter-spacing: 1px;
+	color: rgba(242, 246, 250, 0.49);
+	line-height: 67px;
+	float: left;
+	margin-left: 24px;
+}
+
+#send_intro {
+	color: rgba(242, 246, 250, 0.69);
+	font-weight: 600;
+	font-size: 16px;
+	letter-spacing: 0.5px;
 }
 
 #get_in {
@@ -842,7 +865,7 @@ span.shape_name {
 	opacity: 0.4;
 }
 
-#start_game_btn, #cancel_game_btn {
+#start_game_btn, #cancel_game_btn, #cancel_challenge_btn {
 	font-size: 16px;
 	font-weight: 500;
 	background-color: rgba(65, 63, 177, 1);
@@ -852,9 +875,11 @@ span.shape_name {
 	float: left;
 }
 
-#cancel_game_btn {
+#cancel_game_btn, #cancel_challenge_btn {
 	background-color: rgba(128, 140, 255, 0.12);
 	color: rgba(242, 246, 250, 0.86);
+	clear: both;
+	margin-top: 20px;
 }
 
 #start_game_btn:hover {
@@ -879,11 +904,27 @@ span.game_or, span.cancel_or {
 	color: rgba(133, 186, 234, 1);
 }
 
+#friend_link {
+	margin-top: -8px;
+	margin-bottom: 20px;
+	display: inline-block;
+	font-size: 13px;
+}
+
+#ch_link {
+    display: inline-block;
+    float: left;
+    font-size: 20px;
+    margin-right: 20px;
+	margin-top: -8px;
+	font-weight: 500;
+}
+
 
 /* ----- */
 
 
-#waiting_game {
+#waiting_game, #waiting_challenge {
 	opacity: 0;
 	display: none;
 }

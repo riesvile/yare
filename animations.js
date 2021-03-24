@@ -277,6 +277,15 @@ function login_success(user_name){
 			duration: 4000
 		});
 	}
+	
+	try {
+		if (game_active == 0){
+			 window.location = 'https://yare.io/hub';
+		}
+	} catch (error) {
+	  //console.error(error);
+	}
+	
 }
 
 function wait_server(){
@@ -372,6 +381,52 @@ function resizing(){
 	new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
 }
 
+function wait_start_view(){
+	
+}
+
+function wait_challenge_view(){
+  	anime({
+  		targets: '#user_selections',
+  		translateY: [0, -10],
+  		opacity: [1, 0],
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#pre_game',
+  		translateY: [0, -10],
+  		opacity: [1, 0],
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+	
+	setTimeout(function(){
+  		document.getElementById('user_selections').style.display = 'none';
+		document.getElementById('pre_game').style.display = 'none';
+		document.getElementById('waiting_for_opponent').style.display = 'block';
+		document.getElementById('waiting_challenge').style.display = 'block';
+		
+		document.getElementById('waiting_head_text').innerHTML = 'Waiting for a friend...';
+		document.getElementById('waiting_secondary_text').style.display = 'none';
+	  	anime({
+	  		targets: '#waiting_for_opponent',
+	  		translateY: [-10, 0],
+	  		opacity: [0, 1],
+	  		easing: 'easeOutQuad',
+	  		duration: 300
+	  	});
+	  	anime({
+	  		targets: '#waiting_challenge',
+	  		translateY: [-10, 0],
+	  		opacity: [0, 1],
+	  		easing: 'easeOutQuad',
+	  		duration: 300
+	  	});
+	}, 300);
+  
+}
+
 function wait_opponent_view(){
   	anime({
   		targets: '#user_selections',
@@ -419,6 +474,36 @@ function code_copy_success(target){
 		borderColor: ['rgba(133, 234, 143, 0.55)', 'rgba(118, 127, 136, 0.48)'],
   		easing: 'easeOutQuad',
   		duration: 800
+  	});
+}
+
+function update_success(){
+  	anime({
+  		targets: '#update_code',
+		color: ['rgba(255, 255, 255, 1)', 'rgba(242, 246, 250, 0.92)'],
+  		backgroundColor: ['rgba(142, 196, 148, 1)', 'rgba(42, 46, 78, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 800
+  	});
+}
+
+function highlight_update_btn(){
+  	anime({
+  		targets: '#update_code',
+		color: ['rgba(242, 246, 250, 0.92)', 'rgba(255, 255, 255, 1)'],
+  		backgroundColor: ['rgba(42, 46, 78, 1)', 'rgba(248, 71, 71, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 10
+  	});
+}
+
+function nolight_update_btn(){
+  	anime({
+  		targets: '#update_code',
+		color: ['rgba(255, 255, 255, 1)', 'rgba(242, 246, 250, 0.92)'],
+  		backgroundColor: ['rgba(248, 71, 71, 1)', 'rgba(42, 46, 78, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 10
   	});
 }
 
@@ -514,6 +599,7 @@ function tut_phase_success(){
   		easing: 'easeOutQuad',
   		duration: 3000
 	});
+	document.getElementById('panel').scrollTop = 0;
 }
 
 

@@ -133,8 +133,75 @@ parentPort.on("message", message => {
 	  	.then((result) => {
 			console.log('p1_color');
 			console.log(result[0].p1_color);
-			
-			
+			if (result[0].player2 == 'medium-bot'){
+				player2_code = player2_code = `
+					
+				var this_player_id = players['p2'];		
+				
+				var my_spirits = [];
+				
+				
+				
+				for (q = 0; q < (Object.keys(spirits)).length; q++){
+					if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
+						my_spirits.push(spirits[Object.keys(spirits)[q]]);
+					}
+				}
+				
+				global['base'] = Object.values(bases)[1];
+				global['enemy_base'] = Object.values(bases)[0];
+				global['star_zxq'] = stars['star_zxq'];
+				global['star_a1c'] = stars['star_a1c'];
+				
+				for (i=0; i<my_spirits.length; i++){
+					my_spirits[i].move(star_a1c.position);
+					my_spirits[i].energize(my_spirits[i]);
+	
+				    if (my_spirits[i].energy == my_spirits[i].energy_capacity){
+						memory[my_spirits[i].id] = 'charging';
+					} else if (my_spirits[i].energy == 0){
+						memory[my_spirits[i].id] = 'harvesting';
+					}
+
+					if (memory[my_spirits[i].id] == 'charging'){
+				    	my_spirits[i].move(base.position);
+				    	my_spirits[i].energize(base);
+					} else if (memory[my_spirits[i].id] == 'harvesting'){
+				    	my_spirits[i].move(star_a1c.position);
+						my_spirits[i].energize(my_spirits[i]);
+					}
+				}
+
+				if (base.sight.enemies.length > 0){
+					var invader = spirits[base.sight.enemies[0]];
+					for (i=0; i<my_spirits.length; i++){
+						if (my_spirits[i].energy > invader.energy / 2 && memory['attackers'] <= 3){
+							memory[my_spirits[i].id] = 'attacker';
+							if (memory['attackers'] == undefined){
+								memory['attackers'] = 1;
+							} else {
+								memory['attackers'] += 1;
+							}
+						}
+						if (memory[my_spirits[i].id] == 'attacker'){
+							my_spirits[i].move(invader.position);
+							my_spirits[i].energize(invader);
+						}
+					}
+				}
+
+				if (my_spirits.length >= 4){
+					if (my_spirits[0].energy == my_spirits.energy_capacity){
+						memory[my_spirits[0].id] = 'invader';
+					}
+					if (memory[my_spirits[0].id] == 'invader'){
+						my_spirits[0].move(enemy_base.position);
+						my_spirits[0].energize(enemy_base);
+					}
+				}
+				
+				`;
+			}
 			
 			User.find({user_id: players['p1']})
 				.then((result_p1) => {
@@ -180,8 +247,8 @@ function user_code(){
 		if (workerData[1] == 'tutorial'){
 			//console.log(player1_code);
 			var helper_count = (player1_code.match(/my_spirits/g) || []).length;
-			console.log('my_spirits count');
-			console.log(helper_count);
+			//console.log('my_spirits count');
+			//console.log(helper_count);
 			
 			if (helper_count > 2){
 				console.log('tutorial phase 6 half-done');
@@ -237,10 +304,14 @@ players['p2'] = 'zx2';
 var players_update = {};
 players_update['p1'] = 'old';
 
+var spirit_p2_cost = 100;
+
 //tutorial
 if (workerData[1] == 'tutorial'){
 	var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 	var tutorial_flag1 = 0;
+	spirit_p2_cost = 30;
+	
 	
 	player2_code = `
 				//all = spirits.length;
@@ -446,7 +517,7 @@ if (!isMainThread){
 				
 			if (Math.abs(target[0] - this.position[0]) < 0.6 && Math.abs(target[1] - this.position[1]) < 0.6){
 			
-				console.log('not going anywhere');
+				//console.log('not going anywhere');
 				incr[0] = 0;
 				incr[1] = 0;
 				this.position[0] = target[0];
@@ -466,7 +537,7 @@ if (!isMainThread){
 					}
 					
 				} else {
-					console.log('spirit is dead');
+					//console.log('spirit is dead');
 				}
 						
 			}
@@ -476,7 +547,7 @@ if (!isMainThread){
 	
 	
 		energize(target) {
-			console.log('target = ');
+			//console.log('target = ');
 			//console.log(target);
 			var entry_index2 = energize_queue.findIndex(entry2 => entry2[0]['id'] === this.id);
 			
@@ -734,7 +805,7 @@ if (!isMainThread){
 			}
 			
 			
-			console.log('living_spirits[i].qcollisions');
+			//console.log('living_spirits[i].qcollisions');
 			//console.log(living_spirits[i].qcollisions);
 			
 		}
@@ -802,20 +873,24 @@ if (!isMainThread){
 		
 			//objects birth
 			if (base_lookup['base_' + players['p1']].energy >= 100){
-				top_s++;
-				global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1450, 600], 1, 10, players['p1'], colors['player1'], 100);
-				base_lookup['base_' + players['p1']].energy -= 100;
-				global[players['p1'] + top_s].move([1430, 600]);
-				console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-				if (workerData[1] == 'tutorial'){
-					console.log('tutorial phase 5 done');
-					tutorial_phase[4] = 1;
+				if (workerData[1] == 'tutorial' && top_s > 20){
+					console.log('can not have more than 20 spirits in tutorial');
+				} else {
+					top_s++;
+					global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1450, 600], 4, 40, players['p1'], colors['player1'], 100);
+					base_lookup['base_' + players['p1']].energy -= 100;
+					global[players['p1'] + top_s].move([1430, 600]);
+					console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+					if (workerData[1] == 'tutorial'){
+						console.log('tutorial phase 5 done');
+						tutorial_phase[4] = 1;
+					}
 				}
 			}
-			if (base_lookup['base_' + players['p2']].energy >= 30){
+			if (base_lookup['base_' + players['p2']].energy >= spirit_p2_cost){
 				top_q++;
-				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2350, 1400], 1, 10, players['p2'], colors['player2'], 30);
-				base_lookup['base_' + players['p2']].energy -= 30;
+				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2350, 1400], 4, 40, players['p2'], colors['player2'], 30);
+				base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;
 				global[players['p2'] + top_q].move([2380, 1400]);
 				console.log('spirit was born')
 			}
@@ -839,7 +914,7 @@ if (!isMainThread){
 				//tutorial
 				if (workerData[1] == 'tutorial'){
 					try {
-						console.log('tutorial, star position');
+						//console.log('tutorial, star position');
 						//console.log(move_queue[0][2]);
 						if (move_queue[0][2][0] == 900 && move_queue[0][2][1] == 800){
 							console.log('tutorial phase 1 done');
@@ -902,7 +977,7 @@ if (!isMainThread){
 					
 					var potential_structure_collisions = move_queue[i][0].sight.structures;
 					for (k = 0; k < potential_structure_collisions.length; k++){
-						console.log(' ------------------------------- structure potential collisions');
+						//console.log(' ------------------------------- structure potential collisions');
 						//console.log(potential_structure_collisions[k]);
 						
 						
@@ -918,10 +993,10 @@ if (!isMainThread){
 						spirit_before[0] = move_queue[i][0].position[0] - move_queue[i][1][0];
 						spirit_before[1] = move_queue[i][0].position[1] - move_queue[i][1][1];
 							
-						console.log('position now = ' + spirit_position);
-						console.log('position before = ' + spirit_before);
+						//console.log('position now = ' + spirit_position);
+						//console.log('position before = ' + spirit_before);
 						if (get_distance(spirit_position, object_position) < min_distance){
-							console.log('inside');
+							//console.log('inside');
 							//intersection(x0, y0, r0, x1, y1, r1)
 							inter_points = intersection(spirit_before[0], spirit_before[1], base_speed, object_position[0], object_position[1], min_distance);
 							console.log('intersection points:');
@@ -982,25 +1057,25 @@ if (!isMainThread){
 				//if origin == target —> attempt harvest from star
 				if (energize_queue[i][0] == energize_queue[i][1]){
 					for (j = 0; j < energize_queue[i][0].sight.structures.length; j++){
-						console.log('ilook here');
-						console.log(energize_queue[i][0].sight.structures[j]);
+						//console.log('ilook here');
+						//console.log(energize_queue[i][0].sight.structures[j]);
 						if ((energize_queue[i][0].sight.structures[j]).startsWith('star') == true){
-							console.log('its a star its a star its a star its a star its a star its a star its a star its a star');
+							//console.log('its a star its a star its a star its a star its a star its a star its a star its a star');
 							star_distance = get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position);
 							if (star_distance < 200){
 								if (workerData[1] == 'tutorial' && energize_queue[i][0].id == 'anonymous1'){
 									tutorial_phase[1] = 1;
 								}
-								console.log('harvesting');
+								//console.log('harvesting');
 								energize_queue[i][0].energy += energy_value * energize_queue[i][0].size;
 								if (energize_queue[i][0].energy > energize_queue[i][0].energy_capacity) energize_queue[i][0].energy = energize_queue[i][0].energy_capacity;
 								//render energize: [origin, target, energy]
 								render_data2.energize.push([star_lookup[energize_queue[i][0].sight.structures[j]].id, energize_queue[i][0].id, energy_value * energize_queue[i][0].size]);
 							} else {
-								console.log('out of reach');
+								//console.log('out of reach');
 							}
-							console.log(get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position) + ' far away');
-							console.log(energize_queue[i][0].energy);
+							//console.log(get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position) + ' far away');
+							//console.log(energize_queue[i][0].energy);
 						}
 					}
 				}
@@ -1073,8 +1148,8 @@ if (!isMainThread){
 						} else {
 							console.log('no energy to give');
 						}
-						console.log('origin energy: ' + energize_queue[i][0].energy);
-						console.log('target energy: ' + energize_queue[i][1].energy);
+						//console.log('origin energy: ' + energize_queue[i][0].energy);
+						//console.log('target energy: ' + energize_queue[i][1].energy);
 					}
 				
 				}
@@ -1099,8 +1174,8 @@ if (!isMainThread){
 						} else {
 							console.log('no energy to give');
 						}
-						console.log('origin energy: ' + energize_queue[i][0].energy);
-						console.log('target energy: ' + energize_queue[i][1].energy);
+						//console.log('origin energy: ' + energize_queue[i][0].energy);
+						//console.log('target energy: ' + energize_queue[i][1].energy);
 					}				
 				}
 				

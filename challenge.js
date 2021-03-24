@@ -2,6 +2,7 @@
 var active_session = 0;
 var tempURLThing = document.URL.replace('#', '');
 var game_id = /[^/]*$/.exec(tempURLThing)[0];
+console.log('ggggame_id = ' + game_id);
 
 if (getCookie('session_id') != null && getCookie('user_id') != null){
 	if (getCookie('user_id') == "anonymous"){
@@ -45,7 +46,7 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 
 
 
-
+/*
 function p2_ready(){
 	fetch('/confirm-challenge/' + game_id, {
 	        method: "POST",
@@ -73,7 +74,7 @@ function p2_ready(){
 	  });
 	  
 }
-
+*/
 
 
 function setCookie(name,value,days) {

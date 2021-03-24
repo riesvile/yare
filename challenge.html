@@ -1,23 +1,457 @@
 <!doctype html>
 <html>
   <head>
-    <title>yare.io</title>
+    <title>yare.io · challenge</title>
 	<style>
 	</style>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../colors.css">
 	<link rel="stylesheet" href="../style.css">
+	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../anime.min.js"></script>
   </head>
   <body>
 	  
-	  <h1>Challenge – choosing shape and color</h1>
+	  <div id="hector">
+		  <h1 id="logo"><a href="#">yare<span class="logo_lowlight">.io</span></a></h1>
+		  <div class="menu">
+			  <div class="menu_link" id="signed_in">username</div>
+		  </div>
+	  </div>
 	  
-	  <a href="#" id="user_ready" onclick="p2_ready()">Ready</a>
-  
-  	  <br>
-  	  <span id="status_message">status</span>
+	  <div id="overlay"></div>
 	  
-  
+	  <div id="newgame_wrap">
+		  
+	  	<div id="user_selections">
+		  
+		  <h1 id="challenge_head">Challenge · <span id="challenge_p1">player 1</span> vs <span id="challenge_p2">player 2</span>
+		  
+		  <div id="choose_shape_block">
+			  
+			  <h2 class="deer_h">Choose a shape</h2>
+			  <p class="deer_p">See the <a href="#">docs</a> for differences</p>
+			  
+			  <div class="shape_block" id="shape_circles">
+				  <span class="shape_name" id="shape_name_circles">Circles</span>
+			  </div>
+			  <div class="shape_block" id="shape_squares">
+				  <span class="shape_name" id="shape_name_squares">Squares</span>
+			  </div>
+			  <div class="shape_block" id="shape_triangles">
+				  <span class="shape_name" id="shape_name_triangles">Triangles</span>
+			  </div>
+		  </div>
+		
+		  <div id="choose_color_block">
+			    <h2 class="deer_h">Choose a color</h2>
+				<div class="color_option" id="color_gblue_border">
+					<div id="color_gblue"></div>
+				</div>
+				<div class="color_option" id="color_purply_border">
+					<div id="color_purply"></div>
+				</div>
+				<div class="color_option" id="color_redish_border">
+					<div id="color_redish"></div>
+				</div>
+				<div class="color_option" id="color_yerange_border">
+					<div id="color_yerange"></div>
+				</div>
+			  
+		  </div>
+		  
+	  	</div>
+		
+		<div id="waiting_for_opponent">
+			<div id="waiting_illu"></div>
+			<h2 class="deer_h" id="waiting_head_text">Looking for an opponent</h2>
+			<p class="deer_p" id="waiting_secondary_text">Average time: 1 minute</p>
+		</div>
+		  
+		  
+		  
+		  
+		  <div id="start_area">
+			  <div id="pre_game">
+				  <div id="start_game_btn" onclick="p2_ready()">Accept challenge</div>
+		  	  </div>
+			  <div id="waiting_game">
+				  <div id="game_starting">Game is starting...</div>
+			  </div>
+		  </div>
+		  
+		  
+	  </div>
+	  
+	  
+		  
+	  <a href="#" id="get_in" onclick="get_in()">Start game</a>
+	  
+  	  
   </body>
- 
-  <script src="../rendering.js"></script>
-  <script src="../challenge.js"></script>
+  
+  <script>
+	  
+	  function getCookie(name) {
+	      var nameEQ = name + "=";
+	      var ca = document.cookie.split(';');
+	      for(var i=0;i < ca.length;i++) {
+	          var c = ca[i];
+	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	      }
+	      return null;
+	  }
+	  
+	  function eraseCookie(name) {   
+	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	  }
+
+
+	  //colors
+	  
+	  function draw_borders(){
+		  switch(chosen_color){
+			  case 'gblue':
+				  console.log('it was gblue');
+				  chosen_color = 'gblue';
+				  gblue_el.style.borderWidth = '2px';
+				  gblue_el.style.borderColor = 'rgba(28, 196, 240, 1)';
+				  if (chosen_shape == 'circles') {
+					  circles_el.style.borderColor = 'rgba(28, 196, 240, 1)';
+					  document.getElementById('shape_name_circles').style.color = 'rgba(48, 216, 260, 1)';
+				  }
+				  if (chosen_shape == 'squares') {
+					  squares_el.style.borderColor = 'rgba(28, 196, 240, 1)';
+					  document.getElementById('shape_name_squares').style.color = 'rgba(48, 216, 260, 1)';
+				  }
+				  if (chosen_shape == 'triangles') {
+					  triangles_el.style.borderColor = 'rgba(28, 196, 240, 1)';
+					  document.getElementById('shape_name_triangles').style.color = 'rgba(48, 216, 260, 1)';
+				  }
+				  break;
+			  case 'purply':
+				  console.log('it was purply');
+				  chosen_color = 'purply';
+				  purply_el.style.borderWidth = '2px';
+				  purply_el.style.borderColor = 'rgba(128, 140, 255, 1)';
+				  if (chosen_shape == 'circles') {
+					  circles_el.style.borderColor = 'rgba(128, 140, 255, 1)';
+					  document.getElementById('shape_name_circles').style.color = 'rgba(168, 180, 255, 1)';
+				  }
+				  if (chosen_shape == 'squares') {
+					  squares_el.style.borderColor = 'rgba(128, 140, 255, 1)';
+					  document.getElementById('shape_name_squares').style.color = 'rgba(168, 180, 255, 1)';
+				  }
+				  if (chosen_shape == 'triangles') {
+					  triangles_el.style.borderColor = 'rgba(128, 140, 255, 1)';
+					  document.getElementById('shape_name_triangles').style.color = 'rgba(168, 180, 255, 1)';
+				  }
+				  break;
+			  case 'redish':
+				  console.log('it was redish');
+				  chosen_color = 'redish';
+				  redish_el.style.borderWidth = '2px';
+				  redish_el.style.borderColor = 'rgba(235, 119, 103, 1)';
+				  if (chosen_shape == 'circles') {
+					  circles_el.style.borderColor = 'rgba(235, 119, 103, 1)';
+					  document.getElementById('shape_name_circles').style.color = 'rgba(255, 139, 123, 1)';
+				  }
+				  if (chosen_shape == 'squares') {
+					  squares_el.style.borderColor = 'rgba(235, 119, 103, 1)';
+					  document.getElementById('shape_name_squares').style.color = 'rgba(255, 139, 123, 1)';
+				  }
+				  if (chosen_shape == 'triangles') {
+					  triangles_el.style.borderColor = 'rgba(235, 119, 103, 1)';
+					  document.getElementById('shape_name_triangles').style.color = 'rgba(255, 139, 123, 1)';
+				  }
+				  break;
+			  case 'yerange':
+				  console.log('it was yerange');
+				  chosen_color = 'yerange';
+				  yerange_el.style.borderWidth = '2px';
+				  yerange_el.style.borderColor = 'rgba(218, 183, 96, 1)';
+				  if (chosen_shape == 'circles') {
+					  circles_el.style.borderColor = 'rgba(218, 183, 96, 1)';
+					  document.getElementById('shape_name_circles').style.color = 'rgba(238, 203, 116, 1)';
+				  }
+				  if (chosen_shape == 'squares') {
+					  squares_el.style.borderColor = 'rgba(218, 183, 96, 1)';
+					  document.getElementById('shape_name_squares').style.color = 'rgba(238, 203, 116, 1)';
+				  }
+				  if (chosen_shape == 'triangles') {
+					  triangles_el.style.borderColor = 'rgba(218, 183, 96, 1)';
+					  document.getElementById('shape_name_triangles').style.color = 'rgba(238, 203, 116, 1)';
+				  }
+				  break;
+			  default:
+				  console.log('color defaulted');
+	  	  }
+	  }
+	  
+	  function color_selection(ch_color){
+		  switch(ch_color){
+			  case 'gblue':
+				  console.log('it was gblue');
+				  chosen_color = 'gblue';
+				  gblue_el.style.borderWidth = '2px';
+				  gblue_el.style.borderColor = 'rgba(28, 196, 240, 1)';
+				  purply_el.style.borderWidth = '1px';
+				  purply_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  redish_el.style.borderWidth = '1px';
+				  redish_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  yerange_el.style.borderWidth = '1px';
+				  yerange_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  draw_borders();
+				  break;
+			  case 'purply':
+				  console.log('it was purply');
+				  chosen_color = 'purply';
+				  gblue_el.style.borderWidth = '1px';
+				  gblue_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  purply_el.style.borderWidth = '2px';
+				  purply_el.style.borderColor = 'rgba(128, 140, 255, 1)';
+				  redish_el.style.borderWidth = '1px';
+				  redish_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  yerange_el.style.borderWidth = '1px';
+				  yerange_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  draw_borders();
+				  break;
+			  case 'redish':
+				  console.log('it was redish');
+				  chosen_color = 'redish';
+				  gblue_el.style.borderWidth = '1px';
+				  gblue_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  purply_el.style.borderWidth = '1px';
+				  purply_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  redish_el.style.borderWidth = '2px';
+				  redish_el.style.borderColor = 'rgba(235, 119, 103, 1)';
+				  yerange_el.style.borderWidth = '1px';
+				  yerange_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  draw_borders();
+				  break;
+			  case 'yerange':
+				  console.log('it was yerange');
+				  chosen_color = 'yerange';
+				  gblue_el.style.borderWidth = '1px';
+				  gblue_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  purply_el.style.borderWidth = '1px';
+				  purply_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  redish_el.style.borderWidth = '1px';
+				  redish_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
+				  yerange_el.style.borderWidth = '2px';
+				  yerange_el.style.borderColor = 'rgba(218, 183, 96, 1)';
+				  draw_borders();
+				  break;
+			  default:
+				  console.log('color defaulted');
+	  	  }
+	  }
+	  
+	  function shape_selection(ch_shape){
+		  document.getElementById('start_area').style.opacity = 1;
+		  document.getElementById('start_area').style.cursor = 'default';
+		  document.getElementById('start_game_btn').style.cursor = 'pointer';
+		  
+		  console.log('chosen shape = ' + ch_shape);
+		  switch(ch_shape){
+			  case 'circles':
+				  circles_el.style.opacity = 1; 
+				  circles_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
+				  squares_el.style.opacity = 0.48; 
+				  squares_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
+				  triangles_el.style.opacity = 0.48; 
+				  triangles_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
+				  chosen_shape = 'circles';
+				  draw_borders();
+				  break;
+			  case 'squares':
+				  circles_el.style.opacity = 0.48; 
+				  circles_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
+				  squares_el.style.opacity = 1; 
+				  squares_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
+				  triangles_el.style.opacity = 0.48; 
+				  triangles_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
+				  chosen_shape = 'squares';
+				  draw_borders();
+				  break;
+			  case 'triangles':
+				  circles_el.style.opacity = 0.48; 
+				  circles_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
+				  squares_el.style.opacity = 0.48; 
+				  squares_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
+				  triangles_el.style.opacity = 1; 
+				  triangles_el.style.borderColor = 'transparent';
+				  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
+				  chosen_shape = 'triangles';
+				  draw_borders();
+				  break;
+			  default:
+				  console.log('shape defaulted');
+			  
+		  }
+	  }
+	  
+	  
+	  
+	  function start_game(type){
+		console.log('start game');
+		wait_opponent_view();
+		  
+	  	fetch('/new-game', {
+	          method: "POST",
+	          headers: {
+	            Accept: "application/json",
+	            "Content-Type": "application/json"
+	          },
+	          body: JSON.stringify({
+	  	        user_id: getCookie('user_id'),
+				user_shape: chosen_shape,
+			    user_color: chosen_color,
+	  	        session_id: getCookie('session_id'),
+	  			type: type
+	  	    })
+	  	}).then(response => response.json())
+	        .then(response => {
+	  		  //redirect to game id
+	  		  console.log(response);
+	  		  game_id = response.g_id;
+	  		  if (response.meta == 'easy-bot'){
+	  			 setCookie('game_id', game_id);
+	  		  	 window.location.href = './t1/' + response.g_id;
+	  			 //document.location.reload(true);
+	  		  } else if (response.meta == 'waiting for p2'){
+	  			  waiting_for_p2(response.g_id);
+	  		  }
+		  
+		 
+	  	  })
+	        .catch(err => {
+	  		  console.log(err);
+	  	  });
+	  	  console.log(getCookie('user_id'));
+		  
+	  }
+	  
+	  
+	  function p2_ready(){
+        console.log('challenge accepted');
+		wait_start_view();
+		  
+	  	fetch('/confirm-challenge/' + game_id, {
+	  	        method: "POST",
+	  	        headers: {
+	  	          Accept: "application/json",
+	  	          "Content-Type": "application/json"
+	  	        },
+	  	        body: JSON.stringify({
+	  		        user_id: getCookie('user_id'),
+					user_shape: chosen_shape,
+			   	 	user_color: chosen_color,
+	  		        session_id: getCookie('session_id'),
+	  		    })
+
+	      }).then(response => response.json())
+	        .then(response => {
+	  		  console.log(response);
+	  		  if (response.data == "own challenge"){
+	  			  console.log("Can't accept your own challenge");
+	  	
+	  		  } else if (response.data == "accepted"){
+	  		  	  console.log("Challenge accepted");
+	  		  } else if (response.data == "waiting for p1 to start"){
+				  console.log('start in five sec');
+			  	setTimeout(function(){
+			    	window.location = '../' + response.server + '/' + game_id;
+			  	}, 5000);
+	  		  }
+	  	  })
+	        .catch(err => {
+	  		  console.log(err);
+	  	  });
+	  
+	  }
+	  
+	  
+	  
+	  
+	  
+	  function challenge_friend(){
+		  console.log('challenge friend');	  	
+	  }
+	  
+	  function get_in(){
+	  	fetch('/confirm-challenge/' + game_id, {
+	  	        method: "POST",
+	  	        headers: {
+	  	          Accept: "application/json",
+	  	          "Content-Type": "application/json"
+	  	        },
+	  	        body: JSON.stringify({
+	  		        user_id: getCookie('user_id'),
+	  		        session_id: getCookie('session_id'),
+	  		    })
+
+	      }).then(response => response.json())
+	        .then(response => {
+	  		  console.log(response);
+	  		  if (response.data == "start"){
+	  			  window.location = './' + response.server + 'n/' + game_id;
+	  			  //location.reload();
+	  	
+	  		  } else {
+	  		  	  console.log("Something went wrong " + response.data);
+	  		  }
+	  	  })
+	        .catch(err => {
+	  		  console.log(err);
+	  	  });
+	  }
+	  
+	  
+	  var chosen_color = 'purply';
+	  var chosen_shape = '';
+	  
+	  var gblue_el = document.getElementById('color_gblue_border');
+	  var purply_el = document.getElementById('color_purply_border');
+	  var redish_el = document.getElementById('color_redish_border');
+	  var yerange_el = document.getElementById('color_yerange_border');
+	  
+	  var circles_el = document.getElementById('shape_circles');
+	  var squares_el = document.getElementById('shape_squares');
+	  var triangles_el = document.getElementById('shape_triangles');
+	  
+	  //document.getElementById('start_game_btn').addEventListener('click', start_game.bind(null, 'automatch'), false);
+	  
+	  gblue_el.addEventListener('click', color_selection.bind(null, 'gblue'), false);
+	  purply_el.addEventListener('click', color_selection.bind(null, 'purply'), false);
+	  redish_el.addEventListener('click', color_selection.bind(null, 'redish'), false);
+	  yerange_el.addEventListener('click', color_selection.bind(null, 'yerange'), false);
+	  
+	  circles_el.addEventListener('click', shape_selection.bind(null, 'circles'), false);
+	  squares_el.addEventListener('click', shape_selection.bind(null, 'squares'), false);
+	  triangles_el.addEventListener('click', shape_selection.bind(null, 'triangles'), false);
+	  
+	  
+	  draw_borders();
+	  
+	  //document.getElementById('color_gblue_border').addEventListener('click', chosencolor, false)
+	  
+  
+  
+  
+  </script>
+  
+  <script src="../animations.js"></script>
+    <script src="../challenge.js"></script>
   </html>
