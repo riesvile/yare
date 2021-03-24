@@ -1430,6 +1430,7 @@ app.get('/d1/:game_id', (req, res) => {
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
+app.get('/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
 app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
 app.get('/game', (req, res) => res.sendFile(__dirname + '/game.html'));
 app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));

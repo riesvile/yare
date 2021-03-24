@@ -5,6 +5,7 @@
 	<style>
 	</style>
 	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../colors.css">
@@ -159,6 +160,11 @@
 	      exec: function() {update_code();},
 	      bindKey: {mac: "shift-enter", win: "shift-enter"}
 	  })
+	  
+	  if (localStorage.getItem("code_code") != null){
+		  var code_code = localStorage.getItem("code_code");
+		  editor.setValue(code_code, 1);
+	  }
 	  
 	  
 	  var x = 0;
@@ -439,7 +445,7 @@
 					 if (codecoming.player1){
 						 if (pla1 == "anonymous" && getCookie('session_id') == codecoming.player1_session){
 							 //console.log('anonymous user oisjhfd oidjf iosdh fiodh giodfj giodfj giojhdfiog diohfg iodfhg iodfh giodf hgiodf hgiodhfgiodhf giodfh iog dfiogh ');
-							 editor.setValue(codecoming.player1, 1);
+							 //editor.setValue(codecoming.player1, 1);
 							 //console.log(editor.getValue().length);
 						 	 if (editor.getValue().length != 24){
 								 tutorial_started = 1;
@@ -456,7 +462,7 @@
 					 }
 				 } else if (pla2 == getCookie('user_id')){
 					if (codecoming.player2){
-				 		editor.setValue(codecoming.player2, 1);
+				 		//editor.setValue(codecoming.player2, 1);
 					}
 				 }
 			 
@@ -536,6 +542,7 @@
 		  }
 		  console.log('clicked');
 		  user_code = editor.getValue();
+		  localStorage.setItem("code_code", user_code);
 		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  }
 	  
