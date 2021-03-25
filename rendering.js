@@ -10,8 +10,8 @@ var pointer_originX = 0;
 var pointer_originY = 0;
 var pointer_offsetX = 0;
 var pointer_offsetY = 0;
-var current_offsetX = 0;
-var current_offsetY = 0;
+var current_offsetX = 800;
+var current_offsetY = 900;
 var panning = 0;
 var disableSelection = 0;
 
@@ -29,14 +29,14 @@ function baseOffsetUpdate(){
 function offsetUpdate(){
 	
 	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
-	c_base.clearRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
+	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
 	
 	//c.fillStyle = 'rgba(6,8,100,0.1)';
-	c.clearRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
+	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
 	
 	
 	//c.setTransform(1, 0, 0, 1, 0, 0);
-	c_base.setTransform(1, 0, 0, 1, 0, 0);
+	c_base.setTransform(scale, 0, 0, scale, 0, 0);
 	c_base.translate(offsetX, offsetY);
 	//c.translate(offsetX, offsetY);
 	
@@ -132,6 +132,33 @@ function onPointerUp(e){
 	disableSelection = 0;
 }
 
+function zoom(event) {
+  event.preventDefault();
+  scale += event.deltaY * -0.005;
+  multiplier += event.deltaY * 0.005;
+
+  // Restrict scale
+  scale = Math.round(Math.min(Math.max(.5, scale), 2) * 1000) / 1000;
+  multiplier = 1 / scale;
+  
+  if (scale > 1.5){
+	  z_level = 2;
+  } else if (scale < 0.75) {
+	  z_level = 0.5;
+  } else {
+	  z_level = 1;
+  }
+ 
+  console.log('scale = ' + scale);
+  console.log('multiplier = ' + multiplier);
+  
+  offsetUpdate();
+
+  // Apply scale transform
+  //el.style.transform = `scale(${scale})`;
+}
+
+
 // Add event listeners
 document.addEventListener("touchstart", onPointerDown, false);
 document.addEventListener("touchmove", onPointerMove, false);
@@ -187,8 +214,16 @@ base_canvas.height = innerHeight;
 c.scale (1, 1);
 c_base.scale (1, 1);
 
+base_canvas.onwheel = zoom;
+//c.translate(800, 900);
+
+
 var offsetX = 0;
 var offsetY = 0;
+var scale = 1;
+var prev_scale = 1;
+var z_level = 1;
+var multiplier = 1;
 
 var game_tick = 1000; // 1s
 var fps = 60;
@@ -539,6 +574,7 @@ function drawInnerSh(teX, teY) {
 
 
 function initiate_world(){
+	offsetUpdate();
 	spirit_lookup = {};
 	star_lookup = {};
 	base_lookup = {};
@@ -571,8 +607,9 @@ function initiate_world(){
 		base_lookup[bases_queue[i].id].draw();
 	}
 	
-	draw_grid();
+	//draw_grid();
 	offsetUpdate();
+	
 	
 	world_initiated = 1;
 }
@@ -590,9 +627,9 @@ function render_state(timestamp){
 	
 	c.fillStyle = 'rgba(6,8,10,1)';
 	//c.fillRect(0, 0, main_canvas.width, main_canvas.height);
-	c.fillRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
+	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
 	
-	c.setTransform(1, 0, 0, 1, 0, 0);
+	c.setTransform(scale, 0, 0, scale, 0, 0);
 	c.translate(offsetX, offsetY);
 	
 	if (panning == 1){

@@ -202,11 +202,11 @@
 	  
 	  load_start();
 	  
-	  var socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
+	  const socket = new WebSocket('wss://yare.io:443/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
-	  function connectSocket(){
+	  //function connectSocket(){
 		  
-		  socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
+		//  socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 		  
 		  //socket.binaryType = "arraybuffer";
 		  socket.addEventListener('open', function(event){
@@ -480,9 +480,14 @@
 	  		  //console.log(z);
 		  
 		  });
-	  }
+		  
+		  socket.onclose = function(){
+		      location.reload();
+		  }
+		  
+		  //}
 	  
-	  connectSocket();
+	  //connectSocket();
 	  
 	  
 	  const sendMessage = () => {
