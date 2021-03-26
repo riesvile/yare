@@ -59,6 +59,36 @@ function offsetUpdate(){
 	
 }
 
+function zoomUpdate(){
+	
+	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
+	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
+	
+	
+	//c.setTransform(1, 0, 0, 1, 0, 0);
+	c_base.setTransform(scale, 0, 0, scale, 0, 0);
+	c_base.translate(offsetX, offsetY);
+	//c.translate(offsetX, offsetY);
+	
+	//world_spirits = living_spirits.length;
+	//for (i = 0; i < world_spirits; i++){
+	//	spirit_lookup[living_spirits[i].id].draw();
+	//}
+	
+	world_stars = stars.length;
+	for (i = 0; i < world_stars; i++){
+		star_lookup[stars[i].id].draw();
+	}
+	
+	//world_bases = bases.length;
+	//for (i = 0; i < world_bases; i++){
+	//	base_lookup[bases[i].id].draw();
+	//}
+	
+	//draw_grid();
+	
+}
+
 function onPointerDown(e){ 
 	e = e || window.event;
 	var el_id = (e.target || e.srcElement).id;
@@ -132,27 +162,66 @@ function onPointerUp(e){
 	disableSelection = 0;
 }
 
+function getMousePos(e) {
+    return {x:e.clientX,y:e.clientY};
+}
+
+
 function zoom(event) {
   event.preventDefault();
+  prevScale = scale;
   scale += event.deltaY * -0.005;
   multiplier += event.deltaY * 0.005;
 
   // Restrict scale
-  scale = Math.round(Math.min(Math.max(.5, scale), 2) * 1000) / 1000;
+  scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
   multiplier = 1 / scale;
   
-  if (scale > 1.5){
-	  z_level = 2;
-  } else if (scale < 0.75) {
-	  z_level = 0.5;
-  } else {
-	  z_level = 1;
-  }
+  //if (scale > 1.5){
+	//  z_level = 2;
+  //} else if (scale < 0.75) {
+//	  z_level = 0.5;
+ // } else {
+	  //z_level = 1;
+  //}
  
-  console.log('scale = ' + scale);
-  console.log('multiplier = ' + multiplier);
+  //console.log('scale = ' + scale);
+  //console.log('prevscale = ' + prevScale);
+  //console.log('scale/prev = ' + (scale/prevScale));
+  //console.log('multiplier = ' + multiplier);
   
-  offsetUpdate();
+  
+  
+  if (scale >= 2 || scale <= 0.5){
+  	
+  } else {
+	  var mousePos = getMousePos(event);
+	  console.log(mousePos.x);
+	  
+	  //(mousePos.x * scale) - (mousePos.x * prevScale)
+  
+  	 //!!!!!!!!! IT's a LOGARITMIC SCALE not linear!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
+  
+	  //offsetX += (mousePos.x * prevScale) - (mousePos.x * scale);
+	  //offsetY += (mousePos.y * prevScale) - (mousePos.y * scale);
+	  //offsetX += (mousePos.x * (1 - scale/prevScale));
+	  //offsetY += (mousePos.y * (1 - scale/prevScale));
+	  
+	  offsetX += (mousePos.x * 1/scale) - (mousePos.x * 1/prevScale);
+	  offsetY += (mousePos.y * 1/scale) - (mousePos.y * 1/prevScale);
+	  
+	  
+	  //offsetX += -900 * (scale - prevScale);
+	  //offsetY += -900 * (scale - prevScale);
+	  //offsetX += mousePos.x * (0.005);
+	  //offsetY += mousePos.y * (0.005);
+  	  //offsetUpdate();
+	  zoomUpdate();
+	  
+  }
+  
+  
 
   // Apply scale transform
   //el.style.transform = `scale(${scale})`;
