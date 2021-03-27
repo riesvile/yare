@@ -17,217 +17,7 @@ function generateUniqueString(prefix) {
 // ----- automatching -----
 
 
-var game_pairs = [];
-var automatch_looking = [];
-var paired_and_waiting = {};
 
-//checking if user is knocking on the server (didn't close browser window)
-var actively_waiting = {};
-
-//rewrite this entire stupidity later, you fucking moron. What were you even doing, the fuck?
-
-function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2color, p1rating, p2rating){
-	
-	const game = new Game({
-		game_id: gid,
-		server: srvr,
-		player1: p1id,
-		player2: p2id,
-		p1_session_id: '',
-		p2_session_id: '',
-		p1_shape: p1shape,
-		p2_shape: p2shape,
-		p1_color: p1color,
-		p2_color: p2color,
-		p1_rating: p1rating,
-		p2_rating: p2rating,
-		winner: '',
-		ranked: 1,
-		active: 0.5,
-		game_duration: 0,
-		observers: 0
-	});
-
-	game.save()
-		.then((result) => {
-			console.log('am game saved to db');
-			console.log(result);
-			try {
-				fetch('https://yare.io/' + srvr + 'ns/' + gid, {
-			        method: "POST",
-			        headers: {
-			          Accept: "application/json",
-			          "Content-Type": "application/json"
-			        },
-			        body: JSON.stringify({
-				        game_id: gid
-				    })
-				}).then(response => response.json())
-			      .then(response => {
-					  console.log('loooooooooooook herererererererererererer !!!!!!!!!!!!!!!!!!!!!!!!!!');
-					  console.log('loooooooooooook herererererererererererer !!!!!!!!!!!!!!!!!!!!!!!!!!');
-					  console.log('loooooooooooook herererererererererererer !!!!!!!!!!!!!!!!!!!!!!!!!!');
-					  console.log('loooooooooooook herererererererererererer !!!!!!!!!!!!!!!!!!!!!!!!!!');
-					  active_games[gid][0] = 1;
-					  console.log(active_games[gid]);
-					  console.log(response);
-				  })
-			      .catch(err => {
-					  console.log(err);
-				  });
-			} catch (error) {
-				console.log(error);
-			}
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-	
-}
-
-function games_paired(){
-	
-	
-	//
-	// Generalize this for all game pairs (for each)
-	//
-	
-	//players are matched, check server loads, redirect to the right server and start a game worker there
-	
-	for (j = 0; j < game_pairs.length; j++){
-		
-		var am_servers = Object.keys(server_occupancy);
-		var am_load_threshold = 10;
-		var am_chosen_server = 'd4';
-		var p1p1 = game_pairs[j][0];
-		var p2p2 = game_pairs[j][1];
-	
-		for (i = 0; i < am_servers.length; i++){
-			if (server_occupancy[am_servers[i]] > am_load_threshold){
-				am_chosen_server = am_servers[i];
-				server_occupancy[am_chosen_server]--;
-				console.log(server_occupancy);
-				console.log('chosen server = ' + am_chosen_server);
-				break;
-			}
-			if (i == (am_servers.length - 1)){
-				console.log('all serverrrrrs busy, increasing load');
-				if (am_load_threshold <= 0){
-					console.log('maximum server capacity reached');
-				} else {
-					am_load_threshold -= 5; 
-					i = -1;
-				}
-			
-			}
-		
-		}
-	
-		g_id = new_game(p1p1[0], p2p2[0], init_status = 0.5, am_chosen_server);
-		
-		//add server
-		paired_and_waiting[p1p1[0]] = [g_id, am_chosen_server];
-		paired_and_waiting[p2p2[0]] = [g_id, am_chosen_server];
-		
-		update_game_db(g_id, am_chosen_server, p1p1[0], p2p2[0], p1p1[2], p2p2[2], p1p1[3], p2p2[3], p1p1[1], p2p2[1]);
-				
-	}
-	
-	game_pairs = [];
-	console.log('paired and waiting');
-	console.log(paired_and_waiting);
-	
-	//check if this works by extending the automatch tick time and trying matching multiple people
-	
-}
-
-
-	setInterval(function(){
-		if(automatch_looking.length > 0){
-			for (i = 0; i < automatch_looking.length; i++){
-				//[user_id, rating, shape, color, time_spent_in_queue, matched?]
-				console.log(automatch_looking[i]);
-				if (actively_waiting[automatch_looking[i][0]] == undefined){
-					console.log('undefined');
-					continue;
-				} else if (actively_waiting[automatch_looking[i][0]] == 0){
-					console.log(automatch_looking[i][0] + ' is not in the queue anymore');
-					paired_and_waiting[automatch_looking[i][0]] = 'interrupted';
-					automatch_looking[i][5] = 1;
-					continue;
-				} else if (actively_waiting[automatch_looking[i][0]] == 1){
-					console.log(automatch_looking[i][0] + ' is in queue');
-					actively_waiting[automatch_looking[i][0]] = 0;
-					//continue;
-				}
-				
-				
-				var looker1 = automatch_looking[i];
-				var topCandidate = '';
-				
-				if (looker1[5] == 1) continue;
-				
-				for (j = i+1; j < automatch_looking.length; j++){
-					var looker2 = automatch_looking[j];
-					
-					console.log('lookers');
-					console.log(looker1);
-					console.log(looker2);
-					console.log(Math.abs(looker1[1] - looker2[1]));
-					
-					var rating_difference = Math.abs(looker1[1] - looker2[1])
-					
-					if (looker1[4] < 4100){
-						if (rating_difference < 100){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else if (looker1[4] < 8100){
-						if (rating_difference < 200){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else if (looker1[4] < 12100){
-						if (rating_difference < 300){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else {
-						if (rating_difference < 500){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					}
-				}
-			}
-			
-			//clearing out matched items from the automatch queue
-			for (i = automatch_looking.length - 1; i >= 0; i--){
-				if (automatch_looking[i][5] == 1){
-					automatch_looking.splice(i, 1);
-				}
-			}
-			
-			if (game_pairs.length > 0) {
-				console.log('paired players');
-				console.log(game_pairs);
-				games_paired();
-			}
-			
-			//add time_spent_in_queue
-			for (q = 0; q < automatch_looking.length; q++){
-				automatch_looking[q][4] += 4000;
-			}
-			
-		}
-		
-		console.log('automatch tick');
-		
-	}, 4000)
 	
 
 // -----
@@ -262,7 +52,7 @@ var server_occupancy = {
 	d4: 20
 };
 var connections = {};
-var this_server = 't1';
+var this_server = 'd1';
 var this_server_type = 'tutorial';
 
 
@@ -1616,28 +1406,28 @@ app.get('/d1/:game_id', (req, res) => {
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
-app.get('/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
-app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
-app.get('/game', (req, res) => res.sendFile(__dirname + '/game.html'));
+app.get('/d1/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
+app.get('/d1/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
+app.get('/d1/game', (req, res) => res.sendFile(__dirname + '/game.html'));
 app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
-app.get('/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
-app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
-app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
-app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
-app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
-app.get('/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
-app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
-app.get('/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
-app.get('/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
-app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
-app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
-app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
-app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
-app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
+app.get('/d1/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
+app.get('/d1/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
+app.get('/d1/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
+app.get('/d1/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
+app.get('/d1/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
+app.get('/d1/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
+app.get('/d1/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
+app.get('/d1/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
+app.get('/d1/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
+app.get('/d1/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
+app.get('/d1/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
+app.get('/d1/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
+app.get('/d1/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
+app.get('/d1/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
 
 
-app.get('/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
-app.get('/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
+app.get('/d1/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
+app.get('/d1/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
 
 app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
 app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
