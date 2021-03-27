@@ -350,9 +350,43 @@
 	  }
 	  
 	  
+	  function am_knock(usid){
+	  	knockknock = setInterval(function(){
+	  		console.log('checking with server');
+	  		fetch('/automatch-status', {
+	  	        method: "POST",
+	  	        headers: {
+	  	          Accept: "application/json",
+	  	          "Content-Type": "application/json"
+	  	        },
+	  	        body: JSON.stringify({
+	  		        user_id: usid
+	  		    })
+	  		}).then(response => response.json())
+	  	      .then(response => {
+	  			  //redirect to game id
+	  			  console.log(response);
+	  			  if (response.data == 'am-not-yet'){
+	  				  console.log('not matched yet');
+	  			  } else if (response.data == 'am-ready'){
+	  				  console.log('game is ready');
+	  				  //document.getElementById("get_in").style.display = "block";
+	  				  window.location = './' + response.server + '/' + response.game_id;
+	  			  }
+		  
+		 
+	  		  })
+	  	      .catch(err => {
+	  			  console.log(err);
+	  		  });
+	  	}, 1000);
+	  }
+	  
+	  
 	  
 	  function start_game(type){
 		console.log('start game');
+		
 		if (type == 'challenge'){
 			wait_challenge_view();
 		} else {
@@ -380,12 +414,16 @@
 	  		  game_id = response.g_id;
 	  		  if (response.meta == 'easy-bot'){
 	  			 //setCookie('game_id', game_id);
-	  		  	 window.location.href = './t1/' + response.g_id;
+	  		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
 	  			 //document.location.reload(true);
 	  		  } else if (response.meta == 'medium-bot'){
 			  	  window.location.href = './' + response.server + 'n/' + response.g_id;
 		  	  } else if (response.meta == 'waiting for p2'){
 	  			  waiting_for_p2(response.g_id);
+	  		  } else if (response.meta == 'automatching'){
+	  			  am_knock(getCookie('user_id'));
+	  		  } else if (response.meta == 'anonymous'){
+	  			  console.log('create a new account or login')
 	  		  }
 		  
 		 

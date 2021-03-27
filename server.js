@@ -21,6 +21,9 @@ var game_pairs = [];
 var automatch_looking = [];
 var paired_and_waiting = {};
 
+//checking if user is knocking on the server (didn't close browser window)
+var actively_waiting = {};
+
 //rewrite this entire stupidity later, you fucking moron. What were you even doing, the fuck?
 
 function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2color, p1rating, p2rating){
@@ -50,7 +53,7 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 			console.log('am game saved to db');
 			console.log(result);
 			try {
-				fetch('https://yare.io' + srvr + 'ns/' + gid, {
+				fetch('https://yare.io/' + srvr + 'ns/' + gid, {
 			        method: "POST",
 			        headers: {
 			          Accept: "application/json",
@@ -65,6 +68,8 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 					  console.log('loooooooooooook herererererererererererer !!!!!!!!!!!!!!!!!!!!!!!!!!');
 					  console.log('loooooooooooook herererererererererererer !!!!!!!!!!!!!!!!!!!!!!!!!!');
 					  console.log('loooooooooooook herererererererererererer !!!!!!!!!!!!!!!!!!!!!!!!!!');
+					  active_games[gid][0] = 1;
+					  console.log(active_games[gid]);
 					  console.log(response);
 				  })
 			      .catch(err => {
@@ -138,9 +143,25 @@ function games_paired(){
 
 
 	setInterval(function(){
-		if(automatch_looking.length > 1){
+		if(automatch_looking.length > 0){
 			for (i = 0; i < automatch_looking.length; i++){
 				//[user_id, rating, shape, color, time_spent_in_queue, matched?]
+				console.log(automatch_looking[i]);
+				if (actively_waiting[automatch_looking[i][0]] == undefined){
+					console.log('undefined');
+					continue;
+				} else if (actively_waiting[automatch_looking[i][0]] == 0){
+					console.log(automatch_looking[i][0] + ' is not in the queue anymore');
+					paired_and_waiting[automatch_looking[i][0]] = 'interrupted';
+					automatch_looking[i][5] = 1;
+					continue;
+				} else if (actively_waiting[automatch_looking[i][0]] == 1){
+					console.log(automatch_looking[i][0] + ' is in queue');
+					actively_waiting[automatch_looking[i][0]] = 0;
+					//continue;
+				}
+				
+				
 				var looker1 = automatch_looking[i];
 				var topCandidate = '';
 				
@@ -199,7 +220,7 @@ function games_paired(){
 			
 			//add time_spent_in_queue
 			for (q = 0; q < automatch_looking.length; q++){
-				automatch_looking[i][4] += 4000;
+				automatch_looking[q][4] += 4000;
 			}
 			
 		}
@@ -554,11 +575,20 @@ app.post('/new-game', (req, res) => {
 					console.log(result);
 					console.log('...auto match added');
 					//[user_id, rating, shape, color, time_spent_in_queue, matched?]
-					automatch_looking.push([result[0].user_id, result[0].rating, req.body.user_shape, get_color(req.body.user_color), 0, 0]);
-					res.status(200).send({
-						//g_id: g_id,
-						meta: 'automatching'
-				    });
+					
+					if (req.body.user_id == 'anonymous'){
+						res.status(200).send({
+							//g_id: g_id,
+							meta: 'anonymous'
+					    });
+					} else {
+						automatch_looking.push([result[0].user_id, result[0].rating, req.body.user_shape, get_color(req.body.user_color), 0, 0]);
+						res.status(200).send({
+							//g_id: g_id,
+							meta: 'automatching'
+					    });
+					}
+					
 				})
 				.catch((error) => {
 					console.log(error);
@@ -572,32 +602,34 @@ app.post('/new-game', (req, res) => {
 
 app.post('/automatch-status', (req, res) => {
 	
-	for (i = 0; i < paired_and_waiting.length; i++){
+	console.log('automatch knock from ' + req.body.user_id);
+	
+	actively_waiting[req.body.user_id] = 1;
+	
+	if (paired_and_waiting[req.body.user_id] == undefined){
+		res.status(200).send({
+			data: 'am-not-yet'
+        });
+	} else if (paired_and_waiting[req.body.user_id] == 'interrupted'){
+		res.status(200).send({
+			data: 'interrupted'
+        });
+	} else {
+		if (active_games[paired_and_waiting[req.body.user_id][0]][0] == 1){
+			res.status(200).send({
+				game_id: paired_and_waiting[req.body.user_id][0],
+				server: paired_and_waiting[req.body.user_id][1],
+				data: 'am-ready'
+	        });
+			delete paired_and_waiting[req.body.user_id];
+		} else {
+			res.status(200).send({
+				data: 'am-not-yet'
+	        });
+		}
 		
 	}
 	
-	
-	
-	
-	
-	game_id_url = req.params.game_id;
-	if (active_games[game_id_url][0] == 0.5){
-		res.status(200).send({
-			player1: active_games[game_id_url][1],
-			player2: '',
-			server: active_games[game_id_url][3],
-			data: 'not yet'
-        });
-	} else if (active_games[game_id_url][0] == 1){
-		res.status(200).send({
-			player1: active_games[game_id_url][1],
-			player2: active_games[game_id_url][2],
-			server: active_games[game_id_url][3],
-			data: 'ready'
-        });
-	} else {
-		data: 'game cancelled'
-	}
 });
 
 app.post('/check-status/:game_id', (req, res) => {
