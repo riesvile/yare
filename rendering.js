@@ -192,7 +192,7 @@ function zoom(event) {
   
   
   
-  if (scale >= 2 || scale <= 0.5){
+  if (scale > 2 || scale < 0.5){
   	
   } else {
 	  var mousePos = getMousePos(event);
