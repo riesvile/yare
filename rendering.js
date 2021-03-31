@@ -268,6 +268,29 @@ document.getElementById("panel").addEventListener("mouseleave", function(e) {
 
 
 
+// Console 
+
+function console_toggle(){
+	var console_content_height = document.getElementById("console_in").clientHeight;
+	if (document.getElementById("console").classList.contains("collapsed")){
+		console_expanding(console_content_height);
+		cnsl_expanded = 1;
+	} else {
+		console_collapsing(console_content_height);
+		cnsl_expanded = 0;
+	}
+	
+	
+	document.getElementById("console").classList.toggle("collapsed");
+	
+	
+	
+}
+
+document.getElementById("console_head").addEventListener("click", console_toggle, false);
+
+
+
 // ------
 // Game rendering
 // ------
@@ -371,7 +394,7 @@ function draw_grid(){
 
 
 class Spirit {
-	constructor(id, position, size, energy, player, color){
+	constructor(id, position, size, energy, player, color, merged){
 		this.id = id
 		this.position = position;
 		this.size = size;
@@ -383,6 +406,7 @@ class Spirit {
 			enemies: [],
 			structures: []
 		}
+		this.merged = merged;
 		
 		//const properties
 		this.hp = 1;
@@ -419,6 +443,41 @@ class Spirit {
 		//this.position[0] = origin[0] + (incr[0] / tick_counter_avg);
 		//this.position[1] = origin[1] + (incr[1] / tick_counter_avg);
 		//this.draw();
+	}
+	
+	merge(target) {
+		var that = this;
+		var counter_merge = 0;
+		var origin_size_decr = that.size/10;
+		var new_size = this.size + target.size;
+		var increment = [0, 0];
+		increment[0] = (target.position[0] - this.position[0])/10;
+		increment[1] = (target.position[1] - this.position[1])/10;
+		
+		target.energy_capacity = this.energy_capacity + target.energy_capacity;
+		target.energy = this.energy + target.energy;
+		
+		var interval_merge = setInterval(function() {
+		    if (counter_merge > 10) {
+		        clearInterval(interval_merge);
+		    }
+			target.size += (new_size - target.size)/10; 
+			that.position[0] += increment[0];
+			that.position[1] += increment[1];
+			console.log('dddd');
+			that.size -= origin_size_decr;
+			if (that.size <= 0) that.size = 0;
+			
+			
+			
+			//move this into target, reduce size
+			
+			
+			
+			counter_merge++;
+			
+		}, 16);
+		
 	}
 	
 	death() {
@@ -654,7 +713,9 @@ function initiate_world(){
 	world_spirits = units_queue.length;
 	for (i = 0; i < world_spirits; i++){
 		if (units_queue[i].hp == 0) continue;
-		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color);
+		//console.log('units_queue[i]');
+		//console.log(units_queue[i]);
+		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color, units_queue[i].merged);
 		spirit_lookup[units_queue[i].id].draw();
 		console.log(spirit_lookup[units_queue[i].id]);
 		//birth_queue.splice(i, 1);
@@ -721,7 +782,7 @@ function render_state(timestamp){
 	//objects birth
 	birthlings = birth_queue.length;
 	for (i = 0; i < birthlings; i++){
-		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color);
+		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color, birth_queue[i].merged);
 		spirit_lookup[birth_queue[i].id].draw();
 		console.log(spirit_lookup[birth_queue[i].id]);
 		
@@ -740,7 +801,13 @@ function render_state(timestamp){
 	for (i = 0; i < moveables; i++){
 		//console.log('move_queue[i]');
 		//console.log(move_queue[i]);
-		spirit_lookup[move_queue[i][0]].move(move_queue[i][1], move_queue[i][2], move_queue[i][3]);
+		try {
+			spirit_lookup[move_queue[i][0]].move(move_queue[i][1], move_queue[i][2], move_queue[i][3]);
+		} catch (e) {
+			console.log(e);
+			location.reload();
+		}
+		
 	}
 	//move_queue = [];
 
@@ -763,7 +830,7 @@ function render_state(timestamp){
 	//	stars[i].draw();
 	//}
 
-
+	
 	//objects energize
 	
 	for (i = 0; i < energize_queue.length; i++){
@@ -854,6 +921,19 @@ function render_state(timestamp){
 		
 	}
 	death_queue = [];
+	
+	
+	//objects merge
+	for (i = 0; i < merge_queue.length; i++){
+		//there is a 'continue' if hp == 0 somewhere around that might cause problems later
+		spirit_lookup[merge_queue[i][1]].merge(spirit_lookup[merge_queue[i][2]]);
+	}
+	merge_queue = [];
+	
+	
+	
+	
+	
 
 
 	tick_counter++;

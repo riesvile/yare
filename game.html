@@ -66,7 +66,7 @@
 	  
 		  <p class="info_h">Reference to your spirit (an object).</p>
 		  <p class="info_p">In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>
-	  
+	 
   </div>
   
   <div id="overlay"></div>
@@ -75,7 +75,22 @@
   <div id="overlay_start"></div>
   <div id="grad_top"></div>
   
+  <div id="console" class="collapsed">
+	  <div id="console_head">
+	  	<span id="console_lbl">CONSOLE</span>
+		<span id="console_drop"></span>
+	  </div>
+	  
+	  <div id="console_in">
+		  <p class="console_item console_error">.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position);</p>
+		  <p class="console_item">50</p>
+		  <p class="console_item">50</p>
+  	  </div>
+  </div>
+  
   <div id="panel" class="panel_start">
+	  
+	  
 	
 	<!-- <div id="grad_bottom"></div> -->
 
@@ -173,6 +188,7 @@
 	  var birth_queue = [];
 	  var units_queue = [];
 	  var energize_queue = [];
+	  var merge_queue = [];
 	  var death_queue = [];
 	  var stars_queue = [];
 	  var bases_queue = [];
@@ -197,12 +213,17 @@
 	  var elapsed = 0;
 	  var prev = 0;
 	  
+	  var cnsl = [];
+	  var has_error = 0;
+	  var cnsl_length = 0;
+	  var cnsl_expanded = 0;
+	  
 	  
 	  var this_server = 't1';
 	  
 	  load_start();
 	  
-	  const socket = new WebSocket('wss://yare.io:443/' + this_server + '/' + this_game_id); // wss://yare.io:443
+	  const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
 	  //function connectSocket(){
 		  
@@ -220,6 +241,8 @@
 		  
 			  tick_counter = 0;
 			  elapsed = 0;
+			  
+			  document.getElementById('console_in').innerHTML = '';
 		  
 			  try {
 				 incoming = JSON.parse(event.data);
@@ -248,6 +271,23 @@
 				 } else {
 					 energize_queue = [];
 				 }
+				 
+				 if (incoming.special.length > 0){
+					 console.log('incoming.special');
+					 console.log(incoming.special);
+					 
+					 for (s = 0; s < incoming.special.length; s++){
+						 if (incoming.special[s][0] == 'm'){
+						 	//is merge
+							 merge_queue.push(incoming.special[s]);
+						 }
+					 }
+					 
+					 //special_queue = incoming.special;
+				 } else {
+					 //special_queue = [];
+					 merge_queue = [];
+				 }
 			 
 				 if (incoming.death.length > 0){
 					 death_queue = incoming.death;
@@ -255,17 +295,86 @@
 					 death_queue = [];
 				 }
 			 
-				 if (incoming.error_msg.length > 0){
-					 //console.log(incoming.error_msg);
+				 if (incoming.error_msg1.length > 0){
+					 if (pla1 == getCookie('user_id')){
+						 has_error = 1;
+						 error_console();
+						 var err_lbl = "ERRORS";
+						 if (incoming.error_msg1.length == 1) err_lbl = "ERROR";
+						 document.getElementById('console_lbl').innerHTML = "CONSOLE (" + incoming.error_msg1.length + " " + err_lbl + ")"; 
+						 cnsl_in = document.getElementById('console_in');
+					 	 for (cns = 0; cns < incoming.error_msg1.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.error_msg1[cns] + "</p>";
+							 //console.error(incoming.error_msg1[cns]);
+					 	 }					 
+					 }
+				 } else if (incoming.error_msg1.length == 0){
+					 if (pla1 == getCookie('user_id')){
+					 	 has_error = 0;
+						 clean_console();
+						 document.getElementById('console_lbl').innerHTML = "CONSOLE"; 
+					 }
 				 }
+				 
+				 
+				 if (incoming.error_msg2.length > 0){
+					 if (pla2 == getCookie('user_id')){
+						 has_error = 1;
+						 error_console();
+						 document.getElementById('console_lbl').innerHTML = "(" + incoming.error_msg2.length + ") CONSOLE"; 
+						 cnsl_in = document.getElementById('console_in');
+					 	 for (cns = 0; cns < incoming.error_msg2.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.error_msg2[cns] + "</p>";
+							 //console.error(incoming.error_msg2[cns]);
+					 	 }
+						 
+						 console.log('t')
+						 var console_content_height = document.getElementById("console_in").clientHeight;
+						 update_console_height(console_content_height);
+						 
+					 }
+				 } else if (incoming.error_msg2.length == 0){
+					 if (pla2 == getCookie('user_id')){
+					 	 has_error = 0;
+						 clean_console();
+						 document.getElementById('console_lbl').innerHTML = "CONSOLE"; 
+					 }
+				 }
+				 
 			 
 				 if (incoming.console1.length > 0){
-					 //console.log(incoming.console1);
+					 if (pla1 == getCookie('user_id')){
+						 cnsl_in = document.getElementById('console_in');
+					 	 for (cns = 0; cns < incoming.console1.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.console1[cns] + "</p>";
+							 //console.log(incoming.console1[cns]);
+					 	 }
+					 }
+					
 				 }
 			 
 				 if (incoming.console2.length > 0){
-					 //console.log(incoming.console2);
+					 if (pla2 == getCookie('user_id')){
+						 cnsl_in = document.getElementById('console_in');
+						 cnsl_in.innerHTML = '';
+					 	 for (cns = 0; cns < incoming.console2.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.console2[cns] + "</p>";
+							 //console.log(incoming.console2[cns]);
+					 	 }
+					 }
 				 }
+				 
+				 if (cnsl_expanded == 1){
+					 var console_content_height = document.getElementById("console_in").clientHeight;
+					 update_console_height(console_content_height);	
+				 }
+				 
+				 
+				 
+				 
+				 
+				 
+				 
 			 
 				 if (incoming.tutorial.length > 0){
 					 //console.log('tutorial !!!!!!!!!!!!!!!!!!!');
@@ -412,7 +521,8 @@
 					 document.getElementById('overlay_start').style.display = 'none';
 					 document.getElementById('tutorial').style.display = 'none';
 					 document.getElementById('editor_container').style.position = 'fixed';
-					 document.getElementById('editor_container').style.top = '20px';
+					 document.getElementById('editor_container').style.top = '60px';
+					 document.getElementById('console').style.display = 'block';
 				 
 					 document.getElementById('panel').classList.remove("panel_start");
 				 }
@@ -683,4 +793,7 @@
   <script src="../tutorial_texts.js"></script>
   <script src="../rendering.js"></script>
   <script src="../basics.js"></script>
+  
+  <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
   </html>

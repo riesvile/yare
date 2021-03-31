@@ -138,15 +138,15 @@ parentPort.on("message", message => {
 					
 				var this_player_id = players['p2'];		
 				
-				var my_spirits = [];
+				//var my_spirits = [];
 				
 				
 				
-				for (q = 0; q < (Object.keys(spirits)).length; q++){
-					if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
-						my_spirits.push(spirits[Object.keys(spirits)[q]]);
-					}
-				}
+				//for (q = 0; q < (Object.keys(spirits)).length; q++){
+				//	if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
+				//		my_spirits.push(spirits[Object.keys(spirits)[q]]);
+				//	}
+				//}
 				
 				global['base'] = Object.values(bases)[1];
 				global['enemy_base'] = Object.values(bases)[0];
@@ -173,25 +173,29 @@ parentPort.on("message", message => {
 				}
 
 				if (base.sight.enemies.length > 0){
+					console.log('i see you');
 					var invader = spirits[base.sight.enemies[0]];
-					for (i=0; i<my_spirits.length; i++){
-						if (my_spirits[i].energy > invader.energy / 2 && memory['attackers'] <= 3){
-							memory[my_spirits[i].id] = 'attacker';
-							if (memory['attackers'] == undefined){
-								memory['attackers'] = 1;
-							} else {
-								memory['attackers'] += 1;
-							}
+					console.log(invader);
+					console.log('invader');
+					for (j=0; j<my_spirits.length; j++){
+						if (my_spirits[j].energy == my_spirits[j].energy_capacity){
+							memory[my_spirits[j].id] = "attacker";
 						}
-						if (memory[my_spirits[i].id] == 'attacker'){
-							my_spirits[i].move(invader.position);
-							my_spirits[i].energize(invader);
+						console.log(my_spirits[j].id)
+						console.log(memory[my_spirits[j].id])
+						if (memory[my_spirits[j].id] == "attacker" && j < my_spirits.length / 2){
+							console.log('this should be last');
+							my_spirits[j].move(invader.position);
+							my_spirits[j].energize(invader);
 						}
 					}
+					
+				} else {
+					memory['atck'] = 0; 
 				}
 
-				if (my_spirits.length >= 4){
-					if (my_spirits[0].energy == my_spirits.energy_capacity){
+				if (my_spirits.length >= 800){
+					if (my_spirits[0].energy == my_spirits[0].energy_capacity){
 						memory[my_spirits[0].id] = 'invader';
 					}
 					if (memory[my_spirits[0].id] == 'invader'){
@@ -258,14 +262,16 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		console.error(error);
+		fill_error(players['p1'], error.message);
+		//console.error(error);
 	}
 	
 	try {
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		console.error(error);
+		fill_error(players['p2'], error.message);
+		//console.error(error);
 	}
 	
 	
@@ -287,6 +293,7 @@ var spirits2 = [];
 var move_queue = [];
 var move_queue_ids = [];
 var energize_queue = [];
+var merge_queue = [];
 var birth_queue = [];
 var death_queue = [];
 var star_zxq;
@@ -306,6 +313,8 @@ players_update['p1'] = 'old';
 
 var spirit_p2_cost = 100;
 
+var temp_flag = 0;
+
 //tutorial
 if (workerData[1] == 'tutorial'){
 	var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -321,15 +330,17 @@ if (workerData[1] == 'tutorial'){
 					
 				var this_player_id = players['p2'];		
 				
-				var my_spirits = [];
+				//var my_spirits = [];
 				
 				
-				
-				for (q = 0; q < (Object.keys(spirits)).length; q++){
-					if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
-						my_spirits.push(spirits[Object.keys(spirits)[q]]);
-					}
-				}
+				//
+				//for (q = 0; q < (Object.keys(spirits)).length; q++){
+				//	if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
+				//		my_spirits.push(spirits[Object.keys(spirits)[q]]);
+				//	}
+				//}
+				//
+			
 				
 				global['base'] = Object.values(bases)[1];
 				global['enemy_base'] = Object.values(bases)[0];
@@ -361,6 +372,8 @@ color_palettes['color4'] = 'rgba(201,161,101,1)';
 
 var pl1_units = {};
 var pl2_units = {};
+var my_spirits1 = [];
+var my_spirits2 = [];
 
 var top_s = 0;
 var top_q = 0;
@@ -375,7 +388,8 @@ var processTime2 = 0;
 var processTimeRes = 0;
 var game_finished = 0;
 
-var user_error;
+var user_error1 = [];
+var user_error2 = [];
 
 var test_s1 = {};
 var test_s2 = {};
@@ -403,7 +417,8 @@ var render_data2 = {
 	'energize': [],
 	'death': [],
 	'birth': [],
-	'error_msg': [],
+	'error_msg1': [],
+	'error_msg2': [],
 	'console1': [],
 	'console2': []
 }
@@ -445,6 +460,17 @@ var sandboxx = {
 };
 
 
+
+function fill_error(plid, err_msg){
+	if (plid == players['p1']){
+		user_error1.push(err_msg);
+	} else if (plid == players['p2']){
+		user_error2.push(err_msg);
+	}
+}
+
+
+
 //sandbox is the keyword, moron
 const vm = new VM({ timeout: 250, sandbox: {console: console1, memory: memory1} });
 const vm2 = new VM({ timeout: 250, sandbox: {console: console2, memory: memory2} });
@@ -452,13 +478,14 @@ const vm2 = new VM({ timeout: 250, sandbox: {console: console2, memory: memory2}
 
 //vm.freeze(spirits, 'spirits');
 vm.freeze(players, 'players');
-//try creating and accessing a new spirit to check for freeze
 vm.freeze(pl1_units, 'spirits');
+vm.freeze(my_spirits1, 'my_spirits');
 vm.freeze(star_lookup, 'stars');
 vm.freeze(base_lookup, 'bases');
 //vm2.freeze(spirits2, 'spirits');
 vm2.freeze(players, 'players');
 vm2.freeze(pl2_units, 'spirits');
+vm2.freeze(my_spirits2, 'my_spirits');
 vm2.freeze(star_lookup, 'stars');
 vm2.freeze(base_lookup, 'bases');
 
@@ -476,6 +503,7 @@ if (!isMainThread){
 				enemies: [],
 				structures: []
 			}
+			this.merged = [];
 			this.qcollisions = [];
 		
 		
@@ -499,11 +527,20 @@ if (!isMainThread){
 		move(target) {
 			//check that target is array, otherwise throw error
 			if (Array.isArray(target) == false){
-				user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
+				//user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
+				console.log(this.player_id);
+				var err_msg = '.move() argument must be an array. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[0].position)';
+				
+				fill_error(this.player_id, err_msg);
+				
 				return
 			} else {
 				if (target.length != 2){
-					user_error = '.move() argument must be an array with two items [x, y]. E.g. s1.move([100, 100]) or s1.move(s2.position)';
+					console.log('player id');
+					console.log(this.player_id);
+					var err_msg = '.move() argument must be an array of length 2. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[0].position)';
+				
+					fill_error(this.player_id, err_msg);
 					return
 				}
 			}
@@ -551,6 +588,16 @@ if (!isMainThread){
 			//console.log(target);
 			var entry_index2 = energize_queue.findIndex(entry2 => entry2[0]['id'] === this.id);
 			
+			if (Array.isArray(target) == true){
+				var err_msg = ".energize() argument must be a spirit object, not an array. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1'])";
+				fill_error(this.player_id, err_msg);
+				return;
+			} else if (typeof target !== 'object' || target === null){
+				var err_msg = ".energize() argument must be a spirit object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1'])";
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			
 			try {
 				if (typeof target.id === 'string' || target.id instanceof String){
 					if (target.structure_type == 'base'){
@@ -587,6 +634,42 @@ if (!isMainThread){
 				}
 				
 				//energize_queue[entry_index2] = [this, target];
+			}
+			
+		}
+		
+		merge(target){
+			
+			var entry_index3 = merge_queue.findIndex(entry3 => entry3[0]['id'] === this.id);
+			
+			try {
+				if (Array.isArray(target) == true){
+					var err_msg = ".merge() argument must be a friendly spirit object, not an array. E.g. my_spirits[0].merge(my_spirits[1])";
+					fill_error(this.player_id, err_msg);
+					return;
+				} else if (typeof target !== 'object' || target === null){
+					var err_msg = ".merge() argument must be a friendly spirit object. E.g. my_spirits[0].merge(my_spirits[1])";
+					fill_error(this.player_id, err_msg);
+					return;
+				}
+			
+				if (Math.abs(target.position[0] - this.position[0]) < 12 && Math.abs(target.position[1] - this.position[1]) < 12 && this.player_id == target.player_id){
+				
+				} else {
+					return;
+				}
+			} catch (error){
+				fill_error(this.player_id, error.message);
+				
+			}
+			
+						
+			if (target.hp != 0 && this.hp != 0){
+				if (entry_index3 == -1){
+					merge_queue.push([this, target]);
+				} else {
+					merge_queue[entry_index2] = [this, target];
+				}
 			}
 			
 		}
@@ -822,10 +905,18 @@ if (!isMainThread){
 				if (living_spirits[n].hp == 0) continue;
 				
 				if (is_in_sight(living_spirits[n], bases[m], 600)){
-					if (bases[m].player_id == players['p1'] && living_spirits[n].player_id == players['p1']){
-						bases[m].sight.friends.push(living_spirits[n].id);
+					if (bases[m].player_id == players['p1']){
+						if (living_spirits[n].player_id == players['p1']){
+							bases[m].sight.friends.push(living_spirits[n].id);
+						} else {
+							bases[m].sight.enemies.push(living_spirits[n].id);
+						}
 					} else {
-						bases[m].sight.enemies.push(living_spirits[n].id);
+						if (living_spirits[n].player_id == players['p1']){
+							bases[m].sight.enemies.push(living_spirits[n].id);
+						} else {
+							bases[m].sight.friends.push(living_spirits[n].id);
+						}
 					}
 				}
 			}
@@ -850,9 +941,11 @@ if (!isMainThread){
 				render_data2 = {
 					'move': [],
 					'energize': [],
+					'special': [],
 					'death': [],
 					'birth': [],
-					'error_msg': [],
+					'error_msg1': [],
+					'error_msg2': [],
 					'console1': [],
 					'console2': [],
 					'tutorial': []
@@ -861,14 +954,15 @@ if (!isMainThread){
 				render_data2 = {
 					'move': [],
 					'energize': [],
+					'special': [],
 					'death': [],
 					'birth': [],
-					'error_msg': [],
+					'error_msg1': [],
+					'error_msg2': [],
 					'console1': [],
 					'console2': []
 				}
 			}
-			
 		
 		
 			//objects birth
@@ -880,7 +974,7 @@ if (!isMainThread){
 					global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1450, 600], 4, 40, players['p1'], colors['player1'], 100);
 					base_lookup['base_' + players['p1']].energy -= 100;
 					global[players['p1'] + top_s].move([1430, 600]);
-					console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+					//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 					if (workerData[1] == 'tutorial'){
 						console.log('tutorial phase 5 done');
 						tutorial_phase[4] = 1;
@@ -892,7 +986,8 @@ if (!isMainThread){
 				global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2350, 1400], 4, 40, players['p2'], colors['player2'], 30);
 				base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;
 				global[players['p2'] + top_q].move([2380, 1400]);
-				console.log('spirit was born')
+				console.log(top_q);
+				//console.log('spirit was born')
 			}
 				
 			
@@ -905,7 +1000,11 @@ if (!isMainThread){
 			}
 		
 		
+		
+			//
 		    //objects move
+			//
+			
 			moveables = move_queue.length;
 			//console.log('moveables = ' + moveables);
 			for (i = (moveables - 1); i >= 0; i--){
@@ -999,8 +1098,8 @@ if (!isMainThread){
 							//console.log('inside');
 							//intersection(x0, y0, r0, x1, y1, r1)
 							inter_points = intersection(spirit_before[0], spirit_before[1], base_speed, object_position[0], object_position[1], min_distance);
-							console.log('intersection points:');
-							console.log(inter_points);
+							//console.log('intersection points:');
+							//console.log(inter_points);
 							
 							move_queue[i][0].position[0] = inter_points[0];
 							move_queue[i][0].position[1] = inter_points[2];
@@ -1048,7 +1147,9 @@ if (!isMainThread){
 			//console.log(spirit_lookup['sp1'].sight);
 		
 		
+			//
 			//objects energize
+			//
 			
 			var energize_apply = [];
 			e_targets = energize_queue.length;
@@ -1287,7 +1388,6 @@ if (!isMainThread){
 				energize_apply.splice(i, 1);			
 			}
 			
-			
 		
 		
 			//objects death & vm sandbox objects update
@@ -1315,13 +1415,55 @@ if (!isMainThread){
 			
 				death_queue.splice(i, 1);
 			}
+			
+			
+			
+			
+			//
+			//objects merge
+			//
+			
+			for (i = (merge_queue.length - 1); i >= 0; i--){
+				
+				//var m_origin = merge_queue[i][0];
+				//var m_dest = merge_queue[i][1];
+				
+				merge_queue[i][1].merged.push(merge_queue[i][0].id);
+				
+				for (m = 0; m < merge_queue[i][0].merged.length; m++){
+					merge_queue[i][1].merged.push(merge_queue[i][0].merged[m])
+				}
+				
+				merge_queue[i][1].size += merge_queue[i][0].size;
+				merge_queue[i][1].energy += merge_queue[i][0].energy;
+				merge_queue[i][1].energy_capacity = merge_queue[i][1].size * 10;
+				
+				merge_queue[i][0].hp = 0;
+				merge_queue[i][0].size = 0;
+				merge_queue[i][0].energy = 0;
+				merge_queue[i][0].position = merge_queue[i][1].position;
+				
+				render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
+				//render_data2.death.push(merge_queue[i][0].id);
+				
+				merge_queue.splice(i, 1);
+			
+			}
+			
+			
+			
+			
+			
+			
 		
 		
 			//errors
-			render_data2.error_msg = user_error;
+			render_data2.error_msg1 = user_error1;
+			render_data2.error_msg2 = user_error2;
 			render_data2.console1 = log1;
 			render_data2.console2 = log2;
-			user_error = '';
+			user_error1 = [];
+			user_error2 = [];
 		
 		
 			//tutorial data update
@@ -1331,28 +1473,101 @@ if (!isMainThread){
 		
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
-			console.log(render_data2);
+			//console.log(render_data2);
 			parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData[0], meta: ''});
 			//wss.broadcast();
 			
+			
+			
+			
+			
+			//
+			// THIS IS THE BOTTLENECT
+			// Think about better architecture for pl1_units, pl2_units, withour re-initiating multiple times (in server.js as well)
+			//
+			
 			//update vm sandbox objects
-			for (i = 0; i < living_spirits.length; i++){
-				spt = living_spirits[i];	
-				if (spt.player_id == players['p2']){
-					pl2_units[spt.id] = spt;
-					var tempJSON = JSON.stringify(spt);
-					pl1_units[spt.id] = JSON.parse(tempJSON);
-				} else if (spt.player_id == players['p1']) {
-					pl1_units[spt.id] = spt;
-					var tempJSON = JSON.stringify(spt);
-					pl2_units[spt.id] = JSON.parse(tempJSON);
+			if (temp_flag == 0){
+				var p1_top = 0;
+				var p2_top = 0;
+				console.log('living_spirits.length = ' + living_spirits.length);
+				console.log('my_spirits1.length = ' + my_spirits1.length);
+				for (i = 0; i < living_spirits.length; i++){
+					spt = living_spirits[i];
+					//console.log(spt);	
+					if (spt.player_id == players['p2']){
+						pl2_units[spt.id] = spt;
+						
+						//if (spt.hp != 0) {
+							my_spirits2[p2_top] = spt;
+							p2_top++;
+						//}
+						
+						//pl1_units[spt.id] = {};
+					
+						//Object.assign(pl1_units[spt.id], spt)
+					
+						var tempJSON = JSON.stringify(spt);
+						pl1_units[spt.id] = JSON.parse(tempJSON);
+					
+						/*pl1_units[spt.id] = {
+							id: spt.id,
+							position: spt.position,
+							size: spt.size,
+							energy: spt.energy,
+							color: spt.color,
+							sight: spt.sight,
+							qcollisions: spt.qcollisions,
+							hp: spt.hp,
+							move_speed: spt.move_speed,
+							energy_capacity: spt.energy_capacity,
+							player_id: spt.player_id,
+							cost: spt.cost
+						}*/
+					
+					
+					} else if (spt.player_id == players['p1']) {
+						pl1_units[spt.id] = spt;
+						
+						//if (spt.hp != 0) {
+							my_spirits1[p1_top] = spt;
+							p1_top++;
+						//}
+						
+						//pl2_units[spt.id] = {};
+					
+						//Object.assign(pl2_units[spt.id], spt)
+					
+						var tempJSON = JSON.stringify(spt);
+						pl2_units[spt.id] = JSON.parse(tempJSON);
+						
+						
+						/*pl2_units[spt.id] = {
+							id: spt.id,
+							position: spt.position,
+							size: spt.size,
+							energy: spt.energy,
+							color: spt.color,
+							sight: spt.sight,
+							qcollisions: spt.qcollisions,
+							hp: spt.hp,
+							move_speed: spt.move_speed,
+							energy_capacity: spt.energy_capacity,
+							player_id: spt.player_id,
+							cost: spt.cost
+						}*/
+					}
+					//what is this doing here? (maybe important)
+					spt.move(spt.position);
 				}
-				spt.move(spt.position);
-			}
+				console.log('objects processing');
+				temp_flag = 0;
+				console.log('my_spirits1.length = ' + my_spirits1.length);
+			} 
+			
 			
 			log1 = [];
 			log2 = [];
-			
 			
 			
 		
@@ -1360,7 +1575,7 @@ if (!isMainThread){
 			processTime2 = process.hrtime(processTime1);
 			processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
 			console.log('calculated in = ' + processTimeRes);
-			user_error = 'calculated in = ' + processTimeRes;
+			//user_error = 'calculated in = ' + processTimeRes;
 			
 			
 			//tutorial
@@ -1375,13 +1590,13 @@ if (!isMainThread){
 		//map creation
 		// -----------------
 
-		for (s = 1; s < 2; s++){
+		for (s = 1; s < 3; s++){
 			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 4, 0, players['p1'], colors['player1'], 100);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
-		for (q = 1; q < 2; q++){
+		for (q = 1; q < 3; q++){
 			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 4, 0, players['p2'], colors['player2'], 100);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
@@ -1411,7 +1626,7 @@ if (!isMainThread){
 			//ws.send(JSON.stringify(render_data2));
 			//ws.send(JSON.stringify(render_data));
 			//ws.send(render_data);
-			//console.log(render_data2);
+			console.log(render_data2);
 			//var render_data = [[],[],[],[],[]];
 		
 		}, game_tick);

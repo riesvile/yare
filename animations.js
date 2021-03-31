@@ -466,6 +466,129 @@ function wait_opponent_view(){
   
 }
 
+function update_console_height(hght){
+	//console.log('was triggered');
+	//console.log(hght);
+	if (hght == 0){
+		hght = 20;
+	}
+  	anime({
+  		targets: '#console',
+  		height: 24 + hght,
+  		easing: 'easeOutQuad',
+  		duration: 100
+  	});
+}
+
+function error_console(){
+  	anime({
+  		targets: '#console',
+		backgroundColor: ['rgba(54, 32, 35, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+  	anime({
+  		targets: '#console_lbl',
+		color: ['rgba(255, 155, 165, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+}
+
+function clean_console(){
+  	anime({
+  		targets: '#console',
+		backgroundColor: ['rgba(48, 45, 51, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+  	anime({
+  		targets: '#console_lbl',
+		color: ['rgba(242, 246, 250, 0.49)'],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+}
+
+function console_expanding(hght){
+	if (has_error == 1){
+		error_console();
+	}
+	if (hght == 0){
+		hght = 20;
+	}
+  	anime({
+  		targets: '#console',
+  		height: [40, 24 + hght],
+		//backgroundColor: ['rgba(48, 45, 51, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+  	anime({
+  		targets: '#console_in',
+		opacity: [0, 1],
+		translateY: [0, 10],
+  		easing: 'easeOutQuad',
+		delay: 50,
+  		duration: 150
+  	});
+	
+  	anime({
+  		targets: '#console_lbl',
+		opacity: [1, 0],
+		translateY: [0, 10],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+  	anime({
+  		targets: '#console_drop',
+		rotate: '180deg',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+}
+
+function console_collapsing(hght){
+	if (has_error == 1){
+		error_console();
+	}
+  	anime({
+  		targets: '#console',
+  		height: [24 + hght, 40],
+		//backgroundColor: ['rgba(48, 45, 51, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+  	anime({
+  		targets: '#console_in',
+		opacity: [1, 0],
+		translateY: [10, 0],
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+  	anime({
+  		targets: '#console_lbl',
+		opacity: [0, 1],
+		translateY: [10, 0],
+  		easing: 'easeOutQuad',
+		delay: 50,
+  		duration: 150
+  	});
+	
+  	anime({
+  		targets: '#console_drop',
+		rotate: '0deg',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+}
+
 function code_copy_success(target){
   	anime({
   		targets: target,
