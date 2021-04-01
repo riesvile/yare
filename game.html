@@ -189,6 +189,7 @@
 	  var units_queue = [];
 	  var energize_queue = [];
 	  var merge_queue = [];
+	  var divide_queue = [];
 	  var death_queue = [];
 	  var stars_queue = [];
 	  var bases_queue = [];
@@ -278,8 +279,9 @@
 					 
 					 for (s = 0; s < incoming.special.length; s++){
 						 if (incoming.special[s][0] == 'm'){
-						 	//is merge
 							 merge_queue.push(incoming.special[s]);
+						 } else if (incoming.special[s][0] == 'd'){
+						 	 divide_queue.push(incoming.special[s]);
 						 }
 					 }
 					 

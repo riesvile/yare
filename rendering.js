@@ -398,6 +398,7 @@ class Spirit {
 		this.id = id
 		this.position = position;
 		this.size = size;
+		this.final_size = size;
 		this.energy = energy;
 		this.color = color;
 		
@@ -451,6 +452,7 @@ class Spirit {
 		var origin_size_decr = that.size/10;
 		var new_size = this.size + target.size;
 		var increment = [0, 0];
+		target.final_size += that.size;
 		increment[0] = (target.position[0] - this.position[0])/10;
 		increment[1] = (target.position[1] - this.position[1])/10;
 		
@@ -458,10 +460,8 @@ class Spirit {
 		target.energy = this.energy + target.energy;
 		
 		var interval_merge = setInterval(function() {
-		    if (counter_merge > 10) {
-		        clearInterval(interval_merge);
-		    }
-			target.size += (new_size - target.size)/10; 
+		    
+			target.size += origin_size_decr; 
 			that.position[0] += increment[0];
 			that.position[1] += increment[1];
 			console.log('dddd');
@@ -469,7 +469,14 @@ class Spirit {
 			if (that.size <= 0) that.size = 0;
 			
 			
-			
+		    if (counter_merge > 9) {
+		        clearInterval(interval_merge);
+				target.size = target.final_size;
+				console.log('target.size final');
+				console.log(target.size);
+		    }
+			console.log('target.size');
+			console.log(target.size);
 			//move this into target, reduce size
 			
 			
@@ -479,6 +486,36 @@ class Spirit {
 		}, 16);
 		
 	}
+	
+	
+	divide(){
+		var that = this;
+		var counter_divide = 0;
+		var original_energy = that.energy
+		var original_size = that.size;
+		
+		//that.hp = 1;
+		//that.size = 1;
+		
+		for (d = 0; d < that.merged.length; d++){
+			spirit_lookup[that.merged[d]].hp = 1;
+			spirit_lookup[that.merged[d]].size = 1;
+			
+			var interval_divide = setInterval(function() {
+			    if (counter_divide > 10) {
+			        clearInterval(interval_divide);
+			    }
+				
+				
+				counter_divide++;
+			}, 16);
+		}
+		
+		that.merged = [];
+		that.size = 1;
+		that.energy = original_energy / original_size;
+	}
+	
 	
 	death() {
 		var that = this;
@@ -503,13 +540,25 @@ class Spirit {
 	draw() {
 		var color_parts = this.color.match(/[.?\d]+/g);
 		var spirit_percent_energy = this.energy / this.energy_capacity;
+		var drawing_size = this.size / 2;
+		
+		if (this.size <= 0.1){
+			drawing_size = 0;
+		} else if (this.size < 4){
+			drawing_size = this.size + 1;
+		} else if (this.size < 12){
+			drawing_size = 4 + ((this.size - 3) / 2);
+		} else {
+			drawing_size = 8 + ((this.size - 11) / 4);
+		}
+		
 		if (spirit_percent_energy < 0) spirit_percent_energy = 0;
 		c.beginPath();
-		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		if (this.size <= 2){
-			c.lineWidth = this.size / 2;
+		c.arc(this.position[0], this.position[1], drawing_size, 0, Math.PI * 2, false);
+		if (this.size < 8){
+			c.lineWidth = 0.5 + ((this.size - 1) / 4);
 		} else {
-			c.lineWidth = this.size / 4;
+			c.lineWidth = 2;
 		}
 		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.8) + ')';
 		//if (this.hp > 0){
@@ -518,7 +567,7 @@ class Spirit {
 		
 		
 		c.beginPath();
-		c.arc(this.position[0], this.position[1], this.size * (spirit_percent_energy), 0, Math.PI * 2, false);
+		c.arc(this.position[0], this.position[1], drawing_size * (spirit_percent_energy), 0, Math.PI * 2, false);
 		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
 		c.fill();
 	}
