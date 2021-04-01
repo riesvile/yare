@@ -394,7 +394,7 @@ function draw_grid(){
 
 
 class Spirit {
-	constructor(id, position, size, energy, player, color, merged){
+	constructor(id, position, size, energy, player, color, merged, hp = 1){
 		this.id = id
 		this.position = position;
 		this.size = size;
@@ -410,7 +410,7 @@ class Spirit {
 		this.merged = merged;
 		
 		//const properties
-		this.hp = 1;
+		this.hp = hp;
 		this.move_speed = 1;
 		this.energy_capacity = size * 10;
 		this.player_id = player;
@@ -456,6 +456,12 @@ class Spirit {
 		increment[0] = (target.position[0] - this.position[0])/10;
 		increment[1] = (target.position[1] - this.position[1])/10;
 		
+		target.merged.push(that.id);
+		
+		for (let me = 0; me < that.merged.length; me++){
+			target.merged.push(that.merged[me]);
+		}
+		
 		target.energy_capacity = this.energy_capacity + target.energy_capacity;
 		target.energy = this.energy + target.energy;
 		
@@ -493,43 +499,48 @@ class Spirit {
 		var counter_divide = 0;
 		var original_energy = that.energy
 		var original_size = that.size;
+		var size_decr = (original_size - 1)/10
 		
 		//that.hp = 1;
 		//that.size = 1;
-		
-		for (d = 0; d < that.merged.length; d++){
+		console.log('that.merged');
+		console.log(that.merged);
+		for (let d = 0; d < that.merged.length; d++){
 			spirit_lookup[that.merged[d]].hp = 1;
 			spirit_lookup[that.merged[d]].size = 1;
-			
-			var interval_divide = setInterval(function() {
-			    if (counter_divide > 10) {
-			        clearInterval(interval_divide);
-			    }
-				
-				
-				counter_divide++;
-			}, 16);
 		}
 		
+		var interval_divide = setInterval(function() {
+			that.size -= size_decr;
+		    if (counter_divide > 10) {
+		        clearInterval(interval_divide);
+				that.size = 1;
+		    }
+			
+			counter_divide++;
+		}, 16);
+		
 		that.merged = [];
-		that.size = 1;
+		//that.size = 1;
 		that.energy = original_energy / original_size;
 	}
 	
 	
 	death() {
 		var that = this;
-		var counter = 0;
-		var alpha = 10;
-		var interval = setInterval(function() {
-		    if (counter > 10) {
+		var counter_death = 0;
+		var alpha = 8;
+		var start_size = this.size;
+		var interval_death = setInterval(function() {
+		    if (counter_death > 8) {
 				//var index = living_spirits.findIndex(x => x.id == that.id);
 				//living_spirits.splice(index);
-		        clearInterval(interval);
+		        clearInterval(interval_death);
+				that.hp = 0;
 		    }
-			that.size = that.size + (0.1 * that.size);
-			that.color = that.color.replace(/[^,]+(?=\))/, alpha/10);
-			counter++;
+			that.size += 0.1 * start_size //that.size + (0.1 * that.size);
+			that.color = that.color.replace(/[^,]+(?=\))/, alpha/8);
+			counter_death++;
 			alpha--;
 		}, 16);
 		
@@ -538,38 +549,41 @@ class Spirit {
 	}
 	
 	draw() {
-		var color_parts = this.color.match(/[.?\d]+/g);
-		var spirit_percent_energy = this.energy / this.energy_capacity;
-		var drawing_size = this.size / 2;
+		if (this.hp != 0){
+			var color_parts = this.color.match(/[.?\d]+/g);
+			var spirit_percent_energy = this.energy / this.energy_capacity;
+			var drawing_size = this.size / 2;
 		
-		if (this.size <= 0.1){
-			drawing_size = 0;
-		} else if (this.size < 4){
-			drawing_size = this.size + 1;
-		} else if (this.size < 12){
-			drawing_size = 4 + ((this.size - 3) / 2);
-		} else {
-			drawing_size = 8 + ((this.size - 11) / 4);
+			if (this.size <= 0.1){
+				drawing_size = 0;
+			} else if (this.size < 4){
+				drawing_size = this.size + 1;
+			} else if (this.size < 12){
+				drawing_size = 4 + ((this.size - 3) / 2);
+			} else {
+				drawing_size = 8 + ((this.size - 11) / 4);
+			}
+		
+			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], drawing_size, 0, Math.PI * 2, false);
+			if (this.size < 8){
+				c.lineWidth = 0.5 + ((this.size - 1) / 4);
+			} else {
+				c.lineWidth = 2;
+			}
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.8) + ')';
+			//if (this.hp > 0){
+				c.stroke();
+			//}
+		
+		
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], drawing_size * (spirit_percent_energy), 0, Math.PI * 2, false);
+			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
+			c.fill();
 		}
 		
-		if (spirit_percent_energy < 0) spirit_percent_energy = 0;
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], drawing_size, 0, Math.PI * 2, false);
-		if (this.size < 8){
-			c.lineWidth = 0.5 + ((this.size - 1) / 4);
-		} else {
-			c.lineWidth = 2;
-		}
-		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.8) + ')';
-		//if (this.hp > 0){
-			c.stroke();
-		//}
-		
-		
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], drawing_size * (spirit_percent_energy), 0, Math.PI * 2, false);
-		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
-		c.fill();
 	}
 	
 	//color_parts[3] * (spirit_percent_energy/2 + 0.69)
@@ -761,10 +775,10 @@ function initiate_world(){
 	
 	world_spirits = units_queue.length;
 	for (i = 0; i < world_spirits; i++){
-		if (units_queue[i].hp == 0) continue;
+		//if (units_queue[i].hp == 0) continue;
 		//console.log('units_queue[i]');
 		//console.log(units_queue[i]);
-		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color, units_queue[i].merged);
+		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color, units_queue[i].merged, units_queue[i].hp);
 		spirit_lookup[units_queue[i].id].draw();
 		console.log(spirit_lookup[units_queue[i].id]);
 		//birth_queue.splice(i, 1);
@@ -831,7 +845,7 @@ function render_state(timestamp){
 	//objects birth
 	birthlings = birth_queue.length;
 	for (i = 0; i < birthlings; i++){
-		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color, birth_queue[i].merged);
+		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color, birth_queue[i].merged, birth_queue[i].hp);
 		spirit_lookup[birth_queue[i].id].draw();
 		console.log(spirit_lookup[birth_queue[i].id]);
 		
@@ -958,7 +972,7 @@ function render_state(timestamp){
 			//alert('game over, ' + winner + ' won');
 			game_over(winner, loser);
 		} else {
-			spirit_lookup[death_queue[i]].hp = 0;
+			//spirit_lookup[death_queue[i]].hp = 0;
 			//draw_death(spirit_lookup[death_queue[i]].id, spirit_lookup[death_queue[i]].size, spirit_lookup[death_queue[i]].color);
 			spirit_lookup[death_queue[i]].death();
 			
@@ -978,6 +992,13 @@ function render_state(timestamp){
 		spirit_lookup[merge_queue[i][1]].merge(spirit_lookup[merge_queue[i][2]]);
 	}
 	merge_queue = [];
+	
+	
+	//objects divide
+	for (i = 0; i < divide_queue.length; i++){
+		spirit_lookup[divide_queue[i][1]].divide();
+	}
+	divide_queue = [];
 	
 	
 	

@@ -1531,6 +1531,7 @@ if (!isMainThread){
 				}
 				
 				death_queue[i].hp = 0;
+				console.log(death_queue[i]);
 				render_data2.death.push(death_queue[i].id);
 				
 				//delete spirit_lookup[suid];
