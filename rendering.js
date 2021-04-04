@@ -453,6 +453,9 @@ class Spirit {
 		var new_size = this.size + target.size;
 		var increment = [0, 0];
 		target.final_size += that.size;
+		
+		that.hp = 0;
+		
 		increment[0] = (target.position[0] - this.position[0])/10;
 		increment[1] = (target.position[1] - this.position[1])/10;
 		
@@ -462,15 +465,15 @@ class Spirit {
 			target.merged.push(that.merged[me]);
 		}
 		
-		target.energy_capacity = this.energy_capacity + target.energy_capacity;
-		target.energy = this.energy + target.energy;
+		target.energy_capacity = that.energy_capacity + target.energy_capacity;
+		target.energy += that.energy;
 		
 		var interval_merge = setInterval(function() {
 		    
 			target.size += origin_size_decr; 
 			that.position[0] += increment[0];
 			that.position[1] += increment[1];
-			console.log('dddd');
+			//console.log('dddd');
 			that.size -= origin_size_decr;
 			if (that.size <= 0) that.size = 0;
 			
@@ -478,11 +481,14 @@ class Spirit {
 		    if (counter_merge > 9) {
 		        clearInterval(interval_merge);
 				target.size = target.final_size;
-				console.log('target.size final');
-				console.log(target.size);
+				//console.log('target.size final');
+				//console.log(target.size);
+				that.energy = 0;
+				//console.log('merged spirit');
+				//console.log('')
 		    }
-			console.log('target.size');
-			console.log(target.size);
+			//console.log('target.size');
+			//console.log(target.size);
 			//move this into target, reduce size
 			
 			
@@ -496,11 +502,15 @@ class Spirit {
 	
 	divide(){
 		var that = this;
+		var color_parts = this.color.match(/[.?\d]+/g);
 		var counter_divide = 0;
-		var original_energy = that.energy
+		var original_energy = that.energy;
+		var original_energy_capacity = that.energy_capacity
 		var original_size = that.size;
 		var size_decr = (original_size - 1)/10
 		
+		console.log('size before divide')
+		console.log(original_size);
 		//that.hp = 1;
 		//that.size = 1;
 		console.log('that.merged');
@@ -508,13 +518,16 @@ class Spirit {
 		for (let d = 0; d < that.merged.length; d++){
 			spirit_lookup[that.merged[d]].hp = 1;
 			spirit_lookup[that.merged[d]].size = 1;
+			spirit_lookup[that.merged[d]].energy = Math.floor(original_energy / original_size);
+			spirit_lookup[that.merged[d]].energy_capacity = original_energy_capacity / original_size;
 		}
 		
 		var interval_divide = setInterval(function() {
 			that.size -= size_decr;
 		    if (counter_divide > 10) {
-		        clearInterval(interval_divide);
 				that.size = 1;
+				that.final_size = 1;
+		        clearInterval(interval_divide);
 		    }
 			
 			counter_divide++;
@@ -523,6 +536,12 @@ class Spirit {
 		that.merged = [];
 		//that.size = 1;
 		that.energy = original_energy / original_size;
+		console.log('that.original_energy_capacity = ' + original_energy_capacity);
+		console.log('that.original_size = ' + original_size);
+		console.log('that.energy_capacity = ' + that.energy_capacity);
+		that.energy_capacity = original_energy_capacity / original_size;
+		console.log('that.energy_capacity = ' + that.energy_capacity);
+		//var spirit_percent_energy = this.energy / this.energy_capacity;
 	}
 	
 	
@@ -847,7 +866,7 @@ function render_state(timestamp){
 	for (i = 0; i < birthlings; i++){
 		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color, birth_queue[i].merged, birth_queue[i].hp);
 		spirit_lookup[birth_queue[i].id].draw();
-		console.log(spirit_lookup[birth_queue[i].id]);
+		//console.log(spirit_lookup[birth_queue[i].id]);
 		
 		for (j = 0; j<bases.length; j++){
 			if (bases[j].player_id == birth_queue[i].player_id) bases[j].energy -= birth_queue[i].cost;
@@ -901,10 +920,12 @@ function render_state(timestamp){
 		//console.log('energize_queue[i]');
 		//console.log(energize_queue[i]);
 		if (energize_queue[i][0].startsWith('star')) {
-			draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
-			if (energy_processed[energize_queue[i][1]] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
-				spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-				energy_processed[energize_queue[i][1]] = 1;
+			if (spirit_lookup[energize_queue[i][1]].hp != 0){
+				draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
+				if (energy_processed[energize_queue[i][1]] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
+					spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+					energy_processed[energize_queue[i][1]] = 1;
+				}
 			}
 		} else if (energize_queue[i][1].startsWith('base')) {
 			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
@@ -943,7 +964,12 @@ function render_state(timestamp){
 						//baseOffsetUpdate();
 					} else {
 						spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
-						spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+						if (spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
+							spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+						} else {
+							//spirit_lookup[energize_queue[i][1]].energy = energize_queue[i][2];
+						}
+						
 						//base_lookup[energize_queue[i][1]].draw();
 						energy_processed[energize_queue[i][0]] = 1;
 						//console.log('base energy');

@@ -1,0 +1,209 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+#doc_sections {
+	width: 68%;
+	margin-top: 44px;
+	margin-left: 16%;
+	position: absolute;
+	top: 0;
+	
+}
+
+.doc_sec_link {
+	display: inline-block;
+	margin-right: 20px;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.55);
+}
+
+.doc_sec_active {
+	color: rgba(242, 246, 250, 0.89);
+}
+
+#doc_content {
+	width: 68%;
+	margin-left: 16%;
+}
+
+#doc_content section {
+	padding-top: 20vh;
+}
+
+.h_sec_head {
+	font-size: 40px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	float: left;
+}
+
+.doc_h4 {
+	font-size: 20px;
+	font-weight: 500;
+	margin-bottom: 26px;
+	color: rgba(242, 246, 250, 1);
+}
+
+.p_normal {
+	max-width: 690px;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 32px;
+	margin-bottom: 20px;
+	color: rgba(242, 246, 250, 0.82);
+}
+
+.p_sec_intro {
+	font-size: 20px;
+	font-weight: 400;
+	width: 72%;
+	margin-left: 28%;
+	margin-top: 24px;
+	line-height: 36px;
+	transform: translateY(-50%);
+	color: rgba(242, 246, 250, 0.82);
+}
+
+.sep_small {
+	width: 100%;
+	height: 20px;
+	clear: both;
+}
+
+
+/* -- */
+
+
+.p_intro {
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 36px;
+	max-width: 740px;
+	margin-bottom: 60px;
+}
+
+#game_board_img {
+	width: 100%;
+	height: 500px;
+	background-color: #223;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---- Tables ---- */
+
+.table_doc {
+	width: 100%;
+}
+
+.row_doc {
+	width: calc(100% + 64px);
+	margin-left: -32px;
+	border-radius: 12px;
+}
+
+.row_in_doc {
+	width: calc(100% - 64px);
+	margin-left: 32px;
+	background-color: rgba(20, 40, 150, 0.2);
+	padding-top: 16px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.row_in_doc_head {
+	width: 100%;
+	padding-bottom: 12px;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.row_in_doc_head span {
+	font-size: 12px;
+	font-family: Montserrat, sans-serif;
+	text-transform: uppercase;
+	color: rgba(242, 246, 250, 0.48);
+	letter-spacing: 1px;
+}
+
+.table_doc_property, .table_doc_type, .table_doc_value {
+	display: inline-block;
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+}
+
+.table_doc_property {
+	width: 32%;
+}
+
+.table_doc_type {
+	text-align: right;
+	font-family: Lucida Sans Typewriter, Lucida Console, monaco, Bitstream Vera Sans Mono, monospace;
+	font-size: 14px;
+	color: rgba(242, 246, 250, 0.69);
+	width: 10%;
+}
+
+.table_doc_value {
+	float: right;
+	text-align: right;
+}
+
+
+
+
+
+.placeholder {
+	height: 900px;
+	width: 100%;
+	background-color: #092;
+}
+
+#trailer_placeholder {
+	width: 100%;
+	height: 400px;
+	background-color: #007;
+	margin-bottom: 100px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

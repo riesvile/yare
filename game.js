@@ -302,6 +302,7 @@ var star_a1c;
 var base1;
 var base2;
 
+
 var player1_code;
 var player1_session = '';
 var player2_code;
@@ -1009,6 +1010,7 @@ if (!isMainThread){
 			}
 			
 			var qcollisions_stay = {};
+			var prev_position = {};
 		
 		
 			//objects birth
@@ -1055,6 +1057,7 @@ if (!isMainThread){
 			//console.log('moveables = ' + moveables);
 			for (i = (moveables - 1); i >= 0; i--){
 				if (move_queue[i][0].hp == 0) continue;
+				prev_position[move_queue[i][0].id] = JSON.parse(JSON.stringify(move_queue[i][0].position));
 				
 				//tutorial
 				if (workerData[1] == 'tutorial'){
@@ -1590,22 +1593,44 @@ if (!isMainThread){
 				for (d = 0; d < divide_queue[i].merged.length; d++){
 					
 					var divided = spirit_lookup[divide_queue[i].merged[d]]
-					console.log('dividing ' + divided.id);
+					//console.log('dividing ' + divided.id);
 					var temp_posX = JSON.parse(JSON.stringify(original.position[0])); 
 					var temp_posY = JSON.parse(JSON.stringify(original.position[1])); 
 					 
 					//divided.position[0] = temp_posX;
 					//divided.position[1] = temp_posY; 
-					divided.position = JSON.parse(JSON.stringify(original.position));
+					divided.position = JSON.parse(JSON.stringify(prev_position[original.id]));
 					divided.hp = 1;
 					divided.size = 1;
 					divided.energy = Math.floor(original.energy / original_size);
+					
+					//var adj1 = 5;
+					//var adj2 = 5;
+					
+					var adj1 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
+					var adj2 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
+					
+					//var adj1 = Math.floor(Math.random() * 100) / 20;
+					//var adj2 = Math.floor(Math.random() * 100) / 20;
+					//console.log('divided');
+					//console.log(divided);
+					
+					//console.log(divided.position);
+					//console.log(prev_position[original.id]);
+					
+					render_data2.move.push([divided.id, prev_position[original.id], [adj1, adj2], [divided.position[0] + adj1, divided.position[1] + adj2]]);
+					
+					divided.position[0] += adj1;
+					divided.position[1] += adj2;
+					
+					
 					
 				}
 				
 				original.merged = [];
 				original.size = 1;
 				original.energy = Math.floor(original.energy / original_size);
+				original.energy_capacity = original.energy_capacity / original_size;
 				
 				
 				render_data2.special.push(['d', divide_queue[i].id]);

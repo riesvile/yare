@@ -253,7 +253,7 @@ function login_success(user_name){
 		document.getElementById('new_account').style.display = 'none';	
 		document.getElementById('login').style.display = 'none';
 	} catch (error) {
-	  console.error(error);
+	  //console.error(error);
 	}
 	
 	document.getElementById('signed_in').innerHTML = user_name;
@@ -378,7 +378,12 @@ function user_links(){
 }
 
 function resizing(){
-	new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
+	try {
+		new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
+	} catch (error) {
+	  //console.error(error);
+	}
+	
 }
 
 function wait_start_view(){
@@ -731,7 +736,7 @@ try {
 	var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
 	var login_pos = document.getElementById('login').getBoundingClientRect();
 } catch (error) {
-  console.error(error);
+  //console.error(error);
 }
 
 //var new_acc_rect = document.getElementById('new_account').getBoundingClientRect();
@@ -749,13 +754,13 @@ try {
 	document.getElementById('login').addEventListener('click', login, false);
 	
 } catch (error) {
-  console.error(error);
+  //console.error(error);
 }
 
 try {
 	document.getElementById('log_out').addEventListener('click', logout, false);
 } catch (error) {
-  console.error(error);
+  //console.error(error);
 }
 
 
@@ -766,7 +771,7 @@ try {
 	document.getElementById('over_new_account').addEventListener('click', new_account, false);
 	document.getElementById('over_login').addEventListener('click', login, false);
 } catch (error) {
-  console.error(error);
+  //console.error(error);
 }
 
 

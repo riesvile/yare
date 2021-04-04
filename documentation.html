@@ -1,0 +1,254 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare.io</title>
+	<style>
+	</style>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./colors.css">
+	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./documentation.css">
+	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./anime.min.js"></script>
+  </head>
+  <body>
+	  
+	  <div id="new_account_wrap">
+		  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+		  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+			  <span id="user_err_message">Something's wrong</span>
+		  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+			  <span id="password_err_message">Something's wrong</span>
+			  <br>
+			   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
+		  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+		  </form>
+	  </div>
+  
+	  <div id="login_wrap">
+		  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+		  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
+		  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
+			  <span id="login_err_message">Something's wrong</span>
+			  <br>
+		  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+		  </form>
+	  </div>
+  
+	  <div id="profile_links">  
+		  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
+		  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
+		  	<a href="#" class="profile_link" id="log_out">Log out</a>
+	  </div>
+  
+  
+	  <div id="hector">
+		  <h1 id="logo"><a href="#">yare<span class="logo_lowlight">.io</span></a></h1>
+		  <div id="doc_sections">
+				  <a href="#doc_intro" id="doc_sec_link_intro" class="doc_sec_link">Intro & Gameplay</a>
+				  <a href="#doc_spirit" id="doc_sec_link_spirit" class="doc_sec_link doc_sec_active">Spirit</a>
+				  <a href="#doc_base" id="doc_sec_link_base" class="doc_sec_link">Base</a>
+				  <a href="#doc_energy" id="doc_sec_link_energy" class="doc_sec_link">Energy</a>
+				  <a href="#doc_credits" id="doc_sec_link_credits" class="doc_sec_link">Credits</a>
+		  </div>
+		  <div class="menu">
+			  <div class="menu_link new_acc" id="new_account">New account</div>
+			  <div class="menu_link" id="login">Log in</div>
+			  <div class="menu_link" id="signed_in">username</div>
+		  </div>
+	  </div>
+	  
+	  <div id="overlay"></div>
+	  <div id="grad_top2"></div>
+	  
+	  <div id="doc_content">
+		  
+		<section id="doc_intro">
+		  <p class="p_intro">yare.io is a real-time 2-player (1v1) strategy game where you control your units (spirits) via javascript. You win by destroying the opponent’s base.</p>
+		  <div id="trailer_placeholder"></div>
+		  <h4 class="doc_h4">Game board</h4>
+		  <p class="p_normal">Yare.io is played on a board sized 6000&nbsp;×&nbsp;4000 units. It’s an Euclidian plane starting [0,&nbsp;0] at the top left and [6000,&nbsp;4000] at the bottom right. Star and player base positions shown below.</p>
+		  <div class="sep_small"></div>
+		  <div id="game_board_img"></div>
+	    </section>
+		  
+	  	<section id="doc_spirit">
+		  <h2 class="h_sec_head">Spirit</h2>
+		  <p class="p_sec_intro">Spirits are the game’s units. They are JavaScript objects with various properties and methods listed below.</p>
+		  <div class="sep_small"></div>
+		  
+		  <div class="table_doc">
+				<div class="row_in_doc_head">
+					<span class="table_doc_property">Property</span>
+					<span class="table_doc_type">Type</span>
+					<span class="table_doc_value">Value</span>
+				</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">id</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">username + #. E.g. jane7</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">position</span>
+					<span class="table_doc_type">array</span>
+					<span class="table_doc_value">spirit’s [x, y] coordinates, e.g. [750, 900]</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">size</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">username + #. E.g. jane7</span>
+				</div>
+			</div>
+		  </div>
+		  
+		</section>
+	  
+	  	<section id="doc_base">
+		  <h2 class="h_sec_head">Base</h2>
+		  <p class="p_sec_intro">Base is the birth-place for new spirits, automatically generating new spirits when it has enough energy. If there is an enemy in its sight, the base stops producing new spirits, keeping all energy to defend itself.</p>
+		  <div class="placeholder"></div>
+		</section>
+		  
+		<section id="doc_energy">
+		  <h2 class="h_sec_head">Energy</h2>
+		  <p class="p_sec_intro">Energy is the only resource in the game. Spirits harvest it from the stars, use it to create new spirits, transfer energy between themselves and attack with it.</p>
+		  <div class="placeholder"></div>
+		</section>
+		  
+		<section id="doc_credits">
+		  <h2 class="h_sec_head">Credits</h2>
+		  <div class="placeholder"></div>
+		</section>
+	  
+	  
+  	  </div>
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+		
+		
+		
+	  
+	  
+	  
+  </body>
+  
+  <script>
+	  var prevActive;
+	  var currentActive;
+	  
+	  function getCookie(name){
+	      var nameEQ = name + "=";
+	      var ca = document.cookie.split(';');
+	      for(var i=0;i < ca.length;i++) {
+	          var c = ca[i];
+	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	      }
+	      return null;
+	  }
+	  
+	  function eraseCookie(name){   
+	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	  }
+	  
+	  function updateActive(elid){
+		  //console.log(elid)
+		  var sec_links = document.getElementsByClassName('doc_sec_link');
+		  for (i = 0; i < sec_links.length; i++){
+			  sec_links[i].classList.remove('doc_sec_active');
+		  }
+		  
+		  switch (elid){
+			  case 'doc_intro':
+				  document.getElementById('doc_sec_link_intro').classList.add('doc_sec_active');
+				  break;
+			  case 'doc_spirit':
+				  document.getElementById('doc_sec_link_spirit').classList.add('doc_sec_active');
+				  break;
+			  case 'doc_base':
+				  document.getElementById('doc_sec_link_base').classList.add('doc_sec_active');
+				  break;
+			  case 'doc_energy':
+				  document.getElementById('doc_sec_link_energy').classList.add('doc_sec_active');
+				  break;
+			  case 'doc_credits':
+				  document.getElementById('doc_sec_link_credits').classList.add('doc_sec_active');
+				  break;
+		  }
+		  
+	  }
+	  
+	  
+	  function isElementInViewport2 (el){
+
+	      var rect = el.getBoundingClientRect();
+
+	      return (
+	          rect.top >= 0 &&
+	          rect.bottom <= (window.innerHeight/2 || document.documentElement.clientHeight/2) /* or $(window).height() */
+	      );
+	  }
+	  
+	  function isElementInViewport (el, percentVisible) {
+	    let
+	      rect = el.getBoundingClientRect(),
+	      windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+
+	    return !(
+	      Math.floor(100 - (((rect.top >= 0 ? 0 : rect.top) / +-rect.height) * 100)) < percentVisible ||
+	      Math.floor(100 - ((rect.bottom - windowHeight) / rect.height) * 100) < percentVisible
+	    )
+	  };
+	  
+	  function activeSection(){
+	      /* Your code go here */
+		  if (isElementInViewport(doc_intro_el, 50)) currentActive = doc_intro_el;
+		  if (isElementInViewport(doc_spirit_el, 50)) currentActive = doc_spirit_el;
+		  if (isElementInViewport(doc_base_el, 50)) currentActive = doc_base_el;
+		  if (isElementInViewport(doc_energy_el, 50)) currentActive = doc_energy_el;
+		  if (isElementInViewport(doc_credits_el, 50)) currentActive = doc_credits_el;
+		  
+		  if (currentActive != prevActive){
+			  prevActive = currentActive;
+			  updateActive(currentActive.id)
+		  }
+		  //console.clear();
+		  //console.log(isElementInViewport2(doc_intro_el, 50));
+		  //console.log(isElementInViewport2(doc_spirit_el, 50));
+		  //console.log(isElementInViewport2(doc_base_el, 50));
+		  
+	  }
+	  
+	  var doc_intro_el = document.getElementById('doc_intro');
+	  var doc_spirit_el = document.getElementById('doc_spirit');
+	  var doc_base_el = document.getElementById('doc_base');
+	  var doc_energy_el = document.getElementById('doc_energy');
+	  var doc_credits_el = document.getElementById('doc_credits');
+	  
+	  
+	  addEventListener('DOMContentLoaded', activeSection, false);
+	  addEventListener('load', activeSection, false);
+	  addEventListener('scroll', activeSection, false);
+  
+  
+  
+  </script>
+  
+  <script src="../animations.js"></script>
+  <script src="../basics.js"></script>
+  </html>

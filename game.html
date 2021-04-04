@@ -154,8 +154,10 @@
   <script src="../animations.js"></script>
   <script>
 	  window.onfocus = function() {
-		  socket.send('reinitiate');
-		  world_initiated = 0;
+		  setTimeout(function(){
+			  socket.send('reinitiate');
+			  world_initiated = 0;
+		  }, 1000);
 	  };
 	  window.onblur = function() {
 	      focused = false;
@@ -263,6 +265,7 @@
 			 
 				 if (incoming.move.length > 0){
 					 move_queue = incoming.move;
+					 //console.log(move_queue);
 				 } else {
 					 move_queue = [];
 				 }
@@ -594,7 +597,10 @@
 		  });
 		  
 		  socket.onclose = function(){
-		      location.reload();
+			  setTimeout(function(){
+				  location.reload();
+			  }, 1000);
+		      
 		  }
 		  
 		  //}
