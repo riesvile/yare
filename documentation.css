@@ -26,6 +26,7 @@
 
 #doc_content {
 	width: 68%;
+	max-width: 1200px;
 	margin-left: 16%;
 }
 
@@ -120,11 +121,14 @@
 
 .row_in_doc {
 	width: calc(100% - 64px);
+	height: 36px;
 	margin-left: 32px;
-	background-color: rgba(20, 40, 150, 0.2);
 	padding-top: 16px;
 	padding-bottom: 16px;
 	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+	display: flex;
+	align-items: center;
+	position: relative;
 }
 
 .row_in_doc_head {
@@ -163,10 +167,31 @@
 .table_doc_value {
 	float: right;
 	text-align: right;
+	margin-right: 0;
+	margin-left: auto;
 }
 
 
 
+
+.has_expando {
+	margin-right: 60px;
+}
+
+.expando_info {
+	width: 32px;
+	height: 32px;
+	border: 2px solid rgba(242, 246, 250, 0.2);
+	border-radius: 100%;
+	display: inline-block;
+	text-align: center;
+	line-height: 32px;
+	position: absolute;
+	right: 0px;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+}
 
 
 .placeholder {

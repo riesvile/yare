@@ -274,7 +274,7 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 
 function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd4', pla1_shape = 0, pla2_shape = 0) {
 	var g_id = generateUniqueString(3);
-	active_games[g_id] = [0, 0, 0, 0];
+	active_games[g_id] = [0, 0, 0, 0, 0, 0];
 	active_games[g_id][0] = init_status;
 	active_games[g_id][1] = pl1_id;
 	active_games[g_id][2] = pl2_id;

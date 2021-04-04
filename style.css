@@ -1046,6 +1046,75 @@ h1#pnf {
 
 
 
+.g_con {
+	display: block;
+	float: left;
+	margin-left: 28px;
+}
+
+.ico_circle {
+	width: 14px;
+	height: 14px;
+	background-color: rgba(204, 174, 220, 1);
+	float: left;
+	display: block;
+	border-radius: 100%;
+	margin-top: 3px;
+	margin-right: 10px;
+}
+
+.ico_square {
+	width: 13px;
+	height: 13px;
+	background-color: rgba(204, 174, 220, 1);
+	float: left;
+	display: block;
+	border-radius: 2px;
+	margin-top: 3px;
+	margin-right: 10px;
+}
+
+
+
+.ico_triangle {
+	position: relative;
+	background-color: rgba(204, 174, 220, 1);
+	text-align: left;
+	display: block;
+	width: 15px;
+	height: 15px;
+	float: left;
+	margin-top: 5px;
+	margin-right: 10px;
+}
+.ico_triangle:before,
+.ico_triangle:after {
+	content: '';
+	position: absolute;
+	background-color: inherit;
+}
+.ico_triangle,
+.ico_triangle:before,
+.ico_triangle:after {
+	width:  8px;
+	height: 8px;
+	border-top-right-radius: 30%;
+}
+
+.ico_triangle {
+	transform: rotate(-60deg) skewX(-30deg) scale(1,.866);
+}
+.ico_triangle:before {
+	transform: rotate(-135deg) skewX(-45deg) scale(1.414,.707) translate(0,-50%);
+}
+.ico_triangle:after {
+	transform: rotate(135deg) skewY(-45deg) scale(.707,1.414) translate(50%);
+}
+
+
+
+
+
 
 
 

@@ -98,7 +98,7 @@ function onPointerDown(e){
 	if (el_id != 'base_canvas'){
 		return;
 	} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
-		console.log('thissisis');
+		//console.log('thissisis');
 		disableSelection = 0;
 	} else {
 		disableSelection = 1;
@@ -118,7 +118,7 @@ function onPointerDown(e){
 		}
 	}
 	
-	console.log('mouse down');
+	//console.log('mouse down');
 	pointer_originX = x;
 	pointer_originY = y;
 	current_offsetX = offsetX;
@@ -156,7 +156,7 @@ function onPointerMove(e){
 	}
 }
 function onPointerUp(e){ 
-	console.log('mouse up');
+	//console.log('mouse up');
 	mousey = 0;
 	panning = 0;
 	disableSelection = 0;
@@ -196,7 +196,7 @@ function zoom(event) {
   	
   } else {
 	  var mousePos = getMousePos(event);
-	  console.log(mousePos.x);
+	  //console.log(mousePos.x);
 	  
 	  //(mousePos.x * scale) - (mousePos.x * prevScale)
   
@@ -586,7 +586,9 @@ class Spirit {
 			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
 			c.beginPath();
 			c.arc(this.position[0], this.position[1], drawing_size, 0, Math.PI * 2, false);
-			if (this.size < 8){
+			if (this.size < 2){
+				c.lineWidth = 0.75;
+			} else if (this.size < 8){
 				c.lineWidth = 0.5 + ((this.size - 1) / 4);
 			} else {
 				c.lineWidth = 2;
@@ -799,7 +801,7 @@ function initiate_world(){
 		//console.log(units_queue[i]);
 		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color, units_queue[i].merged, units_queue[i].hp);
 		spirit_lookup[units_queue[i].id].draw();
-		console.log(spirit_lookup[units_queue[i].id]);
+		//console.log(spirit_lookup[units_queue[i].id]);
 		//birth_queue.splice(i, 1);
 	}
 	units_queue = [];
