@@ -288,7 +288,7 @@ input[type=submit] {
 	width: 24px;
 	height: 24px;
 	display: block;
-	background: url('../assets/loader.gif');
+	background: url('../asset/loader.gif');
 	background-size: cover;
 	position: absolute;
 	bottom: 11px;
@@ -393,7 +393,7 @@ input[type=submit] {
 		width: 40px;
 		height: 40px;
 		background-color: #500;
-		background: url(../assets/dropdown.png) no-repeat scroll;
+		background: url(../asset/dropdown.png) no-repeat scroll;
 		background-size: cover;
 		display: block;
 		position: absolute;

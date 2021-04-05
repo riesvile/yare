@@ -365,7 +365,7 @@ table.info_table td {
 
 
 		#gif_move {
-			background: url(assets/method-move.gif) no-repeat scroll;
+			background: url(asset/method-move.gif) no-repeat scroll;
 			background-size: contain;
 			background-position: center;
 		}
@@ -409,7 +409,7 @@ table.info_table td {
 	width: 32px;
 	height: 32px;
 	display: block;
-	background: url('assets/dropdown2.png');
+	background: url('asset/dropdown2.png');
 	background-size: cover;
 }
 
