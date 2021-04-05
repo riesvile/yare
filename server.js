@@ -1659,11 +1659,11 @@ app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(_
 app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
 
 
-app.get('/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
-app.get('/assets/dropdown.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown.png'));
-app.get('/assets/dropdown2.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown2.png'));
-app.get('/assets/board.png', (req, res) => res.sendFile(__dirname + '/assets/board.png'));
-app.get('/assets/method-move.gif', (req, res) => res.sendFile(__dirname + '/assets/method-move.gif'));
+app.get('/asset/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
+app.get('/asset/dropdown.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown.png'));
+app.get('/asset/dropdown2.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown2.png'));
+app.get('/asset/board.png', (req, res) => res.sendFile(__dirname + '/assets/board.png'));
+app.get('/asset/method-move.gif', (req, res) => res.sendFile(__dirname + '/assets/method-move.gif'));
 
 app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
 app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
