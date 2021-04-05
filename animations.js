@@ -731,6 +731,108 @@ function tut_phase_success(){
 }
 
 
+function show_info_snippet(elid, leftPos, topPos){
+	console.log(elid)
+	var info_el = document.getElementById("info_box");
+	var info_content = document.getElementById("info_box_content");
+	var el_height = 0;
+	var el_width = 0;
+	switch (elid){
+		case "info_spirit_size":
+			info_content.innerHTML = "<span class='g_con'><span class='ico_circle'></span> Circles</span><div class='sep_mini'></div><table class='info_table'><tr><td>1</td><td>Default size</td></tr><tr><td>100</td><td>Max size (100 spirits merged together)</td></tr></table><div class='sep_mini'></div><div class='sep_small'></div>";
+			break;
+		case "info_spirit_energy_capacity":
+			info_content.innerHTML = "<p class='p_normal'>energy_capacity = 10 × size</p><div class='sep_mini'></div>";
+			break;
+		case "info_spirit_sight":
+			info_content.innerHTML = "<pre class='code_sample'>my_spirits[1].sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>structures:</span> [‘star_zxq’]&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy spirit and a star within 400 radius around the spirit</p>			<pre class='code_sample'>my_spirits[1].sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
+			break;
+	}
+	
+	el_width = info_el.getBoundingClientRect().width;
+	el_height = info_el.getBoundingClientRect().height;
+	
+	info_el.style.display = "block";
+	info_el.style.left = leftPos - el_width + 40 + 'px';
+	info_el.style.top = topPos - el_height - 12 + 'px';
+	
+	anime({
+  		targets: '#info_box',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 200
+	});
+}
+
+function hide_info_snippet(){
+	anime({
+  		targets: '#info_box',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 200
+	});
+}
+
+function expand_documentation(elid, rotator){
+	try {
+		var exp_row = document.getElementById(elid);
+		var exp_el = document.querySelector('#' + elid + ' div.exp_content').getBoundingClientRect();
+	} catch (error) {
+	  console.error(error);
+	}
+	
+	
+	
+	if (exp_row.classList.contains("row_expanded")){
+		console.log('collapsing');
+		exp_row.classList.remove('row_expanded');
+		anime({
+	  		targets: '#' + elid,
+	  		minHeight: 0,
+	  		easing: 'easeOutQuad',
+	  		duration: 200
+		});
+		anime({
+	  		targets: '#' + elid + '_wrap',
+			backgroundColor: ['rgba(242, 246, 250, 0.06)', 'rgba(242, 246, 250, 0)'],
+	  		easing: 'easeOutQuad',
+	  		duration: 200
+		});
+		anime({
+	  		targets: '#' + rotator,
+	  		rotate: 0,
+	  		easing: 'easeOutQuad',
+	  		duration: 200
+		});
+	} else {
+		console.log('expanding')
+		exp_row.classList.add('row_expanded');
+		anime({
+	  		targets: '#' + elid,
+	  		minHeight: exp_el.height + 68,
+	  		easing: 'easeOutQuad',
+	  		duration: 200
+		});
+		anime({
+	  		targets: '#' + elid + '_wrap',
+			backgroundColor: ['rgba(242, 246, 250, 0)', 'rgba(242, 246, 250, 0.06)'],
+	  		easing: 'easeOutQuad',
+	  		duration: 200
+		});
+		anime({
+	  		targets: '#' + rotator,
+	  		rotate: 180,
+	  		easing: 'easeOutQuad',
+	  		duration: 200
+		});
+	}
+	
+	console.log(exp_el.height);
+	
+}
+
+
+
 // helper vars
 try {
 	var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();

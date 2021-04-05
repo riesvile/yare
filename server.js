@@ -259,8 +259,8 @@ var server_occupancy = {
 	d4: 20
 };
 var connections = {};
-var this_server = 'd1';
-var this_server_type = 'real'; //'real'
+var this_server = 't1';
+var this_server_type = 'tutorial'; //'real'
 
 
 //connect to mongodb
@@ -1637,33 +1637,37 @@ app.get('/d1/:game_id', (req, res) => {
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
-app.get('/d1/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
-app.get('/d1/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
-app.get('/d1/game', (req, res) => res.sendFile(__dirname + '/game.html'));
-app.get('/d1/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
-app.get('/d1/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
-app.get('/d1/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
-app.get('/d1/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
-app.get('/d1/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
-app.get('/d1/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
-app.get('/d1/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
-app.get('/d1/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
-app.get('/d1/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
-app.get('/d1/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
-app.get('/d1/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
-app.get('/d1/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
-app.get('/d1/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
-app.get('/d1/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
-app.get('/d1/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
+app.get('/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
+app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
+app.get('/game', (req, res) => res.sendFile(__dirname + '/game.html'));
+app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
+app.get('/documentation', (req, res) => res.sendFile(__dirname + '/documentation.html'));
+app.get('/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
+app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
+app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
+app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
+app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
+app.get('/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
+app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
+app.get('/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
+app.get('/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
+app.get('/documentation.css', (req, res) => res.sendFile(__dirname + '/documentation.css'));
+app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
+app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
+app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
+app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
+app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
 
 
-app.get('/d1/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
-app.get('/d1/assets/dropdown.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown.png'));
-app.get('/d1/assets/game/innerSh1x.png', (req, res) => res.sendFile(__dirname + '/assets/game/innerSh1x.png'));
+app.get('/assets/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
+app.get('/assets/dropdown.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown.png'));
+app.get('/assets/dropdown2.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown2.png'));
+app.get('/assets/board.png', (req, res) => res.sendFile(__dirname + '/assets/board.png'));
+app.get('/assets/method-move.gif', (req, res) => res.sendFile(__dirname + '/assets/method-move.gif'));
 
-app.get('/d1/est', (req, res) => res.sendFile(__dirname + '/est.html'));
-app.get('/d1/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
-app.get('/d1/nope', (req, res) => res.sendFile(__dirname + '/nope.html'));
+app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
+app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
+app.get('/nope', (req, res) => res.sendFile(__dirname + '/nope.html'));
 
 
 

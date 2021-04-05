@@ -1059,7 +1059,7 @@ h1#pnf {
 	float: left;
 	display: block;
 	border-radius: 100%;
-	margin-top: 3px;
+	margin-top: 11px;
 	margin-right: 10px;
 }
 
@@ -1070,7 +1070,7 @@ h1#pnf {
 	float: left;
 	display: block;
 	border-radius: 2px;
-	margin-top: 3px;
+	margin-top: 11px;
 	margin-right: 10px;
 }
 
@@ -1084,7 +1084,7 @@ h1#pnf {
 	width: 15px;
 	height: 15px;
 	float: left;
-	margin-top: 5px;
+	margin-top: 13px;
 	margin-right: 10px;
 }
 .ico_triangle:before,
