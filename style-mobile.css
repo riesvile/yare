@@ -23,11 +23,22 @@
 	
 	#panel {
 		width: 620px;
-	}
+	}	
 }
 
 
-@media (max-width: 600px) {
+@media (max-width: 1200px) {
+	#doc_content {
+		width: 90%;
+		margin-left: 5%;
+	}
+	
+}
+
+
+
+
+@media (max-width: 880px) {
 	
 .mobile_only {
 	display: block;

@@ -181,8 +181,6 @@ parentPort.on("message", message => {
 						if (my_spirits[j].energy == my_spirits[j].energy_capacity){
 							memory[my_spirits[j].id] = "attacker";
 						}
-						console.log(my_spirits[j].id)
-						console.log(memory[my_spirits[j].id])
 						if (memory[my_spirits[j].id] == "attacker" && j < my_spirits.length / 2){
 							console.log('this should be last');
 							my_spirits[j].move(invader.position);
@@ -194,7 +192,7 @@ parentPort.on("message", message => {
 					memory['atck'] = 0; 
 				}
 
-				if (my_spirits.length >= 800){
+				if (my_spirits.length >= 30){
 					if (my_spirits[0].energy == my_spirits[0].energy_capacity){
 						memory[my_spirits[0].id] = 'invader';
 					}
@@ -476,8 +474,8 @@ function fill_error(plid, err_msg){
 
 
 //sandbox is the keyword, moron
-const vm = new VM({ timeout: 250, sandbox: {console: console1, memory: memory1} });
-const vm2 = new VM({ timeout: 250, sandbox: {console: console2, memory: memory2} });
+const vm = new VM({ timeout: 350, sandbox: {console: console1, memory: memory1} });
+const vm2 = new VM({ timeout: 350, sandbox: {console: console2, memory: memory2} });
 
 
 //vm.freeze(spirits, 'spirits');
