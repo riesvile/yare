@@ -84,7 +84,7 @@
 		<section id="doc_intro">
 		  <p class="p_intro">yare.io is a real-time 2-player (1v1) strategy game where you control your units (spirits) via javascript. You win by destroying the opponent’s base.</p>
 		  <div id="trailer_placeholder"><span>placeholder for trailer video</span></div>
-		  <h4 class="doc_h4">Game board</h4>
+		  <h4 id="gm_board" class="doc_h4">Game board</h4>
 		  <p class="p_normal">Yare.io is played on a board sized 4400&nbsp;×&nbsp;3000 units. It’s an Euclidian plane starting [0,&nbsp;0] at the top left and [4400,&nbsp;3000] at the bottom right. Star and player base positions shown below.</p>
 		  <div class="sep_small"></div>
 		  <img src="asset/board.png" class="board_img">
@@ -111,10 +111,12 @@
 			  <p class="access_p"><span class="highlight">my_spirits</span> array contains only your spirits. E.g. my_spirits[0] is your oldest spirit.</p>
 		  </div>
 		 
+		 <div class="sep_small"></div>
+		 <p class="p_normal" style="max-width: 69%"><span class="lowlight">You can also access your own spirits by their id. E.g. jane2.position, but that’s highly impractical in the real game outside of the tutorial.</span></p>
 		  
 		  
 		  
-		  <div class="sep_large"></div>
+		  <div class="sep_medium"></div>
 		  <h4 class="doc_h4">Properties</h4>
 		  <div class="sep_small"></div>
 		  
@@ -157,7 +159,7 @@
 					<span class="table_doc_value has_expando">
 						<span class="g_con"><span class="ico_circle"></span> 10–1000</span>
 						<span class="g_con"><span class="ico_square"></span> 100</span>
-						<span class="g_con"><span class="ico_triangle"></span> 150</span>
+						<span class="g_con"><span class="ico_triangle"></span> 100</span>
 					</span>
 					<span id="info_spirit_energy_capacity" class="expando_info">?</span>
 				</div>
@@ -166,7 +168,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">energy</span>
 					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">spirit’s current energy – <a href="#">more about energy</a></span>
+					<span class="table_doc_value">spirit’s current energy – <a href="#doc_energy">more about energy</a></span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -187,7 +189,7 @@
 		  </div>
 		  
 		  
-		  <div class="sep_large"></div>
+		  <div id="methods_ent" class="sep_large"></div>
 		  <h4 class="doc_h4">Methods</h4>
 		  <div class="sep_small"></div>
 		  
@@ -197,8 +199,8 @@
 					<span class="table_doc_argument">Argument</span>
 					<span class="table_doc_usedby">Can be used by</span>
 				</div>
-		  	<div id="exp_move_method_wrap" class="row_doc" style="background-color: rgba(242, 246, 250, 0.06);">
-				<div id="exp_move_method" class="row_in_doc row_expanded" style="min-height: 404px;">
+		  	<div id="exp_move_method_wrap" class="row_doc">
+				<div id="exp_move_method" class="row_in_doc">
 					<span class="table_doc_method">move(<span class="target_lowlight">target</span>)</span>
 					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
 					<span class="table_doc_usedby">
@@ -206,7 +208,7 @@
 						<span class="g_con"><span class="ico_square"></span> Squares</span>
 						<span class="g_con"><span class="ico_triangle"></span> Triangles</span>
 					</span>
-					<span id="expand_for_move" class="expando_more" style="transform: rotate(180deg);"><span class="ico_expand"></span></span>
+					<span id="expand_for_move" class="expando_more"><span class="ico_expand"></span></span>
 						
 					
 					
@@ -317,6 +319,13 @@
 			</div>
 		  </div>
 		  
+		  <div class="sep_medium"></div>
+		  
+		  <p class="p_intro" style="max-width: 800px">All instances of a method are executed together for both players every tick on the server in the same order as the table above.</p>
+		  <div class="sep_medium_negative"></div>
+		  <p class="p_somewhat_important"><span class="lowlightish">First, all movements of all spirits are calculated and executed, then all energize() methods and so on.</span></p>
+		  <p class="p_somewhat_important"><span class="lowlightish">E.g. if two spirits of the same size and with the same amount of energy are attacking each other, they will die at the same moment.</span></p>
+		  
 		  
 		  
 		</section>
@@ -325,6 +334,22 @@
 		  <h2 class="h_sec_head">Base</h2>
 		  <p class="p_sec_intro">Base is the birth-place for new spirits, automatically generating new spirits when it has enough energy. If there is an enemy in its sight, the base stops producing new spirits, keeping all energy to defend itself.</p>
 		  
+		  <div class="sep_medium"></div>
+		  <p class="p_somewhat_important">Energy needed to generate a new spirit <span class="lowlight">(happens automatically </span>once per tick<span class="lowlight">)</span></p>
+		  <span class="energy_needed">
+			<span class="g_con"><span class="ico_circle"></span> 200</span>
+			<span class="g_con"><span class="ico_square"></span> 500</span>
+			<span class="g_con"><span class="ico_triangle"></span> 500</span>
+		  </span>
+		  
+		  <div class="sep_medium"></div>
+		  <div class="full_full">
+			  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">The base won’t generate new spirits if there is an enemy in its sight (400 radius). It will keep all incoming energy <span class="lowlight">(until it reaches its energy_capacity)</span> to defend itself.</span></p>
+		  </div>
+		  
+		  
+		  
+		  <div class="sep_medium"></div>
 		  <div class="sep_medium"></div>
 		  <h4 class="doc_h4">Properties</h4>
 		  <div class="sep_small"></div>
@@ -369,8 +394,8 @@
 					<span class="table_doc_type">number</span>
 					<span class="table_doc_value">
 						<span class="g_con"><span class="ico_circle"></span> 200</span>
-						<span class="g_con"><span class="ico_square"></span> 200</span>
-						<span class="g_con"><span class="ico_triangle"></span> 200</span>
+						<span class="g_con"><span class="ico_square"></span> 500</span>
+						<span class="g_con"><span class="ico_triangle"></span> 500</span>
 					</span>
 				</div>
 			</div>
@@ -378,7 +403,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">energy</span>
 					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">base’s current energy – <a href="#">more about energy</a></span>
+					<span class="table_doc_value">base’s current energy – <a href="#doc_energy">more about energy</a></span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -393,7 +418,7 @@
 					<span class="table_doc_property">sight</span>
 					<span class="table_doc_type">object</span>
 					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
-					<span class="expando_info">?</span>
+					<span id="info_base_sight" class="expando_info">?</span>
 				</div>
 			</div>
 		  </div>
@@ -403,12 +428,62 @@
 		<section id="doc_energy">
 		  <h2 class="h_sec_head">Energy</h2>
 		  <p class="p_sec_intro">Energy is the only resource in the game. Spirits harvest it from the stars, use it to create new spirits, transfer energy between themselves and attack with it.</p>
-		  <div class="placeholder"></div>
+		  <div class="sep_large"></div>
+		  <p class="p_intro">Stars are the source of infinite energy. <span class="lowlight">There is no limit to how much energy you can get from them.</span></p>
+			  
+		  <div class="star_ilu">
+		  	<div class="star_large"></div>
+			<div class="star_shadow"></div>
+			<div class="star_small"></div>
+		  </div>
+		  
+		  <div class="sep_small"></div>
+		  <h4 class="doc_h4">Star properties</h4>
+		  <div class="sep_small"></div>
+		  
+		  <div class="table_doc">
+				<div class="row_in_doc_head">
+					<span class="table_doc_property">Property</span>
+					<span class="table_doc_type">Type</span>
+					<span class="table_doc_value">Value</span>
+				</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">id</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">“star_zxq“ and “star_a1c” (see <a href="#gm_board">game board</a>)</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">structure_type</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">“star“</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">position</span>
+					<span class="table_doc_type">array</span>
+					<span class="table_doc_value">[x, y] coordinates (see <a href="#gm_board">game board</a>)</span>
+				</div>
+			</div>
+		  </div>
+		  
+		  <div class="sep_medium"></div>
+		  <p class="p_somewhat_important">All “movement” of energy in the game is done via the energize(<span class="lowlight">target</span>) method. See the <a href="#methods_ent">Spirit methods</a> section.</p>
+		  
+		  
+		  
+		  
+		  
 		</section>
 		  
 		<section id="doc_credits">
 		  <h2 class="h_sec_head">Credits</h2>
 		   <p class="p_sec_intro">Yare.io was made by Lev Miseri. Contact me at levmiseri@gmail.com</p>
+		   <div class="sep_large"></div>
+		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>
 		</section>
 	  

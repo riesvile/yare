@@ -751,7 +751,7 @@ if (!isMainThread){
 			}
 			
 			this.hp = 1;
-			this.energy_capacity = 100;
+			this.energy_capacity = 200;
 			this.player_id = player;
 			this.color = color;
 			//this.energy = energy;
@@ -949,7 +949,7 @@ if (!isMainThread){
 			for (n = 0; n < living_length; n++){
 				if (living_spirits[n].hp == 0) continue;
 				
-				if (is_in_sight(living_spirits[n], bases[m], 600)){
+				if (is_in_sight(living_spirits[n], bases[m], 400)){
 					if (bases[m].player_id == players['p1']){
 						if (living_spirits[n].player_id == players['p1']){
 							bases[m].sight.friends.push(living_spirits[n].id);
@@ -1048,7 +1048,7 @@ if (!isMainThread){
 				}
 			}
 			if (base_lookup['base_' + players['p2']].energy >= spirit_p2_cost){
-				if (p1_defend != 1){
+				if (p2_defend != 1){
 					top_q++;
 					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2350, 1400], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
 					base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;

@@ -3,6 +3,10 @@
 	margin: 0;
 }
 
+section {
+	position: relative;
+}
+
 #doc_sections {
 	width: 68%;
 	margin-top: 44px;
@@ -70,6 +74,15 @@
 	color: rgba(242, 246, 250, 0.82);
 }
 
+.p_somewhat_important {
+	max-width: 68%;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 34px;
+	margin-bottom: 20px;
+	color: rgba(242, 246, 250, 0.89);
+}
+
 .p_sec_intro {
 	font-size: 20px;
 	font-weight: 400;
@@ -84,6 +97,14 @@
 .p_method_desc {
 	font-size: 20px;
 	font-weight: 500;
+}
+
+.full_full {
+	background-color: rgba(242, 246, 250, 0.06);
+	padding: 24px 28px 8px 28px;
+	width: calc(100% - 32px);
+	border-radius: 12px;
+	float: left;
 }
 
 .side_side {
@@ -144,6 +165,12 @@
 	clear: both;
 }
 
+.sep_medium_negative {
+	margin-top: -32px;
+	height: 2px;
+	clear: both;
+}
+
 .sep_large {
 	width: 100%;
 	height: 120px;
@@ -156,6 +183,10 @@
 
 .lowlight {
 	color: rgba(242, 246, 250, 0.55);
+}
+
+.lowlightish {
+	color: rgba(242, 246, 250, 0.69);
 }
 
 #info_box {
@@ -377,7 +408,19 @@ table.info_table td {
 
 
 
+.energy_needed .g_con {
+	line-height: 36px;
+	margin-left: 0;
+	margin-right: 24px;
+	color: rgba(242, 246, 250, 0.79);
+	font-weight: 500;
+}
 
+.energy_needed {
+	display: block;
+	transform-origin: top left;
+	transform: scale(1.2);
+}
 
 
 .has_expando {
@@ -441,7 +484,45 @@ table.info_table td {
 
 
 
+.star_ilu {
+	width: 850px;
+	height: 850px;
+	position: absolute;
+	top: 200px;
+	right: -20%;
+	opacity: 0.69;
+}
 
+.star_large {
+	width: 850px;
+	height: 850px;
+	background-color: rgba(54, 195, 255, 0.02);
+	border-radius: 100%;
+}
+
+.star_shadow {
+	width: 450px;
+	height: 450px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	border-radius: 100%;
+	transform: translate(-50%, -50%);
+	background: rgba(133,219,255,0.01);
+	background: radial-gradient(circle, rgba(133,219,255,0) 50%, rgba(225,243,255,1) 100%);
+	opacity: 0.15;
+}
+
+.star_small {
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	border-radius: 100%;
+	transform: translate(-50%, -50%);
+	background-color: rgba(228, 248, 255, 1);
+}
 
 
 
