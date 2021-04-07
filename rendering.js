@@ -888,6 +888,7 @@ function render_state(timestamp){
 		try {
 			spirit_lookup[move_queue[i][0]].move(move_queue[i][1], move_queue[i][2], move_queue[i][3]);
 		} catch (e) {
+			//if spirit I don't know about, try creating it instead of reloading?
 			console.log(e);
 			location.reload();
 		}

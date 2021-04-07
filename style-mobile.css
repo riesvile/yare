@@ -33,6 +33,11 @@
 		margin-left: 5%;
 	}
 	
+	.row_in {
+		width: 90%;
+		margin-left: 5%;
+	}
+	
 }
 
 
@@ -382,6 +387,225 @@ p.tutorial_text {
 
 
 /* ----- */
+
+
+/* ----- player hub & Leaderboard ----- */
+
+#content_hub_wrap {
+	width: 68%;
+	margin-left: 16%;
+	margin-top: 44vh;
+	transform: translateY(-50%);
+}
+
+span#hub_username {
+	font-size: 20px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+}
+
+span#user_hub_stats {
+	font-size: 16px;
+	color: rgba(242, 246, 250, 0.55);
+	display: block;
+	margin-top: 8px;
+}
+
+span#hub_logout {
+	color: rgba(133, 186, 234, 0.69);
+	cursor: pointer;
+}
+
+span#hub_logout:hover {
+	color: rgba(159, 157, 232, 1);
+}
+
+#hub_menu {
+	margin-top: 132px;
+}
+
+#hub_menu a {
+	font-size: 40px;
+	font-weight: 600;
+	width: 360px;
+	color: rgba(133, 186, 234, 1);
+	display: block;
+	line-height: 68px;
+}
+
+#hub_menu a:hover {
+	color: rgba(253, 211, 180, 1);
+}
+
+#hub_menu #hub_documentation, #hub_menu #hub_leaderboard {
+	color: rgba(133, 186, 234, 0.55);
+}
+
+#hub_menu #hub_documentation:hover, #hub_menu #hub_leaderboard:hover, #hub_menu #hub_reddit:hover {
+	color: rgba(159, 157, 232, 1);
+}
+
+#hub_menu #hub_reddit {
+	font-size: 24px;
+	color: rgba(133, 186, 234, 0.55);
+	line-height: 56px;
+}
+
+#hub_resume_game {
+	display: none;
+}
+
+
+#hub_resume_info {
+	font-size: 20px;
+	color: rgba(242, 246, 250, 0.55);
+	padding-bottom: 20px;
+	display: block;
+}
+
+#hub_resume_players {
+	color: rgba(242, 246, 250, 0.82);
+}
+
+#hub_resume_resign {
+	color: rgba(234, 133, 133, 1) !important;
+	cursor: pointer;
+}
+
+#hub_resume_resign:hover {
+	color: rgba(255, 13, 53, 1) !important;
+}
+
+
+
+
+
+.table {
+	width: 100%;
+	margin-top: -80px;
+	padding-bottom: 100px;
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	position: absolute;
+	top: 90vh;
+}
+
+.hub_table tr{
+	width: 100%;
+	height: 80px;
+	position: relative;
+}
+
+.row {
+	width: 100%;
+	height: 80px;
+	position: relative;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.row_in {
+	display: block;
+	position: relative;
+}
+
+.row_in span {
+	display: block;
+	float: left;
+}
+
+.table_game_date {
+	width: 120px;
+}
+
+.table_game_players {
+	
+}
+
+.table_player1, .table_player2 {
+	color: rgba(242, 246, 250, 1);
+}
+
+.table_game_duration {
+	margin-left: auto;
+	width: 120px;
+}
+
+.table_game_result {
+	width: 50px;
+}
+
+.result_win {
+	color: rgba(133, 234, 143, 1);
+}
+
+.result_loss {
+	color: rgba(234, 133, 133, 1);
+}
+
+.table_game_eloresult {
+	text-align: right;
+	width: 90px;
+}
+
+/* leaderboard */
+
+.t_leaderboard {
+	top: 60vh;
+}
+
+.lb_row {
+	border-top: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.table_lb_rank {
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	top: 16px;
+	left: 0;
+}
+
+.table_lb_player {
+	position: absolute;
+	top: 16px;
+	left: 40px;
+}
+
+.table_lb_fav_shape {
+	position: absolute;
+	top: 46px;
+	right: 0;
+	margin-right: 0;
+}
+
+.table_lb_games {
+	position: absolute;
+	top: 46px;
+	left: 40px;
+	text-align: left;
+	width: 120px;
+}
+
+.table_lb_winrate {
+	position: absolute;
+	top: 46px;
+	left: 160px;
+	text-align: left;
+	width: 120px;
+}
+
+.table_lb_rating {
+	position: absolute;
+	top: 16px;
+	right: 0;
+	text-align: right;
+}
+
+
+/* ----- */
+
+
 
 
 

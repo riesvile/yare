@@ -491,6 +491,7 @@ table.info_table td {
 	top: 200px;
 	right: -20%;
 	opacity: 0.69;
+	pointer-events: none;
 }
 
 .star_large {

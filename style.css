@@ -37,6 +37,16 @@ a {
 	text-decoration: none;
 }
 
+h1.page_head {
+	font-size: 40px;
+	color: ;
+	width: 68%;
+	margin-left: 16%;
+	margin-top: 20vh;
+	color: rgba(242, 246, 250, 1);
+	font-weight: 500;
+}
+
 code {
 	color: rgba(137, 146, 156, 0.86);
 }
@@ -663,7 +673,7 @@ p.tutorial_text {
 
 /* ----- */
 
-/* ----- player hub ----- */
+/* ----- player hub & Leaderboard ----- */
 
 #content_hub_wrap {
 	width: 68%;
@@ -824,6 +834,49 @@ span#hub_logout:hover {
 	width: 90px;
 }
 
+/* leaderboard */
+
+.t_leaderboard {
+	top: 60vh;
+}
+
+.lb_row {
+	border-top: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.table_lb_rank {
+	width: 10%;
+}
+
+.table_lb_player {
+	width: 48%;
+	color: rgba(242, 246, 250, 0.89);
+}
+
+.table_lb_fav_shape {
+	width: 14px;
+	height: 14px;
+	background-color: #800;
+	margin-right: calc(5% - 14px);
+}
+
+.table_lb_games {
+	width: 14%;
+	text-align: right;
+}
+
+.table_lb_winrate {
+	width: 18%;
+	text-align: right;
+}
+
+.table_lb_rating {
+	width: 10%;
+	text-align: right;
+	font-family: Lucida Sans Typewriter,Lucida Console,monaco,Bitstream Vera Sans Mono,monospace; 
+	font-size: 14px;
+	color: rgba(242, 246, 250, 1);
+}
 
 
 /* ----- */
