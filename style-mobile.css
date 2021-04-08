@@ -45,6 +45,7 @@
 
 @media (max-width: 880px) {
 	
+	
 .mobile_only {
 	display: block;
 }
@@ -393,8 +394,8 @@ p.tutorial_text {
 
 #content_hub_wrap {
 	width: 68%;
-	margin-left: 16%;
-	margin-top: 44vh;
+	margin-left: 24px;
+	margin-top: 72vh;
 	transform: translateY(-50%);
 }
 
@@ -425,9 +426,9 @@ span#hub_logout:hover {
 }
 
 #hub_menu a {
-	font-size: 40px;
+	font-size: 32px;
 	font-weight: 600;
-	width: 360px;
+	width: 320px;
 	color: rgba(133, 186, 234, 1);
 	display: block;
 	line-height: 68px;
@@ -446,7 +447,7 @@ span#hub_logout:hover {
 }
 
 #hub_menu #hub_reddit {
-	font-size: 24px;
+	font-size: 20px;
 	color: rgba(133, 186, 234, 0.55);
 	line-height: 56px;
 }
@@ -488,7 +489,7 @@ span#hub_logout:hover {
 	font-weight: 500;
 	color: rgba(242, 246, 250, 0.69);
 	position: absolute;
-	top: 90vh;
+	top: 107vh;
 }
 
 .hub_table tr{
@@ -504,31 +505,36 @@ span#hub_logout:hover {
 	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
 }
 
-.row_in {
+.t_leaderboard .row_in {
 	display: block;
 	position: relative;
 }
 
-.row_in span {
+.t_leaderboard .row_in span {
 	display: block;
 	float: left;
 }
 
 .table_game_date {
-	width: 120px;
+	width: 0px;
+	display: none;
 }
 
 .table_game_players {
-	
+	width: 240px;
 }
 
 .table_player1, .table_player2 {
 	color: rgba(242, 246, 250, 1);
 }
 
+.player1_shape, .player2_shape {
+	display: none;
+}
+
 .table_game_duration {
-	margin-left: auto;
-	width: 120px;
+	opacity: 0;
+	width: 80px;
 }
 
 .table_game_result {

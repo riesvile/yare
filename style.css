@@ -810,11 +810,35 @@ span#hub_logout:hover {
 
 .table_player1, .table_player2 {
 	color: rgba(242, 246, 250, 1);
+	display: inline-block;
+}
+
+.player1_shape, .player2_shape {
+	display: inline-block;
+	position: relative;
+	width: 24px;
+	height: 14px;
+}
+
+.player2_shape {
+	margin-left: 10px;
+}
+
+.player1_shape span, .player2_shape span {
+	margin-top: 0;
+	position: absolute;
+	top: 2px;
+	left: 0;
+}
+
+.versus {
+	margin-left: 8px;
 }
 
 .table_game_duration {
 	margin-left: auto;
 	width: 120px;
+	opacity: 0;
 }
 
 .table_game_result {
@@ -827,6 +851,10 @@ span#hub_logout:hover {
 
 .result_loss {
 	color: rgba(234, 133, 133, 1);
+}
+
+.result_nada {
+	color: rgba(242, 246, 250, 0.4);
 }
 
 .table_game_eloresult {

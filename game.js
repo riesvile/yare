@@ -175,8 +175,6 @@ parentPort.on("message", message => {
 				if (base.sight.enemies.length > 0){
 					console.log('i see you');
 					var invader = spirits[base.sight.enemies[0]];
-					console.log(invader);
-					console.log('invader');
 					for (j=0; j<my_spirits.length; j++){
 						if (my_spirits[j].energy == my_spirits[j].energy_capacity){
 							memory[my_spirits[j].id] = "attacker";
@@ -187,19 +185,37 @@ parentPort.on("message", message => {
 							my_spirits[j].energize(invader);
 						}
 					}
-					
+	
 				} else {
 					memory['atck'] = 0; 
 				}
 
-				if (my_spirits.length >= 30){
-					if (my_spirits[0].energy == my_spirits[0].energy_capacity){
-						memory[my_spirits[0].id] = 'invader';
-					}
-					if (memory[my_spirits[0].id] == 'invader'){
-						my_spirits[0].move(enemy_base.position);
-						my_spirits[0].energize(enemy_base);
-					}
+				if (my_spirits.length >= 20 && memory['phase'] != 1){
+				    if (memory['phase'] == undefined || memory['phase'] == ''){
+				        memory['phase'] = 1;
+				    }
+				}
+
+				if (memory['phase'] == 1){
+				    for (j = 0; j < 11; j++){
+				        if (my_spirits[j].energy == my_spirits[j].energy_capacity){
+				    		memory[my_spirits[j].id] = 'invader';
+				    		my_spirits[j].move([2200, 1000]);
+					    }
+					    my_spirits[0].move([2000,1100]);
+				    }
+				}
+
+				if (memory['phase'] == 1 && my_spirits[0].position[0] == 2100 && my_spirits[5].position[0] == 2100){
+				    memory['phase'] = 2;
+				}
+
+				if (memory['phase'] == 2){
+				    for (j=1; j<11; j++){
+				        my_spirits[j].move(enemy_base.position);
+				        my_spirits[j].energize(enemy_base)
+				    }
+				    my_spirits[0].move([1000, 1000])
 				}
 				
 				`;
@@ -533,7 +549,7 @@ if (!isMainThread){
 			if (Array.isArray(target) == false){
 				//user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
 				console.log(this.player_id);
-				var err_msg = '.move() argument must be an array. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[0].position)';
+				var err_msg = '.move() argument must be an array. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[0].position). Received: ' + target;
 				
 				fill_error(this.player_id, err_msg);
 				

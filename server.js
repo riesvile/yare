@@ -1098,7 +1098,6 @@ app.post('/gameinfo', (req, res) => {
 
 
 app.post('/populate-hub', (req, res) => {
-
 	Game.find({$or:[{player1: req.body.user_id},{player2: req.body.user_id}]})
 		.sort({updatedAt:'desc'})
 		.limit(10)
@@ -1122,7 +1121,32 @@ app.post('/populate-hub', (req, res) => {
 		.catch((error) => {
 			console.log(error);
 		})
+});
 
+app.post('/populate-leaderboard', (req, res) => {
+	User.find({})
+		.sort({rating:'desc'})
+		.limit(100)
+		.exec()
+		.then((result) => {
+			//res.send(result);
+			console.log('dbdbdb result');
+			console.log(result);
+			console.log(result[0]);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no results"
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "populate",
+					stream: result
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
 });
 
 
@@ -1643,6 +1667,7 @@ app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
 app.get('/game', (req, res) => res.sendFile(__dirname + '/game.html'));
 app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
 app.get('/documentation', (req, res) => res.sendFile(__dirname + '/documentation.html'));
+app.get('/leaderboard', (req, res) => res.sendFile(__dirname + '/leaderboard.html'));
 app.get('/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
 app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
 app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));

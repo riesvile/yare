@@ -69,7 +69,7 @@
 	  </div>
 	  
 	  
-	  <div class="table t_leaderboard">
+	  <div class="table t_leaderboard" id="lbfill">
 	  	<div class="row lb_row">
 			<div class="row_in">
 				<span class="table_lb_rank">1</span>
@@ -206,6 +206,50 @@
 	  function eraseCookie(name){   
 	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 	  }
+	  
+	  
+	  function fill_leaderboard(lb_data){
+		  console.log(lb_data);
+		  var tbl = document.getElementById('lbfill');
+		  var tbl_data = '';
+		  
+		  for (i = 0; i < lb_data.length; i++){
+		  	tbl_data += "<div class='row lb_row'>							<div class='row_in'>								<span class='table_lb_rank'>" + (i + 1) + "</span>								<span class='table_lb_player'>" + lb_data[i]['user_id'] + "</span>								<span class='table_lb_fav_shape'></span>								<span class='table_lb_games'>" + lb_data[i]['games_count'] + "</span>								<span class='table_lb_winrate'>-%</span>								<span class='table_lb_rating'>" + lb_data[i]['rating'] + "</span>							</div>						</div>"
+		  } 
+		  
+		  tbl.innerHTML = tbl_data;
+		  
+	  }
+	  
+	  
+	  if (getCookie('user_id') != null && getCookie('user_id') != 'anonymous'){
+		fetch('/populate-leaderboard', {
+		        method: "POST",
+		        headers: {
+		          Accept: "application/json",
+		          "Content-Type": "application/json"
+		        },
+		        body: JSON.stringify({
+			        meta: 'top100'
+			    })
+
+	    }).then(response => response.json())
+	      .then(response => {
+			  //console.log(response);
+		  if (response.data == 'no results'){
+			  console.log('Nothing to show');
+		  } else {
+			  console.log('populate table');
+			  fill_leaderboard(response.stream);
+		  }
+	  })
+	  .catch(error => {
+		  console.log(error);
+	  })
+	  
+	  
+	  }
+	  
 	  
   
   </script>

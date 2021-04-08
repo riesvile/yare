@@ -9,6 +9,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./style-mobile.css">
 	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./anime.min.js"></script>
   </head>
@@ -35,7 +36,7 @@
 			      <span id="hub_resume_info"><span id="hub_resume_players">levmiseri vs koala</span> · non-ranked · <span id="hub_resume_resign">Resign</span>
 			  </div>
 			  <a href="https://yare.io/documentation" id="hub_documentation">Documentation</a>
-			  <a href="#" id="hub_leaderboard">Leaderboard</a>
+			  <a href="https://yare.io/leaderboard" id="hub_leaderboard">Leaderboard</a>
 			  <a href="https://www.reddit.com/r/yaregame/" id="hub_reddit">r/yaregame</a>
 		  </div>
 	  </div>
@@ -45,14 +46,14 @@
 		
 		
 		
-	  <div class="table">
+	  <div class="table" id="hubfill">
 	  	<div class="row">
 			<div class="row_in">
 				<span class="table_game_date">10 min ago</span>
 				<div class="table_game_players">
-					<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
+					<span class="table_player1"><span class="player1_shape"><span class="ico_circle"></span></span>levmiseri</span>
 					<span class="versus">vs</span>
-					<span class="table_player2"><span class="player2_shape"></span>koala</span>
+					<span class="table_player2"><span class="player2_shape"><span class="ico_circle"></span></span>koala</span>
 				</div>
 					
 				<span class="table_game_duration">30 min</span>
@@ -64,9 +65,9 @@
 			<div class="row_in">
 				<span class="table_game_date">10 min ago</span>
 				<div class="table_game_players">
-					<span class="table_player1"><span class="player1_shape"></span>levmiseri</span>
+					<span class="table_player1"><span class="player1_shape"><span class="ico_circle"></span></span>levmiseri</span>
 					<span class="versus">vs</span>
-					<span class="table_player2"><span class="player2_shape"></span>koala</span>
+					<span class="table_player2"><span class="player2_shape"><span class="ico_circle"></span></span>koala</span>
 				</div>
 					
 				<span class="table_game_duration">30 min</span>
@@ -169,6 +170,77 @@
 	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 	  }
 	  
+	  function timeSince(date) {
+
+	    var seconds = Math.floor((new Date() - date) / 1000);
+
+	    var interval = Math.floor(seconds / 31536000);
+
+	    if (interval > 1) {
+	      return interval + " y ago";
+	    }
+	    interval = Math.floor(seconds / 2592000);
+	    if (interval > 1) {
+	      return interval + " m ago";
+	    }
+	    interval = Math.floor(seconds / 86400);
+	    if (interval > 1) {
+	      return interval + " d ago";
+	    }
+	    interval = Math.floor(seconds / 3600);
+	    if (interval > 1) {
+	      return interval + " h ago";
+	    }
+	    interval = Math.floor(seconds / 60);
+	    if (interval > 1) {
+	      return interval + " m ago";
+	    }
+	    return Math.floor(seconds) + " sec ago";
+	  }
+	  
+	  function get_color(color_num){
+		  switch (color_num){
+		  case 'color1':
+			  return 'rgba(128,140,255,1)';
+		  case 'color2':
+			  return 'rgba(232,97,97,1)';
+		  case 'color3':
+			  return 'rgba(58,197,240,1)';
+		  case 'color4':
+			  return 'rgba(201,161,101,1)';
+			  
+		  }
+	  }
+	  
+	  function fill_hub(hub_data){
+		  var tbl = document.getElementById('hubfill');
+		  var tbl_data = '';
+		  var this_player = getCookie('user_id');
+		  var resultString = '';
+		  
+		  
+		  
+		  for (i = 0; i < hub_data.length; i++){
+			  console.log(hub_data[i]);
+			  if (hub_data[i]['winner'] == this_player){
+				  resultString = " result_win'>Win";
+			  } else if (hub_data[i]['winner'] == ''){
+			  	  resultString = " result_nada'> Anulled";
+			  } else {
+			  	  resultString = " result_lost'>Loss";
+			  }
+			  var gameDate = new Date(hub_data[i]['updatedAt']);
+			  
+			  tbl_data += "<div class='row'>							<div class='row_in'>								<span class='table_game_date'>" + timeSince(gameDate) + "</span>								<div class='table_game_players'>									<span class='table_player1'><span class='player1_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p1_color']) + "'></span></span>" + hub_data[i]['player1'] + "</span>									<span class='versus'>vs</span>									<span class='table_player2'><span class='player2_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p2_color']) + "'></span></span>" + hub_data[i]['player2'] + "</span>								</div>													<span class='table_game_duration'>30 min</span>								<span class='table_game_result" + resultString + "</span>								<span class='table_game_eloresult'>1957</span>							</div>						  </div>"
+			  
+			  
+			  
+		  }
+		  
+		  tbl.innerHTML = tbl_data;
+	  }
+	  
+	  
 	  if (getCookie('user_id') != null && getCookie('user_id') != 'anonymous'){
 		fetch('/populate-hub', {
 		        method: "POST",
@@ -182,11 +254,12 @@
 
 	    }).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
+			  //console.log(response);
 		  if (response.data == 'no results'){
 			  console.log('No games to show');
 		  } else {
 			  console.log('populate table');
+			  fill_hub(response.stream);
 		  }
 	  })
 	  .catch(error => {
