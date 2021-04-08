@@ -15,6 +15,11 @@ var current_offsetY = 900;
 var panning = 0;
 var disableSelection = 0;
 
+var board_x = 0;
+var board_y = 0;
+var pointing_at_x = 0;
+var pointing_at_y = 0;
+
 function baseOffsetUpdate(){
 	world_bases = bases.length;
 	for (i = 0; i < world_bases; i++){
@@ -118,12 +123,14 @@ function onPointerDown(e){
 		}
 	}
 	
+	hide_hover();
 	//console.log('mouse down');
 	pointer_originX = x;
 	pointer_originY = y;
 	current_offsetX = offsetX;
 	current_offsetY = offsetY;
 }
+
 function onPointerMove(e){
 	//console.log(disableSelection);
 	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
@@ -142,7 +149,7 @@ function onPointerMove(e){
 	
 	
 	if (mousey == 1){
-		//console.log('mouse moving');
+		console.log('mouse moving');
 		panning = 1;
 		//console.log(x + " / " + y);
 		
@@ -153,8 +160,21 @@ function onPointerMove(e){
 		offsetX = pointer_offsetX + current_offsetX;
 		offsetY = pointer_offsetY + current_offsetY;
 		//offsetUpdate();
+	} else {
+		board_x = x*multiplier - offsetX;
+		board_y = y*multiplier - offsetY;
+		//console.log('x = ' + board_x);
+		//console.log('y = ' + board_y);
+		
+		pointing_at_x = x;
+		pointing_at_y = y;
+		
+		fill_hover_thing(x, y, board_x, board_y);
+		
+		
 	}
 }
+
 function onPointerUp(e){ 
 	//console.log('mouse up');
 	mousey = 0;
@@ -164,6 +184,61 @@ function onPointerUp(e){
 
 function getMousePos(e) {
     return {x:e.clientX,y:e.clientY};
+}
+
+function fill_hover_thing(xx, yy, board_xx, board_yy){
+	var hoveroid = document.getElementById('game_hover');
+	hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+	hoveroid.style.left = xx + 'px';
+	var hover_content = [];
+	
+	for (i = 0; i < living_spirits.length; i++){
+		if (Math.abs(living_spirits[i].position[0] - board_xx) <= 10 && Math.abs(living_spirits[i].position[1] - board_yy) <= 10){
+			hover_content.push(['spirit', living_spirits[i].id, living_spirits[i].energy]);
+		}
+	}
+	
+	for (b = 0; b < bases.length; b++){
+		if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
+			hover_content.push(['base', bases[b].id, bases[b].energy, bases[b].position, bases[b].def_status]);
+		}
+	}
+	
+	for (s = 0; s < stars.length; s++){
+		if (Math.abs(stars[s].position[0] - board_xx) <= 50 && Math.abs(stars[s].position[1] - board_yy) <= 50){
+			hover_content.push(['star', stars[s].id]);
+		}
+	}
+	
+	
+	if (hover_content.length == 0){
+		hide_hover();
+	} else if (hover_content.length == 1){
+		show_hover();
+		if (hover_content[0][0] == 'spirit'){
+			hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+		} else if (hover_content[0][0] == 'base'){
+			hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+			hoveroid.style.bottom = window.innerHeight - yy - 20 + 'px';
+			hoveroid.style.left = xx + 50 + 'px';
+		} else if (hover_content[0][0] == 'star'){
+			hoveroid.innerHTML = "<span class='star_id'>" + hover_content[0][1] + "</span>";
+			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+			hoveroid.style.left = xx - 20 + 'px';
+		}
+	} else if (hover_content.length > 4){
+		var total_eng = 0;
+		for (j = 0; j < hover_content.length; j++){
+			total_eng += hover_content[j][2];
+		}
+		hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + " + " + (hover_content.length - 1) + " spirits</span><span class='spirit_energy'>" + total_eng + " <span class='lowlight'>total energy</span></span>";
+	} else {
+		var temp_fill = '';
+		for (j = 0; j < hover_content.length; j++){
+			temp_fill += "<span class='spirit_id'>" + hover_content[j][1] + "<span class='lowlight'> · " + hover_content[j][2] + "</span></span>"
+		}
+		hoveroid.innerHTML = temp_fill;
+	}
 }
 
 
@@ -177,13 +252,15 @@ function zoom(event) {
   scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
   multiplier = 1 / scale;
   
-  //if (scale > 1.5){
-	//  z_level = 2;
-  //} else if (scale < 0.75) {
-//	  z_level = 0.5;
- // } else {
-	  //z_level = 1;
-  //}
+  if (scale > 1.7){
+	  document.getElementById('game_hover').style.fontSize = "15px";
+	  document.getElementById('game_hover').style.lineHeight = "20px";
+  } else if (scale > 1.3){
+	  document.getElementById('game_hover').style.fontSize = "13px";
+	  document.getElementById('game_hover').style.lineHeight = "18px";
+  } else {
+  	document.getElementById('game_hover').style.fontSize = "11px";
+  }
  
   //console.log('scale = ' + scale);
   //console.log('prevscale = ' + prevScale);
@@ -681,7 +758,7 @@ class Star {
 }
 
 class Base {
-	constructor(id, position, energy, player, color){
+	constructor(id, position, energy, player, color, def_status = 0){
 		this.id = id
 		this.position = position;
 		this.size = 20;
@@ -697,6 +774,10 @@ class Base {
 		this.energy_capacity = 100;
 		this.player_id = player;
 		this.color = color;
+		
+		// 1 if under attack
+		this.def_status = def_status;
+		
 		//this.energy = energy;
 	
 		bases.push(this);
@@ -865,8 +946,9 @@ function render_state(timestamp){
 	prev = timestamp;
 	dumb_cycler++;
 	
-	if (dumb_cycler >= 200){
-		dumb_cycler = 0;
+	if (dumb_cycler >= 60){
+		dumb_cycler = 0;		
+		fill_hover_thing(pointing_at_x, pointing_at_y, board_x, board_y);
 	}
 	//console.log(dumb_cycler)
 	

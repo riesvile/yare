@@ -51,6 +51,18 @@ code {
 	color: rgba(137, 146, 156, 0.86);
 }
 
+.highlight {
+	color: rgba(242, 246, 250, 0.92);
+}
+
+.lowlight {
+	color: rgba(242, 246, 250, 0.55);
+}
+
+.lowlightish {
+	color: rgba(242, 246, 250, 0.69);
+}
+
 #editor_container {
 	background-color: transparent;
 	backdrop-filter: blur(0px);
@@ -140,6 +152,26 @@ input:focus {
 	color: rgba(242, 246, 250, 0.89);
 }
 
+#game_hover {
+	position: absolute;
+	bottom: 800px;
+	left: 800px;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 16px;
+	color: rgba(242, 246, 250, 0.89);
+	pointer-events: none;
+}
+
+.spirit_id, .spirit_energy, .base_id, .base_energy, .star_id {
+	display: block;
+	max-width: 160px;
+}
+
+.star_id {
+	font-size:16px;
+}
+
 
 /* ----- Header area ----- */
 
@@ -197,7 +229,7 @@ h1#logo {
 }
 
 #profile_links {
-	position: absolute;
+	position: fixed;
 	top: 30px;
 	right: 40px;
 	z-index: 20000;

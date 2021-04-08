@@ -177,18 +177,6 @@ section {
 	clear: both;
 }
 
-.highlight {
-	color: rgba(242, 246, 250, 0.92);
-}
-
-.lowlight {
-	color: rgba(242, 246, 250, 0.55);
-}
-
-.lowlightish {
-	color: rgba(242, 246, 250, 0.69);
-}
-
 #info_box {
 	position: absolute;
 	top: 200px;

@@ -200,14 +200,14 @@ parentPort.on("message", message => {
 				    for (j = 0; j < 11; j++){
 				        if (my_spirits[j].energy == my_spirits[j].energy_capacity){
 				    		memory[my_spirits[j].id] = 'invader';
-				    		my_spirits[j].move([2400, 1150]);
+				    		my_spirits[j].move([2600, 1050]);
 					    }
 						memory[my_spirits[0].id] = 'bait';
 					    my_spirits[0].move([2150,1250]);
 				    }
 				}
 
-				if (memory['phase'] == 1 && my_spirits[1].position[0] == 2400 && my_spirits[5].position[0] == 2400){
+				if (memory['phase'] == 1 && my_spirits[1].position[0] == 2600 && my_spirits[5].position[0] == 2600){
 				    memory['phase'] = 2;
 				}
 

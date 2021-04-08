@@ -70,6 +70,11 @@
 	 
   </div>
   
+  <div id="game_hover">
+  	<span class="spirit_id">haha1 · <span class="lowlight">24</span></span>
+	<span class="spirit_energy">24 <span class="lowlight">energy</span></span>
+  </div>
+  
   <div id="overlay"></div>
   <div id="game_over_overlay"></div>
   <div id="overlay_pre_start"></div>
@@ -223,11 +228,11 @@
 	  var cnsl_expanded = 0;
 	  
 	  
-	  var this_server = 'd1';
+	  var this_server = 't1';
 	  
 	  load_start();
 	  
-	  const socket = new WebSocket('wss://yare.io:443/' + this_server + '/' + this_game_id); // wss://yare.io:443
+	  const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
 	  //function connectSocket(){
 		  

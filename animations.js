@@ -730,6 +730,23 @@ function tut_phase_success(){
 	document.getElementById('panel').scrollTop = 0;
 }
 
+function hide_hover(){
+	anime({
+  		targets: '#game_hover',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 10
+	});
+}
+
+function show_hover(){
+	anime({
+  		targets: '#game_hover',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 10
+	});
+}
 
 function show_info_snippet(elid, leftPos, topPos){
 	console.log(elid)
