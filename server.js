@@ -293,9 +293,6 @@ function create_worker (game_id, game_type) {
 	  if (render_data.meta == 'initiate'){
 		  console.log('initiate world');
 		  connections[render_data.client].send(render_data.data);
-		  connections[render_data.client].send(JSON.stringify(code_temps));
-		  console.log("code_temps['player1']");
-		  console.log(JSON.stringify(code_temps));
 		  delete connections[render_data.client];
 	  } else if (render_data.meta == 'test'){
 		  console.log('testing');
@@ -1343,7 +1340,7 @@ var player2_session = 'xyz';
 
 var player1_code_temp;
 var player2_code_temp;
-var code_temps = {};
+//var code_temps = {};
 
 var tutorial = {};
 
@@ -1429,8 +1426,8 @@ wss.on('connection', function connection(ws, req) {
 				console.log(active_games[g_id][1])
 			}
 			if (message['u_id'] == active_games[g_id][1] || active_games[g_id][1] == 'anonymous'){
-				code_temps['player1'] = message['u_code'];
-				code_temps['player1_session'] = message['session_id'];
+				//code_temps['player1'] = message['u_code'];
+				//code_temps['player1_session'] = message['session_id'];
 				player1_code = `
 				//all = spirits.length;
 				//for (s = 0; s < all; s++){
@@ -1471,8 +1468,8 @@ wss.on('connection', function connection(ws, req) {
 				` + message['u_code'];
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id']);
 			} else if (message['u_id'] == active_games[g_id][2]){
-				code_temps['player2'] = message['u_code'];
-				code_temps['player2_session'] = message['session_id'];
+				//code_temps['player2'] = message['u_code'];
+				//code_temps['player2_session'] = message['session_id'];
 				player2_code = `
 				//all = spirits.length;
 				//for (s = 0; s < all; s++){

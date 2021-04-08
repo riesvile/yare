@@ -925,7 +925,20 @@ function render_state(timestamp){
 		} catch (e) {
 			//if spirit I don't know about, try creating it instead of reloading?
 			console.log(e);
-			location.reload();
+			console.log(move_queue[i][0]);
+			
+			var tpid = '';
+			var clr = '';
+			if (move_queue[i][0].startsWith(pla1)){
+				tpid = pla1;
+				clr = colors['color1'];
+			} else {
+				tpid = pla2;
+				clr = colors['color2'];
+			}
+			
+			spirit_lookup[move_queue[i][0]] = new Spirit(move_queue[i][0], move_queue[i][1], 1, 10, tpid, clr, [], 1);
+			//location.reload();
 		}
 		
 	}
