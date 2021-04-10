@@ -28,6 +28,11 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to db'))
 	.catch((error) => console.log(error));
 
+
+const min_beam = 200;
+// histogram square - maximal, s.t. any two points inside are closer <= beam 
+const h_square = min_beam / Math.sqrt(2);
+
 //initiate_world
 parentPort.on("message", message => {
   if (message.data == "initiate world") {
@@ -674,14 +679,13 @@ if (!isMainThread){
 			}
 			
 			//this, this.energy, this.size, target)
-			if (target.hp != 0){
+			var are_beamable = fast_dist_lt(this.position, target.position, min_beam);
+			if (target.hp != 0 && are_beamable){
 				if (entry_index2 == -1){
 					energize_queue.push([this, target]);
 				} else {
 					energize_queue[entry_index2] = [this, target];
 				}
-				
-				//energize_queue[entry_index2] = [this, target];
 			}
 			
 		}
@@ -800,9 +804,18 @@ if (!isMainThread){
 		return Math.hypot(item2[0]-item1[0], item2[1]-item1[1]);
 	}
 	
-	function get_distance_fast(item1, item2){
-		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2)
+	function dist_sq(item1, item2){
+		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2);
 	}
+
+	function fast_dist_lt(item1, item2, range){
+		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) < range**2;
+	}
+
+	function fast_dist_leq(item1, item2, range){
+		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) < range**2;
+	}
+
 	
 	function intersection(x0, y0, r0, x1, y1, r1) {
 	        var a, dx, dy, d, h, rx, ry;
@@ -887,10 +900,177 @@ if (!isMainThread){
 	}
 
 	function is_in_sight(item1, item2, range = 400){
-		if (Math.abs(item1.position[0] - item2.position[0]) < range && Math.abs(item1.position[1] - item2.position[1]) < range){
-			return true;
-		} else {
-			return false;
+		return fast_dist_lt(item1.position, item2.position, range);
+	}
+
+
+
+	function get_sight_fast(){
+		var living_length = living_spirits.length;
+		for (h = 0; h < living_length; h++){
+		  living_spirits[h].sight = {
+				friends_beamable: [],
+				enemies_beamable: [],
+				friends: [],
+				enemies: [],
+				structures: []
+		  }
+		  living_spirits[h].qcollisions = [];
+		}
+
+		function work(i, j){
+			var pi = living_spirits[i].player_id;
+			var pj = living_spirits[j].player_id;
+			if (pi == pj){
+				// friend
+				living_spirits[i].sight.friends.push(living_spirits[j].id);
+				living_spirits[j].sight.friends.push(living_spirits[i].id);
+			}
+			else{
+				// enemy
+				living_spirits[i].sight.enemies.push(living_spirits[j].id);
+				living_spirits[j].sight.enemies.push(living_spirits[i].id);
+			}
+		}
+
+		function work_beamable(i, j){
+			var pi = living_spirits[i].player_id;
+			var pj = living_spirits[j].player_id;
+			if (pi == pj){
+				// friend
+				living_spirits[i].sight.friends_beamable.push(living_spirits[j].id);
+				living_spirits[j].sight.friends_beamable.push(living_spirits[i].id);
+			}
+			else{
+				// enemy
+				living_spirits[i].sight.enemies_beamable.push(living_spirits[j].id);
+				living_spirits[j].sight.enemies_beamable.push(living_spirits[i].id);
+			}
+		}
+
+		var hist = {};
+		for (i = 0; i < living_length; i++){
+			if (living_spirits[i].hp == 0) continue;
+			var pos = living_spirits[i].position;
+
+			var xbin = Math.floor(pos[0] / h_square);
+			var ybin = Math.floor(pos[1] / h_square);
+
+
+			if (hist[[xbin, ybin]] == undefined){
+				// first element is the x,y, since js has no tuples
+				// and converts the key to string
+				hist[[xbin, ybin]] = [[xbin,ybin]];
+			}
+			hist[[xbin, ybin]].push(i);
+			
+			//stars
+			for (k = 0; k < stars.length; k++){
+				if (is_in_sight(living_spirits[i], stars[k])){
+					living_spirits[i].sight.structures.push(stars[k].id);
+				}
+			}
+			//bases
+			for (l = 0; l < bases.length; l++){
+				if (is_in_sight(living_spirits[i], bases[l])){
+					living_spirits[i].sight.structures.push(bases[l].id);
+				}
+			}
+		}
+
+		Object.values(hist).forEach(function(bin){
+			// assuming that visible == 2* min_beam
+			//
+			// this bin, all are visible && beamable
+			for(i = 1; i <bin.length;i++){
+				for(j = i+1; j <bin.length;j++){
+					work(bin[i],bin[j]);
+					work_beamable(bin[i],bin[j]);
+				}
+			}
+
+			// iterate neighboring bins
+			// first is done, last is too far away 
+			for(d = 1; d < 15 ; d++){
+				var dy = Math.round(d /4);
+				var dx = d % 4;
+
+				// neighbor bin
+				var nb = hist[[bin[0][0]+dx, bin[0][1]+dy]];
+				if(nb == undefined)
+					continue;
+
+				// O(N^2) part
+				for(i = 1; i <bin.length;i++){
+					for(j = 1; j <nb.length;j++){
+						var dsq = dist_sq(
+							living_spirits[bin[i]].position,
+							living_spirits[nb[j]].position,
+						);
+						if(dsq < (2*min_beam)**2)
+							work(bin[i],nb[j]);
+						if(dsq < min_beam**2)
+							work_beamable(bin[i],nb[j]);
+					}
+				}
+			}
+		});
+
+		//bases sight
+		for (m = 0; m < bases.length; m++){
+  		  	bases[m].sight = {
+				friends_beamable: [],
+				enemies_beamable: [],
+  				friends: [],
+  				enemies: [],
+  				structures: []
+		    }
+			var base_pos = bases[m].position;
+			var xbin = Math.floor(base_pos[0] / h_square);
+			var ybin = Math.floor(base_pos[1] / h_square);
+
+			for(dx = -3;dx < 3;dx++){
+				for(dy = -3;dy < 3;dy++){
+					var nb = hist[[xbin+dx, ybin+dy]];
+					if(nb == undefined)
+						continue;
+					for(i = 1; i < nb.length;i++){
+						var dsq = dist_sq(
+							living_spirits[nb[i]].position,
+							base_pos
+						);
+						var friend = bases[m].player_id == living_spirits[nb[i]].player_id;
+						if(dsq < (2*min_beam)**2){
+							if(friend){
+								bases[m].sight.friends.push(living_spirits[nb[i]].id);
+							}else{
+								bases[m].sight.enemies.push(living_spirits[nb[i]].id);
+							}
+						}
+						if(dsq < min_beam**2){
+							if(friend){
+								bases[m].sight.friends_beamable.push(living_spirits[nb[i]].id);
+							}else{
+								bases[m].sight.enemies_beamable.push(living_spirits[nb[i]].id);
+							}
+						}
+					}
+				}
+			}
+			  
+			if (bases[m].sight.enemies.length > 0){
+				if (bases[m].player_id == players['p1']){
+					p1_defend = 1;
+				} else {
+					p2_defend = 1;
+				}
+			} else {
+				if (bases[m].player_id == players['p1']){
+					p1_defend = 0;
+				} else {
+					p2_defend = 0;
+				}
+			}
 		}
 	}
 
@@ -1193,7 +1373,7 @@ if (!isMainThread){
 							
 						//console.log('position now = ' + spirit_position);
 						//console.log('position before = ' + spirit_before);
-						if (get_distance(spirit_position, object_position) < min_distance){
+						if (fast_dist_lt(spirit_position, object_position, min_distance)){
 							//console.log('inside');
 							//intersection(x0, y0, r0, x1, y1, r1)
 							inter_points = intersection(spirit_before[0], spirit_before[1], base_speed, object_position[0], object_position[1], min_distance);
@@ -1202,8 +1382,8 @@ if (!isMainThread){
 							//console.log(inter_points);
 							
 							
-							var quick_dist1 = get_distance_fast([inter_points[0], inter_points[2]], move_queue[i][2]);
-							var quick_dist2 = get_distance_fast([inter_points[1], inter_points[3]], move_queue[i][2]);
+							var quick_dist1 = dist_sq([inter_points[0], inter_points[2]], move_queue[i][2]);
+							var quick_dist2 = dist_sq([inter_points[1], inter_points[3]], move_queue[i][2]);
 							
 							if (Math.abs(quick_dist1 - quick_dist2) > 5){
 								if (quick_dist1 < quick_dist2){
@@ -1253,8 +1433,8 @@ if (!isMainThread){
 								console.log(q_points);
 								
 								if (q_points != false){
-									var quick_dist1 = get_distance_fast([q_points[0], q_points[2]], move_queue[i][0].position);
-									var quick_dist2 = get_distance_fast([q_points[1], q_points[3]], move_queue[i][0].position);
+									var quick_dist1 = dist_sq([q_points[0], q_points[2]], move_queue[i][0].position);
+									var quick_dist2 = dist_sq([q_points[1], q_points[3]], move_queue[i][0].position);
 									
 									if (quick_dist1 < quick_dist2){
 										move_queue[i][0].position[0] = q_points[0];
@@ -1316,11 +1496,24 @@ if (!isMainThread){
 			//objects sight
 			//console.log('spirit_lookup[sp1].sight');
 			//console.log(spirit_lookup['sp1'].sight);
+			var start = process.hrtime();
 			get_sight();
+			var diff = process.hrtime(start);
+			var took1 = (diff[0] * 1000000000 + diff[1]) / 1000000;
+			console.log('get_sight took = ' + took1);
+
+		/*
+			var start = process.hrtime();
+			get_sight_fast();
+			var diff = process.hrtime(start);
+			var took2 = (diff[0] * 1000000000 + diff[1]) / 1000000;
+			console.log('get_sight_fast took = ' + took2);
+			*/
+			
+
 			//console.log('spirit_lookup[s1].sight');
 			//console.log(spirit_lookup['s1'].sight);
 			//console.log(spirit_lookup['sp1'].sight);
-		
 		
 			//
 			//objects energize
@@ -1328,6 +1521,8 @@ if (!isMainThread){
 			
 			var energize_apply = [];
 			e_targets = energize_queue.length;
+
+			// TODO RM dist checks, the queue now only contains close things
 			for (i = (e_targets - 1); i >= 0; i--){
 				//if (energize_queue[i][1].hp == 0) break;
 				//if origin == target —> attempt harvest from star
@@ -1337,8 +1532,9 @@ if (!isMainThread){
 						//console.log(energize_queue[i][0].sight.structures[j]);
 						if ((energize_queue[i][0].sight.structures[j]).startsWith('star') == true){
 							//console.log('its a star its a star its a star its a star its a star its a star its a star its a star');
-							star_distance = get_distance(energize_queue[i][0].position, star_lookup[energize_queue[i][0].sight.structures[j]].position);
-							if (star_distance < 200){
+							var star = star_lookup[energize_queue[i][0].sight.structures[j]].position;
+							var star_close = fast_dist_lt(energize_queue[i][0].position, star, min_beam);
+							if (star_close){
 								if (workerData[1] == 'tutorial' && energize_queue[i][0].id == 'anonymous1'){
 									tutorial_phase[1] = 1;
 								}
@@ -1410,8 +1606,8 @@ if (!isMainThread){
 					}
 					
 					
-					target_distance = get_distance(energize_queue[i][0].position, energize_queue[i][1].position);
-					if (target_distance < 200){
+					target_close = fast_dist_lt(energize_queue[i][0].position, energize_queue[i][1].position, min_beam);
+					if (target_close){
 						if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
 							energize_queue[i][0].energy -= energy_value * energize_queue[i][0].size;
 							energize_queue[i][1].energy += energy_value * energize_queue[i][0].size;
@@ -1432,9 +1628,9 @@ if (!isMainThread){
 			
 				//if target is enemy
 				else if (energize_queue[i][0].player_id != energize_queue[i][1].player_id){
-					target_distance = get_distance(energize_queue[i][0].position, energize_queue[i][1].position);
+					target_close = fast_dist_lt(energize_queue[i][0].position, energize_queue[i][1].position, min_beam);
 					var strength = 0;
-					if (target_distance < 200){
+					if (target_close){
 						if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
 							strength = energy_value * energize_queue[i][0].size;
 							energize_apply.push([energize_queue[i][0], strength * (-1)]);
@@ -1847,7 +2043,8 @@ if (!isMainThread){
 		
 		// /*
 		
-		for (s = 1; s < 6; s++){
+		var start_num_spirits = 5;
+		for (s = 1; s < 1+start_num_spirits ; s++){
 			if (s > 3){
 				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1250+s*20,520], 1, 0, players['p1'], colors['player1'], 100);
 				spirits.push(global[players['p1'] + s]);
@@ -1860,7 +2057,7 @@ if (!isMainThread){
 			
 		}
 
-		for (q = 1; q < 6; q++){
+		for (q = 1; q < 1+start_num_spirits ; q++){
 			if (q > 3){
 				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2450+q*20,1500], 1, 0, players['p2'], colors['player2'], 100);
 				spirits2.push(global[players['p2'] + q]);
@@ -1870,7 +2067,6 @@ if (!isMainThread){
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}
-			
 		}
 		
 		// */
