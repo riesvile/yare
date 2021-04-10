@@ -227,12 +227,14 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			hoveroid.style.left = xx - 20 + 'px';
 		}
 	} else if (hover_content.length > 4){
+		show_hover();
 		var total_eng = 0;
 		for (j = 0; j < hover_content.length; j++){
 			total_eng += hover_content[j][2];
 		}
 		hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + " + " + (hover_content.length - 1) + " spirits</span><span class='spirit_energy'>" + total_eng + " <span class='lowlight'>total energy</span></span>";
 	} else {
+		show_hover();
 		var temp_fill = '';
 		for (j = 0; j < hover_content.length; j++){
 			temp_fill += "<span class='spirit_id'>" + hover_content[j][1] + "<span class='lowlight'> · " + hover_content[j][2] + "</span></span>"
@@ -428,7 +430,81 @@ var world_initiated = 0;
 
 function game_over(winner){
 	//alert('game over, ' + winner + ' won');
+	if (game_ended == 1){
+		return;
+	}
 	
+	game_ended = 1;
+	
+	var p111_rating = 0;
+	var p222_rating = 0;
+	
+  	fetch('/gameinfo', {
+  	        method: "POST",
+  	        headers: {
+  	          Accept: "application/json",
+  	          "Content-Type": "application/json"
+  	        },
+  	        body: JSON.stringify({
+  		        game_id: this_game_id
+  		    })
+
+      }).then(response => response.json())
+        .then(response => {
+		  p111_rating = response.p1_rating;
+		  p222_rating = response.p2_rating;
+  		  console.log(response);
+	  	  //document.getElementById('player1_rating').innerHTML = p111_rating + "<span class='player_delta' id='player1_delta'>+10</span>";
+	  	  //document.getElementById('player2_rating').innerHTML = p222_rating + "<span class='player_delta' id='player1_delta'>-9</span>";
+	  	  document.getElementById('player1_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color1'] + "'></span>";
+	  	  document.getElementById('player2_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color2'] + "'></span>";
+		  
+		  setTimeout(function(){
+		  	
+  	    	fetch('/playerinfo', {
+  	    	        method: "POST",
+  	    	        headers: {
+  	    	          Accept: "application/json",
+  	    	          "Content-Type": "application/json"
+  	    	        },
+  	    	        body: JSON.stringify({
+  	    		        pla1: pla1,
+  						pla2: pla2
+  	    		    })
+
+  	        }).then(response => response.json())
+  	          .then(response => {
+  				  var p111_delta = response.pla1_rating - p111_rating;
+  				  var p222_delta = response.pla2_rating - p222_rating;
+  				  var p111_delta_string = "<span class='player_delta' id='player1_delta'>+" + p111_delta + "</span>";
+  				  var p222_delta_string = "<span class='player_delta' id='player2_delta'>+" + p222_delta + "</span>";
+				  
+  				  if (p111_delta > 0){
+  				  	p111_delta_string = "<span class='player_delta delta_positive' id='player1_delta'>+" + p111_delta + "</span>";
+  				  } else if (p111_delta < -1){
+  				  	p111_delta_string = "<span class='player_delta delta_negative' id='player1_delta'>" + p111_delta + "</span>";
+  				  }
+				  
+  				  if (p222_delta > 0){
+  				  	p222_delta_string = "<span class='player_delta delta_positive' id='player2_delta'>+" + p222_delta + "</span>";
+  				  } else if (p222_delta < -1){
+  				  	p222_delta_string = "<span class='player_delta delta_negative' id='player2_delta'>" + p222_delta + "</span>";
+  				  }
+				  
+  			  	  document.getElementById('player1_rating').innerHTML = p111_rating + p111_delta_string;
+  			  	  document.getElementById('player2_rating').innerHTML = p222_rating + p222_delta_string;
+  	    	  })
+  	          .catch(err => {
+  	    		  console.log(err);
+  	    	  });
+			
+		  }, 1000);
+		  
+	    	
+  	  })
+        .catch(err => {
+  		  console.log(err);
+  	  });
 	
 	if (tutorial_phase > 1){
 		//it's a tutorial game
@@ -451,12 +527,18 @@ function game_over(winner){
 		document.getElementById('over_login').style.display = 'none';
 	}
 	
-	
+	if (pla2 == 'medium-bot') document.getElementById('ranked_nonranked').innerHTML = 'Non-ranked';
 	
 	document.getElementById('player1_name').innerHTML = pla1;
 	document.getElementById('player2_name').innerHTML = pla2;
 	game_over_box();
 	game_active = 0;
+	
+	
+  	
+	
+	
+	
 }
 
 
@@ -1057,6 +1139,7 @@ function render_state(timestamp){
 				draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
 				if (energy_processed[energize_queue[i][1]] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
 					spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+					if (spirit_lookup[energize_queue[i][1]].energy > spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
 					energy_processed[energize_queue[i][1]] = 1;
 				}
 			}
@@ -1064,7 +1147,7 @@ function render_state(timestamp){
 			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
 			if (energy_processed[energize_queue[i][0]] != 1){
 				if (spirit_lookup[energize_queue[i][0]].player_id != base_lookup[energize_queue[i][1]].player_id){
-					spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+					spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
 					base_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
 					//base_lookup[energize_queue[i][1]].draw();
 					energy_processed[energize_queue[i][0]] = 1;
@@ -1073,6 +1156,7 @@ function render_state(timestamp){
 					//baseOffsetUpdate();
 				} else {
 					spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+					if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
 					base_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
 					//base_lookup[energize_queue[i][1]].draw();
 					energy_processed[energize_queue[i][0]] = 1;
@@ -1090,6 +1174,7 @@ function render_state(timestamp){
 					if (spirit_lookup[energize_queue[i][0]].player_id != spirit_lookup[energize_queue[i][1]].player_id){
 						spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
 						spirit_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
+						if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
 						//base_lookup[energize_queue[i][1]].draw();
 						energy_processed[energize_queue[i][0]] = 1;
 						//console.log('base energy');
@@ -1097,8 +1182,10 @@ function render_state(timestamp){
 						//baseOffsetUpdate();
 					} else {
 						spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+						if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
 						if (spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
 							spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+							if (spirit_lookup[energize_queue[i][1]].energy >= spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
 						} else {
 							//spirit_lookup[energize_queue[i][1]].energy = energize_queue[i][2];
 						}

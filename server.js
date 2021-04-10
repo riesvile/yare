@@ -523,7 +523,7 @@ function friend_challenge(req, res){
 		p1_rating: 0,
 		p2_rating: 0,
 		winner: '',
-		ranked: 0,
+		ranked: 1,
 		active: 0.5,
 		game_duration: 0,
 		observers: 0
@@ -1043,7 +1043,7 @@ app.post('/gameinfo', (req, res) => {
 	Game.find({game_id: req.body.game_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('dbdb result');
+			console.log('getting game info');
 			console.log(result);
 			console.log(result[0]['active']);
 			if (result.length == 0){
@@ -1081,6 +1081,68 @@ app.post('/gameinfo', (req, res) => {
 					p2_rating: result[0]['p2_rating'],
 					c_day: result[0]['createdAt']
 		        });
+			} else {
+				res.status(200).send({
+		        	data: "something went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+
+});
+
+
+app.post('/playerinfo', (req, res) => {
+	var p111_rating = 0;
+	var p222_rating = 0;
+
+	User.find({user_id: req.body.pla1})
+		.then((result) => {
+			//res.send(result);
+			console.log('getting player info');
+			console.log(result);
+			console.log(result[0]['active']);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no user found"
+		        });
+			} else if (result[0]['rating'] != undefined && result[0]['rating'] != ''){
+				p111_rating = result[0]['rating'];
+				if (req.body.pla2){
+					User.find({user_id: req.body.pla2})
+						.then((result2) => {
+							//res.send(result);
+							console.log('getting player info');
+							console.log(result2);
+							if (result2.length == 0){
+								res.status(200).send({
+						        	data: "no user found"
+						        });
+							} else if (result2[0]['rating'] != undefined && result2[0]['rating'] != ''){
+								p222_rating = result2[0]['rating'];
+								
+								res.status(200).send({
+									pla1_rating: p111_rating,
+									pla2_rating: p222_rating
+						        });
+				
+				
+							} else {
+								res.status(200).send({
+						        	data: "something went wrong"
+						        });
+							}
+						})
+						.catch((error) => {
+							console.log(error);
+						})
+				} else {
+					res.status(200).send({
+						pla1_rating: p111_rating
+			        });
+				}
 			} else {
 				res.status(200).send({
 		        	data: "something went wrong"
