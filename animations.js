@@ -731,20 +731,22 @@ function tut_phase_success(){
 }
 
 function hide_hover(){
+	//document.getElementById('game_hover').style.opacity = 0;
 	anime({
   		targets: '#game_hover',
   		opacity: 0,
   		easing: 'easeOutQuad',
-  		duration: 10
+  		duration: 20
 	});
 }
 
 function show_hover(){
+	//document.getElementById('game_hover').style.opacity = 1;
 	anime({
   		targets: '#game_hover',
   		opacity: 1,
   		easing: 'easeOutQuad',
-  		duration: 10
+  		duration: 20
 	});
 }
 

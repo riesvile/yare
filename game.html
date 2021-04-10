@@ -137,15 +137,15 @@
 		  <div class="gt_row">
 			  <div class="gt_row_in">
 				 <div class="player_shape" id="player1_shape"></div>
-				 <div class="player_name" id="player1_name">levmiseri</div>
-				 <div class="player_rating" id="player1_rating">1957</div>
+				 <div class="player_name" id="player1_name"></div>
+				 <div class="player_rating" id="player1_rating">----<span class='player_delta' id='player1_delta'>+10</span></div>
 		  	  </div>
 		  </div>
 		  <div class="gt_row">
 			   <div class="gt_row_in">
 				  <div class="player_shape" id="player2_shape"></div>
-				  <div class="player_name" id="player2_name">jane</div>
-				  <div class="player_rating" id="player2_rating">1117</div>
+				  <div class="player_name" id="player2_name"></div>
+				  <div class="player_rating" id="player2_rating">----<span class="player_delta" id="player2_delta">+10</span></div>
 			   </div>
 		  </div>
 	  </div>
@@ -208,6 +208,10 @@
 	  
 	  var pla1 = '';
 	  var pla2 = '';
+	  var pla1_rating = 0;
+	  var pla2_rating = 0;
+	  
+	  var game_ended = 0;
 	  
 	  var game_type = '';
 	  var game_active = 1;
@@ -542,6 +546,8 @@
 				 //console.log(incoming);
 				 pla1 = incoming.players[0];
 				 pla2 = incoming.players[1];
+				 colors['color1'] = incoming.colors[0];
+				 colors['color2'] = incoming.colors[1];
 			 
 				 //console.log('playersrsrsr');
 				 //console.log(pla1);

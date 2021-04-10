@@ -45,6 +45,7 @@ parentPort.on("message", message => {
 				'stars': [],
 				'bases': [],
 				'players': [],
+				'colors': [],
 				'tut': 1
 			}
 	    } else {
@@ -52,7 +53,8 @@ parentPort.on("message", message => {
 				'units': [],
 				'stars': [],
 				'bases': [],
-				'players': []
+				'players': [],
+				'colors': []
 			}
 	    }
 		var all_spirits = living_spirits.length;
@@ -70,6 +72,9 @@ parentPort.on("message", message => {
 		
 		init_data.players[0] = players['p1'];
 		init_data.players[1] = players['p2'];
+		
+		init_data.colors[0] = colors['player1'];
+		init_data.colors[1] = colors['player2'];
 		
 		if (players_update['p1'] != 'old'){
 			init_data.players[0] = players_update['p1'];
@@ -238,11 +243,22 @@ parentPort.on("message", message => {
 				`;
 			}
 			
+			console.log('starting rating update');
 			User.find({user_id: players['p1']})
 				.then((result_p1) => {
+					console.log(result_p1);
 					User.find({user_id: players['p2']})
 						.then((result_p2) => {
-							Game.updateOne({game_id: workerData[0]}, {p1_rating: result_p1[0]['rating'], p2_rating: result_p2[0]['rating']}, {upsert: true})
+							console.log(result_p2);
+							var p222_rating = '';
+							if (players['p2'] == 'easy-bot'){
+								p222_rating = 100;
+							} else if (players['p2'] == 'medium-bot'){
+								p222_rating = 1000;
+							} else {
+								p222_rating = result_p2[0]['rating'];
+							}
+							Game.updateOne({game_id: workerData[0]}, {p1_rating: result_p1[0]['rating'], p2_rating: p222_rating}, {upsert: true})
 								.then((qq) => {
 									console.log('p1 and p2 ratings updated');
 								});	
@@ -293,7 +309,14 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		fill_error(players['p1'], error.message);
+		
+		var regex = /\((.*):(\d+):(\d+)\)$/;
+		var eline_temp = error.stack.split("\n");
+		var eline = eline_temp[1].match(/\d+/)[0];
+		console.log(eline_temp[1].match(/\d+/)[0]);
+		//var line = match[1];
+		//console.log(error.stack);
+		fill_error(players['p1'], error.message + " | line " + (eline - 37));
 		//console.error(error);
 	}
 	
@@ -301,7 +324,14 @@ function user_code(){
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		fill_error(players['p2'], error.message);
+		
+		var regex = /\((.*):(\d+):(\d+)\)$/;
+		var eline_temp = error.stack.split("\n");
+		var eline = eline_temp[1].match(/\d+/)[0];
+		console.log(eline_temp[1].match(/\d+/)[0]);
+		//var line = match[1];
+		//console.log(error.stack);
+		fill_error(players['p2'], error.message + " | line " + (eline - 31));
 		//console.error(error);
 	}
 	
@@ -566,7 +596,7 @@ if (!isMainThread){
 			if (Array.isArray(target) == false){
 				//user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
 				console.log(this.player_id);
-				var err_msg = '.move() argument must be an array. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[0].position). Received: ' + target;
+				var err_msg = '.move() argument must be an array. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position). Received: ' + target;
 				
 				fill_error(this.player_id, err_msg);
 				
@@ -575,7 +605,7 @@ if (!isMainThread){
 				if (target.length != 2){
 					console.log('player id');
 					console.log(this.player_id);
-					var err_msg = '.move() argument must be an array of length 2. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[0].position)';
+					var err_msg = '.move() argument must be an array of length 2. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position). Received: ' + target;
 				
 					fill_error(this.player_id, err_msg);
 					return
@@ -642,11 +672,11 @@ if (!isMainThread){
 			var entry_index2 = energize_queue.findIndex(entry2 => entry2[0]['id'] === this.id);
 			
 			if (Array.isArray(target) == true){
-				var err_msg = ".energize() argument must be a spirit object, not an array. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1'])";
+				var err_msg = ".energize() argument must be a spirit object, not an array. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
 				fill_error(this.player_id, err_msg);
 				return;
 			} else if (typeof target !== 'object' || target === null){
-				var err_msg = ".energize() argument must be a spirit object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1'])";
+				var err_msg = ".energize() argument must be a spirit object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
 				fill_error(this.player_id, err_msg);
 				return;
 			}
@@ -702,11 +732,11 @@ if (!isMainThread){
 			
 			try {
 				if (Array.isArray(target) == true){
-					var err_msg = ".merge() argument must be a friendly spirit object, not an array. E.g. my_spirits[0].merge(my_spirits[1])";
+					var err_msg = ".merge() argument must be a friendly spirit object, not an array. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target;
 					fill_error(this.player_id, err_msg);
 					return;
 				} else if (typeof target !== 'object' || target === null){
-					var err_msg = ".merge() argument must be a friendly spirit object. E.g. my_spirits[0].merge(my_spirits[1])";
+					var err_msg = ".merge() argument must be a friendly spirit object. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target;
 					fill_error(this.player_id, err_msg);
 					return;
 				}
@@ -1617,8 +1647,10 @@ if (!isMainThread){
 							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][0].energy]);
 							energize_queue[i][1].energy += energize_queue[i][0].energy;
 							energize_queue[i][0].energy = 0;
+							if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
+							
 						} else {
-							console.log('no energy to give');
+							//console.log('no energy to give');
 						}
 						//console.log('origin energy: ' + energize_queue[i][0].energy);
 						//console.log('target energy: ' + energize_queue[i][1].energy);
@@ -1644,7 +1676,7 @@ if (!isMainThread){
 							energize_apply.push([energize_queue[i][1], strength * (-2)]);
 							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
 						} else {
-							console.log('no energy to give');
+							//console.log('no energy to give');
 						}
 						//console.log('origin energy: ' + energize_queue[i][0].energy);
 						//console.log('target energy: ' + energize_queue[i][1].energy);

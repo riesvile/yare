@@ -161,6 +161,7 @@ input:focus {
 	line-height: 16px;
 	color: rgba(242, 246, 250, 0.89);
 	pointer-events: none;
+	opacity: 0;
 }
 
 .spirit_id, .spirit_energy, .base_id, .base_energy, .star_id {
@@ -548,7 +549,10 @@ a#over_login {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
-	background-color: #7882dc;
+}
+
+.player_shape span {
+	margin-top: 0;
 }
 
 .player_name {
@@ -564,6 +568,29 @@ a#over_login {
 	font-feature-settings: 'tnum';
 	-webkit-font-feature-settings: 'tnum';
 	-moz-font-feature-settings: 'tnum';
+	position: relative;
+}
+
+.player_delta {
+	font-family: Lucida Sans Typewriter,Lucida Console,monaco,Bitstream Vera Sans Mono,monospace; 
+	font-size: 14px;
+	font-feature-settings: 'tnum';
+	-webkit-font-feature-settings: 'tnum';
+	-moz-font-feature-settings: 'tnum';
+	position: absolute;
+	top: 0;
+	right: -68px;
+	text-align: left;
+	width: 60px;
+	color: rgba(242, 246, 250, 0.55);
+}
+
+.delta_positive {
+	color: rgba(133, 234, 143, 1);
+}
+
+.delta_negative {
+	color: rgba(234, 133, 133, 1);
 }
 
 
