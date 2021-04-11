@@ -98,15 +98,19 @@ function zoomUpdate(){
 function pinchStart(e){
 	var pinch_start_val = 0;
 	prevScale = scale;
+	dist_init = Math.hypot(
+	    e.touches[0].pageX - e.touches[1].pageX,
+	    e.touches[0].pageY - e.touches[1].pageY);
 }
 
 function pinchMove(e){
 	var dist = Math.hypot(
 	    e.touches[0].pageX - e.touches[1].pageX,
-	    e.touches[0].pageY - e.touches[1].pageY);
+	    e.touches[0].pageY - e.touches[1].pageY) - dist_init
 		
-	scale = prevScale + dist / 1000;
-	multiplier = 1 / scale;
+		document.getElementById('logo').innerHTML = dist;
+	//scale = prevScale + dist / 1000;
+	//multiplier = 1 / scale;
 }
 
 
@@ -216,7 +220,7 @@ function onPointerMove(e){
 function onPointerUp(e){ 
 	//console.log('mouse up');
 	if (scaling) {
-	    pinchEnd(e);
+	    //pinchEnd(e);
 	    scaling = false;
 	}
 	
@@ -361,6 +365,7 @@ document.addEventListener("mouseup", onPointerUp, false);
 
 var scaling = false;
 var prevScale = 1;
+var dist_init = 0;
 
 //var canvasTouch = document.getElementById("base_canvas");
 //canvasTouch.addEventListener("ontouchstart")
