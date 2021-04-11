@@ -97,6 +97,7 @@ function zoomUpdate(){
 
 function pinchStart(e){
 	var pinch_start_val = 0;
+	prevScale = scale;
 }
 
 function pinchMove(e){
@@ -104,7 +105,6 @@ function pinchMove(e){
 	    e.touches[0].pageX - e.touches[1].pageX,
 	    e.touches[0].pageY - e.touches[1].pageY);
 		
-	prevScale = scale;
 	scale = prevScale + dist / 1000;
 	multiplier = 1 / scale;
 }
@@ -359,7 +359,8 @@ document.addEventListener("mousedown", onPointerDown, false);
 document.addEventListener("mousemove", onPointerMove, false);
 document.addEventListener("mouseup", onPointerUp, false);
 
-var scaling = false
+var scaling = false;
+var prevScale = 1;
 
 //var canvasTouch = document.getElementById("base_canvas");
 //canvasTouch.addEventListener("ontouchstart")
