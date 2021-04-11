@@ -983,6 +983,7 @@ function game_switch_view(){
 	if (switcher.classList.contains('switch_switched')){
 		switcher.classList.remove('switch_switched');
 		panel.style.display = "block";
+		panel.style.backgroundColor = "rgba(12, 10, 16, 0.96)";
 	} else {
 		switcher.classList.add('switch_switched');
 		panel.style.display = "none";

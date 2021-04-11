@@ -94,8 +94,38 @@ function zoomUpdate(){
 	
 }
 
+
+function pinchStart(e){
+	var pinch_start_val = 0;
+}
+
+function pinchMove(e){
+	var dist = Math.hypot(
+	    e.touches[0].pageX - e.touches[1].pageX,
+	    e.touches[0].pageY - e.touches[1].pageY);
+		
+	prevScale = scale;
+	scale = prevScale + dist / 1000;
+	multiplier = -1 * (prevScale + dist / 1000);
+}
+
+
 function onPointerDown(e){ 
 	e = e || window.event;
+	
+	
+	try {
+		if (e.touches.length === 2) {
+		    scaling = true;
+		    pinchStart(e);
+		}
+	} catch (e) {
+		console.log(e);
+	}
+	
+	//console.log(e);
+	console.log(scaling);
+	
 	var el_id = (e.target || e.srcElement).id;
 	//console.log('down id= ' + el_id);
 	
@@ -132,8 +162,13 @@ function onPointerDown(e){
 }
 
 function onPointerMove(e){
+	e = e || window.event;
+	
+	if (scaling) {
+	    pinchMove(e);
+	}
 	//console.log(disableSelection);
-	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+	if (e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
 	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
 	    var touch = evt.touches[0] || evt.changedTouches[0];
 	    x = touch.pageX;
@@ -177,6 +212,11 @@ function onPointerMove(e){
 
 function onPointerUp(e){ 
 	//console.log('mouse up');
+	if (scaling) {
+	    pinchEnd(e);
+	    scaling = false;
+	}
+	
 	mousey = 0;
 	panning = 0;
 	disableSelection = 0;
@@ -315,6 +355,11 @@ document.addEventListener("touchend", onPointerUp, false);
 document.addEventListener("mousedown", onPointerDown, false);
 document.addEventListener("mousemove", onPointerMove, false);
 document.addEventListener("mouseup", onPointerUp, false);
+
+var scaling = false
+
+//var canvasTouch = document.getElementById("base_canvas");
+//canvasTouch.addEventListener("ontouchstart")
 
 document.getElementById("panel").addEventListener("mouseenter", function(e) {
 	if (mousey != 1){
