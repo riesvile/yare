@@ -46,6 +46,10 @@ function dismissals(){
 	document.getElementById('new_account_wrap').style.pointerEvents = 'none';
 	document.getElementById('login_wrap').style.pointerEvents = 'none';
 	document.getElementById('profile_links').style.pointerEvents = 'none';
+	
+	if (resign_open == 1){
+		dont_resign();
+	}
 }
 
 function dismiss_helper(){
@@ -471,6 +475,120 @@ function wait_opponent_view(){
   
 }
 
+function pre_resign(){
+	resign_open = 1;
+	
+  	anime({
+  		targets: '#resign_game',
+  		translateY: [0, -10],
+		translateX: [0, -10],
+		width: 200,
+		height: 44,
+		fontSize: 14,
+		backgroundColor: 'rgba(30, 30, 32, 1)',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0.39)',
+		backdropFilter: 'blur(12px)',
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#resign_btn',
+		opacity: [0, 1],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#cancel_resign_btn',
+		opacity: [0, 1],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#pre_resign_btn',
+		opacity: [1, 0],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '.you_sure_lbl',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+
+	document.getElementById('overlay').style.pointerEvents = 'auto';
+	document.getElementById('pre_resign_btn').style.display = 'none';
+	document.getElementById('resign_btn').style.display = 'block';
+	document.getElementById('cancel_resign_btn').style.display = 'block';
+}
+
+function dont_resign(){
+	resign_open = 0;
+	
+  	anime({
+  		targets: '#resign_game',
+  		translateY: [-10, 0],
+		translateX: [-10, 0],
+		width: 75,
+		height: 36,
+		fontSize: 12,
+		backgroundColor: 'rgba(58, 40, 38, 0.69)',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0)',
+		backdropFilter: 'blur(0px)',
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#resign_btn',
+		opacity: [1, 0],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#cancel_resign_btn',
+		opacity: [1, 0],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#pre_resign_btn',
+		opacity: [0, 1],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '.you_sure_lbl',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 50
+	});
+
+	document.getElementById('overlay').style.pointerEvents = 'none';
+	document.getElementById('pre_resign_btn').style.display = 'block';
+	document.getElementById('resign_btn').style.display = 'none';
+	document.getElementById('cancel_resign_btn').style.display = 'none';
+}
+
 function update_console_height(hght){
 	//console.log('was triggered');
 	//console.log(hght);
@@ -855,6 +973,28 @@ function expand_documentation(elid, rotator){
 
 
 
+// mobile game view
+
+function game_switch_view(){
+	
+	var switcher = document.getElementById('switch_view');
+	var panelo = document.getElementById('panel');
+	
+	if (switcher.classList.contains('switch_switched')){
+		switcher.classList.remove('switch_switched');
+		panel.style.display = "block";
+	} else {
+		switcher.classList.add('switch_switched');
+		panel.style.display = "none";
+	}
+	
+}
+
+
+
+
+
+
 // helper vars
 try {
 	var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
@@ -869,6 +1009,7 @@ try {
 var account_creation = 0;
 var account_login = 0;
 var dismiss_intent = 1;
+var resign_open = 0;
 
 
 //document.getElementById('new_account').addEventListener('pointerdown', dismiss_helper, false);

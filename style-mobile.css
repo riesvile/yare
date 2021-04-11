@@ -67,14 +67,26 @@
 	z-index: 1000;
 }
 
+#update_switch_wrapper {
+	bottom: 20px;
+	left: 20px;
+	z-index: 2;
+}
+
+.update_switch_wrapper_real {
+	bottom: 20px !important;
+	left: 20px !important;
+}
+
+
 #update_code {
-	width: 212px;
-	height: 67px;
+	width: calc(100% - 104px);
+	height: 56px;
 	background-color: #2a2e4e;
-	line-height: 67px;
+	line-height: 55px;
 	position: fixed;
-	bottom: 28px;
-	left: 28px;
+	bottom: 20px;
+	left: 20px;
 	border-radius: 12px;
 	cursor: pointer;
 	display: block;
@@ -91,6 +103,34 @@
 	text-align: center;
 	display: block;
 	padding-top: 1px;
+}
+
+#switch_view {
+	width: 56px;
+	height: 56px;
+	line-height: 51px;
+	background-color: #2a2e4e;
+	border-radius: 12px;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	border: 2px solid rgba(6, 8, 10, 0);
+	box-sizing: border-box;
+}
+
+.switch_ico {
+	width: 52px;
+	display: block;
+	text-align: center;
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: 1px;
+}
+
+.switch_switched {
+	background-color: rgba(6, 8, 10, 0.89) !important;
+	border: 2px solid rgba(90, 98, 148, 1) !important;
+	
 }
 
 #get_in {
@@ -274,7 +314,7 @@ input[type=submit] {
 #panel {
 	width: 100%;
 	height: 100%;
-	background-color: #f00;
+	background-color: rgba(12, 10, 16, 0.96);
 }
 
 

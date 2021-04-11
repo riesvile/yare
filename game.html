@@ -64,11 +64,26 @@
   
   
   <div id="tutorial_infobox">
-	  
 		  <p class="info_h">Reference to your spirit (an object).</p>
 		  <p class="info_p">In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>
-	 
   </div>
+  
+  <div id="game_info_panel">
+	 <div id="game_info_panel_in">
+	  <div id="info_player1_shape"><span class="ico_circle"></span></div>
+	  <p id="info_player1_name">levmiseri</p>
+	  <div id="info_player2_shape"><span class="ico_circle"></span></div>
+	  <p id="info_player2_name">levmiseri</p>
+     </div>
+  </div>
+  
+  <div id="resign_game">
+	  <span class="resign_lbl" id="pre_resign_btn">Resign</span>
+	  <span class="resign_lbl" id="resign_btn">Yes, I resign</span>
+	  <span class="cancel_lbl" id="cancel_resign_btn">Cancel</span>
+	  <span class="you_sure_lbl">Are you sure?</span>
+  </div>
+  
   
   <div id="game_hover">
   	<span class="spirit_id">haha1 · <span class="lowlight">24</span></span>
@@ -80,6 +95,7 @@
   <div id="overlay_pre_start"></div>
   <div id="overlay_start"></div>
   <div id="grad_top"></div>
+  <div id="grad_bottom"></div>
   
   <div id="console" class="collapsed">
 	  <div id="console_head">
@@ -121,7 +137,7 @@
   <div id="update_switch_wrapper">
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
   <div id="shortcut_info">SHIFT + ENTER</div>
-  <div id="switch_view" class="mobile_only"><span class="switch_ico">aa</span></div>
+  <div id="switch_view" class="mobile_only"><span class="switch_ico">{ }</span></div>
   </div>
   
   
@@ -189,6 +205,52 @@
 		  editor.setValue(code_code, 1);
 	  }
 	  
+	  function taylor_UI(){
+		  console.log('pla1 = ' + pla1);
+		  var cookie_user = getCookie('user_id');
+		  
+		  if (view_set == 0){
+			  view_set = 1;
+			  
+			  if (pla1 == cookie_user){
+				  offsetX = 0;
+				  offsetY = 0;
+				  scale = 1;
+			  } else if (pla2 == cookie_user){
+				  offsetX = -2200;
+				  offsetY = -800;
+				  scale = 1;
+			  }
+		  }
+		  
+		 if (game_type == 'tutorial'){
+			 if (tutorial_phase > 1){
+				 tut_start();
+			 }
+		 } else {
+			 document.getElementById('game_info_panel').style.display = "block";
+			 document.getElementById('info_player1_name').innerHTML = pla1;
+			 document.getElementById('info_player2_name').innerHTML = pla2;
+			 document.getElementById('info_player1_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color1'] + "'></span>";
+			 document.getElementById('info_player2_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color2'] + "'></span>";
+			 
+			 if (pla1 == cookie_user || pla2 == getCookie('user_id')){
+				 user_role = 'player';
+				 document.getElementById('update_switch_wrapper').classList.add('update_switch_wrapper_real');
+				 document.getElementById('update_code').classList.add('update_code_real');
+				 document.getElementById('shortcut_info').classList.add('shortcut_info_real');
+			 } else {
+				 user_role = 'observer';
+				 document.getElementById('panel').style.display = "none";
+				 document.getElementById('console').style.display = "none";
+				 document.getElementById('overlay_start').style.display = "none";
+				 document.getElementById('update_switch_wrapper').style.display = "none";
+				 document.getElementById('logo').style.display = "block";
+				 document.getElementById('resign_game').style.display = "none";					 
+			 }
+		 }
+	  }
+	  
 	  
 	  var x = 0;
 	  var y = 0;
@@ -211,6 +273,7 @@
 	  var pla1_rating = 0;
 	  var pla2_rating = 0;
 	  
+	  var client_role = 'observer';
 	  var game_ended = 0;
 	  
 	  var game_type = '';
@@ -231,12 +294,16 @@
 	  var cnsl_length = 0;
 	  var cnsl_expanded = 0;
 	  
+	  var view_set = 0;
+	  var offsetX_adjust = 0;
+	  var offsetY_adjust = 0;
+	  
 	  
 	  var this_server = 't1';
 	  
 	  load_start();
 	  
-	  const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
+	  const socket = new WebSocket('wss://yare.io:443/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
 	  //function connectSocket(){
 		  
@@ -384,7 +451,13 @@
 					 update_console_height(console_content_height);	
 				 }
 				 
-				 
+				 //console.log('incoming.end');
+				 //console.log(incoming.end);
+				 if (incoming.end != 0 && incoming.end != undefined){
+					 //console.log('incoming.end');
+					 //console.log(incoming.end);
+				 	game_over(incoming.end)
+				 }
 				 
 				 
 				 
@@ -407,6 +480,7 @@
 				 }
 			 
 				 if (tut_helper_phase != tutorial_phase){
+					 taylor_UI();
 					 tut_helper_phase = tutorial_phase;
 					 var tut_wrap_edge = 0;
 				 
@@ -524,6 +598,7 @@
 			 
 				 if (incoming.tut == 1){
 					 game_type = 'tutorial';
+					 document.getElementById('resign_game').style.display = 'none';
 					 if (tutorial_started == 0){
 					 	document.getElementById('update_code').innerHTML = "<span>SEND CODE</span>";
 					 }
@@ -548,10 +623,11 @@
 				 pla2 = incoming.players[1];
 				 colors['color1'] = incoming.colors[0];
 				 colors['color2'] = incoming.colors[1];
-			 
-				 //console.log('playersrsrsr');
-				 //console.log(pla1);
-			 
+				 
+				 console.log(game_type);
+				 console.log(tutorial_phase);
+				 
+				 taylor_UI();
 			 
 			  } catch (e) {
 				  //console.log(e);
@@ -681,6 +757,14 @@
 		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  }
 	  
+	  function resign_game(){
+		  user_code = editor.getValue();
+		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id'), meta: 'resign'}));
+		  dont_resign();
+		  //var temp_winner = '';
+		  //game_over()
+	  }
+	  
 	  document.getElementById('update_code').addEventListener("click",function(e){
 		  update_code();
 	  },false);
@@ -807,6 +891,14 @@
 	  
 	  document.getElementById('send_intro').addEventListener('mouseenter', highlight_update_btn, false);
 	  document.getElementById('send_intro').addEventListener('mouseleave', nolight_update_btn, false);
+	  
+	  
+	  document.getElementById('pre_resign_btn').addEventListener('click', pre_resign, false);
+	  document.getElementById('cancel_resign_btn').addEventListener('click', dont_resign, false);
+	  document.getElementById('resign_btn').addEventListener('click', resign_game, false);
+	  
+	  
+	  document.getElementById('switch_view').addEventListener('click', game_switch_view, false);
 	  
 	  
   </script>

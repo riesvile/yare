@@ -14,6 +14,110 @@ function getNewRating(playerRating, opponentRating, playerResult) {
 
 //
 
+function end_game(was_p1 = 0, was_p2 = 0){
+	game_finished = 1;
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	console.log('GAME OVER');
+	
+	
+	
+	var p1won = was_p1;
+	var p2won = was_p2;
+	var gameWinner = '';
+	var winnerRating = 0;
+	var newWinnerRating = 0;
+	var gameLoser = '';
+	var loserRating = 0;
+	var newLoserRating = 0;
+	
+	if (p2won == 1){
+		gameWinner = players['p2'];
+	} else {
+		gameWinner = players['p1'];
+	}
+	
+	//to handle client
+	end_winner = gameWinner
+	
+    Game.find({game_id: workerData[0]})
+	  	.then((result) => {
+			if (p2won == 1){
+				gameWinner = players['p2'];
+				winnerRating = result[0]['p2_rating'];
+				gameLoser = players['p1'];
+				loserRating = result[0]['p1_rating'];
+			
+				newWinnerRating = getNewRating(winnerRating, loserRating, 1);
+				newLoserRating = getNewRating(loserRating, winnerRating, 0);
+				console.log('newWinnerRating');
+				console.log(newWinnerRating);
+				console.log('newLoserRating');
+				console.log(newLoserRating);
+			} else {
+				gameWinner = players['p1'];
+				winnerRating = result[0]['p1_rating'];
+				gameLoser = players['p2'];
+				loserRating = result[0]['p2_rating'];
+			
+				newWinnerRating = getNewRating(winnerRating, loserRating, 1);
+				newLoserRating = getNewRating(loserRating, winnerRating, 0);
+				console.log('newWinnerRating');
+				console.log(newWinnerRating);
+				console.log('newLoserRating');
+				console.log(newLoserRating);
+			}
+		
+			console.log('result');
+			if (result[0]['ranked'] == 0) {
+				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true})
+					.then((qq) => {
+						console.log('winner updated to ' + gameWinner);
+						setTimeout(function(){
+							process.exit(0);
+						}, 1000);
+					});	
+			} else if (result[0]['ranked'] == 1){
+			
+				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true})
+					.then((qq) => {
+						console.log('winner updated to ' + gameWinner);
+						User.updateOne({user_id: gameWinner}, {rating: newWinnerRating}, {upsert: true})
+							.then((qq) => {
+								console.log('winner rating updated');
+								User.updateOne({user_id: gameLoser}, {rating: newLoserRating}, {upsert: true})
+									.then((qq) => {
+										console.log('loser rating updated');
+										setTimeout(function(){
+											process.exit(0);
+										}, 1000);
+									});	
+							});	
+					});	
+			}
+		
+		})
+  		.catch((error) => {
+  			console.log(error);
+			setTimeout(function(){
+				process.exit(0);
+			}, 3000);
+			//process.exit(0);
+  		}) 
+	
+}
+
 
 
 
@@ -86,6 +190,10 @@ parentPort.on("message", message => {
 	  if (message.pl_num == "player1"){
 		  if (message.session_id == player1_session || message.pl_id == 'anonymous'){
 		  	player1_code = message.pl_code;
+			if (message.resigning == 1){
+				console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
+				end_game(0, 1);
+			}
 		  } else {
 		  	User.find({user_id: message.pl_id})
 		  		.then((result) => {
@@ -96,6 +204,10 @@ parentPort.on("message", message => {
 		  				//all good, update session id and prolong expiration date
 		  				player1_session = message.session_id;
 						player1_code = message.pl_code;
+						if (message.resigning == 1){
+							console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
+							end_game(0, 1);
+						}
 		  			} else {
 		  				parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
 		  			}
@@ -108,6 +220,10 @@ parentPort.on("message", message => {
 	  } else if (message.pl_num == "player2"){
 		  if (message.session_id == player2_session){
 		  	player2_code = message.pl_code;
+			if (message.resigning == 1){
+				console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
+				end_game(1, 0);
+			}
 		  } else {
 		  	User.find({user_id: message.pl_id})
 		  		.then((result) => {
@@ -118,6 +234,10 @@ parentPort.on("message", message => {
 		  				//all good, update session id and prolong expiration date
 		  				player2_session = message.session_id;
 						player2_code = message.pl_code;
+						if (message.resigning == 1){
+							console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
+							end_game(1, 0);
+						}
 		  			} else {
 		  				parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
 		  			}
@@ -200,7 +320,7 @@ parentPort.on("message", message => {
 					memory['atck'] = 0; 
 				}
 
-				if (my_spirits.length >= 18 && memory['phase'] != 1){
+				if (my_spirits.length >= 600 && memory['phase'] != 1){
 				    if (memory['phase'] == undefined || memory['phase'] == ''){
 				        memory['phase'] = 1;
 				    }
@@ -379,6 +499,7 @@ var p1_defend = 0;
 var p2_defend = 0;
 
 var temp_flag = 0;
+var end_winner = 0;
 
 //tutorial
 if (workerData[1] == 'tutorial'){
@@ -1258,7 +1379,8 @@ if (!isMainThread){
 					'error_msg1': [],
 					'error_msg2': [],
 					'console1': [],
-					'console2': []
+					'console2': [],
+					'end': end_winner
 				}
 			}
 			
@@ -1691,34 +1813,16 @@ if (!isMainThread){
 				energize_apply[i][0].energy += energize_apply[i][1];
 			}
 			
+			
+			
 			for (i = (e_applies - 1); i >= 0; i--){
 				if (energize_apply[i][0].energy < 0){
 					death_queue.push(energize_apply[i][0]);
 					if (energize_apply[i][0].structure_type == 'base' && game_finished != 1){
 						game_finished = 1;
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
-						console.log('GAME OVER');
 						console.log(energize_apply[i][0].player_id + ' lost');
 						var p1won = 0;
 						var p2won = 0;
-						var gameWinner = '';
-						var winnerRating = 0;
-						var newWinnerRating = 0;
-						var gameLoser = '';
-						var loserRating = 0;
-						var newLoserRating = 0;
 						
 						if (energize_apply[i][0].player_id == players['p1']){
 							p2won = 1;
@@ -1726,65 +1830,7 @@ if (!isMainThread){
 							p1won = 1;
 						}
 						
-						
-					    Game.find({game_id: workerData[0]})
-						  	.then((result) => {
-								if (p2won == 1){
-									gameWinner = players['p2'];
-									winnerRating = result[0]['p2_rating'];
-									gameLoser = players['p1'];
-									loserRating = result[0]['p1_rating'];
-									
-									newWinnerRating = getNewRating(winnerRating, loserRating, 1);
-									newLoserRating = getNewRating(loserRating, winnerRating, 0);
-									console.log('newWinnerRating');
-									console.log(newWinnerRating);
-									console.log('newLoserRating');
-									console.log(newLoserRating);
-								} else {
-									gameWinner = players['p1'];
-									winnerRating = result[0]['p1_rating'];
-									gameLoser = players['p2'];
-									loserRating = result[0]['p2_rating'];
-									
-									newWinnerRating = getNewRating(winnerRating, loserRating, 1);
-									newLoserRating = getNewRating(loserRating, winnerRating, 0);
-									console.log('newWinnerRating');
-									console.log(newWinnerRating);
-									console.log('newLoserRating');
-									console.log(newLoserRating);
-								}
-								
-								console.log('result');
-								if (result[0]['ranked'] == 0) {
-									Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true})
-										.then((qq) => {
-											console.log('winner updated to ' + gameWinner);
-											process.exit(0);
-										});	
-								} else if (result[0]['ranked'] == 1){
-									
-									Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true})
-										.then((qq) => {
-											console.log('winner updated to ' + gameWinner);
-											User.updateOne({user_id: gameWinner}, {rating: newWinnerRating}, {upsert: true})
-												.then((qq) => {
-													console.log('winner rating updated');
-													User.updateOne({user_id: gameLoser}, {rating: newLoserRating}, {upsert: true})
-														.then((qq) => {
-															console.log('loser rating updated');
-															process.exit(0);
-														});	
-												});	
-										});	
-								}
-								
-							})
-					  		.catch((error) => {
-					  			console.log(error);
-								//process.exit(0);
-					  		}) 
-						
+						end_game(p1won, p2won);
 						
 					}
 				}
@@ -1917,7 +1963,8 @@ if (!isMainThread){
 			
 			
 			
-		
+			if (log1.length > 30) log1.length = 30;
+			if (log2.length > 30) log2.length = 30;
 		
 			//errors
 			render_data2.error_msg1 = user_error1;
@@ -2106,16 +2153,16 @@ if (!isMainThread){
 		// -- //
 	
 	
-		global['base_' + players['p1']] = new Base('base_' + players['p1'], [1500, 600], players['p1'], colors['player1']);
-		global['base_' + players['p2']] = new Base('base_' + players['p2'], [2300, 1400], players['p2'], colors['player2']);
+		global['base_' + players['p1']] = new Base('base_' + players['p1'], [1600, 700], players['p1'], colors['player1']);
+		global['base_' + players['p2']] = new Base('base_' + players['p2'], [2800, 1700], players['p2'], colors['player2']);
 	
 		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 	
-		star_zxq = new Star('star_zxq', [900, 800]);
+		star_zxq = new Star('star_zxq', [1000, 1000]);
 		star_lookup['star_zxq'] = star_zxq;
 	
-		star_a1c = new Star('star_a1c', [2900, 1200]);
+		star_a1c = new Star('star_a1c', [3400, 1400]);
 		star_lookup['star_a1c'] = star_a1c;
 		
 		

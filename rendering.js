@@ -388,7 +388,6 @@ c_base.scale (1, 1);
 base_canvas.onwheel = zoom;
 //c.translate(800, 900);
 
-
 var offsetX = 0;
 var offsetY = 0;
 var scale = 1;
@@ -733,9 +732,15 @@ class Spirit {
 			var color_parts = this.color.match(/[.?\d]+/g);
 			var spirit_percent_energy = this.energy / this.energy_capacity;
 			var drawing_size = this.size / 2;
-			var gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 20);
-			gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] * spirit_percent_energy) / 20 + ')');
-			gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
+			var gradient = this.color;
+			try {
+				gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 20);
+				gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] * spirit_percent_energy) / 20 + ')');
+				gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
+			} catch (e) {
+				console.log(e);
+			}
+			
 		
 			if (this.size <= 0.1){
 				drawing_size = 0;
@@ -943,10 +948,16 @@ function draw_death(id, size, color){
 function draw_energize(origin, target, energy_strength, color){
 	var color_parts = color.match(/[.?\d]+/g);
 	//console.log(Number(color_parts[0]) + 50)
-	var grad = c.createLinearGradient(Math.round(origin[0]), Math.round(origin[1]), Math.round(target[0]), Math.round(target[1]));
-	grad.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
-	grad.addColorStop(0.06, 'rgba(' + (Number(color_parts[0]) + 80) + ', ' + (Number(color_parts[1]) + 50) + ', ' + (Number(color_parts[2]) + 50) + ', ' + color_parts[3] + ')');
-	grad.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
+	try {
+		var grad = c.createLinearGradient(Math.round(origin[0]), Math.round(origin[1]), Math.round(target[0]), Math.round(target[1]));
+		grad.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
+		grad.addColorStop(0.06, 'rgba(' + (Number(color_parts[0]) + 80) + ', ' + (Number(color_parts[1]) + 50) + ', ' + (Number(color_parts[2]) + 50) + ', ' + color_parts[3] + ')');
+		grad.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
+	} catch (e) {
+		console.log(e);
+		console.log(origin, target);
+	}
+	
 	//var incX = (target[0] - origin[0]) / 200;
 	//var incY = (target[1] - origin[1]) / 200;
 	

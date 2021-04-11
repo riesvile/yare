@@ -693,6 +693,8 @@ app.post('/session', (req, res) => {
     console.log(req.body.user_name);
     console.log(req.body.password);
 	
+	console.log('session was called !!!!!!!');
+	
 	User.find({user_id: req.body.user_id})
 		.then((result) => {
 			//res.send(result);
@@ -1435,10 +1437,10 @@ function start_world(game_id){
 	}
 }
 
-function send_code(ws, pl_num, pl_id, pl_code, game_id, session_id){
+function send_code(ws, pl_num, pl_id, pl_code, game_id, session_id, resign_state){
 	console.log('sending code');
 	console.log('session_id = ' + session_id);
-	workers[game_id].postMessage({client: ws, data: "player code", pl_num: pl_num, pl_id: pl_id, pl_code: pl_code, session_id: session_id});
+	workers[game_id].postMessage({client: ws, data: "player code", pl_num: pl_num, pl_id: pl_id, pl_code: pl_code, session_id: session_id, resigning: resign_state});
 }
 
 
@@ -1457,6 +1459,8 @@ wss.broadcast = function broadcast(data, game_id) {
 wss.on('connection', function connection(ws, req) {
 	console.log('new client connected');
 	var g_id = /[^/]*$/.exec(req.url)[0];
+	var resigning1 = 0;
+	var resigning2 = 0;
 	console.log(g_id); 
 	ws.game_id = g_id;
 	//cookie session?
@@ -1476,8 +1480,17 @@ wss.on('connection', function connection(ws, req) {
 			initiate_world(ws.client_id, g_id);
 		} else {
 			message = JSON.parse(message);
-			console.log('message');
-	    	console.log('received: %s', message);
+			if (message.meta == "resign"){
+				console.log(message.u_id + ' is resigning');
+				if (message['u_id'] == active_games[g_id][1]) resigning1 = 1;
+				if (message['u_id'] == active_games[g_id][2]) resigning2 = 1;
+			} else {
+				console.log('message');
+		    	console.log('received: %s', message);
+				resigning1 = 0;
+				resigning2 = 0;
+			}
+			
 		}
 		connections[ws.client_id] = ws;
 		//player1_code = message;
@@ -1528,7 +1541,7 @@ wss.on('connection', function connection(ws, req) {
 				global['star_a1c'] = stars['star_a1c'];
 				
 				` + message['u_code'];
-				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id']);
+				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
 			} else if (message['u_id'] == active_games[g_id][2]){
 				//code_temps['player2'] = message['u_code'];
 				//code_temps['player2_session'] = message['session_id'];
@@ -1564,7 +1577,7 @@ wss.on('connection', function connection(ws, req) {
 				global['star_a1c'] = stars['star_a1c'];
 				
 				` + message['u_code'];
-				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id']);
+				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
 			}
 		} catch (error) {
 		  //console.error(error);
