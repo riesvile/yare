@@ -109,8 +109,11 @@ function pinchMove(e){
 	    e.touches[0].pageY - e.touches[1].pageY) - dist_init
 		
 		document.getElementById('logo').innerHTML = dist;
-	//scale = prevScale + dist / 1000;
-	//multiplier = 1 / scale;
+	scale = prevScale + (dist / 1000);
+	scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
+	multiplier = 1 / scale;
+	
+	zoomUpdate();
 }
 
 
@@ -124,7 +127,7 @@ function onPointerDown(e){
 		    pinchStart(e);
 		}
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 	
 	//console.log(e);
@@ -193,8 +196,8 @@ function onPointerMove(e){
 			//console.log(x + " / " + y);
 		
 		
-			pointer_offsetX = x - pointer_originX;
-			pointer_offsetY = y - pointer_originY;
+			pointer_offsetX = (x - pointer_originX) * multiplier;
+			pointer_offsetY = (y - pointer_originY) * multiplier;
 		
 			offsetX = pointer_offsetX + current_offsetX;
 			offsetY = pointer_offsetY + current_offsetY;
@@ -227,6 +230,7 @@ function onPointerUp(e){
 	mousey = 0;
 	panning = 0;
 	disableSelection = 0;
+	offsetUpdate();
 }
 
 function getMousePos(e) {

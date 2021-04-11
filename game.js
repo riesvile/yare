@@ -1443,10 +1443,10 @@ if (!isMainThread){
 					try {
 						//console.log('tutorial, star position');
 						//console.log(move_queue[0][2]);
-						if (move_queue[0][2][0] == 900 && move_queue[0][2][1] == 800){
+						if (move_queue[0][2][0] == 1000 && move_queue[0][2][1] == 1000){
 							console.log('tutorial phase 1 done');
 							tutorial_phase[0] = 1;
-						} else if (move_queue[0][2][0] == 1500 && move_queue[0][2][1] == 600){
+						} else if (move_queue[0][2][0] == 1600 && move_queue[0][2][1] == 700){
 							console.log('tutorial phase 3 done');
 							tutorial_phase[2] = 1;
 						}

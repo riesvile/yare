@@ -317,6 +317,10 @@ input[type=submit] {
 	background-color: rgba(12, 10, 16, 0.96);
 }
 
+#grad_bottom {
+	display: block;
+}
+
 
 /* ----- Tutorial ----- */
 

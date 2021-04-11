@@ -511,6 +511,7 @@ input[type=submit] {
 	bottom: 0;
 	z-index: 1;
 	background: linear-gradient(180deg, rgba(6,8,10,0) 0%, rgba(6,8,10,1) 100%);
+	display: none;
 }
 
 
