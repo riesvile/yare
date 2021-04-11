@@ -106,7 +106,7 @@ function pinchMove(e){
 		
 	prevScale = scale;
 	scale = prevScale + dist / 1000;
-	multiplier = -1 * (prevScale + dist / 1000);
+	multiplier = 1 / scale;
 }
 
 
@@ -124,41 +124,42 @@ function onPointerDown(e){
 	}
 	
 	//console.log(e);
-	console.log(scaling);
+	if (scaling != true){
+		var el_id = (e.target || e.srcElement).id;
+		//console.log('down id= ' + el_id);
 	
-	var el_id = (e.target || e.srcElement).id;
-	//console.log('down id= ' + el_id);
-	
-	//console.log(el_id);
-	if (el_id != 'base_canvas'){
-		return;
-	} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
-		//console.log('thissisis');
-		disableSelection = 0;
-	} else {
-		disableSelection = 1;
-	}
-	
-	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
-	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
-	    var touch = evt.touches[0] || evt.changedTouches[0];
-	    x = touch.pageX;
-	    y = touch.pageY;
-		mousey = 1;
-	} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
-	    x = e.clientX;
-	    y = e.clientY;
-		if (e.which === 1){
-			mousey = 1;
+		//console.log(el_id);
+		if (el_id != 'base_canvas'){
+			return;
+		} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
+			//console.log('thissisis');
+			disableSelection = 0;
+		} else {
+			disableSelection = 1;
 		}
+	
+		if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+		    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+		    var touch = evt.touches[0] || evt.changedTouches[0];
+		    x = touch.pageX;
+		    y = touch.pageY;
+			mousey = 1;
+		} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
+		    x = e.clientX;
+		    y = e.clientY;
+			if (e.which === 1){
+				mousey = 1;
+			}
+		}
+	
+		hide_hover();
+		//console.log('mouse down');
+		pointer_originX = x;
+		pointer_originY = y;
+		current_offsetX = offsetX;
+		current_offsetY = offsetY;
 	}
 	
-	hide_hover();
-	//console.log('mouse down');
-	pointer_originX = x;
-	pointer_originY = y;
-	current_offsetX = offsetX;
-	current_offsetY = offsetY;
 }
 
 function onPointerMove(e){
@@ -166,48 +167,50 @@ function onPointerMove(e){
 	
 	if (scaling) {
 	    pinchMove(e);
+	} else {
+		if (e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+		    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+		    var touch = evt.touches[0] || evt.changedTouches[0];
+		    x = touch.pageX;
+		    y = touch.pageY;
+		} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
+		    x = e.clientX;
+		    y = e.clientY;
+		}
+	
+		if (disableSelection == 1){
+			e.preventDefault();
+		}
+	
+	
+		if (mousey == 1){
+			console.log('mouse moving');
+			panning = 1;
+			//console.log(x + " / " + y);
+		
+		
+			pointer_offsetX = x - pointer_originX;
+			pointer_offsetY = y - pointer_originY;
+		
+			offsetX = pointer_offsetX + current_offsetX;
+			offsetY = pointer_offsetY + current_offsetY;
+			//offsetUpdate();
+		} else {
+			board_x = x*multiplier - offsetX;
+			board_y = y*multiplier - offsetY;
+			//console.log('x = ' + board_x);
+			//console.log('y = ' + board_y);
+		
+			pointing_at_x = x;
+			pointing_at_y = y;
+		
+			fill_hover_thing(x, y, board_x, board_y);
+		
+		
+		}
 	}
 	//console.log(disableSelection);
-	if (e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
-	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
-	    var touch = evt.touches[0] || evt.changedTouches[0];
-	    x = touch.pageX;
-	    y = touch.pageY;
-	} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
-	    x = e.clientX;
-	    y = e.clientY;
-	}
 	
-	if (disableSelection == 1){
-		e.preventDefault();
-	}
-	
-	
-	if (mousey == 1){
-		console.log('mouse moving');
-		panning = 1;
-		//console.log(x + " / " + y);
-		
-		
-		pointer_offsetX = x - pointer_originX;
-		pointer_offsetY = y - pointer_originY;
-		
-		offsetX = pointer_offsetX + current_offsetX;
-		offsetY = pointer_offsetY + current_offsetY;
-		//offsetUpdate();
-	} else {
-		board_x = x*multiplier - offsetX;
-		board_y = y*multiplier - offsetY;
-		//console.log('x = ' + board_x);
-		//console.log('y = ' + board_y);
-		
-		pointing_at_x = x;
-		pointing_at_y = y;
-		
-		fill_hover_thing(x, y, board_x, board_y);
-		
-		
-	}
 }
 
 function onPointerUp(e){ 
@@ -288,7 +291,7 @@ function zoom(event) {
   event.preventDefault();
   prevScale = scale;
   scale += event.deltaY * -0.005;
-  multiplier += event.deltaY * 0.005;
+  //multiplier += event.deltaY * 0.005;
 
   // Restrict scale
   scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
