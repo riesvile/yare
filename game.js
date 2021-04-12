@@ -2098,7 +2098,7 @@ if (!isMainThread){
 		
 		// --- if tutorial --- //
 		
-		 ///*
+		 /*
 
 		for (s = 1; s < 2; s++){
 			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 5, 0, players['p1'], colors['player1'], 100);
@@ -2112,7 +2112,7 @@ if (!isMainThread){
 			top_q = q;
 		}
 		
-		 //*/
+		 */
 		
 		// -- //
 		
@@ -2120,7 +2120,7 @@ if (!isMainThread){
 		
 		// --- if real --- //
 		
-		 /*
+		// /*
 		
 		var start_num_spirits = 5;
 		for (s = 1; s < 1+start_num_spirits ; s++){
@@ -2148,7 +2148,7 @@ if (!isMainThread){
 			}
 		}
 		
-		 */
+		// */
 		
 		// -- //
 	
