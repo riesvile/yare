@@ -222,16 +222,11 @@ h1#logo {
 
 #new_account_wrap, #login_wrap {
 	color: rgba(242, 246, 250, 0.55);
-	font-size: 14px;
-	position: absolute;
-	top: 60px;
-	z-index: 20000;
-	opacity: 0;
-	display: none;
+	margin-left: 20px;
 }
 
 #new_account_wrap p {
-	width: 380px;
+	width: calc(100vw - 40px);
 	line-height: 26px;
 	font-size: 14px;
 	font-weight: 500;
@@ -255,7 +250,7 @@ h1#logo {
 	border-radius: 8px;
 	background-color: rgba(52, 49, 60, 0.55);
 	color: rgba(242, 246, 250, 0.89);
-	width: 400px;
+	width: calc(100vw - 68px);
 	display: block;
 	margin-bottom: 12px;
 }
@@ -320,6 +315,45 @@ input[type=submit] {
 #grad_bottom {
 	display: block;
 }
+
+
+/* ----- Game over ----- */
+
+#game_over_block, #game_status_block {
+	width: calc(100vw - 48px);
+}
+
+.game_table {
+	width: calc(100vw - 68px);
+}
+
+#game_result {
+	font-size: 32px;
+	font-weight: 600;
+	margin-bottom: 20px;
+}
+
+#tutorial_over, #over_message {
+	width: 520px;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 32px;
+	color: rgba(242, 246, 250, 0.69);
+	margin-bottom: 20px;
+}
+
+#over_message {
+	font-size: 18px;
+	width: calc(100vw - 68px);
+	
+}
+
+.player_delta {
+	right: -48px;
+}
+
+
+/* ----- */
 
 
 /* ----- Tutorial ----- */
@@ -655,7 +689,79 @@ span#hub_logout:hover {
 
 /* ----- */
 
+/* -- Documentation -- */
 
+#doc_sections {
+	display: none;
+}
+
+#doc_content {
+	overflow-x: hidden;
+}
+
+#doc_content section {
+	padding-top: 16vh;
+}
+
+.h_sec_head {
+	font-size: 36px;
+	margin-bottom: 24px;
+}
+
+.p_sec_intro {
+	clear: both;
+	width: calc(100% - 24px);
+	margin-left: 0;
+	transform: none;
+}
+
+.sep_medium {
+	height: 30px;
+}
+
+
+.side_side {
+	width: calc(100% - 56px);
+	clear: both;
+	margin-bottom: 12px;
+}
+
+.side_adj {
+	margin-left: 0;
+}
+
+p.p_normal {
+	max-width: 100% !important;
+}
+
+p.p_somewhat_important {
+	max-width: 100% !important;
+	font-size: 16px;
+	line-height: 28px;
+}
+
+.shapo {
+	display: none;
+}
+
+.row_in_doc_head span.table_doc_method {
+    width: 24%;
+}
+
+.table_doc_method {
+	width: 24%;
+}
+
+.table_doc_argument {
+	width: 36%;
+	display: none;
+}
+
+.g_con {
+	margin-left: 16px;
+}
+
+/* -- */
 
 
 

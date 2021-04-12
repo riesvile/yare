@@ -101,6 +101,11 @@ function pinchStart(e){
 	dist_init = Math.hypot(
 	    e.touches[0].pageX - e.touches[1].pageX,
 	    e.touches[0].pageY - e.touches[1].pageY);
+		
+	prev_offsetX = offsetX;
+	prev_offsetY = offsetY;
+	xxx = (e.touches[0].clientX + e.touches[1].pageX) / 2;
+	yyy = (e.touches[0].pageY + e.touches[1].pageY) / 2;
 }
 
 function pinchMove(e){
@@ -108,10 +113,13 @@ function pinchMove(e){
 	    e.touches[0].pageX - e.touches[1].pageX,
 	    e.touches[0].pageY - e.touches[1].pageY) - dist_init
 		
-		document.getElementById('logo').innerHTML = dist;
 	scale = prevScale + (dist / 1000);
 	scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
 	multiplier = 1 / scale;
+	
+    offsetX = prev_offsetX + (xxx * 1/scale) - (xxx * 1/prevScale);
+    offsetY = prev_offsetY + (yyy * 1/scale) - (yyy * 1/prevScale);
+	
 	
 	zoomUpdate();
 }
@@ -370,6 +378,10 @@ document.addEventListener("mouseup", onPointerUp, false);
 var scaling = false;
 var prevScale = 1;
 var dist_init = 0;
+var prev_offsetX = 0;
+var prev_offsetY = 0;
+var xxx = 0;
+var yyy = 0;
 
 //var canvasTouch = document.getElementById("base_canvas");
 //canvasTouch.addEventListener("ontouchstart")

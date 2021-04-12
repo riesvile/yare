@@ -3,6 +3,10 @@
 	margin: 0;
 }
 
+:root {
+  touch-action: auto;
+}
+
 section {
 	position: relative;
 }

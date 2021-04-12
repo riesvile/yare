@@ -3,27 +3,52 @@ function dismissals(){
 		dismiss_intent = 1;
 		return;
 	}
-	if (account_creation == 1){
-		anime({
-			targets: '#new_account_wrap',
-			translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
-			translateY: [20, 0],
-			opacity: [1, 0],
-			easing: 'easeOutQuad',
-			duration: 200
-		});
-		account_creation = 0;
-	} else if (account_login == 1){
-		anime({
-			targets: '#login_wrap',
-			translateX: [login_pos.right - 440, login_pos.right - 440],
-			translateY: [20, 0],
-			opacity: [1, 0],
-			easing: 'easeOutQuad',
-			duration: 200
-		});
-		account_login = 0;
+	
+	if (window.screen.availWidth < 700){
+		if (account_creation == 1){
+			anime({
+				targets: '#new_account_wrap',
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_creation = 0;
+		} else if (account_login == 1){
+			anime({
+				targets: '#login_wrap',
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_login = 0;
+		}
+	} else {
+		if (account_creation == 1){
+			anime({
+				targets: '#new_account_wrap',
+				translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_creation = 0;
+		} else if (account_login == 1){
+			anime({
+				targets: '#login_wrap',
+				translateX: [login_pos.right - 440, login_pos.right - 440],
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_login = 0;
+		}
 	}
+	
+	
 	
 	anime({
 		targets: '#profile_links',
@@ -81,14 +106,25 @@ function new_account(){
 	account_creation = 1;
 	document.getElementById('new_account_wrap').style.display = 'block';
 	document.getElementById('new_account_wrap').style.pointerEvents = 'auto';
-	anime({
-		targets: '#new_account_wrap',
-		translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
-		translateY: [0, 20],
-		opacity: [0, 1],
-		easing: 'easeOutQuad',
-		duration: 300
-	});
+	
+	if (window.screen.availWidth < 700){
+		anime({
+			targets: '#new_account_wrap',
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	} else {
+		anime({
+			targets: '#new_account_wrap',
+			translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	}
 	
 	anime({
 		targets: '#overlay',
@@ -97,6 +133,9 @@ function new_account(){
 		easing: 'easeOutQuad',
 		duration: 300
 	});
+	
+	
+	
 	
 	document.getElementById("new_user_name").focus();
 	document.getElementById('overlay').style.pointerEvents = 'auto';
@@ -106,14 +145,25 @@ function login(){
 	account_login = 1;
 	document.getElementById('login_wrap').style.display = 'block';
 	document.getElementById('login_wrap').style.pointerEvents = 'auto';
-	anime({
-		targets: '#login_wrap',
-		translateX: [login_pos.right - 440, login_pos.right - 440],
-		translateY: [0, 20],
-		opacity: [0, 1],
-		easing: 'easeOutQuad',
-		duration: 300
-	});
+	
+	if (window.screen.availWidth < 700){
+		anime({
+			targets: '#login_wrap',
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	} else {
+		anime({
+			targets: '#login_wrap',
+			translateX: [login_pos.right - 440, login_pos.right - 440],
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	}
 	
 	anime({
 		targets: '#overlay',
@@ -122,6 +172,8 @@ function login(){
 		easing: 'easeOutQuad',
 		duration: 300
 	});
+	
+	
 	
 	document.getElementById("user_name").focus();
 	document.getElementById('overlay').style.pointerEvents = 'auto';

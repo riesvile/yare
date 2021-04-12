@@ -5,7 +5,8 @@
 
 :root {
   touch-action: pan-x pan-y;
-  height: 100% 
+  height: 100%;
+  width: 100%;
 }
 
 .mobile_only {
@@ -20,6 +21,8 @@ body {
 	background-color: #06080a;
 	font-family: 'Montserrat', sans-serif;
 	color: #fff;
+	overscroll-behavior-y: contain;
+	overscroll-behavior-x: contain;
 }
 
 canvas#main_canvas, canvas#base_canvas {
