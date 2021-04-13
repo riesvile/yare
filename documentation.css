@@ -461,6 +461,7 @@ table.info_table td {
 	background-color: #007;
 	margin-bottom: 100px;
 	position: relative;
+	display: none;
 }
 
 #trailer_placeholder span {
@@ -518,6 +519,16 @@ table.info_table td {
 }
 
 
+
+#early_access {
+	font-size: 16px;
+	font-weight: 500;
+	padding: 24px 20px;
+	background-color: rgba(108, 98, 148, 0.39);
+	display: inline-block;
+	border-radius: 12px;
+	color: #DFD8FB;
+}
 
 
 

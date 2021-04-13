@@ -38,6 +38,11 @@
 		margin-left: 5%;
 	}
 	
+	#newgame_wrap {
+		width: 80%;
+		margin-left: 10%;
+	}
+	
 }
 
 
@@ -635,7 +640,7 @@ span#hub_logout:hover {
 /* leaderboard */
 
 .t_leaderboard {
-	top: 60vh;
+	top: 44vh;
 }
 
 .lb_row {
@@ -762,6 +767,11 @@ p.p_somewhat_important {
 }
 
 /* -- */
+
+h1.page_head {
+	margin-left: 24px;
+	margin-top: 16vh;
+}
 
 
 

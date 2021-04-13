@@ -62,6 +62,7 @@ function dismissals(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0)',
 		backdropFilter: 'blur(0px)',
+		"-webkit-backdrop-filter": 'blur(0px)',
 		easing: 'easeOutQuad',
 		duration: 200
 	});
@@ -95,6 +96,7 @@ function game_over_box(){
 		targets: '#game_over_overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 900
 	});
@@ -130,6 +132,7 @@ function new_account(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 300
 	});
@@ -169,6 +172,7 @@ function login(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 300
 	});
@@ -342,6 +346,8 @@ function login_success(user_name){
 	  //console.error(error);
 	}
 	
+	//document.getElementById('input').blur();
+	
 }
 
 function wait_server(){
@@ -425,6 +431,7 @@ function user_links(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 300
 	});
@@ -546,6 +553,7 @@ function pre_resign(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 200
 	});
@@ -603,6 +611,7 @@ function dont_resign(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0)',
 		backdropFilter: 'blur(0px)',
+		"-webkit-backdrop-filter": 'blur(0px)',
 		easing: 'easeOutQuad',
 		duration: 200
 	});

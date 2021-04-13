@@ -252,6 +252,7 @@ input:focus {
 	color: rgba(234, 133, 133, 0.69);
 	cursor: pointer;
 	z-index: 99999;
+	display: none;
 }
 
 #pre_resign_btn:hover, #resign_btn:hover {
@@ -1311,6 +1312,43 @@ h1#pnf {
 
 
 
+
+
+
+
+#wait_container {
+	width: 100vw;
+	height: 100vh;
+}
+
+#tr_loader {
+	width: 100px;
+	height: 100px;
+	background: url(./asset/tr-loader.gif);
+	background-size: cover;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#load_para {
+	position: absolute;
+	top: calc(50% + 200px);
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.2);
+}
+
+#index_intro {
+	position: absolute;
+	top: calc(50% + 200px);
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.01);
+}
 
 .g_con {
 	display: block;

@@ -429,30 +429,42 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
+		try {
+			var regex = /\((.*):(\d+):(\d+)\)$/;
+			var eline_temp = error.stack.split("\n");
+			var eline = eline_temp[1].match(/\d+/)[0];
+			console.log(eline_temp[1].match(/\d+/)[0]);
+			//var line = match[1];
+			//console.log(error.stack);
+			fill_error(players['p1'], error.message + " | line " + (eline - 37));
+			//console.error(error);
+		} catch (e) {
+			console.log(error);
+			console.log(e);
+			fill_error(players['p1'], "Something went wrong. Probably a Syntax Error.");
+		}
 		
-		var regex = /\((.*):(\d+):(\d+)\)$/;
-		var eline_temp = error.stack.split("\n");
-		var eline = eline_temp[1].match(/\d+/)[0];
-		console.log(eline_temp[1].match(/\d+/)[0]);
-		//var line = match[1];
-		//console.log(error.stack);
-		fill_error(players['p1'], error.message + " | line " + (eline - 37));
-		//console.error(error);
 	}
 	
 	try {
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
+		try {
+			var regex = /\((.*):(\d+):(\d+)\)$/;
+			var eline_temp = error.stack.split("\n");
+			var eline = eline_temp[1].match(/\d+/)[0];
+			console.log(eline_temp[1].match(/\d+/)[0]);
+			//var line = match[1];
+			//console.log(error.stack);
+			fill_error(players['p2'], error.message + " | line " + (eline - 31));
+			//console.error(error);
+		} catch (e) {
+			console.log(error);
+			console.log(e);
+			fill_error(players['p2'], "Something went wrong. Probably a Syntax Error.");
+		}
 		
-		var regex = /\((.*):(\d+):(\d+)\)$/;
-		var eline_temp = error.stack.split("\n");
-		var eline = eline_temp[1].match(/\d+/)[0];
-		console.log(eline_temp[1].match(/\d+/)[0]);
-		//var line = match[1];
-		//console.log(error.stack);
-		fill_error(players['p2'], error.message + " | line " + (eline - 31));
-		//console.error(error);
 	}
 	
 	
@@ -1396,9 +1408,9 @@ if (!isMainThread){
 				} else {
 					if (p1_defend != 1){
 						top_s++;
-						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1450, 600], 1, 10, players['p1'], colors['player1'], spirit_p1_cost);
+						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 1, 10, players['p1'], colors['player1'], spirit_p1_cost);
 						base_lookup['base_' + players['p1']].energy -= spirit_p1_cost;
-						global[players['p1'] + top_s].move([1430, 600]);
+						//global[players['p1'] + top_s].move([1600, 660]);
 						//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 						if (workerData[1] == 'tutorial'){
 							console.log('tutorial phase 5 done');
@@ -1410,9 +1422,9 @@ if (!isMainThread){
 			if (base_lookup['base_' + players['p2']].energy >= spirit_p2_cost){
 				if (p2_defend != 1){
 					top_q++;
-					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2350, 1400], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
+					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2820, 1760], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
 					base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;
-					global[players['p2'] + top_q].move([2380, 1400]);
+					//global[players['p2'] + top_q].move([2800, 1760]);
 					//console.log(top_q);
 				}
 			}
@@ -2125,11 +2137,11 @@ if (!isMainThread){
 		var start_num_spirits = 5;
 		for (s = 1; s < 1+start_num_spirits ; s++){
 			if (s > 3){
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1250+s*20,520], 1, 0, players['p1'], colors['player1'], 100);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1250+s*20,620], 1, 0, players['p1'], colors['player1'], 100);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,500], 1, 0, players['p1'], colors['player1'], 100);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], 1, 0, players['p1'], colors['player1'], 100);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			}
@@ -2138,11 +2150,11 @@ if (!isMainThread){
 
 		for (q = 1; q < 1+start_num_spirits ; q++){
 			if (q > 3){
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2450+q*20,1500], 1, 0, players['p2'], colors['player2'], 100);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2970+q*20,1800], 1, 0, players['p2'], colors['player2'], 100);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*20,1520], 1, 0, players['p2'], colors['player2'], 100);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [3020+q*20,1820], 1, 0, players['p2'], colors['player2'], 100);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}
