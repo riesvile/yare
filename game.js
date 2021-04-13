@@ -274,7 +274,7 @@ parentPort.on("message", message => {
 			console.log('p1_color');
 			console.log(result[0].p1_color);
 			if (result[0].player2 == 'medium-bot'){
-				player2_code = player2_code = `
+				player2_code = `
 					
 				var this_player_id = players['p2'];		
 				
