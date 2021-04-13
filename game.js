@@ -276,6 +276,7 @@ parentPort.on("message", message => {
 			if (result[0].player2 == 'medium-bot'){
 				player2_code = `
 					
+				/*
 				var this_player_id = players['p2'];		
 				
 				//var my_spirits = [];
@@ -369,6 +370,418 @@ parentPort.on("message", message => {
 					}
 				    
 				}
+				*/
+
+var base = Object.values(bases)[1];
+var enemy_base = Object.values(bases)[0];
+var star_zxq = stars['star_zxq'];
+var star_a1c = stars['star_a1c'];
+
+if(memory['time'] == undefined)
+	memory['time'] = 0;
+memory['time'] += 1;
+
+function dist_sq(coor1, coor2){
+	var a = coor1[0] - coor2[0];
+	var b = coor1[1] - coor2[1];
+	return a*a + b*b;
+}
+
+function dist(coor1, coor2){
+	return Math.sqrt(dist_sq(coor1, coor2));
+}
+
+function mult(a, coor){
+	return [a * coor[0],a*coor[1]];
+}
+
+function add(coor1, coor2){
+	return [coor1[0] + coor2[0],coor1[1] + coor2[1]];
+}
+
+function linc(coor1, coor2, alpha){
+	return add(mult(alpha, coor1), mult(1-alpha, coor2));
+}
+
+var min_beam = 200;
+var min_beam_sq = min_beam**2;
+
+var my_star = star_zxq;
+var e_star = star_a1c;
+
+if(dist_sq(star_a1c.position, base.position) < dist_sq(star_zxq.position, base.position)){
+    my_star = star_a1c;
+    e_star = star_zxq;
+}
+
+function minimizing_unit(l, objective, selector){
+	var min = null;
+	var min_val = null;
+
+	for(var i = 0; i< l.length ;i++){
+		var unit = spirits[l[i]];
+		if(selector != null && !selector(unit))
+			continue;
+
+		var val = objective(unit);
+		if(min_val == null || val < min_val){
+			min_val =  val;
+			min = unit;
+		}
+	}
+	return min;
+}
+
+
+function closest_unit(ref, l, min_dist,  pred){
+	var pick = null;
+	var pickd = null;
+
+	for(var i = 0; i< l.length ;i++){
+		var unit = spirits[l[i]];
+		var ud = dist_sq(unit.position, ref.position);
+
+		if(min_dist > 0 &&  ud >= min_dist**2)
+			continue;
+		
+		if(pred != null && !pred(unit))
+			continue;
+
+		if(pickd==null ||ud < pickd){
+			pickd = ud;
+			pick = unit;
+		}
+	}
+	return pick;
+}
+
+function find_pass(s){
+	var my_dist = dist_sq(base.position, s.position);
+	
+	for(var i = 0; i< s.sight.friends_beamable.length ;i++){
+		var friend = spirits[s.sight.friends_beamable[i]];
+
+		var d = dist_sq(friend.position, s.position);
+		var dbf = dist_sq(friend.position, base.position);
+		var dsf = dist_sq(friend.position, my_star.position);
+
+		if(
+		// close to each other is ok near base
+		(d < 0.3 * min_beam_sq && my_dist > 1.2 * min_beam_sq )
+		|| dsf < min_beam_sq
+		|| 1.05 * dbf > my_dist
+		){
+		    if(memory[friend.id + "pass"] == s.id){
+		        memory[friend.id + "pass"] = true;
+		        memory[s.id + "pass"] = false;
+		    }
+			continue;
+		}
+		
+		if(memory[friend.id + "pass"] == s.id)
+		    return friend;
+		    
+			//|| friend.energy > 0.8 * friend.energy_capacity
+		if(memory[friend.id + "pass"] == true)
+		    return friend;
+	}
+
+	return null;
+}
+
+
+function beam_from_to(from, to, shorten=1){
+    return mult(shorten/dist(from.position, to.position), add(mult(-1, from.position), to.position));
+}
+
+var base_to_star_beam = beam_from_to(base, my_star, 0.99*min_beam);
+var h_pos = add(base.position, mult(2.6, base_to_star_beam));
+var h0_pos = add(my_star.position, beam_from_to(my_star, base, 0.99*min_beam));
+
+var l = [-100, 0];
+var r = [100, 0];
+var u = [0, -100];
+var d = [0, 100];
+var n = [0, 0];
+var dr = [100,100];
+var dl = [100,-100];
+var ur = [-100,100];
+var ul = [-100,-100];
+
+// H - harvest star
+// d - defend star, only visible
+// D - defend star, seek all in unit.sight
+// b - defend base, only visible, harvest
+// B - defend base, seek all in base.sight, harvest
+// g - gather point
+// f - fallback - go to base
+// A - attack enemy star
+// a - attack enemy base
+// s - attack supply chain :-)
+
+var default_plan = 'f';
+var teams = [10, 4, 5, 15, 1000];
+var attack_groups = [2, 4];
+if(memory['plans'] == undefined)
+	memory['plans'] = ['H', 'b', default_plan, 'B', default_plan];
+var plans = memory['plans'];
+// ids in teams array
+	
+var gather_prop = 0.5;
+var gather_pos = linc(base.position, enemy_base.position, gather_prop);
+
+var supply_pos = linc(enemy_base.position, e_star.position, 0.5);
+
+var a_min_life = 0.2;
+var h_min_life = 0.0;
+
+//
+
+var my_alive = [];
+var team_counts = teams.map(function(e){return 0;});
+var no_teams = [];
+
+// alive/counts/teamcounts
+for (var i = 0; i < my_spirits.length;i++){
+	
+	//console.log(my_spirits[i]);
+	var s = my_spirits[i];
+	
+	var t = memory[s.id+'team'];
+	var no_team = t == undefined || t == null;
+	
+	var alive = s.hp == 1;
+
+	if(no_team && alive){
+		no_teams.push(s.id);
+	}
+	if (!no_team && !alive){
+		memory[s.id+'team'] = null;
+	}
+    //console.log(t + " " +s.id + " " + alive + " " + no_team);
+    
+	if(!no_team && alive){
+	    if(team_counts[t] >= teams[t] || t >= team_counts.length){
+	        memory[s.id+'team'] = null;
+	        no_teams.push(s.id);
+	    }else
+		    team_counts[t] = team_counts[t] + 1;
+	}
+	if(alive){
+		my_alive.push(s.id);
+	}
+}
+
+// assign unasigned spirits to teams
+for (var i = 0; i < no_teams.length;i++){
+	for(var t=0 ; t<team_counts.length;t++){
+		if(team_counts[t] < teams[t] && (attack_groups.indexOf(t) == -1 || plans[t] == default_plan)){
+		    //console.log(t + " " + no_teams[i])
+			memory[no_teams[i]+'team'] = t;
+			team_counts[t] += 1;
+			break;
+		}
+	}
+}
+
+// attack plan
+for(var i = 0 ; i < attack_groups.length; i++){
+	var idx = attack_groups[i];
+	console.log("bot attack group " +idx + " "+team_counts[idx] +" " +teams[idx])
+	if((team_counts[idx] == teams[idx] || team_counts[idx] > 15) && plans[idx] == default_plan){
+		var rnd = Math.random();
+		if(rnd < 0.33)
+			plans[idx] =  'A';
+		else if(rnd < 0.66)
+			plans[idx] =  'S';
+		else
+			plans[idx] =  'a';
+
+		memory['plan']=plans;
+	}
+		
+	if(team_counts[idx] < 2 && plans[idx] != default_plan){
+		plans[idx] = default_plan;
+		memory['plan']=plans;
+	}
+}
+console.log("bot plans " + plans)
+console.log("bot counts " + team_counts)
+
+// 
+
+var damage_plan = {};
+var seek_plan = {};
+var help_plan = {};
+
+function pick_enemy (e, follow=false){
+	if(e.hp != 1)
+		return false;
+		
+	if(damage_plan[e.id] == null || damage_plan[e.id] == undefined)
+		damage_plan[e.id] = e.energy;
+
+	if(follow && (seek_plan[e.id] == null || seek_plan[e.id] == undefined))
+		seek_plan[e.id] = e.energy;
+	
+	return damage_plan[e.id] >= 0 && (!follow || seek_plan[e.id] >= 0);// && dist(spirits[e.position], s.position) <= min_beam;
+}
+
+//console.log(memory['mudrc78team']);
+//plan
+for (var i = 0; i < my_alive.length;i++){
+    s = spirits[my_alive[i]];
+	var t = memory[s.id+'team'];
+	var plan = plans[t];
+	var d2base = dist_sq(s.position, base.position);
+	var d2star = dist_sq(s.position, my_star.position);
+	var d2estar = dist_sq(s.position, e_star.position);
+	var near_base = d2base < min_beam_sq;
+	var near_star = d2star < min_beam_sq;
+	var near_estar = d2estar < min_beam_sq;
+	var base_in_trouble = base.sight.enemies.length > 0;
+	// charge by default
+	if(near_star || near_estar){
+		s.energize(s);
+	}
+
+	if(plan == 'H' || ((plan == 'B' || plan == 'b') && base.sight.enemies.length == 0)){
+		// state
+		if (memory[s.id] != 'charged' && memory[s.id] != 'harvestor') {
+			if(d2base > d2star)
+				memory[s.id] = 'harvestor';
+			else
+				memory[s.id] = 'charged';
+			memory[s.id + "pass"] = false;
+		}
+
+		if (s.energy <= h_min_life * s.energy_capacity) {
+			memory[s.id] = 'harvestor';
+			memory[s.id + "pass"] = false;
+		}
+		
+		if (s.energy == s.energy_capacity && memory[s.id] != 'charged'){
+			memory[s.id] = 'charged';
+			memory[s.id + "pass"] = false;
+		}
+
+		// behavior
+
+		// defense
+		var e = null;
+		if(s.energy > 0)
+			e = minimizing_unit(s.sight.friends_beamable, (u) => u.energy, function(u){
+						if(memory[u.id] != 'fighter' || u.energy == u.energy_capacity)
+							return false;
+
+						if(help_plan[u.id]==undefined){
+							help_plan[u.id] = u.energy_capacity-u.energy;
+						}
+						return help_plan[u.id] > 0;
+					});
+
+		if(e != null){
+			help_plan[e.id] -= s.size;
+			s.energize(e);
+		} else if (memory[s.id] == 'harvestor'){
+			if(d2star > min_beam_sq)
+				s.move(my_star.position);
+			if(d2star < 0.8 * min_beam_sq)
+				s.move(base.position);
+		} else if (memory[s.id] == 'charged'){
+		    var fb = null; 
+		    fb = minimizing_unit(s.sight.friends_beamable, (u) => u.energy, function(u){
+					return memory[u.id] == 'fighter' && u.energy < u.energy_capacity;
+				});
+			if(fb != null){
+				// help a friend
+				s.energize(fb);
+			} else{
+				if(d2base < 0.8 * min_beam_sq)
+					s.move(my_star.position);
+				if(d2base > min_beam_sq)
+					s.move(base.position);
+				s.energize(base);
+			}
+		}
+	} else {
+		// state transitions
+		if(memory[s.id] != 'fighter' || memory[s.id] != 'recharging'){
+			memory[s.id] = 'fighter';
+		}
+		if (s.energy == 0) {
+			memory[s.id] = 'recharging';
+		}
+		if (s.energy == s.energy_capacity){
+			memory[s.id] = 'fighter';
+		}
+
+		// behavior
+
+		if (memory[s.id] == 'recharging' || plan == 'D' || plan == 'd'){
+			if(!near_star || plan == 'D' || plan == 'd')
+				s.move(my_star.position);
+		}
+
+		if (memory[s.id] == 'fighter'){
+			if(plan == 'g'){
+				s.move(gather_pos);
+			}
+
+			if(plan == 'a'){
+				var near_enemy = dist_sq(s.position, enemy_base.position) < min_beam_sq;
+				if(!near_enemy)
+					s.move(enemy_base.position);
+				else
+					s.energize(enemy_base);
+			}
+            
+			if(plan == 'A'){
+				if(!near_estar)
+					s.move(e_star.position);
+			}
+
+			if(plan == 'S'){
+				s.move(supply_pos.position);
+			}
+
+			if(plan == 'b' || plan == 'B'){
+				var min = 0;
+				if(plan =='b')
+					min = min_beam;
+
+				var e = closest_unit(s, base.sight.enemies, min, (e)=>pick_enemy(e, true));
+				if(e != null){
+					s.move(e.position);
+					seek_plan[e.id] -= s.size;
+					if(dist_sq(s.position, e.position) < min_beam_sq)
+						damage_plan[e.id] -= 2*s.size;
+					s.energize(e);
+				}else{
+					s.move(base.position);
+				}
+			}
+
+			if(plan == 'f'){
+				s.move(base.position);
+			}
+			
+			var seek = true;
+			e = closest_unit(s, seek?s.sight.enemies:s.sight.enemies_beamable,
+				0, (e) => pick_enemy(e, seek));
+
+			if(e != null){
+				if(seek){
+					s.move(e);
+					seek_plan[e.id] -= s.size;
+				}
+				if(!seek || dist_sq(s.position, e.position) <= min_beam_sq)
+					damage_plan[e.id] -= 2* s.size;
+				s.energize(e);
+			}
+		}
+	}
+}
 				
 				`;
 			}
@@ -459,6 +872,7 @@ function user_code(){
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
+		console.log(error);
 		try {
 			var regex = /\((.*):(\d+):(\d+)\)$/;
 			var eline_temp = error.stack.split("\n");
@@ -1093,7 +1507,7 @@ if (!isMainThread){
 		}
 
 		function work(i, j){
-			console.log('work ' + living_spirits[i].id + " " + living_spirits[j].id)
+			//console.log('work ' + living_spirits[i].id + " " + living_spirits[j].id)
 			var pi = living_spirits[i].player_id;
 			var pj = living_spirits[j].player_id;
 			if (pi == pj){
@@ -1153,6 +1567,7 @@ if (!isMainThread){
 		}
 
 		Object.values(hist).forEach(function(bin){
+			/*
 			var bstr='';
 			for(i = 0; i <bin.length;i++){
 				var spir = living_spirits[bin[i]];
@@ -1163,6 +1578,7 @@ if (!isMainThread){
 			}
 
 			console.log("BIN: ["+bin+"] = [" + bstr+ "]");
+			*/
 			// assuming that visible == 2* min_beam
 			//
 			// this bin, all are visible && beamable
@@ -1188,7 +1604,7 @@ if (!isMainThread){
 				if(nb == undefined)
 					continue;
 
-				console.log("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
+				//console.log("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
 				// O(N^2) part
 				for(i = 1; i <bin.length;i++){
 					for(j = 1; j <nb.length;j++){
@@ -1713,13 +2129,14 @@ if (!isMainThread){
 			//console.log(spirit_lookup['sp1'].sight);
 			//
 			
+		/*
 			var start = process.hrtime();
 			get_sight();
 			var diff = process.hrtime(start);
 			var took1 = (diff[0] * 1000000000 + diff[1]) / 1000000;
 			console.log('get_sight took = ' + took1);
+			*/
 
-		/*
 
 			var start = process.hrtime();
 			get_sight_fast();
@@ -1750,8 +2167,6 @@ if (!isMainThread){
 						+ " vis=" + visible + " beam=" + beamable + " fb=[" + a.sight.friends_beamable
 						+ "] eb=[" + a.sight.enemies_beamable+ ']');
 					if(friend){
-						a.sight.friends.forEach((u) => assert(u.hp == 1, "hp:"+u.id+ " " + desc));
-						a.sight.friends_beamable.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
 						assert(a.sight.friends.length == (new Set(a.sight.friends)).size, -1 + desc)
 						assert(a.sight.friends_beamable.length == (new Set(a.sight.friends_beamable)).size, 0 + desc2)
 						assert((a.sight.friends.indexOf(b.id) != -1) == visible, 1 + desc);
@@ -1759,8 +2174,6 @@ if (!isMainThread){
 						assert((a.sight.friends_beamable.indexOf(b.id) != -1) == beamable, 3 + desc2);
 						assert((b.sight.friends_beamable.indexOf(a.id) != -1) == beamable, 4);
 					}else{
-						a.sight.enemies.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
-						a.sight.enemies_beamable.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
 						assert((a.sight.enemies.indexOf(b.id) != -1) == visible, 5 + desc);
 						assert((b.sight.enemies.indexOf(a.id) != -1) == visible, 6);
 						assert((a.sight.enemies_beamable.indexOf(b.id) != -1) == beamable, 7 + desc2);
@@ -1770,7 +2183,6 @@ if (!isMainThread){
 					}
 				}
 			}
-			*/
 
 			//console.log('spirit_lookup[s1].sight');
 			//console.log(spirit_lookup['s1'].sight);
@@ -2232,7 +2644,7 @@ if (!isMainThread){
 		
 		// /*
 		
-		var start_num_spirits = 5;
+		var start_num_spirits = 6;
 		for (s = 1; s < 1+start_num_spirits ; s++){
 			if (s > 3){
 				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1250+s*20,620], 1, 0, players['p1'], colors['player1'], 100);
