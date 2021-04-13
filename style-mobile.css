@@ -38,6 +38,11 @@
 		margin-left: 5%;
 	}
 	
+	#newgame_wrap {
+		width: 80%;
+		margin-left: 10%;
+	}
+	
 }
 
 
@@ -67,14 +72,26 @@
 	z-index: 1000;
 }
 
+#update_switch_wrapper {
+	bottom: 20px;
+	left: 20px;
+	z-index: 2;
+}
+
+.update_switch_wrapper_real {
+	bottom: 20px !important;
+	left: 20px !important;
+}
+
+
 #update_code {
-	width: 212px;
-	height: 67px;
+	width: calc(100% - 104px);
+	height: 56px;
 	background-color: #2a2e4e;
-	line-height: 67px;
+	line-height: 55px;
 	position: fixed;
-	bottom: 28px;
-	left: 28px;
+	bottom: 20px;
+	left: 20px;
 	border-radius: 12px;
 	cursor: pointer;
 	display: block;
@@ -91,6 +108,34 @@
 	text-align: center;
 	display: block;
 	padding-top: 1px;
+}
+
+#switch_view {
+	width: 56px;
+	height: 56px;
+	line-height: 51px;
+	background-color: #2a2e4e;
+	border-radius: 12px;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	border: 2px solid rgba(6, 8, 10, 0);
+	box-sizing: border-box;
+}
+
+.switch_ico {
+	width: 52px;
+	display: block;
+	text-align: center;
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: 1px;
+}
+
+.switch_switched {
+	background-color: rgba(6, 8, 10, 0.89) !important;
+	border: 2px solid rgba(90, 98, 148, 1) !important;
+	
 }
 
 #get_in {
@@ -182,16 +227,11 @@ h1#logo {
 
 #new_account_wrap, #login_wrap {
 	color: rgba(242, 246, 250, 0.55);
-	font-size: 14px;
-	position: absolute;
-	top: 60px;
-	z-index: 20000;
-	opacity: 0;
-	display: none;
+	margin-left: 20px;
 }
 
 #new_account_wrap p {
-	width: 380px;
+	width: calc(100vw - 40px);
 	line-height: 26px;
 	font-size: 14px;
 	font-weight: 500;
@@ -215,7 +255,7 @@ h1#logo {
 	border-radius: 8px;
 	background-color: rgba(52, 49, 60, 0.55);
 	color: rgba(242, 246, 250, 0.89);
-	width: 400px;
+	width: calc(100vw - 68px);
 	display: block;
 	margin-bottom: 12px;
 }
@@ -274,8 +314,51 @@ input[type=submit] {
 #panel {
 	width: 100%;
 	height: 100%;
-	background-color: #f00;
+	background-color: rgba(12, 10, 16, 0.96);
 }
+
+#grad_bottom {
+	display: block;
+}
+
+
+/* ----- Game over ----- */
+
+#game_over_block, #game_status_block {
+	width: calc(100vw - 48px);
+}
+
+.game_table {
+	width: calc(100vw - 68px);
+}
+
+#game_result {
+	font-size: 32px;
+	font-weight: 600;
+	margin-bottom: 20px;
+}
+
+#tutorial_over, #over_message {
+	width: 520px;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 32px;
+	color: rgba(242, 246, 250, 0.69);
+	margin-bottom: 20px;
+}
+
+#over_message {
+	font-size: 18px;
+	width: calc(100vw - 68px);
+	
+}
+
+.player_delta {
+	right: -48px;
+}
+
+
+/* ----- */
 
 
 /* ----- Tutorial ----- */
@@ -557,7 +640,7 @@ span#hub_logout:hover {
 /* leaderboard */
 
 .t_leaderboard {
-	top: 60vh;
+	top: 44vh;
 }
 
 .lb_row {
@@ -611,7 +694,136 @@ span#hub_logout:hover {
 
 /* ----- */
 
+/* -- New game screen -- */
 
+
+#newgame_wrap {
+	width: 90%;
+	margin-left: 5%;
+	margin-top: 12vh;
+}
+
+#start_area {
+	margin-top: 0;
+	position: fixed;
+	bottom: 20px;
+	width: 90%;
+}
+
+#start_game_btn, #cancel_game_btn {
+	width: 100%;
+	padding: 0;
+	text-align: center;
+	height: 56px;
+	line-height: 55px;
+}
+
+span.game_or, span.cancel_or {
+	display: none;
+}
+
+#challenge_friend_btn {
+	width: 100%;
+	text-align: center;
+	padding: 0;
+	color: rgba(242, 246, 250, 0.69);
+	height: 40px;
+	line-height: 40px;
+	margin-top: 16px;
+}
+
+.shape_block {
+	float: none;
+	width: 100%;
+	height: 72px;
+	margin-bottom: 8px;
+}
+
+span.shape_name {
+	font-size: 20px;
+}
+
+
+/* ----- */
+
+/* -- Documentation -- */
+
+#doc_sections {
+	display: none;
+}
+
+#doc_content {
+	overflow-x: hidden;
+}
+
+#doc_content section {
+	padding-top: 16vh;
+}
+
+.h_sec_head {
+	font-size: 36px;
+	margin-bottom: 24px;
+}
+
+.p_sec_intro {
+	clear: both;
+	width: calc(100% - 24px);
+	margin-left: 0;
+	transform: none;
+}
+
+.sep_medium {
+	height: 30px;
+}
+
+
+.side_side {
+	width: calc(100% - 56px);
+	clear: both;
+	margin-bottom: 12px;
+}
+
+.side_adj {
+	margin-left: 0;
+}
+
+p.p_normal {
+	max-width: 100% !important;
+}
+
+p.p_somewhat_important {
+	max-width: 100% !important;
+	font-size: 16px;
+	line-height: 28px;
+}
+
+.shapo {
+	display: none;
+}
+
+.row_in_doc_head span.table_doc_method {
+    width: 24%;
+}
+
+.table_doc_method {
+	width: 24%;
+}
+
+.table_doc_argument {
+	width: 36%;
+	display: none;
+}
+
+.g_con {
+	margin-left: 16px;
+}
+
+/* -- */
+
+h1.page_head {
+	margin-left: 24px;
+	margin-top: 16vh;
+}
 
 
 

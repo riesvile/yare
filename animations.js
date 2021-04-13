@@ -3,27 +3,52 @@ function dismissals(){
 		dismiss_intent = 1;
 		return;
 	}
-	if (account_creation == 1){
-		anime({
-			targets: '#new_account_wrap',
-			translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
-			translateY: [20, 0],
-			opacity: [1, 0],
-			easing: 'easeOutQuad',
-			duration: 200
-		});
-		account_creation = 0;
-	} else if (account_login == 1){
-		anime({
-			targets: '#login_wrap',
-			translateX: [login_pos.right - 440, login_pos.right - 440],
-			translateY: [20, 0],
-			opacity: [1, 0],
-			easing: 'easeOutQuad',
-			duration: 200
-		});
-		account_login = 0;
+	
+	if (window.screen.availWidth < 700){
+		if (account_creation == 1){
+			anime({
+				targets: '#new_account_wrap',
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_creation = 0;
+		} else if (account_login == 1){
+			anime({
+				targets: '#login_wrap',
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_login = 0;
+		}
+	} else {
+		if (account_creation == 1){
+			anime({
+				targets: '#new_account_wrap',
+				translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_creation = 0;
+		} else if (account_login == 1){
+			anime({
+				targets: '#login_wrap',
+				translateX: [login_pos.right - 440, login_pos.right - 440],
+				translateY: [20, 0],
+				opacity: [1, 0],
+				easing: 'easeOutQuad',
+				duration: 200
+			});
+			account_login = 0;
+		}
 	}
+	
+	
 	
 	anime({
 		targets: '#profile_links',
@@ -37,6 +62,7 @@ function dismissals(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0)',
 		backdropFilter: 'blur(0px)',
+		"-webkit-backdrop-filter": 'blur(0px)',
 		easing: 'easeOutQuad',
 		duration: 200
 	});
@@ -46,6 +72,10 @@ function dismissals(){
 	document.getElementById('new_account_wrap').style.pointerEvents = 'none';
 	document.getElementById('login_wrap').style.pointerEvents = 'none';
 	document.getElementById('profile_links').style.pointerEvents = 'none';
+	
+	if (resign_open == 1){
+		dont_resign();
+	}
 }
 
 function dismiss_helper(){
@@ -66,6 +96,7 @@ function game_over_box(){
 		targets: '#game_over_overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 900
 	});
@@ -77,22 +108,37 @@ function new_account(){
 	account_creation = 1;
 	document.getElementById('new_account_wrap').style.display = 'block';
 	document.getElementById('new_account_wrap').style.pointerEvents = 'auto';
-	anime({
-		targets: '#new_account_wrap',
-		translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
-		translateY: [0, 20],
-		opacity: [0, 1],
-		easing: 'easeOutQuad',
-		duration: 300
-	});
+	
+	if (window.screen.availWidth < 700){
+		anime({
+			targets: '#new_account_wrap',
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	} else {
+		anime({
+			targets: '#new_account_wrap',
+			translateX: [new_acc_pos.right - 420, new_acc_pos.right - 420],
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	}
 	
 	anime({
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 300
 	});
+	
+	
+	
 	
 	document.getElementById("new_user_name").focus();
 	document.getElementById('overlay').style.pointerEvents = 'auto';
@@ -102,22 +148,36 @@ function login(){
 	account_login = 1;
 	document.getElementById('login_wrap').style.display = 'block';
 	document.getElementById('login_wrap').style.pointerEvents = 'auto';
-	anime({
-		targets: '#login_wrap',
-		translateX: [login_pos.right - 440, login_pos.right - 440],
-		translateY: [0, 20],
-		opacity: [0, 1],
-		easing: 'easeOutQuad',
-		duration: 300
-	});
+	
+	if (window.screen.availWidth < 700){
+		anime({
+			targets: '#login_wrap',
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	} else {
+		anime({
+			targets: '#login_wrap',
+			translateX: [login_pos.right - 440, login_pos.right - 440],
+			translateY: [0, 20],
+			opacity: [0, 1],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+	}
 	
 	anime({
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 300
 	});
+	
+	
 	
 	document.getElementById("user_name").focus();
 	document.getElementById('overlay').style.pointerEvents = 'auto';
@@ -286,6 +346,8 @@ function login_success(user_name){
 	  //console.error(error);
 	}
 	
+	//document.getElementById('input').blur();
+	
 }
 
 function wait_server(){
@@ -369,6 +431,7 @@ function user_links(){
 		targets: '#overlay',
 		backgroundColor: 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
 		duration: 300
 	});
@@ -469,6 +532,122 @@ function wait_opponent_view(){
 	  	});
 	}, 300);
   
+}
+
+function pre_resign(){
+	resign_open = 1;
+	
+  	anime({
+  		targets: '#resign_game',
+  		translateY: [0, -10],
+		translateX: [0, -10],
+		width: 200,
+		height: 44,
+		fontSize: 14,
+		backgroundColor: 'rgba(30, 30, 32, 1)',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0.39)',
+		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#resign_btn',
+		opacity: [0, 1],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#cancel_resign_btn',
+		opacity: [0, 1],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#pre_resign_btn',
+		opacity: [1, 0],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '.you_sure_lbl',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+
+	document.getElementById('overlay').style.pointerEvents = 'auto';
+	document.getElementById('pre_resign_btn').style.display = 'none';
+	document.getElementById('resign_btn').style.display = 'block';
+	document.getElementById('cancel_resign_btn').style.display = 'block';
+}
+
+function dont_resign(){
+	resign_open = 0;
+	
+  	anime({
+  		targets: '#resign_game',
+  		translateY: [-10, 0],
+		translateX: [-10, 0],
+		width: 75,
+		height: 36,
+		fontSize: 12,
+		backgroundColor: 'rgba(58, 40, 38, 0.69)',
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+	
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0)',
+		backdropFilter: 'blur(0px)',
+		"-webkit-backdrop-filter": 'blur(0px)',
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#resign_btn',
+		opacity: [1, 0],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#cancel_resign_btn',
+		opacity: [1, 0],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '#pre_resign_btn',
+		opacity: [0, 1],
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	anime({
+		targets: '.you_sure_lbl',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 50
+	});
+
+	document.getElementById('overlay').style.pointerEvents = 'none';
+	document.getElementById('pre_resign_btn').style.display = 'block';
+	document.getElementById('resign_btn').style.display = 'none';
+	document.getElementById('cancel_resign_btn').style.display = 'none';
 }
 
 function update_console_height(hght){
@@ -855,6 +1034,29 @@ function expand_documentation(elid, rotator){
 
 
 
+// mobile game view
+
+function game_switch_view(){
+	
+	var switcher = document.getElementById('switch_view');
+	var panelo = document.getElementById('panel');
+	
+	if (switcher.classList.contains('switch_switched')){
+		switcher.classList.remove('switch_switched');
+		panel.style.display = "block";
+		panel.style.backgroundColor = "rgba(12, 10, 16, 0.96)";
+	} else {
+		switcher.classList.add('switch_switched');
+		panel.style.display = "none";
+	}
+	
+}
+
+
+
+
+
+
 // helper vars
 try {
 	var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
@@ -869,6 +1071,7 @@ try {
 var account_creation = 0;
 var account_login = 0;
 var dismiss_intent = 1;
+var resign_open = 0;
 
 
 //document.getElementById('new_account').addEventListener('pointerdown', dismiss_helper, false);

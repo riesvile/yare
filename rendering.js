@@ -94,92 +94,151 @@ function zoomUpdate(){
 	
 }
 
+
+function pinchStart(e){
+	var pinch_start_val = 0;
+	prevScale = scale;
+	dist_init = Math.hypot(
+	    e.touches[0].pageX - e.touches[1].pageX,
+	    e.touches[0].pageY - e.touches[1].pageY);
+		
+	prev_offsetX = offsetX;
+	prev_offsetY = offsetY;
+	xxx = (e.touches[0].clientX + e.touches[1].pageX) / 2;
+	yyy = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+}
+
+function pinchMove(e){
+	var dist = Math.hypot(
+	    e.touches[0].pageX - e.touches[1].pageX,
+	    e.touches[0].pageY - e.touches[1].pageY) - dist_init
+		
+	scale = prevScale + (dist / 1000);
+	scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
+	multiplier = 1 / scale;
+	
+    offsetX = prev_offsetX + (xxx * 1/scale) - (xxx * 1/prevScale);
+    offsetY = prev_offsetY + (yyy * 1/scale) - (yyy * 1/prevScale);
+	
+	
+	zoomUpdate();
+}
+
+
 function onPointerDown(e){ 
 	e = e || window.event;
-	var el_id = (e.target || e.srcElement).id;
-	//console.log('down id= ' + el_id);
 	
-	//console.log(el_id);
-	if (el_id != 'base_canvas'){
-		return;
-	} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
-		//console.log('thissisis');
-		disableSelection = 0;
-	} else {
-		disableSelection = 1;
-	}
 	
-	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
-	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
-	    var touch = evt.touches[0] || evt.changedTouches[0];
-	    x = touch.pageX;
-	    y = touch.pageY;
-		mousey = 1;
-	} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
-	    x = e.clientX;
-	    y = e.clientY;
-		if (e.which === 1){
-			mousey = 1;
+	try {
+		if (e.touches.length === 2) {
+		    scaling = true;
+		    pinchStart(e);
 		}
+	} catch (e) {
+		//console.log(e);
 	}
 	
-	hide_hover();
-	//console.log('mouse down');
-	pointer_originX = x;
-	pointer_originY = y;
-	current_offsetX = offsetX;
-	current_offsetY = offsetY;
+	//console.log(e);
+	if (scaling != true){
+		var el_id = (e.target || e.srcElement).id;
+		//console.log('down id= ' + el_id);
+	
+		//console.log(el_id);
+		if (el_id != 'base_canvas'){
+			return;
+		} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
+			//console.log('thissisis');
+			disableSelection = 0;
+		} else {
+			disableSelection = 1;
+		}
+	
+		if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+		    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+		    var touch = evt.touches[0] || evt.changedTouches[0];
+		    x = touch.pageX;
+		    y = touch.pageY;
+			mousey = 1;
+		} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
+		    x = e.clientX;
+		    y = e.clientY;
+			if (e.which === 1){
+				mousey = 1;
+			}
+		}
+	
+		hide_hover();
+		//console.log('mouse down');
+		pointer_originX = x;
+		pointer_originY = y;
+		current_offsetX = offsetX;
+		current_offsetY = offsetY;
+	}
+	
 }
 
 function onPointerMove(e){
-	//console.log(disableSelection);
-	if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
-	    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
-	    var touch = evt.touches[0] || evt.changedTouches[0];
-	    x = touch.pageX;
-	    y = touch.pageY;
-	} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
-	    x = e.clientX;
-	    y = e.clientY;
-	}
+	e = e || window.event;
 	
-	if (disableSelection == 1){
-		e.preventDefault();
-	}
-	
-	
-	if (mousey == 1){
-		console.log('mouse moving');
-		panning = 1;
-		//console.log(x + " / " + y);
-		
-		
-		pointer_offsetX = x - pointer_originX;
-		pointer_offsetY = y - pointer_originY;
-		
-		offsetX = pointer_offsetX + current_offsetX;
-		offsetY = pointer_offsetY + current_offsetY;
-		//offsetUpdate();
+	if (scaling) {
+	    pinchMove(e);
 	} else {
-		board_x = x*multiplier - offsetX;
-		board_y = y*multiplier - offsetY;
-		//console.log('x = ' + board_x);
-		//console.log('y = ' + board_y);
+		if (e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+		    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+		    var touch = evt.touches[0] || evt.changedTouches[0];
+		    x = touch.pageX;
+		    y = touch.pageY;
+		} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
+		    x = e.clientX;
+		    y = e.clientY;
+		}
+	
+		if (disableSelection == 1){
+			e.preventDefault();
+		}
+	
+	
+		if (mousey == 1){
+			console.log('mouse moving');
+			panning = 1;
+			//console.log(x + " / " + y);
 		
-		pointing_at_x = x;
-		pointing_at_y = y;
 		
-		fill_hover_thing(x, y, board_x, board_y);
+			pointer_offsetX = (x - pointer_originX) * multiplier;
+			pointer_offsetY = (y - pointer_originY) * multiplier;
+		
+			offsetX = pointer_offsetX + current_offsetX;
+			offsetY = pointer_offsetY + current_offsetY;
+			//offsetUpdate();
+		} else {
+			board_x = x*multiplier - offsetX;
+			board_y = y*multiplier - offsetY;
+			//console.log('x = ' + board_x);
+			//console.log('y = ' + board_y);
+		
+			pointing_at_x = x;
+			pointing_at_y = y;
+		
+			fill_hover_thing(x, y, board_x, board_y);
 		
 		
+		}
 	}
+	//console.log(disableSelection);
+	
 }
 
 function onPointerUp(e){ 
 	//console.log('mouse up');
+	if (scaling) {
+	    //pinchEnd(e);
+	    scaling = false;
+	}
+	
 	mousey = 0;
 	panning = 0;
 	disableSelection = 0;
+	offsetUpdate();
 }
 
 function getMousePos(e) {
@@ -248,7 +307,7 @@ function zoom(event) {
   event.preventDefault();
   prevScale = scale;
   scale += event.deltaY * -0.005;
-  multiplier += event.deltaY * 0.005;
+  //multiplier += event.deltaY * 0.005;
 
   // Restrict scale
   scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
@@ -315,6 +374,17 @@ document.addEventListener("touchend", onPointerUp, false);
 document.addEventListener("mousedown", onPointerDown, false);
 document.addEventListener("mousemove", onPointerMove, false);
 document.addEventListener("mouseup", onPointerUp, false);
+
+var scaling = false;
+var prevScale = 1;
+var dist_init = 0;
+var prev_offsetX = 0;
+var prev_offsetY = 0;
+var xxx = 0;
+var yyy = 0;
+
+//var canvasTouch = document.getElementById("base_canvas");
+//canvasTouch.addEventListener("ontouchstart")
 
 document.getElementById("panel").addEventListener("mouseenter", function(e) {
 	if (mousey != 1){
@@ -387,7 +457,6 @@ c_base.scale (1, 1);
 
 base_canvas.onwheel = zoom;
 //c.translate(800, 900);
-
 
 var offsetX = 0;
 var offsetY = 0;
@@ -733,9 +802,15 @@ class Spirit {
 			var color_parts = this.color.match(/[.?\d]+/g);
 			var spirit_percent_energy = this.energy / this.energy_capacity;
 			var drawing_size = this.size / 2;
-			var gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 20);
-			gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] * spirit_percent_energy) / 20 + ')');
-			gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
+			var gradient = this.color;
+			try {
+				gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 20);
+				gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] * spirit_percent_energy) / 20 + ')');
+				gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
+			} catch (e) {
+				console.log(e);
+			}
+			
 		
 			if (this.size <= 0.1){
 				drawing_size = 0;
@@ -943,10 +1018,16 @@ function draw_death(id, size, color){
 function draw_energize(origin, target, energy_strength, color){
 	var color_parts = color.match(/[.?\d]+/g);
 	//console.log(Number(color_parts[0]) + 50)
-	var grad = c.createLinearGradient(Math.round(origin[0]), Math.round(origin[1]), Math.round(target[0]), Math.round(target[1]));
-	grad.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
-	grad.addColorStop(0.06, 'rgba(' + (Number(color_parts[0]) + 80) + ', ' + (Number(color_parts[1]) + 50) + ', ' + (Number(color_parts[2]) + 50) + ', ' + color_parts[3] + ')');
-	grad.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
+	try {
+		var grad = c.createLinearGradient(Math.round(origin[0]), Math.round(origin[1]), Math.round(target[0]), Math.round(target[1]));
+		grad.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
+		grad.addColorStop(0.06, 'rgba(' + (Number(color_parts[0]) + 80) + ', ' + (Number(color_parts[1]) + 50) + ', ' + (Number(color_parts[2]) + 50) + ', ' + color_parts[3] + ')');
+		grad.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
+	} catch (e) {
+		console.log(e);
+		console.log(origin, target);
+	}
+	
 	//var incX = (target[0] - origin[0]) / 200;
 	//var incY = (target[1] - origin[1]) / 200;
 	
