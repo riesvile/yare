@@ -694,6 +694,58 @@ span#hub_logout:hover {
 
 /* ----- */
 
+/* -- New game screen -- */
+
+
+#newgame_wrap {
+	width: 90%;
+	margin-left: 5%;
+	margin-top: 12vh;
+}
+
+#start_area {
+	margin-top: 0;
+	position: fixed;
+	bottom: 20px;
+	width: 90%;
+}
+
+#start_game_btn, #cancel_game_btn {
+	width: 100%;
+	padding: 0;
+	text-align: center;
+	height: 56px;
+	line-height: 55px;
+}
+
+span.game_or, span.cancel_or {
+	display: none;
+}
+
+#challenge_friend_btn {
+	width: 100%;
+	text-align: center;
+	padding: 0;
+	color: rgba(242, 246, 250, 0.69);
+	height: 40px;
+	line-height: 40px;
+	margin-top: 16px;
+}
+
+.shape_block {
+	float: none;
+	width: 100%;
+	height: 72px;
+	margin-bottom: 8px;
+}
+
+span.shape_name {
+	font-size: 20px;
+}
+
+
+/* ----- */
+
 /* -- Documentation -- */
 
 #doc_sections {

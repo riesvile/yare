@@ -84,10 +84,6 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 function games_paired(){
 	
 	
-	//
-	// Generalize this for all game pairs (for each)
-	//
-	
 	//players are matched, check server loads, redirect to the right server and start a game worker there
 	
 	for (j = 0; j < game_pairs.length; j++){
@@ -173,6 +169,12 @@ function games_paired(){
 					console.log(Math.abs(looker1[1] - looker2[1]));
 					
 					var rating_difference = Math.abs(looker1[1] - looker2[1])
+					
+					if (looker1[0] == looker2[0]){
+						console.log('it is the same person!!!!!');
+						looker1[5] = 1;
+						continue;
+					}
 					
 					if (looker1[4] < 4100){
 						if (rating_difference < 100){

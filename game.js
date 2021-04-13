@@ -14,6 +14,12 @@ function getNewRating(playerRating, opponentRating, playerResult) {
 
 //
 
+function cancel_game(){
+	setTimeout(function(){
+		process.exit(0);
+	}, 2000);
+}
+
 function end_game(was_p1 = 0, was_p2 = 0){
 	game_finished = 1;
 	console.log('GAME OVER');
@@ -44,8 +50,12 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	
 	if (p2won == 1){
 		gameWinner = players['p2'];
-	} else {
+	} else if (p1won == 1) {
 		gameWinner = players['p1'];
+	} else {
+		end_winner = 'No one';
+		cancel_game();
+		return;
 	}
 	
 	//to handle client
@@ -512,6 +522,9 @@ var p2_defend = 0;
 
 var temp_flag = 0;
 var end_winner = 0;
+
+var game_duration = 0;
+var game_activity = 1;
 
 //tutorial
 if (workerData[1] == 'tutorial'){
@@ -1362,8 +1375,9 @@ if (!isMainThread){
 
 
 	function update_state(){
+		game_duration++;
 		//after everything is calculated
-		
+			
 	//console.log(player2_code);
 	//console.log('player2_code');
 			//render_data = [[],[],[],[],[]];
@@ -1380,6 +1394,28 @@ if (!isMainThread){
 					'console1': [],
 					'console2': [],
 					'tutorial': []
+				}
+				console.log('game_duration = ' + game_duration);
+				console.log(tutorial_phase);
+				
+				if (game_duration == 100){
+					if (tutorial_phase[0] == 0){
+						end_game(0, 0);
+						tutorial_phase[0] = 'end';
+					}
+				} else if (game_duration == 200){
+					if (tutorial_phase[1] == 0){
+						end_game(0, 0);
+						tutorial_phase[0] = 'end';
+					}
+				} else if (game_duration == 300){
+					if (tutorial_phase[2] == 0){
+						end_game(0, 0);
+						tutorial_phase[0] = 'end';
+					}
+				} else if (game_duration == 2000){
+					end_game(0, 0);
+					tutorial_phase[0] = 'end';
 				}
 			} else {
 				render_data2 = {

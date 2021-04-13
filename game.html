@@ -493,6 +493,13 @@
 				 if (incoming.tutorial.length > 0){
 					 //console.log('tutorial !!!!!!!!!!!!!!!!!!!');
 					 //console.log(incoming.tutorial[0]);
+					 if (incoming.tutorial[0][0] == 'end'){
+						 
+					 	setTimeout(function(){
+					 		location.reload()
+					 	}, 3000);
+					 }
+					 
 					 for (t = 0; t < incoming.tutorial[0].length; t++){
 						 if (incoming.tutorial[0][t] == 1){
 							 tutorial_phase = t + 1;
@@ -560,6 +567,9 @@
 								  ttexts[tt].style.lineHeight = '32px';
 						   	 }
 							 tut_phase_success();
+							 break;
+						 case 'end':
+							 alert('tut ended');
 							 break;
 						 default:
 							 console.log('tutorial defaulted');
