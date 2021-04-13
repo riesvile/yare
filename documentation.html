@@ -224,7 +224,7 @@
 						
 						<div class="method_gif_example">
 							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].move([800, 900])</code>
+							<code class="example_code">mySpirits[0].move([800, 900]);</code>
 						</div>
 					</div>
 					
@@ -258,12 +258,12 @@
 						
 						<div class="method_gif_example">
 							<div id="gif_energize1" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].energize(my_spirits[1])</code>
+							<code class="example_code">mySpirits[0].energize(my_spirits[1]);</code>
 						</div>
 						<div class="sep_small"></div>
 						<div class="method_gif_example">
 							<div id="gif_energize2" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].move([800, 900])</code>
+							<pre class="example_code">var enemy = spirits['jane7']; &#10;my_spirits[0].energize(enemy);&#10;my_spirits[1].energize(enemy);</pre>
 						</div>
 						
 						<div class="sep_small"></div>
@@ -285,20 +285,16 @@
 						
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Moves spirit to <span class="target_lowlight">target</span> with a speed of 20 units per tick</p>
+						<p class="p_method_desc">Merges a spirit into another friendly spirit. <span class="target_lowlight">Target</span> needs to be within 10 units radius.</p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
 						
 						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].move([800, 900])</code>
+							<div id="gif_merge" class="gif_in"></div>
+							<pre class="example_code">for (i = 0; i < 5; i++){ &#10;  my_spirits[i].move(my_spirits[6].position);&#10;  my_spirits[i].merge(my_spirits[6]);&#10;}</pre>
 						</div>
 						<div class="sep_small"></div>
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].move([800, 900])</code>
-						</div>
 					</div>
 					
 				</div>
@@ -321,11 +317,6 @@
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
 						
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].move([800, 900])</code>
-						</div>
-						<div class="sep_small"></div>
 						<div class="method_gif_example">
 							<div id="gif_move" class="gif_in"></div>
 							<code class="example_code">mySpirits[0].move([800, 900])</code>

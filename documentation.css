@@ -384,6 +384,8 @@ table.info_table td {
 			left: 24px;
 			bottom: 24px;
 			font-size: 16px;
+			line-height: 24px;
+			color: rgba(242, 246, 250, 0.69);
 		}
 		
 		#gif_move {
@@ -398,7 +400,15 @@ table.info_table td {
 			background: url(asset/method-energize2.gif) no-repeat scroll;
 		}
 		
-		#gif_move, #gif_energize1, #gif_energize2 {
+		#gif_merge {
+			background: url(asset/method-merge.gif) no-repeat scroll;
+		}
+		
+		#gif_divide {
+			background: url(asset/method-divide.gif) no-repeat scroll;
+		}
+		
+		#gif_move, #gif_energize1, #gif_energize2, #gif_merge, #gif_divide {
 			background-size: contain;
 			background-position: center;
 		}

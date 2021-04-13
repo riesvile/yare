@@ -1771,6 +1771,8 @@ app.get('/asset/board.png', (req, res) => res.sendFile(__dirname + '/assets/boar
 app.get('/asset/method-move.gif', (req, res) => res.sendFile(__dirname + '/assets/method-move.gif'));
 app.get('/asset/method-energize1.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize1.gif'));
 app.get('/asset/method-energize2.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize2.gif'));
+app.get('/asset/method-merge.gif', (req, res) => res.sendFile(__dirname + '/assets/method-merge.gif'));
+app.get('/asset/method-divide.gif', (req, res) => res.sendFile(__dirname + '/assets/method-divide.gif'));
 app.get('/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/tr-loader.gif'));
 
 app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
