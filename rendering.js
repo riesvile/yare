@@ -1216,46 +1216,29 @@ function render_state(timestamp){
 		//console.log('energize_queue[i]');
 		//console.log(energize_queue[i]);
 		if (energize_queue[i][0].startsWith('star')) {
-			if (spirit_lookup[energize_queue[i][1]].hp != 0){
-				draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
-				if (energy_processed[energize_queue[i][1]] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
-					spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-					if (spirit_lookup[energize_queue[i][1]].energy > spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
-					energy_processed[energize_queue[i][1]] = 1;
+			
+			try {
+				if (spirit_lookup[energize_queue[i][1]].hp != 0){
+					draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
+					if (energy_processed[energize_queue[i][1]] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
+						spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+						if (spirit_lookup[energize_queue[i][1]].energy > spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
+						energy_processed[energize_queue[i][1]] = 1;
+					}
 				}
+			} catch (e) {
+				console.log(e);
+				location.reload();
 			}
+			
 		} else if (energize_queue[i][1].startsWith('base')) {
-			draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
-			if (energy_processed[energize_queue[i][0]] != 1){
-				if (spirit_lookup[energize_queue[i][0]].player_id != base_lookup[energize_queue[i][1]].player_id){
-					spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
-					base_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
-					//base_lookup[energize_queue[i][1]].draw();
-					energy_processed[energize_queue[i][0]] = 1;
-					//console.log('base energy');
-					//console.log(base_lookup[energize_queue[i][1]].energy);
-					//baseOffsetUpdate();
-				} else {
-					spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
-					if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
-					base_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-					//base_lookup[energize_queue[i][1]].draw();
-					energy_processed[energize_queue[i][0]] = 1;
-					//console.log('base energy');
-					//console.log(base_lookup[energize_queue[i][1]].energy);
-					//baseOffsetUpdate();
-				}
-				
-				
-			}
-		} else {
-			if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
-				draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
+			
+			try {
+				draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
 				if (energy_processed[energize_queue[i][0]] != 1){
-					if (spirit_lookup[energize_queue[i][0]].player_id != spirit_lookup[energize_queue[i][1]].player_id){
+					if (spirit_lookup[energize_queue[i][0]].player_id != base_lookup[energize_queue[i][1]].player_id){
 						spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
-						spirit_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
-						if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
+						base_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
 						//base_lookup[energize_queue[i][1]].draw();
 						energy_processed[energize_queue[i][0]] = 1;
 						//console.log('base energy');
@@ -1264,13 +1247,7 @@ function render_state(timestamp){
 					} else {
 						spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
 						if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
-						if (spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
-							spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-							if (spirit_lookup[energize_queue[i][1]].energy >= spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
-						} else {
-							//spirit_lookup[energize_queue[i][1]].energy = energize_queue[i][2];
-						}
-						
+						base_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
 						//base_lookup[energize_queue[i][1]].draw();
 						energy_processed[energize_queue[i][0]] = 1;
 						//console.log('base energy');
@@ -1278,7 +1255,54 @@ function render_state(timestamp){
 						//baseOffsetUpdate();
 					}
 				}
-			} 
+			} catch (e) {
+				console.log(e);
+				location.reload();
+			}
+			
+		} else {
+			
+				
+				try {
+					
+					if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
+					draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
+					if (energy_processed[energize_queue[i][0]] != 1){
+						if (spirit_lookup[energize_queue[i][0]].player_id != spirit_lookup[energize_queue[i][1]].player_id){
+							spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
+							spirit_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
+							if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
+							//base_lookup[energize_queue[i][1]].draw();
+							energy_processed[energize_queue[i][0]] = 1;
+							//console.log('base energy');
+							//console.log(base_lookup[energize_queue[i][1]].energy);
+							//baseOffsetUpdate();
+						} else {
+							spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
+							if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
+							if (spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
+								spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
+								if (spirit_lookup[energize_queue[i][1]].energy >= spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
+							} else {
+								//spirit_lookup[energize_queue[i][1]].energy = energize_queue[i][2];
+							}
+						
+							//base_lookup[energize_queue[i][1]].draw();
+							energy_processed[energize_queue[i][0]] = 1;
+							//console.log('base energy');
+							//console.log(base_lookup[energize_queue[i][1]].energy);
+							//baseOffsetUpdate();
+						}
+					}
+					
+					} 
+				} catch (e) {
+					console.log(e);
+					location.reload();
+				}
+				
+				
+			
 			
 		}
 	}
