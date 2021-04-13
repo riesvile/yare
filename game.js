@@ -587,7 +587,6 @@ for (var i = 0; i < no_teams.length;i++){
 // attack plan
 for(var i = 0 ; i < attack_groups.length; i++){
 	var idx = attack_groups[i];
-	console.log("bot attack group " +idx + " "+team_counts[idx] +" " +teams[idx])
 	if((team_counts[idx] == teams[idx] || team_counts[idx] > 15) && plans[idx] == default_plan){
 		var rnd = Math.random();
 		if(rnd < 0.33)
@@ -604,9 +603,10 @@ for(var i = 0 ; i < attack_groups.length; i++){
 		plans[idx] = default_plan;
 		memory['plan']=plans;
 	}
+
+	console.log("bot attack group " +idx + " count = "
+		+team_counts[idx] + " goal = " +teams[idx] + " plan = " + plans[idx]);
 }
-console.log("bot plans " + plans)
-console.log("bot counts " + team_counts)
 
 // 
 
