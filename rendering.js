@@ -252,6 +252,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 	var hover_content = [];
 	
 	for (i = 0; i < living_spirits.length; i++){
+		if(living_spirits[i].hp ==0) continue;
 		if (Math.abs(living_spirits[i].position[0] - board_xx) <= 10 && Math.abs(living_spirits[i].position[1] - board_yy) <= 10){
 			hover_content.push(['spirit', living_spirits[i].id, living_spirits[i].energy]);
 		}
