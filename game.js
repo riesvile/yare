@@ -1093,7 +1093,7 @@ if (!isMainThread){
 		}
 
 		function work(i, j){
-			console.log('work ' + living_spirits[i].id + " " + living_spirits[j].id)
+			//console.log('work ' + living_spirits[i].id + " " + living_spirits[j].id)
 			var pi = living_spirits[i].player_id;
 			var pj = living_spirits[j].player_id;
 			if (pi == pj){
@@ -1153,6 +1153,7 @@ if (!isMainThread){
 		}
 
 		Object.values(hist).forEach(function(bin){
+			/*
 			var bstr='';
 			for(i = 0; i <bin.length;i++){
 				var spir = living_spirits[bin[i]];
@@ -1163,6 +1164,7 @@ if (!isMainThread){
 			}
 
 			console.log("BIN: ["+bin+"] = [" + bstr+ "]");
+			*/
 			// assuming that visible == 2* min_beam
 			//
 			// this bin, all are visible && beamable
@@ -1188,7 +1190,7 @@ if (!isMainThread){
 				if(nb == undefined)
 					continue;
 
-				console.log("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
+				//console.log("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
 				// O(N^2) part
 				for(i = 1; i <bin.length;i++){
 					for(j = 1; j <nb.length;j++){
@@ -1713,13 +1715,14 @@ if (!isMainThread){
 			//console.log(spirit_lookup['sp1'].sight);
 			//
 			
+		/*
 			var start = process.hrtime();
 			get_sight();
 			var diff = process.hrtime(start);
 			var took1 = (diff[0] * 1000000000 + diff[1]) / 1000000;
 			console.log('get_sight took = ' + took1);
+			*/
 
-		/*
 
 			var start = process.hrtime();
 			get_sight_fast();
@@ -1750,8 +1753,6 @@ if (!isMainThread){
 						+ " vis=" + visible + " beam=" + beamable + " fb=[" + a.sight.friends_beamable
 						+ "] eb=[" + a.sight.enemies_beamable+ ']');
 					if(friend){
-						a.sight.friends.forEach((u) => assert(u.hp == 1, "hp:"+u.id+ " " + desc));
-						a.sight.friends_beamable.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
 						assert(a.sight.friends.length == (new Set(a.sight.friends)).size, -1 + desc)
 						assert(a.sight.friends_beamable.length == (new Set(a.sight.friends_beamable)).size, 0 + desc2)
 						assert((a.sight.friends.indexOf(b.id) != -1) == visible, 1 + desc);
@@ -1759,8 +1760,6 @@ if (!isMainThread){
 						assert((a.sight.friends_beamable.indexOf(b.id) != -1) == beamable, 3 + desc2);
 						assert((b.sight.friends_beamable.indexOf(a.id) != -1) == beamable, 4);
 					}else{
-						a.sight.enemies.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
-						a.sight.enemies_beamable.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
 						assert((a.sight.enemies.indexOf(b.id) != -1) == visible, 5 + desc);
 						assert((b.sight.enemies.indexOf(a.id) != -1) == visible, 6);
 						assert((a.sight.enemies_beamable.indexOf(b.id) != -1) == beamable, 7 + desc2);
@@ -1770,7 +1769,6 @@ if (!isMainThread){
 					}
 				}
 			}
-			*/
 
 			//console.log('spirit_lookup[s1].sight');
 			//console.log(spirit_lookup['s1'].sight);
