@@ -1807,6 +1807,7 @@ if (!isMainThread){
 
 	function update_state(){
 		game_duration++;
+		console.log('game_duration = ' + game_duration);
 		//after everything is calculated
 			
 	//console.log(player2_code);
@@ -1826,7 +1827,7 @@ if (!isMainThread){
 					'console2': [],
 					'tutorial': []
 				}
-				console.log('game_duration = ' + game_duration);
+				
 				console.log(tutorial_phase);
 				
 				if (game_duration == 100){
@@ -1860,6 +1861,13 @@ if (!isMainThread){
 					'console1': [],
 					'console2': [],
 					'end': end_winner
+				}
+				if (game_duration == 300){
+					if (top_s == 7){
+						end_game(0, 0);
+					}
+				} else if (game_duration == 4000){
+					end_game(0, 0);
 				}
 			}
 			
@@ -2644,10 +2652,10 @@ if (!isMainThread){
 		
 		// /*
 		
-		var start_num_spirits = 6;
+		var start_num_spirits = 7;
 		for (s = 1; s < 1+start_num_spirits ; s++){
-			if (s > 3){
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1250+s*20,620], 1, 0, players['p1'], colors['player1'], 100);
+			if (s > 4){
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], 1, 0, players['p1'], colors['player1'], 100);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
@@ -2659,8 +2667,8 @@ if (!isMainThread){
 		}
 
 		for (q = 1; q < 1+start_num_spirits ; q++){
-			if (q > 3){
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2970+q*20,1800], 1, 0, players['p2'], colors['player2'], 100);
+			if (q > 4){
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2950+q*20,1800], 1, 0, players['p2'], colors['player2'], 100);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
