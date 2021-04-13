@@ -244,16 +244,30 @@
 					
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Moves spirit to <span class="target_lowlight">target</span> with a speed of 20 units per tick</p>
+						<p class="p_method_desc">Transfers (1 × spirit's size) energy unit from itself into <span class="target_lowlight">target</span>. Max distance of the energy transfer is 200 units.</p>
+						<div class="sep_small"></div>
+						<p class="p_method_desc">If <span class="target_lowlight">target</span> is an enemy spirit or a base, the <span class="target_lowlight">target</span> takes damage (loses energy) equivalent to (2 × attacking spirit's size)</p>
+						
+						<div class="sep_small"></div>
+						
+						<p class="p_method_desc">If <span class="target_lowlight">target</span> is the same spirit as origin, the spirit will attempt harvesting energy from a star.</p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
 						
 						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
+							<div id="gif_energize1" class="gif_in"></div>
+							<code class="example_code">mySpirits[0].energize(my_spirits[1])</code>
+						</div>
+						<div class="sep_small"></div>
+						<div class="method_gif_example">
+							<div id="gif_energize2" class="gif_in"></div>
 							<code class="example_code">mySpirits[0].move([800, 900])</code>
 						</div>
+						
+						<div class="sep_small"></div>
+						<p class="p_normal">If a spirit or a base has 0 energy, the next hit, however small, will destroy it.</p>
 					</div>
 					
 				</div>

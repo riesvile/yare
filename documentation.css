@@ -385,10 +385,20 @@ table.info_table td {
 			bottom: 24px;
 			font-size: 16px;
 		}
-
-
+		
 		#gif_move {
 			background: url(asset/method-move.gif) no-repeat scroll;
+		}
+		
+		#gif_energize1 {
+			background: url(asset/method-energize1.gif) no-repeat scroll;
+		}
+		
+		#gif_energize2 {
+			background: url(asset/method-energize2.gif) no-repeat scroll;
+		}
+		
+		#gif_move, #gif_energize1, #gif_energize2 {
 			background-size: contain;
 			background-position: center;
 		}
