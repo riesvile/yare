@@ -309,11 +309,17 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
+		console.log(error);
 		
 		var regex = /\((.*):(\d+):(\d+)\)$/;
 		var eline_temp = error.stack.split("\n");
-		var eline = eline_temp[1].match(/\d+/)[0];
-		console.log(eline_temp[1].match(/\d+/)[0]);
+
+		var eline = 36;
+		var match = eline_temp[1].match(/\d+/);
+		if(match != null){
+			console.log(match[0]);
+			eline = match[0];
+		}
 		//var line = match[1];
 		//console.log(error.stack);
 		fill_error(players['p1'], error.message + " | line " + (eline - 37));
@@ -324,10 +330,16 @@ function user_code(){
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
+		console.log(error);
 		
 		var regex = /\((.*):(\d+):(\d+)\)$/;
 		var eline_temp = error.stack.split("\n");
-		var eline = eline_temp[1].match(/\d+/)[0];
+		var eline = 30;
+		var match = eline_temp[1].match(/\d+/);
+		if(match != null){
+			console.log(match[0]);
+			eline = match[0];
+		}
 		console.log(eline_temp[1].match(/\d+/)[0]);
 		//var line = match[1];
 		//console.log(error.stack);
@@ -949,6 +961,7 @@ if (!isMainThread){
 		}
 
 		function work(i, j){
+			console.log('work ' + living_spirits[i].id + " " + living_spirits[j].id)
 			var pi = living_spirits[i].player_id;
 			var pj = living_spirits[j].player_id;
 			if (pi == pj){
@@ -986,11 +999,10 @@ if (!isMainThread){
 			var xbin = Math.floor(pos[0] / h_square);
 			var ybin = Math.floor(pos[1] / h_square);
 
-
 			if (hist[[xbin, ybin]] == undefined){
 				// first element is the x,y, since js has no tuples
 				// and converts the key to string
-				hist[[xbin, ybin]] = [[xbin,ybin]];
+				hist[[xbin, ybin]] = [[xbin,ybin, -1]];
 			}
 			hist[[xbin, ybin]].push(i);
 			
@@ -1009,6 +1021,16 @@ if (!isMainThread){
 		}
 
 		Object.values(hist).forEach(function(bin){
+			var bstr='';
+			for(i = 0; i <bin.length;i++){
+				var spir = living_spirits[bin[i]];
+				if(spir == undefined)
+					bstr += "N/A,";
+				else
+					bstr += spir.id + ",";
+			}
+
+			console.log("BIN: ["+bin+"] = [" + bstr+ "]");
 			// assuming that visible == 2* min_beam
 			//
 			// this bin, all are visible && beamable
@@ -1020,16 +1042,21 @@ if (!isMainThread){
 			}
 
 			// iterate neighboring bins
-			// first is done, last is too far away 
-			for(d = 1; d < 15 ; d++){
-				var dy = Math.round(d /4);
-				var dx = d % 4;
+			// a rectangle 7x4, the bin is at position [3, 0] (top row, center)
+			for(d = 3; d < 7*4-1 ; d++){
+				// lower left corner, too far away
+				if(d==21) continue;
+
+				var dy = Math.floor(d / 7);
+				var dx = (d % 7) - 3;
+				if(dx==0 && dy==0) continue;
 
 				// neighbor bin
 				var nb = hist[[bin[0][0]+dx, bin[0][1]+dy]];
 				if(nb == undefined)
 					continue;
 
+				console.log("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
 				// O(N^2) part
 				for(i = 1; i <bin.length;i++){
 					for(j = 1; j <nb.length;j++){
@@ -1109,8 +1136,10 @@ if (!isMainThread){
 		var living_length = living_spirits.length;
 		for (h = 0; h < living_length; h++){
 		  living_spirits[h].sight = {
+				friends_beamable: [],
 				friends: [],
 				enemies: [],
+				enemies_beamable: [],
 				structures: []
 		  }
 		  living_spirits[h].qcollisions = [];
@@ -1526,6 +1555,8 @@ if (!isMainThread){
 			//objects sight
 			//console.log('spirit_lookup[sp1].sight');
 			//console.log(spirit_lookup['sp1'].sight);
+			//
+			
 			var start = process.hrtime();
 			get_sight();
 			var diff = process.hrtime(start);
@@ -1533,13 +1564,57 @@ if (!isMainThread){
 			console.log('get_sight took = ' + took1);
 
 		/*
+
 			var start = process.hrtime();
 			get_sight_fast();
 			var diff = process.hrtime(start);
 			var took2 = (diff[0] * 1000000000 + diff[1]) / 1000000;
 			console.log('get_sight_fast took = ' + took2);
+
+			function assert(cond, reason=''){
+				if(!cond)
+					console.log("FALSE: " + reason);
+			}
+			var living_length = living_spirits.length;
+			for (i = 0; i < living_length; i++){
+				if (living_spirits[i].hp == 0) continue;
+				for (j = i+1; j < living_length; j++){
+					if (living_spirits[j].hp == 0) continue;
+
+					var visible = is_in_sight(living_spirits[i], living_spirits[j]);
+					var beamable = is_in_sight(living_spirits[i], living_spirits[j], 200);
+					var friend = living_spirits[i].player_id == living_spirits[j].player_id;
+					var a = living_spirits[i];
+					var b = living_spirits[j];
+
+					var desc = (" " + a.id +" "+ b.id + " d=" + get_distance(a.position, b.position)
+						+ " vis=" + visible + " beam=" + beamable + " f=[" + a.sight.friends
+						+ "] e=[" + a.sight.enemies+ ']');
+					var desc2 = (" " + a.id +" "+ b.id + " d=" + get_distance(a.position, b.position)
+						+ " vis=" + visible + " beam=" + beamable + " fb=[" + a.sight.friends_beamable
+						+ "] eb=[" + a.sight.enemies_beamable+ ']');
+					if(friend){
+						a.sight.friends.forEach((u) => assert(u.hp == 1, "hp:"+u.id+ " " + desc));
+						a.sight.friends_beamable.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
+						assert(a.sight.friends.length == (new Set(a.sight.friends)).size, -1 + desc)
+						assert(a.sight.friends_beamable.length == (new Set(a.sight.friends_beamable)).size, 0 + desc2)
+						assert((a.sight.friends.indexOf(b.id) != -1) == visible, 1 + desc);
+						assert((b.sight.friends.indexOf(a.id) != -1) == visible, 2);
+						assert((a.sight.friends_beamable.indexOf(b.id) != -1) == beamable, 3 + desc2);
+						assert((b.sight.friends_beamable.indexOf(a.id) != -1) == beamable, 4);
+					}else{
+						a.sight.enemies.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
+						a.sight.enemies_beamable.forEach((u) => assert(u.hp == 1, "hp:"+u.id));
+						assert((a.sight.enemies.indexOf(b.id) != -1) == visible, 5 + desc);
+						assert((b.sight.enemies.indexOf(a.id) != -1) == visible, 6);
+						assert((a.sight.enemies_beamable.indexOf(b.id) != -1) == beamable, 7 + desc2);
+						assert((b.sight.enemies_beamable.indexOf(a.id) != -1) == beamable, 8);
+						assert(a.sight.enemies.length == (new Set(a.sight.enemies)).size, 9+desc)
+						assert(a.sight.enemies_beamable.length == (new Set(a.sight.enemies_beamable)).size, 10+desc2)
+					}
+				}
+			}
 			*/
-			
 
 			//console.log('spirit_lookup[s1].sight');
 			//console.log(spirit_lookup['s1'].sight);
@@ -1948,8 +2023,6 @@ if (!isMainThread){
 			if (temp_flag == 0){
 				var p1_top = 0;
 				var p2_top = 0;
-				console.log('living_spirits.length = ' + living_spirits.length);
-				//console.log('my_spirits1.length = ' + my_spirits1.length);
 				for (i = 0; i < living_spirits.length; i++){
 					spt = living_spirits[i];
 					//console.log(spt);	
@@ -2020,6 +2093,9 @@ if (!isMainThread){
 				}
 				//console.log('objects processing');
 				temp_flag = 0;
+				//console.log('my_spirits1.length = ' + my_spirits1.length);
+				console.log('living_spirits.length = ' + living_spirits.length
+					+ " p1 = " + p1_top + " p2 = " + p2_top );
 				//console.log('my_spirits1.length = ' + my_spirits1.length);
 			} 
 			
