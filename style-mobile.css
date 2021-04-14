@@ -413,18 +413,10 @@ p.tutorial_text {
 }
 
 #tutorial_infobox {
-	position: absolute;
-	width: 416px;
-	background-color: rgba(42, 44, 48, 0.32);
-	backdrop-filter: blur(60px);
-	z-index: 1000000;
-	padding: 24px 28px 8px 28px;
-	font-size: 16px;
-	font-weight: 500;
-	border-radius: 12px;
-	opacity: 0;
-	display: none;
-	pointer-events: none;
+	position: fixed;
+	top: 40px;
+	left: 5%;
+	width: calc(90% - 56px);
 }
 
 .bring_up {
@@ -530,6 +522,12 @@ span#hub_logout:hover {
 }
 
 #hub_menu #hub_reddit {
+	font-size: 20px;
+	color: rgba(133, 186, 234, 0.55);
+	line-height: 56px;
+}
+
+#hub_menu #hub_discord {
 	font-size: 20px;
 	color: rgba(133, 186, 234, 0.55);
 	line-height: 56px;
@@ -825,7 +823,9 @@ h1.page_head {
 	margin-top: 16vh;
 }
 
-
+#early_access {
+	width: calc(100vw - 80px);
+}
 
 
 }

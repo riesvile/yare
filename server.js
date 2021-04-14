@@ -249,6 +249,7 @@ var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
 //active games[game_id] = [status, player1_id, player2_id, server];
 var active_games = {};
+var tutorial_finishings = {};
 var server_occupancy_tutorial = {
 	t1: 50,
 	t2: 50,
@@ -303,6 +304,9 @@ function create_worker (game_id, game_type) {
 	  } else if (render_data.meta == 'test'){
 		  console.log('testing');
 		  console.log(render_data.data);
+	  } else if (render_data.meta == 'monitoring'){
+		  console.log('monitoring!!!!!!!!!');
+		  trigger_monitoring(render_data.game_id, render_data.data);
 	  } else {
 		  console.log('processing render data');
 		  console.log(render_data.game_id);
@@ -329,13 +333,13 @@ function load_balancer(){
 function get_color(color_name){
 	switch(color_name){
 		case 'gblue':
-			return 'color1';
+			return 'color3';
 			break;
 		case 'purply':
-			return 'color2';
+			return 'color1';
 			break;
 		case 'redish':
-			return 'color3';
+			return 'color2';
 			break;
 		case 'yerange':
 			return 'color4';
@@ -906,6 +910,30 @@ function trigger_deactivation(game_id){
 	
 }
 
+function trigger_monitoring(gid, val){
+	try {
+		fetch('https://yare.io/monitor', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        game_id: gid,
+				phase: val
+		    })
+		}).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 function deactivate_game(game_id){
 	console.log('here is deactivating happening');
 	try {
@@ -1399,6 +1427,29 @@ app.post('/resume-game', (req, res) => {
 });
 
 
+app.post('/monitor', (req, res) => {
+	console.log(req.body);
+	tutorial_finishings[req.body.game_id] = req.body.phase;
+	
+	res.status(200).send({
+    	data: 'monitoring data saved'
+    });
+});
+
+
+app.post('/qqmonitoring', (req, res) => {
+	console.log(req.body);
+	
+	res.status(200).send({
+		data: 'basic',
+    	active_games: active_games,
+		tutorials: tutorial_finishings
+    });
+});
+
+
+
+
 
 //global
 
@@ -1778,6 +1829,16 @@ app.get('/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/
 app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
 app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
 app.get('/nope', (req, res) => res.sendFile(__dirname + '/nope.html'));
+app.get('/site.webmanifest', (req, res) => res.sendFile(__dirname + '/site.webmanifest'));
+app.get('/apple-touch-icon.png', (req, res) => res.sendFile(__dirname + '/apple-touch-icon.png'));
+app.get('/favicon-32x32.png', (req, res) => res.sendFile(__dirname + '/favicon-32x32.png'));
+app.get('/favicon-16x16.png', (req, res) => res.sendFile(__dirname + '/favicon-16x16.png'));
+
+
+
+
+
+app.get('/qqmonitoring', (req, res) => res.sendFile(__dirname + '/qqmonitoring.html'));
 
 
 

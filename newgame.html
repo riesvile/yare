@@ -5,6 +5,10 @@
 	<style>
 	</style>
 	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./colors.css">
@@ -64,7 +68,8 @@
 		  <div id="choose_shape_block">
 			  
 			  <h2 class="deer_h">Choose a shape</h2>
-			  <p class="deer_p">See the <a href="https://yare.io/documentation" target="_blank">docs</a> for differences</p>
+			  <p class="deer_p"><span style="color: rgba(242, 246, 250, 0.69)">Yare.io is in early access</span>. No matter what you choose, you will play as Circles</p>
+			  <!-- <p class="deer_p">See the <a href="https://yare.io/documentation" target="_blank">docs</a> for differences</p> -->
 			  
 			  <div class="shape_block" id="shape_circles">
 				  <span class="shape_name" id="shape_name_circles">Circles</span>
@@ -420,6 +425,14 @@
 	  
 	  function start_game(type){
 		console.log('start game');
+		
+		if (getCookie('user_id') == undefined || getCookie('user_id') == "anonymous"){
+			alert('please login first!');
+			return;
+		} else if (chosen_shape == ''){
+			alert('choose a shape, please');
+			return;
+		}
 		
 		if (type == 'challenge'){
 			wait_challenge_view();

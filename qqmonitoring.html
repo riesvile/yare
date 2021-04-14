@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare.io</title>
+	<style>
+	</style>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+	  
+	  <div id="qq_active_games">
+	  	<h1 class="qq_h1">Active games</h1>
+		
+		<div class="qq_table" id="qq_active">
+		</div>
+		
+	  </div>
+	  
+	  
+	  <div id="qq_tutorials">
+	  	<h1 class="qq_h1">Tutorial progress</h1>
+		
+		<div class="qq_table_meh" id="qq_tut">
+		</div>
+		
+	  </div>
+	  
+  </body>
+  
+  <script>
+	  
+	  function fill_monitoring(monitoring_data){
+		 
+		 var active_games = monitoring_data.active_games;
+		 var temp_active_html = '';
+		 		 
+		 for (var key of Object.keys(active_games)) {
+		     temp_active_html += "<a href='https://yare.io/" + active_games[key][3] + "/" + key + "' class='qq_table_row'><span class='qq_game_id'>" + key + "</span><span class='qq_server'>" + active_games[key][3] + "</span><span class='qq_player1'>" + active_games[key][1] + "</span><span class='qq_player2'>" + active_games[key][2] + "</span>"
+		 }
+		 
+		 document.getElementById("qq_active").innerHTML = temp_active_html;
+		 
+		 
+		 
+		 
+		 var tuts = monitoring_data.tutorials;
+		 var temp_tut_html = '';
+		 		 
+		 for (var key2 of Object.keys(tuts)) {
+		     temp_tut_html += "<div class='qq_table_row_meh'><span class='qq_game_id'>" + key2 + "</span><span class='qq_tut_phase'>" + tuts[key2] + "</span>"
+		 }
+		 
+		 document.getElementById("qq_tut").innerHTML = temp_tut_html;
+		 
+	  }
+	  
+		fetch('/qqmonitoring', {
+		        method: "POST",
+		        headers: {
+		          Accept: "application/json",
+		          "Content-Type": "application/json"
+		        },
+		        body: JSON.stringify({
+			        meta: 'data-type',
+			    })
+
+	    }).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+		  if (response.data == 'basic'){
+			  fill_monitoring(response);
+		  } else {
+			  console.log('something wrong with monitoring');
+		  }
+	  })
+	  .catch(error => {
+		  console.log(error);
+	  })
+	  
+	  
+  		setInterval(function(){ 
+		
+	  		fetch('/qqmonitoring', {
+	  		        method: "POST",
+	  		        headers: {
+	  		          Accept: "application/json",
+	  		          "Content-Type": "application/json"
+	  		        },
+	  		        body: JSON.stringify({
+	  			        meta: 'data-type',
+	  			    })
+
+	  	    }).then(response => response.json())
+	  	      .then(response => {
+	  			  console.log(response);
+				  if (response.data == 'basic'){
+					  fill_monitoring(response);
+				  } else {
+					  console.log('something wrong with monitoring');
+				  }
+			  })
+			  .catch(error => {
+				  console.log(error);
+			  })
+		
+		}, 10000);
+	  
+  		
+	  
+  
+  
+  
+  </script>
+  
+  </html>

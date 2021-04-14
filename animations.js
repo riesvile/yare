@@ -130,7 +130,7 @@ function new_account(){
 	
 	anime({
 		targets: '#overlay',
-		backgroundColor: 'rgba(0, 0, 0, 0.39)',
+		backgroundColor: 'rgba(0, 0, 0, 0.59)',
 		backdropFilter: 'blur(12px)',
 		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
@@ -170,7 +170,7 @@ function login(){
 	
 	anime({
 		targets: '#overlay',
-		backgroundColor: 'rgba(0, 0, 0, 0.39)',
+		backgroundColor: 'rgba(0, 0, 0, 0.59)',
 		backdropFilter: 'blur(12px)',
 		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',
@@ -339,8 +339,8 @@ function login_success(user_name){
 	}
 	
 	try {
-		if (game_active == 0){
-			 window.location = 'https://yare.io/hub';
+		if (tutorial_phase == 0){
+			 //window.location = './';
 		}
 	} catch (error) {
 	  //console.error(error);
@@ -414,7 +414,7 @@ function resume_client(){
 function logout() {
 	eraseCookie('user_id');
 	eraseCookie('user_session');
-	window.location = './';
+	window.location = 'https://yare.io';
 }
 
 function user_links(){
@@ -953,9 +953,13 @@ function show_info_snippet(elid, leftPos, topPos){
 	el_width = info_el.getBoundingClientRect().width;
 	el_height = info_el.getBoundingClientRect().height;
 	
+	
+	if (window.screen.availWidth > 800){
+		info_el.style.left = leftPos - el_width + 40 + 'px';
+		info_el.style.top = topPos - el_height - 12 + 'px';
+	}
 	info_el.style.display = "block";
-	info_el.style.left = leftPos - el_width + 40 + 'px';
-	info_el.style.top = topPos - el_height - 12 + 'px';
+	
 	
 	anime({
   		targets: '#info_box',

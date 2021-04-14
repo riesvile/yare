@@ -937,6 +937,7 @@ var end_winner = 0;
 
 var game_duration = 0;
 var game_activity = 1;
+var qqmonitoring = [0, 0, 0, 0, 0, 0, 0, 0];
 
 //tutorial
 if (workerData[1] == 'tutorial'){
@@ -1260,6 +1261,10 @@ if (!isMainThread){
 					if (target.id == 'easy-bot2'){
 						console.log('tutorial phase 7 done');
 						tutorial_phase[6] = 1;
+						if (qqmonitoring[6] == 0){
+							qqmonitoring[6] = 1;
+							parentPort.postMessage({data: 7, game_id: workerData[0], meta: 'monitoring'});
+						}
 					}
 				} catch (error){
 					console.log(error);
@@ -1830,17 +1835,17 @@ if (!isMainThread){
 				
 				console.log(tutorial_phase);
 				
-				if (game_duration == 100){
+				if (game_duration == 150){
 					if (tutorial_phase[0] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 200){
+				} else if (game_duration == 300){
 					if (tutorial_phase[1] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 300){
+				} else if (game_duration == 400){
 					if (tutorial_phase[2] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
@@ -1883,13 +1888,17 @@ if (!isMainThread){
 				} else {
 					if (p1_defend != 1){
 						top_s++;
-						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 1, 10, players['p1'], colors['player1'], spirit_p1_cost);
+						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 5, 50, players['p1'], colors['player1'], spirit_p1_cost);
 						base_lookup['base_' + players['p1']].energy -= spirit_p1_cost;
 						//global[players['p1'] + top_s].move([1600, 660]);
 						//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 						if (workerData[1] == 'tutorial'){
 							console.log('tutorial phase 5 done');
 							tutorial_phase[4] = 1;
+							if (qqmonitoring[4] == 0){
+								qqmonitoring[4] = 1;
+								parentPort.postMessage({data: 5, game_id: workerData[0], meta: 'monitoring'});
+							}
 						}
 					}
 				}
@@ -1897,7 +1906,7 @@ if (!isMainThread){
 			if (base_lookup['base_' + players['p2']].energy >= spirit_p2_cost){
 				if (p2_defend != 1){
 					top_q++;
-					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2820, 1760], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
+					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2820, 1760], 5, 50, players['p2'], colors['player2'], spirit_p2_cost);
 					base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;
 					//global[players['p2'] + top_q].move([2800, 1760]);
 					//console.log(top_q);
@@ -1933,9 +1942,18 @@ if (!isMainThread){
 						if (move_queue[0][2][0] == 1000 && move_queue[0][2][1] == 1000){
 							console.log('tutorial phase 1 done');
 							tutorial_phase[0] = 1;
+							if (qqmonitoring[0] == 0){
+								qqmonitoring[0] = 1;
+								parentPort.postMessage({data: 1, game_id: workerData[0], meta: 'monitoring'});
+							}
 						} else if (move_queue[0][2][0] == 1600 && move_queue[0][2][1] == 700){
 							console.log('tutorial phase 3 done');
 							tutorial_phase[2] = 1;
+							if (qqmonitoring[2] == 0){
+								qqmonitoring[2] = 1;
+								parentPort.postMessage({data: 3, game_id: workerData[0], meta: 'monitoring'});
+							}
+							
 						}
 					} catch (error){
 						console.log(error);
@@ -2218,6 +2236,10 @@ if (!isMainThread){
 							if (star_close){
 								if (workerData[1] == 'tutorial' && energize_queue[i][0].id == 'anonymous1'){
 									tutorial_phase[1] = 1;
+									if (qqmonitoring[1] == 0){
+										qqmonitoring[1] = 1;
+										parentPort.postMessage({data: 2, game_id: workerData[0], meta: 'monitoring'});
+									}
 								}
 								//console.log('harvesting');
 								energize_queue[i][0].energy += energy_value * energize_queue[i][0].size;
@@ -2240,10 +2262,18 @@ if (!isMainThread){
 						if (energize_queue[i][1].id.startsWith('base') && energize_queue[i][0].energy < 10 && energize_queue[i][0].id == 'anonymous1'){
 							console.log('tutorial phase 4 done');
 							tutorial_phase[3] = 1;
+							if (qqmonitoring[3] == 0){
+								qqmonitoring[3] = 1;
+								parentPort.postMessage({data: 4, game_id: workerData[0], meta: 'monitoring'});
+							}
 						}
 						if (energize_queue[i][1].id.startsWith('base') && energize_queue[i][0].id == 'anonymous2' && tutorial_flag1 == 1){
 							console.log('tutorial phase 6 done');
 							tutorial_phase[5] = 1;
+							if (qqmonitoring[5] == 0){
+								qqmonitoring[5] = 1;
+								parentPort.postMessage({data: 6, game_id: workerData[0], meta: 'monitoring'});
+							}
 							
 							player2_code = `
 										//all = spirits.length;
@@ -2377,6 +2407,10 @@ if (!isMainThread){
 						if (death_queue[i].id == 'easy-bot2'){
 							console.log('tutorial phase 8 done');
 							tutorial_phase[7] = 1;
+							if (qqmonitoring[7] == 0){
+								qqmonitoring[7] = 1;
+								parentPort.postMessage({data: 8, game_id: workerData[0], meta: 'monitoring'});
+							}
 						}
 					} catch (error){
 						console.log(error);
@@ -2628,7 +2662,7 @@ if (!isMainThread){
 		
 		// --- if tutorial --- //
 		
-		 /*
+		// /*
 
 		for (s = 1; s < 2; s++){
 			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*10,480], 5, 0, players['p1'], colors['player1'], 100);
@@ -2642,7 +2676,7 @@ if (!isMainThread){
 			top_q = q;
 		}
 		
-		 */
+		// */
 		
 		// -- //
 		
@@ -2650,7 +2684,7 @@ if (!isMainThread){
 		
 		// --- if real --- //
 		
-		// /*
+		/*
 		
 		var start_num_spirits = 7;
 		for (s = 1; s < 1+start_num_spirits ; s++){
@@ -2678,7 +2712,7 @@ if (!isMainThread){
 			}
 		}
 		
-		// */
+		*/
 		
 		// -- //
 	

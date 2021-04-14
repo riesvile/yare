@@ -911,11 +911,11 @@ span#hub_logout:hover {
 	color: rgba(133, 186, 234, 0.55);
 }
 
-#hub_menu #hub_documentation:hover, #hub_menu #hub_leaderboard:hover, #hub_menu #hub_reddit:hover {
+#hub_menu #hub_documentation:hover, #hub_menu #hub_leaderboard:hover, #hub_menu #hub_reddit:hover, #hub_menu #hub_discord:hover {
 	color: rgba(159, 157, 232, 1);
 }
 
-#hub_menu #hub_reddit {
+#hub_menu #hub_reddit, #hub_menu #hub_discord {
 	font-size: 24px;
 	color: rgba(133, 186, 234, 0.55);
 	line-height: 56px;
@@ -1292,10 +1292,12 @@ span.game_or, span.cancel_or {
 }
 
 #waiting_illu {
-	width: 64px;
-	height: 44px;
+	width: 56px;
+	height: 56px;
 	background-color: #ff0;
 	margin-bottom: 52px;
+	background: url('asset/tr-loader.gif');
+	background-size: cover;
 }
 
 /* ----- */
@@ -1418,7 +1420,104 @@ h1#pnf {
 
 
 
+.sep_medium {
+	clear: both;
+	height: 40px;
+}
 
+#early_access {
+	font-size: 16px;
+	font-weight: 500;
+	padding: 24px 20px;
+	background-color: rgba(108, 98, 148, 0.39);
+	display: inline-block;
+	border-radius: 12px;
+	color: #DFD8FB;
+}
+
+
+
+
+#qq_active_games {
+	position: absolute;
+	top: 100px;
+	left: 100px;
+}
+
+.qq_h1 {
+	font-size: 24px;
+	font-weight: 600;
+	color: rgba(242, 246, 250, 1);
+	margin-bottom: 60px;
+}
+
+.qq_table {
+	width: 600px;
+	border-top: 1px solid rgba(242, 246, 250, 0.16);
+}
+
+.qq_table_row, .qq_table_row_meh {
+	width: 100%;
+	height: 48px;
+	line-height: 48px;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.16);
+	display: block;
+	position: relative;
+	color: rgba(242, 246, 250, 0.89);
+}
+
+.qq_table_row:hover {
+	background-color: rgba(242, 246, 250, 0.04);
+}
+
+.qq_table_row span {
+	display: block;
+	float: left;
+}
+
+.qq_game_id {
+	width: 140px;
+	font-family: monospace;
+}
+
+.qq_server {
+	width: 5%;
+}
+
+.qq_player1{
+	position: absolute;
+	right: 30%;
+	width: 25%;
+	text-align: right;
+}
+
+.qq_player2 {
+	position: absolute;
+	right: 0;
+	width: 25%;
+	text-align: right;
+}
+
+
+#qq_tutorials {
+	position: absolute;
+	top: 100px;
+	left: 800px;
+}
+
+.qq_table_row_meh span {
+	display: block;
+	float: left;
+}
+
+.qq_table_meh {
+	width: 200px;
+	border-top: 1px solid rgba(242, 246, 250, 0.16);
+}
+
+.qq_tut_phase {
+	width: 20%;
+}
 
 
 
