@@ -1889,7 +1889,7 @@ if (!isMainThread){
 				} else {
 					if (p1_defend != 1){
 						top_s++;
-						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 5, 50, players['p1'], colors['player1'], spirit_p1_cost);
+						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 1, 10, players['p1'], colors['player1'], spirit_p1_cost);
 						base_lookup['base_' + players['p1']].energy -= spirit_p1_cost;
 						//global[players['p1'] + top_s].move([1600, 660]);
 						//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
@@ -1907,7 +1907,7 @@ if (!isMainThread){
 			if (base_lookup['base_' + players['p2']].energy >= spirit_p2_cost){
 				if (p2_defend != 1){
 					top_q++;
-					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2820, 1760], 5, 50, players['p2'], colors['player2'], spirit_p2_cost);
+					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2820, 1760], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
 					base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;
 					//global[players['p2'] + top_q].move([2800, 1760]);
 					//console.log(top_q);
@@ -2663,7 +2663,7 @@ if (!isMainThread){
 		
 		// --- if tutorial --- //
 		
-		// /*
+		 /*
 
 		for (s = 1; s < 2; s++){
 			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1400+s*10,580], 5, 0, players['p1'], colors['player1'], 100);
@@ -2677,7 +2677,7 @@ if (!isMainThread){
 			top_q = q;
 		}
 		
-		// */
+		 */
 		
 		// -- //
 		
@@ -2685,16 +2685,16 @@ if (!isMainThread){
 		
 		// --- if real --- //
 		
-		/*
+		///*
 		
 		var start_num_spirits = 7;
 		for (s = 1; s < 1+start_num_spirits ; s++){
 			if (s > 4){
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], 1, 0, players['p1'], colors['player1'], 100);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], 1, 10, players['p1'], colors['player1'], 100);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], 1, 0, players['p1'], colors['player1'], 100);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], 1, 10, players['p1'], colors['player1'], 100);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			}
@@ -2703,17 +2703,17 @@ if (!isMainThread){
 
 		for (q = 1; q < 1+start_num_spirits ; q++){
 			if (q > 4){
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2950+q*20,1800], 1, 0, players['p2'], colors['player2'], 100);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2950+q*20,1800], 1, 10, players['p2'], colors['player2'], 100);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [3020+q*20,1820], 1, 0, players['p2'], colors['player2'], 100);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [3020+q*20,1820], 1, 10, players['p2'], colors['player2'], 100);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}
 		}
 		
-		*/
+		//*/
 		
 		// -- //
 	
