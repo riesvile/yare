@@ -199,7 +199,7 @@ function onPointerMove(e){
 	
 	
 		if (mousey == 1){
-			console.log('mouse moving');
+			//console.log('mouse moving');
 			panning = 1;
 			//console.log(x + " / " + y);
 		
@@ -1084,7 +1084,7 @@ function initiate_world(){
 	
 	world_stars = stars_queue.length;
 	for (i = 0; i < world_stars; i++){
-		console.log('star created');
+		//console.log('star created');
 		star_lookup[stars_queue[i].id] = new Star(stars_queue[i].id, stars_queue[i].position, stars_queue[i].size);
 		star_lookup[stars_queue[i].id].draw();
 	}
@@ -1092,7 +1092,7 @@ function initiate_world(){
 	
 	world_bases = bases_queue.length;
 	for (i = 0; i < world_bases; i++){
-		console.log('base created');
+		//console.log('base created');
 		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].energy,  bases_queue[i].player_id, bases_queue[i].color);
 		base_lookup[bases_queue[i].id].draw();
 	}

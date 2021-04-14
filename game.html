@@ -209,7 +209,7 @@
 	  }
 	  
 	  function taylor_UI(){
-		  console.log('pla1 = ' + pla1);
+		  //console.log('pla1 = ' + pla1);
 		  var cookie_user = getCookie('user_id');
 		  
 		  if (view_set == 0){
@@ -663,8 +663,8 @@
 				 colors['color1'] = incoming.colors[0];
 				 colors['color2'] = incoming.colors[1];
 				 
-				 console.log(game_type);
-				 console.log(tutorial_phase);
+				 //console.log(game_type);
+				 //console.log(tutorial_phase);
 				 
 				 taylor_UI();
 			 
@@ -790,7 +790,7 @@
 			  document.getElementById('update_code').innerHTML = "<span>UPDATE CODE</span>";
 			  tut_start();
 		  }
-		  console.log('clicked');
+		  //console.log('clicked');
 		  user_code = editor.getValue();
 		  localStorage.setItem("code_code", user_code);
 		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
@@ -925,7 +925,7 @@
 	  for (ce = 0; ce < copy_elements.length; ce++){
 	  	copy_elements[ce].addEventListener('click', function(){
 			code_to_copy = this.getAttribute('code');
-			console.log('code_to_copy = ' + code_to_copy);
+			//console.log('code_to_copy = ' + code_to_copy);
 			copyTextToClipboard(code_to_copy, this);
 	    }, false);
 	  }
