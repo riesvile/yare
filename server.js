@@ -1526,7 +1526,7 @@ wss.on('connection', function connection(ws, req) {
 	connections[ws.client_id] = ws;
 	//console.log(url);
 	//ws.send('welcome!');
-	console.log(connections);
+	//console.log(connections);
 	initiate_world(ws.client_id, g_id);
 	
 	ws.on('message', function incoming(message) {
@@ -1556,7 +1556,7 @@ wss.on('connection', function connection(ws, req) {
 			if (message['u_id'].length > 1){
 				console.log('code sent by');
 				console.log(message['u_id']);
-				console.log(active_games[g_id][1])
+				//console.log(active_games[g_id][1])
 			}
 			if (message['u_id'] == active_games[g_id][1] || active_games[g_id][1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
@@ -1679,7 +1679,7 @@ function findAgain(req, res){
 		.then((result) => {
 			//res.send(result);
 			console.log('db result');
-			console.log(result);
+			//console.log(result);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no game found"
@@ -1720,7 +1720,7 @@ app.post('/d1ns/:game_id', (req, res) => {
 		.then((result) => {
 			//res.send(result);
 			console.log('db result');
-			console.log(result);
+			//console.log(result);
 			if (result.length == 0){
 				findAgain(req, res);
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
