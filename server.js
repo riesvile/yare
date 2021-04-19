@@ -863,7 +863,7 @@ app.get('/all', (req, res) => {
 
 app.get('/game/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
-	res.sendFile(__dirname + '/game.html');
+	res.sendFile(__dirname + '/game3.html');
 });
 
 
@@ -1063,7 +1063,7 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 				console.log(error);
 			})
 	} else if (active_games[game_id_url][0] == 1){
-		res.sendFile(__dirname + '/game.html');
+		res.sendFile(__dirname + '/game3.html');
 	} else {
 		if (this_server_type == "tutorial" && active_games[game_id_url][0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
@@ -1271,7 +1271,7 @@ app.get('/t2f/est', (req, res) => {
 app.get('/challenge/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
 	if (active_games[game_id_url][0] == 1){
-		res.sendFile(__dirname + '/game.html');
+		res.sendFile(__dirname + '/game3.html');
 	} else if (active_games[game_id_url][0] == 0.5){
 		//pending – waiting for p2 to connect
 		res.sendFile(__dirname + '/challenge.html');
@@ -1776,7 +1776,7 @@ app.get('/d1/:game_id', (req, res) => {
 				console.log(error);
 			})
 	} else if (active_games[game_id_url][0] == 1){
-		res.sendFile(__dirname + '/game.html');
+		res.sendFile(__dirname + '/game3.html');
 	} else {
 		if (this_server_type == "tutorial" && active_games[game_id_url][0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
@@ -1794,12 +1794,13 @@ app.get('/d1/:game_id', (req, res) => {
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 app.get('/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
 app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
-app.get('/game', (req, res) => res.sendFile(__dirname + '/game.html'));
+app.get('/game', (req, res) => res.sendFile(__dirname + '/game3.html'));
 app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
 app.get('/documentation', (req, res) => res.sendFile(__dirname + '/documentation.html'));
 app.get('/leaderboard', (req, res) => res.sendFile(__dirname + '/leaderboard.html'));
 app.get('/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
 app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
+app.get('/rendering3.js', (req, res) => res.sendFile(__dirname + '/rendering3.js'));
 app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
 app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
 app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
@@ -1813,6 +1814,7 @@ app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFi
 app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
 app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
 app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
+app.get('/webker.js', (req, res) => res.sendFile(__dirname + '/webker.js'));
 
 
 app.get('/asset/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));

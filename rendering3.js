@@ -601,11 +601,6 @@ function game_over(winner){
 	game_over_box();
 	game_active = 0;
 	
-	
-  	
-	
-	
-	
 }
 
 
@@ -620,9 +615,69 @@ function draw_grid(){
 	}
 }
 
+function create_spirit_p1(spir_id){
+	
+	var spir_position = [game_blocks['t' + tick_counter].p1[spir_id][0][0], game_blocks['t' + tick_counter].p1[spir_id][0][1]];
+	var spir_size = game_blocks['t' + tick_counter].p1[spir_id][1];
+	var spir_energy = game_blocks['t' + tick_counter].p1[spir_id][2];
+	var spir_hp = game_blocks['t' + tick_counter].p1[spir_id][3];
+	var spir_player = pla1;
+	var spir_color = colors['color1'];
+
+	/*
+	if (spir_id.startsWith(pla1)) {
+	 var spir_diff = spir_id.substring(pla1.length);
+	 if (/^\d+$/.test(spir_diff)){
+	 	 spir_player = pla1;
+		 spir_color = colors['color1'];
+	 } else {
+		 spir_player = pla2;
+		 spir_color = colors['color2'];
+	 }
+	} else {
+	 spir_player = pla2;
+	 spir_color = colors['color2'];
+	}
+	*/
+
+	//console.log('creating spirit ' + spir_id);
+	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_hp);
+	
+}
+
+function create_spirit_p2(spir_id){
+	
+	var spir_position = [game_blocks['t' + tick_counter].p2[spir_id][0][0], game_blocks['t' + tick_counter].p2[spir_id][0][1]];
+	var spir_size = game_blocks['t' + tick_counter].p2[spir_id][1];
+	var spir_energy = game_blocks['t' + tick_counter].p2[spir_id][2];
+	var spir_hp = game_blocks['t' + tick_counter].p2[spir_id][3];
+	var spir_player = pla2;
+	var spir_color = colors['color2'];
+
+	/*
+	if (spir_id.startsWith(pla1)) {
+	 var spir_diff = spir_id.substring(pla1.length);
+	 if (/^\d+$/.test(spir_diff)){
+	 	 spir_player = pla1;
+		 spir_color = colors['color1'];
+	 } else {
+		 spir_player = pla2;
+		 spir_color = colors['color2'];
+	 }
+	} else {
+	 spir_player = pla2;
+	 spir_color = colors['color2'];
+	}
+	*/
+
+	console.log('creating spirit ' + spir_id);
+	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_hp);
+	
+}
+
 
 class Spirit {
-	constructor(id, position, size, energy, player, color, merged, hp = 1){
+	constructor(id, position, size, energy, player, color, hp = 1){
 		this.id = id
 		this.position = position;
 		this.size = size;
@@ -630,48 +685,21 @@ class Spirit {
 		this.energy = energy;
 		this.color = color;
 		
-		this.sight = {
-			friends: [],
-			enemies: [],
-			structures: []
-		}
-		this.merged = merged;
-		
 		//const properties
 		this.hp = hp;
-		this.move_speed = 1;
 		this.energy_capacity = size * 10;
 		this.player_id = player;
 		//this.player_id = player; set up later
 		living_spirits.push(this);
 	}
-		
-	birth() { 
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c.fill();
-		c.fillStyle = "rgba(255, 0, 0, 0.5)";
-	}
-	
-	
-	move(origin, incr, target) {
+
+	move(origin, incr) {
 	//incr is array [incrX, incrY]
 	
-		//change this later to only check for origin data (everything synced properly?)
 		this.position = origin;
-		//if next increment overshoots, position = target
-		//if (Math.abs(origin[0] - target[0]) <= Math.abs(incr[0]) && Math.abs(origin[1] - target[1]) <= Math.abs(incr[1])){
-		//	move_queue[i][0].position = [targetX, targetY];
-		//	move_queue[i][1] = [0,0];
-		//}
-		
-		
 		this.position[0] = origin[0] + (incr[0] * (elapsed / 1000));
 		this.position[1] = origin[1] + (incr[1] * (elapsed / 1000));
 		
-		//this.position[0] = origin[0] + (incr[0] / tick_counter_avg);
-		//this.position[1] = origin[1] + (incr[1] / tick_counter_avg);
-		//this.draw();
 	}
 	
 	merge(target) {
@@ -688,10 +716,6 @@ class Spirit {
 		increment[1] = (target.position[1] - this.position[1])/10;
 		
 		target.merged.push(that.id);
-		
-		for (let me = 0; me < that.merged.length; me++){
-			target.merged.push(that.merged[me]);
-		}
 		
 		target.energy_capacity = that.energy_capacity + target.energy_capacity;
 		target.energy += that.energy;
@@ -715,11 +739,6 @@ class Spirit {
 				//console.log('merged spirit');
 				//console.log('')
 		    }
-			//console.log('target.size');
-			//console.log(target.size);
-			//move this into target, reduce size
-			
-			
 			
 			counter_merge++;
 			
@@ -739,16 +758,6 @@ class Spirit {
 		
 		console.log('size before divide')
 		console.log(original_size);
-		//that.hp = 1;
-		//that.size = 1;
-		console.log('that.merged');
-		console.log(that.merged);
-		for (let d = 0; d < that.merged.length; d++){
-			spirit_lookup[that.merged[d]].hp = 1;
-			spirit_lookup[that.merged[d]].size = 1;
-			spirit_lookup[that.merged[d]].energy = Math.floor(original_energy / original_size);
-			spirit_lookup[that.merged[d]].energy_capacity = original_energy_capacity / original_size;
-		}
 		
 		var interval_divide = setInterval(function() {
 			that.size -= size_decr;
@@ -761,8 +770,7 @@ class Spirit {
 			counter_divide++;
 		}, 16);
 		
-		that.merged = [];
-		//that.size = 1;
+		
 		that.energy = original_energy / original_size;
 		console.log('that.original_energy_capacity = ' + original_energy_capacity);
 		console.log('that.original_size = ' + original_size);
@@ -846,11 +854,7 @@ class Spirit {
 			c.fillStyle = gradient;
 			c.fill();
 		}
-		
 	}
-	
-	//color_parts[3] * (spirit_percent_energy/2 + 0.69)
-	
 }
 
 class Star {
@@ -859,14 +863,10 @@ class Star {
 		this.position = position;
 		this.size = 220;
 		this.structure_type = 'star';
-		//this.energy = energy;
-		
 		stars.push(this);
 	}
 	
 	draw() {
-		//console.log('drawing star');
-		
 		
 		c_base.beginPath();
 		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
@@ -906,8 +906,6 @@ class Star {
 		
 		
 		
-	    
-	    //img.addEventListener('load', drawInnerSh(teX, teY), false);
 		
 	}
 }
@@ -919,22 +917,15 @@ class Base {
 		this.size = 20;
 		this.structure_type = 'base';
 		this.energy = energy;
-		this.sight = {
-			friends: [],
-			enemies: [],
-			structures: []
-		}
 		
 		this.hp = 1;
-		this.energy_capacity = 100;
+		this.energy_capacity = 200;
 		this.player_id = player;
 		this.color = color;
 		
 		// 1 if under attack
 		this.def_status = def_status;
 		
-		//this.energy = energy;
-	
 		bases.push(this);
 	}
 	
@@ -992,27 +983,6 @@ class Base {
 	}
 }
 
-function draw_death(id, size, color){
-	var spir = spirit_lookup[id];
-	var alpha = 100;
-	var sizee = size;
-	var colorr = color;
-	
-	
-	var interval = setInterval(function() {
-		c.beginPath();
-		c.arc(spir.position[0], spir.position[1], sizee, 0, Math.PI * 2, false);
-		c.fillStyle = colorr;
-		c.fill();
-		sizee++;
-	    if (sizee > 100) {
-	        clearInterval(interval);
-	    }
-	}, 16);
-	
-	
-}
-
 function draw_energize(origin, target, energy_strength, color){
 	var color_parts = color.match(/[.?\d]+/g);
 	//console.log(Number(color_parts[0]) + 50)
@@ -1026,9 +996,6 @@ function draw_energize(origin, target, energy_strength, color){
 		console.log(origin, target);
 	}
 	
-	//var incX = (target[0] - origin[0]) / 200;
-	//var incY = (target[1] - origin[1]) / 200;
-	
 	c.beginPath();
 	c.moveTo(origin[0], origin[1]);
 	c.lineTo(target[0], target[1]);
@@ -1037,28 +1004,10 @@ function draw_energize(origin, target, energy_strength, color){
 	c.stroke();
 	c.globalAlpha = 1;
 	
-	/*
-	
-	c.beginPath();
-	c.moveTo(origin[0], origin[1]);
-	c.lineTo(origin[0] + (dumb_cycler * incX), origin[1] + (dumb_cycler * incY));
-	c.strokeStyle = color;
-	c.globalAlpha = energy_strength/10 + 0.1;
-	c.stroke();
-	c.globalAlpha = 1;
-	
-	*/
 }
-
-
-
-function drawInnerSh(teX, teY) {
-			c_base.drawImage(img, teX - 225, teY - 225);
-			//console.log('drawing image at ' + teX + ', ' + teY);
-}
-
 
 function initiate_world(){
+	console.log('rendering3');
 	offsetUpdate();
 	spirit_lookup = {};
 	star_lookup = {};
@@ -1067,32 +1016,20 @@ function initiate_world(){
 	stars = [];
 	bases = [];
 	
-	world_spirits = units_queue.length;
-	for (i = 0; i < world_spirits; i++){
-		//if (units_queue[i].hp == 0) continue;
-		//console.log('units_queue[i]');
-		//console.log(units_queue[i]);
-		spirit_lookup[units_queue[i].id] = new Spirit(units_queue[i].id, units_queue[i].position, units_queue[i].size, units_queue[i].energy, units_queue[i].player_id, units_queue[i].color, units_queue[i].merged, units_queue[i].hp);
-		spirit_lookup[units_queue[i].id].draw();
-		//console.log(spirit_lookup[units_queue[i].id]);
-		//birth_queue.splice(i, 1);
-	}
-	units_queue = [];
 	
-	world_stars = stars_queue.length;
-	for (i = 0; i < world_stars; i++){
-		//console.log('star created');
-		star_lookup[stars_queue[i].id] = new Star(stars_queue[i].id, stars_queue[i].position, stars_queue[i].size);
-		star_lookup[stars_queue[i].id].draw();
-	}
-	stars_queue = [];
-	
+	//You are rendering bases before the info arrives
 	world_bases = bases_queue.length;
 	for (i = 0; i < world_bases; i++){
-		//console.log('base created');
 		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].energy,  bases_queue[i].player_id, bases_queue[i].color);
 		base_lookup[bases_queue[i].id].draw();
+		console.log('base drawn ' + bases_queue[i].id);
 	}
+	
+	star_lookup['star_zxq'] = new Star('star_zxq', [1000, 1000]);
+	star_lookup['star_a1c'] = new Star('star_a1c', [3200, 1400]);	
+	
+	star_lookup['star_zxq'].draw();
+	star_lookup['star_a1c'].draw();
 	
 	//draw_grid();
 	offsetUpdate();
@@ -1103,6 +1040,8 @@ function initiate_world(){
 
 function render_state(timestamp){
 	
+	
+	
 	elapsed = timestamp - prev;
 	prev = timestamp;
 	dumb_cycler++;
@@ -1111,14 +1050,8 @@ function render_state(timestamp){
 		dumb_cycler = 0;		
 		fill_hover_thing(pointing_at_x, pointing_at_y, board_x, board_y);
 	}
-	//console.log(dumb_cycler)
-	
-	//offsetX = offsetX + 1;
-	//offsetY = offsetY + 1;
-	
 	
 	c.fillStyle = 'rgba(6,8,10,1)';
-	//c.fillRect(0, 0, main_canvas.width, main_canvas.height);
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
 	
 	c.setTransform(scale, 0, 0, scale, 0, 0);
@@ -1128,227 +1061,36 @@ function render_state(timestamp){
 		offsetUpdate();
 	}
 	
-	
-	
-	//c_base.fillStyle = 'rgba(6,8,10,1)'
-	//c_base.fillRect(-offsetX, -offsetY, main_canvas.width, main_canvas.height);
-	//c.clearRect(0, 0, main_canvas.width, main_canvas.height);
-	
-	//world initiation (page refresh)
-	if (world_initiated == 0 && units_queue.length > 0){
+	//world initiation (page refresh) (hopefully no need for this)
+	if (world_initiated == 0 && bases_queue.length > 0){
 		initiate_world();
 	}
 	
-	
-	
-	//objects birth
-	birthlings = birth_queue.length;
-	for (i = 0; i < birthlings; i++){
-		spirit_lookup[birth_queue[i].id] = new Spirit(birth_queue[i].id, birth_queue[i].position, birth_queue[i].size, birth_queue[i].energy, birth_queue[i].player_id, birth_queue[i].color, birth_queue[i].merged, birth_queue[i].hp);
-		spirit_lookup[birth_queue[i].id].draw();
-		//console.log(spirit_lookup[birth_queue[i].id]);
-		
-		for (j = 0; j<bases.length; j++){
-			if (bases[j].player_id == birth_queue[i].player_id) bases[j].energy -= birth_queue[i].cost;
-			//console.log('bases.length = ' + bases.length);
-			//console.log('bases[' + j + '].player_id = ' + bases[j].player_id);
-		}
-		//birth_queue.splice(i, 1);
-	}
-	birth_queue = [];
-
-
-	//objects move
-	moveables = move_queue.length;
-	for (i = 0; i < moveables; i++){
-		//console.log('move_queue[i]');
-		//console.log(move_queue[i]);
-		try {
-			spirit_lookup[move_queue[i][0]].move(move_queue[i][1], move_queue[i][2], move_queue[i][3]);
-		} catch (e) {
-			//if spirit I don't know about, try creating it instead of reloading?
-			console.log(e);
-			console.log(move_queue[i][0]);
-			
-			var tpid = '';
-			var clr = '';
-			if (move_queue[i][0].startsWith(pla1)){
-				tpid = pla1;
-				clr = colors['color1'];
-			} else {
-				tpid = pla2;
-				clr = colors['color2'];
-			}
-			
-			spirit_lookup[move_queue[i][0]] = new Spirit(move_queue[i][0], move_queue[i][1], 1, 10, tpid, clr, [], 1);
-			//location.reload();
-		}
-		
-	}
-	//move_queue = [];
-
 	all_living = living_spirits.length;
 	for (i = 0; i < all_living; i++){
+		//console.log('living_spirits[i].id');
+		//console.log(living_spirits[i].id);
+		//console.log('pla2 ' + pla2);
+		//console.log('lookup ' + spirit_lookup[living_spirits[i].id].player);
+		if (spirit_lookup[living_spirits[i].id].player_id == pla1){
+			//console.log('active_block = ' + active_block);
+			//console.log(game_blocks[active_block]);
+			spirit_lookup[living_spirits[i].id].move([game_blocks[active_block].p1[living_spirits[i].id][0][4], game_blocks[active_block].p1[living_spirits[i].id][0][5]], [game_blocks[active_block].p1[living_spirits[i].id][0][2], game_blocks[active_block].p1[living_spirits[i].id][0][3]])
+			
+		} else if (spirit_lookup[living_spirits[i].id].player_id == pla2){
+			spirit_lookup[living_spirits[i].id].move([game_blocks[active_block].p2[living_spirits[i].id][0][4], game_blocks[active_block].p2[living_spirits[i].id][0][5]], [game_blocks[active_block].p2[living_spirits[i].id][0][2], game_blocks[active_block].p2[living_spirits[i].id][0][3]])
+			//console.log([game_blocks[active_block].p2[living_spirits[i].id][0][4], game_blocks[active_block].p2[living_spirits[i].id][0][5]], [game_blocks[active_block].p2[living_spirits[i].id][0][2], game_blocks[active_block].p2[living_spirits[i].id][0][3]])
+		}
 		spirit_lookup[living_spirits[i].id].draw();
 	}
 	
 	world_bases = bases.length;
 	for (i = 0; i < world_bases; i++){
-		//if (base_drawn[base_lookup[bases[i].id]] != 1){
-			base_lookup[bases[i].id].draw();
-		//	base_drawn[base_lookup[bases[i].id]] = 1;
-		//}
+		base_lookup[bases[i].id].draw();
 	}
 	
-	
-	//structures
-	//for (i = 0; i < stars.length; i++){
-	//	stars[i].draw();
-	//}
-
 	
 	//objects energize
-	
-	for (i = 0; i < energize_queue.length; i++){
-		//draw_energize(energize_queue[i])
-		//console.log('energize_queue[i]');
-		//console.log(energize_queue[i]);
-		if (energize_queue[i][0].startsWith('star')) {
-			
-			try {
-				if (spirit_lookup[energize_queue[i][1]].hp != 0){
-					draw_energize(star_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][1]].color);
-					if (energy_processed[energize_queue[i][1]] != 1 && spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
-						spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-						if (spirit_lookup[energize_queue[i][1]].energy > spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
-						energy_processed[energize_queue[i][1]] = 1;
-					}
-				}
-			} catch (e) {
-				console.log(e);
-				location.reload();
-			}
-			
-		} else if (energize_queue[i][1].startsWith('base')) {
-			
-			try {
-				draw_energize(spirit_lookup[energize_queue[i][0]].position, base_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
-				if (energy_processed[energize_queue[i][0]] != 1){
-					if (spirit_lookup[energize_queue[i][0]].player_id != base_lookup[energize_queue[i][1]].player_id){
-						spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
-						base_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
-						//base_lookup[energize_queue[i][1]].draw();
-						energy_processed[energize_queue[i][0]] = 1;
-						//console.log('base energy');
-						//console.log(base_lookup[energize_queue[i][1]].energy);
-						//baseOffsetUpdate();
-					} else {
-						spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
-						if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
-						base_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-						//base_lookup[energize_queue[i][1]].draw();
-						energy_processed[energize_queue[i][0]] = 1;
-						//console.log('base energy');
-						//console.log(base_lookup[energize_queue[i][1]].energy);
-						//baseOffsetUpdate();
-					}
-				}
-			} catch (e) {
-				console.log(e);
-				location.reload();
-			}
-			
-		} else {
-			
-				
-				try {
-					
-					if (spirit_lookup[energize_queue[i][0]].hp != 0 && spirit_lookup[energize_queue[i][1]].hp != 0){
-					draw_energize(spirit_lookup[energize_queue[i][0]].position, spirit_lookup[energize_queue[i][1]].position, energize_queue[i][2], spirit_lookup[energize_queue[i][0]].color);
-					if (energy_processed[energize_queue[i][0]] != 1){
-						if (spirit_lookup[energize_queue[i][0]].player_id != spirit_lookup[energize_queue[i][1]].player_id){
-							spirit_lookup[energize_queue[i][0]].energy -= (energize_queue[i][2] / 2);
-							spirit_lookup[energize_queue[i][1]].energy -= energize_queue[i][2];
-							if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
-							//base_lookup[energize_queue[i][1]].draw();
-							energy_processed[energize_queue[i][0]] = 1;
-							//console.log('base energy');
-							//console.log(base_lookup[energize_queue[i][1]].energy);
-							//baseOffsetUpdate();
-						} else {
-							spirit_lookup[energize_queue[i][0]].energy -= energize_queue[i][2];
-							if (spirit_lookup[energize_queue[i][0]].energy < 0) spirit_lookup[energize_queue[i][0]].energy = 0;
-							if (spirit_lookup[energize_queue[i][1]].energy <= spirit_lookup[energize_queue[i][1]].energy_capacity){
-								spirit_lookup[energize_queue[i][1]].energy += energize_queue[i][2];
-								if (spirit_lookup[energize_queue[i][1]].energy >= spirit_lookup[energize_queue[i][1]].energy_capacity) spirit_lookup[energize_queue[i][1]].energy = spirit_lookup[energize_queue[i][1]].energy_capacity;
-							} else {
-								//spirit_lookup[energize_queue[i][1]].energy = energize_queue[i][2];
-							}
-						
-							//base_lookup[energize_queue[i][1]].draw();
-							energy_processed[energize_queue[i][0]] = 1;
-							//console.log('base energy');
-							//console.log(base_lookup[energize_queue[i][1]].energy);
-							//baseOffsetUpdate();
-						}
-					}
-					
-					} 
-				} catch (e) {
-					console.log(e);
-					location.reload();
-				}
-				
-				
-			
-			
-		}
-	}
-
-
-
-	//objects death
-	for (i = 0; i < death_queue.length; i++){
-		console.log(death_queue[i]);
-		if (death_queue[i].startsWith('base')){
-			var winner = '';
-			var loser = base_lookup[death_queue[i]].player_id;
-			if (loser == pla1){
-				winner = pla2;
-			} else {
-				winner = pla1;
-			}
-			//alert('game over, ' + winner + ' won');
-			game_over(winner, loser);
-		} else {
-			//spirit_lookup[death_queue[i]].hp = 0;
-			//draw_death(spirit_lookup[death_queue[i]].id, spirit_lookup[death_queue[i]].size, spirit_lookup[death_queue[i]].color);
-			spirit_lookup[death_queue[i]].death();
-			
-			//delete spirit_lookup[suid];
-			//var index = living_spirits.findIndex(x => x.id == death_queue[i].id);
-			//living_spirits.splice(index);
-		}
-		//draw_death(death_queue[i]);
-		
-	}
-	death_queue = [];
-	
-	
-	//objects merge
-	for (i = 0; i < merge_queue.length; i++){
-		//there is a 'continue' if hp == 0 somewhere around that might cause problems later
-		spirit_lookup[merge_queue[i][1]].merge(spirit_lookup[merge_queue[i][2]]);
-	}
-	merge_queue = [];
-	
-	
-	//objects divide
-	for (i = 0; i < divide_queue.length; i++){
-		spirit_lookup[divide_queue[i][1]].divide();
-	}
-	divide_queue = [];
-	
 	
 	
 	
@@ -1360,7 +1102,9 @@ function render_state(timestamp){
 }
 
 
-render_state();
+
+// Start only when 2 blocks processed and ready?
+//render_state();
 
 
 

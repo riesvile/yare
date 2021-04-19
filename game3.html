@@ -178,15 +178,29 @@
   </body>
   <script src="../animations.js"></script>
   <script>
-	  window.onfocus = function() {
-		  setTimeout(function(){
-			  socket.send('reinitiate');
-			  world_initiated = 0;
-		  }, 10);
-	  };
-	  window.onblur = function() {
-	      focused = false;
-	  };
+	  
+	  function webker_msg_received(msg){
+		  console.log('received ' + msg.data);
+	  }
+
+	  function webker_error(err_msg){
+		  console.log(err_msg);
+	  }
+	  
+	  if (window.Worker) {
+	    // Create a new Web Worker
+	   //Pass the URI of the script which has to run as a web worker to the Worker Constructor
+	    const webker = new Worker('../webker.js'); 
+		webker.postMessage('test');
+		webker.addEventListener('message', webker_msg_received);
+		webker.addEventListener('error', webker_error);
+		
+		
+	  } else {
+		  console.log('no worker support');
+	  }
+	  
+	  
 	  var editor = ace.edit("editor");
 	  editor.setTheme("ace/theme/clouds_midnight");
 	  editor.session.setMode("ace/mode/javascript");
@@ -206,6 +220,22 @@
 	  if (localStorage.getItem("code_code") != null){
 		  var code_code = localStorage.getItem("code_code");
 		  editor.setValue(code_code, 1);
+	  }
+	  
+	  function run_it(){
+		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
+			  game_running = 1;
+			  console.log('GAME IS RUNNING');
+			  
+			  setInterval(function(){ 
+				  // change to tick_counter (not - 1)
+				  active_block = 't' + (tick_counter - 1);
+				  console.log('active block = ' + active_block);
+			  }, 1000);
+			  
+			  render_state();
+			  
+		  }
 	  }
 	  
 	  function taylor_UI(){
@@ -315,6 +345,10 @@
 	  
 	  var energy_processed = {};
 	  var base_drawn = {};
+	  var game_blocks = {};
+	  var active_block = 0;
+	  var game_running = 0;
+	  var tick_counter = 0;
 	  var elapsed = 0;
 	  var prev = 0;
 	  
@@ -348,7 +382,6 @@
 			  energy_processed = {};
 			  base_drawn = {};
 		  
-			  tick_counter = 0;
 			  elapsed = 0;
 			  
 			  document.getElementById('console_in').innerHTML = '';
@@ -356,70 +389,149 @@
 			  try {
 				 incoming = JSON.parse(event.data);
 				 console.log(incoming);
+				 console.log(incoming.t - 1);
+				 tick_counter = incoming.t;
+				 
+				 if (tick_counter > 1){
+					 //game_blocks['t' + tick_counter] = incoming;
+					 //console.log(game_blocks);
+					 
+					 game_blocks['t' + tick_counter] = {
+						 'p1': {},
+						 'p2': {},
+						 'e': [],
+						 's': []
+					 }
+					 
+					 
+					 //
+					 // Populating game_blocks
+					 //
+					 
+					 for (i = 0; i < incoming.p1.length; i++){
+						 var spir_id = incoming.p1[i][0];
+						 game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3], incoming.p1[i][4]];
+						 //console.log('previous tick');
+						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
+							 //console.log('location');
+							 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
+							 var oldLoc = [0, 0];
+							 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
+							 var oldEnergy = 0;
+							 var oldSize = 0;
+							 
+							 if (spirit_lookup[spir_id] == undefined && pla1 != undefined){
+								 create_spirit_p1(spir_id);
+							 }
+							 
+							 if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
+							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
+								oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
+								oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
+								//console.log('went here');
+							 } else {
+								// new spirit instance
+								 console.log('create spirit');
+							 }
+							 game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
+							 game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
+							 game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
+							 game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
+							 
+							 game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+							 game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+							 
+							 
+						 }
+					 }
+					 
+					 for (j = 0; j < incoming.p1.length; j++){
+						 var spir_id = incoming.p2[j][0];
+						 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3], incoming.p2[j][4]];
+						 
+						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
+							 //console.log('location');
+							 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
+							 var oldLoc = [0, 0];
+							 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
+							 var oldEnergy = 0;
+							 var oldSize = 0;
+							 
+							 if (spirit_lookup[spir_id] == undefined && pla2 != undefined){
+								 create_spirit_p2(spir_id);
+							 }
+							 
+							 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
+							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
+								oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
+								oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
+								//console.log('went here');
+							 } else {
+								// new spirit instance
+								 console.log('create spirit');
+							 }
+							 game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
+							 game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
+							 game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
+							 game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
+							 
+							 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+							 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+							 
+						 }
+					 }
+					 
+					 game_blocks['t' + tick_counter]['e'] = incoming.e;
+					 game_blocks['t' + tick_counter]['s'] = incoming.s;
+					 
+					 console.log(game_blocks);
+					 run_it();
+					 
+				 }
+				 
+				 
+				 
+				 //if (game_blocks.length > 1){
+					 
+					 
+					 //position changes
+					 //var p1_units = game_blocks['t' + tick_counter - 1].p1.length;
+					 //console.log('p1 units = ' + p1_units);
+					 //var p2_units = game_blocks['t' + tick_counter - 1].p2.length;
+					 //console.log('p2 units = ' + p2_units);
+					 //for (i = 0; i < )
+					 
+					 
+					 
+					 
+				 	//game_blocks['t' + tick_counter]
+				 //} else {
+					 //game_blocks.push(incoming)
+				 //}
+				 
+				 //block[incoming.t] = 
 			 
 				 //birthLen = incoming.birth.length;
 				 //for (i = 0; i < birthLen; i++){
 				 //	birth_queue.push(incoming.birth[i]);
 				 //}
 			 
-				 if (incoming.birth.length > 0){
-					 birth_queue = incoming.birth;
-					 //console.log(birth_queue);
-				 } else {
-					 birth_queue = [];
-				 }
+				
 			 
-				 if (incoming.move.length > 0){
-					 move_queue = incoming.move;
-					 //console.log(move_queue);
-				 } else {
-					 move_queue = [];
-				 }
-			 
-				 if (incoming.energize.length > 0){
-					 energize_queue = incoming.energize;
-				 } else {
-					 energize_queue = [];
-				 }
-				 
-				 if (incoming.special.length > 0){
-					 console.log('incoming.special');
-					 console.log(incoming.special);
-					 
-					 for (s = 0; s < incoming.special.length; s++){
-						 if (incoming.special[s][0] == 'm'){
-							 merge_queue.push(incoming.special[s]);
-						 } else if (incoming.special[s][0] == 'd'){
-						 	 divide_queue.push(incoming.special[s]);
-						 }
-					 }
-					 
-					 //special_queue = incoming.special;
-				 } else {
-					 //special_queue = [];
-					 merge_queue = [];
-				 }
-			 
-				 if (incoming.death.length > 0){
-					 death_queue = incoming.death;
-				 } else {
-					 death_queue = [];
-				 }
-			 
-				 if (incoming.error_msg1.length > 0){
+				 if (incoming.er1.length > 0){
 					 if (pla1 == getCookie('user_id')){
 						 has_error = 1;
 						 error_console();
 						 var err_lbl = "ERRORS";
-						 if (incoming.error_msg1.length == 1) err_lbl = "ERROR";
-						 document.getElementById('console_lbl').innerHTML = "CONSOLE (" + incoming.error_msg1.length + " " + err_lbl + ")"; 
+						 if (incoming.er1.length == 1) err_lbl = "ERROR";
+						 document.getElementById('console_lbl').innerHTML = "CONSOLE (" + incoming.er1.length + " " + err_lbl + ")"; 
 						 cnsl_in = document.getElementById('console_in');
-					 	 for (cns = 0; cns < incoming.error_msg1.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.error_msg1[cns] + "</p>";
-							 //console.error(incoming.error_msg1[cns]);
+					 	 for (cns = 0; cns < incoming.er1.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.er1[cns] + "</p>";
+							 //console.error(incoming.err1[cns]);
 					 	 }					 
 					 }
-				 } else if (incoming.error_msg1.length == 0){
+				 } else if (incoming.er1.length == 0){
 					 if (pla1 == getCookie('user_id')){
 					 	 has_error = 0;
 						 clean_console();
@@ -428,15 +540,15 @@
 				 }
 				 
 				 
-				 if (incoming.error_msg2.length > 0){
+				 if (incoming.er2.length > 0){
 					 if (pla2 == getCookie('user_id')){
 						 has_error = 1;
 						 error_console();
-						 document.getElementById('console_lbl').innerHTML = "(" + incoming.error_msg2.length + ") CONSOLE"; 
+						 document.getElementById('console_lbl').innerHTML = "(" + incoming.er2.length + ") CONSOLE"; 
 						 cnsl_in = document.getElementById('console_in');
-					 	 for (cns = 0; cns < incoming.error_msg2.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.error_msg2[cns] + "</p>";
-							 //console.error(incoming.error_msg2[cns]);
+					 	 for (cns = 0; cns < incoming.er2.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.er2[cns] + "</p>";
+							 //console.error(incoming.err2[cns]);
 					 	 }
 						 
 						 console.log('t')
@@ -444,7 +556,7 @@
 						 update_console_height(console_content_height);
 						 
 					 }
-				 } else if (incoming.error_msg2.length == 0){
+				 } else if (incoming.er2.length == 0){
 					 if (pla2 == getCookie('user_id')){
 					 	 has_error = 0;
 						 clean_console();
@@ -453,23 +565,23 @@
 				 }
 				 
 			 
-				 if (incoming.console1.length > 0){
+				 if (incoming.c1.length > 0){
 					 if (pla1 == getCookie('user_id')){
 						 cnsl_in = document.getElementById('console_in');
-					 	 for (cns = 0; cns < incoming.console1.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.console1[cns] + "</p>";
+					 	 for (cns = 0; cns < incoming.c1.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.c1[cns] + "</p>";
 							 //console.log(incoming.console1[cns]);
 					 	 }
 					 }
 					
 				 }
 			 
-				 if (incoming.console2.length > 0){
+				 if (incoming.c2.length > 0){
 					 if (pla2 == getCookie('user_id')){
 						 cnsl_in = document.getElementById('console_in');
 						 cnsl_in.innerHTML = '';
-					 	 for (cns = 0; cns < incoming.console2.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.console2[cns] + "</p>";
+					 	 for (cns = 0; cns < incoming.c2.length; cns++){
+							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.c2[cns] + "</p>";
 							 //console.log(incoming.console2[cns]);
 					 	 }
 					 }
@@ -607,34 +719,18 @@
 				 
 				 
 			  } catch (e) {
-				  //console.log(e);
+				  console.log(e);
 			  }
 		  
 			  //world_initiation
 			  try {
-		 		 if (incoming.units.length > 0){
-		 			 units_queue = incoming.units;
-		 			 //console.log('units_queue');
-		 			 //console.log(units_queue);
-		 		 } else {
-		 			 units_queue = [];
-		 		 }
-			 
-				 if (incoming.stars.length > 0){
-					 stars_queue = incoming.stars;
-		 			 //console.log('stars_queue');
-		 			 //console.log(stars_queue);
-				 }
-			 
-				 if (incoming.bases.length > 0){
-					 bases_queue = incoming.bases;
-		 			 //console.log('bases_queue');
-		 			 //console.log(bases_queue);
-				 }
-			 
-				 //console.log('incoming.tut');
-				 //console.log(incoming.tut);
-			 
+				  
+ 				 if (incoming.bases.length > 0){
+ 					 bases_queue = incoming.bases;
+ 		 			 //console.log('bases_queue');
+ 		 			 //console.log(bases_queue);
+ 				 }
+		 				 
 				 if (incoming.tut == 1){
 					 game_type = 'tutorial';
 					 document.getElementById('resign_game').style.display = 'none';
@@ -658,6 +754,7 @@
 			 
 				 //console.log('incoming =======================================');
 				 //console.log(incoming);
+				 console.log('here is initiation');
 				 pla1 = incoming.players[0];
 				 pla2 = incoming.players[1];
 				 colors['color1'] = incoming.colors[0];
@@ -669,51 +766,11 @@
 				 taylor_UI();
 			 
 			  } catch (e) {
-				  //console.log(e);
+				  console.log(e);
 			  }
 		  
 		  
-			  //code_update
-		  
-			  try {
-	 			 codecoming = JSON.parse(event.data);
-	 			 //console.log('codecoming');
-				 //console.log(codecoming);
 			 
-				 //console.log('pla1 = ' + pla1);
-				 //console.log('cookie.user_id = ' + getCookie('user_id'));
-	 		
-				 if (pla1 == getCookie('user_id')){
-					 if (codecoming.player1){
-						 if (pla1 == "anonymous" && getCookie('session_id') == codecoming.player1_session){
-							 //console.log('anonymous user oisjhfd oidjf iosdh fiodh giodfj giodfj giojhdfiog diohfg iodfhg iodfh giodf hgiodf hgiodhfgiodhf giodfh iog dfiogh ');
-							 //editor.setValue(codecoming.player1, 1);
-							 //console.log(editor.getValue().length);
-						 	 if (editor.getValue().length != 24){
-								 tutorial_started = 1;
-								 tut_start();
-						 	 }
-						 
-						 } else if (pla1 != "anonymous" && pla1 == getCookie('user_id')){
-						 	// editor.setValue(codecoming.player1, 1);
-						 	 if (editor.getValue().length != 24){
-								 tutorial_started = 1;
-								 tut_start();
-						 	 }
-						 }
-					 }
-				 } else if (pla2 == getCookie('user_id')){
-					if (codecoming.player2){
-				 		//editor.setValue(codecoming.player2, 1);
-					}
-				 }
-			 
-			 
-			  } catch (e) {
-				  //console.log(e);
-			  }
-		  
-		 
 		  
   		 
 	  		  y = Date.now();
@@ -945,7 +1002,7 @@
 	  
   </script>
   <script src="../tutorial_texts.js"></script>
-  <script src="../rendering.js"></script>
+  <script src="../rendering3.js"></script>
   <script src="../basics.js"></script>
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
