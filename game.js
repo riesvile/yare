@@ -481,11 +481,17 @@ var teams = [1000];
 var attack_groups = []
 
 if(bot_code){
-	teams = [5, 5, 5, 15, 10, 20, 1000];
-	attack_groups = [2, 4, 6];
+	teams = [5, 2, 5,
+		5, 10, 16, 20, 1000];
+	attack_groups = [3, 5, 7];
 	if(memory['plans'] == undefined)
-		memory['plans'] = ['H',
-		'B', default_plan, 'B', default_plan, 'B', default_plan];
+		memory['plans'] = ['B', 'B', 'B',
+			default_plan, 'B', default_plan, 'B', default_plan];
+
+	// do not waste time on start
+	if(memory['time'] > 40){
+		memory['plans'][1] ='b';
+	}
 } else {
     // H - harvest star
     // d - defend star, only visible
@@ -626,6 +632,12 @@ function pick_enemy (e, follow=false){
 for (var i = 0; i < my_alive.length;i++){
     s = spirits[my_alive[i]];
 	var t = memory[s.id+'team'];
+
+	// disperse, so that they do not move in one batch
+	if(bot_code && t == 0 && 3*(i+1) >= memory['time']){
+		continue;
+	}
+
 	var plan = plans[t];
 	var d2base = dist_sq(s.position, base.position);
 	var d2star = dist_sq(s.position, my_star.position);
