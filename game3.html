@@ -223,14 +223,18 @@
 	  }
 	  
 	  function run_it(){
+		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
 			  game_running = 1;
 			  console.log('GAME IS RUNNING');
 			  
+			  active_block = 't' + (tick_counter);
+			  console.log('active block = ' + active_block);
 			  setInterval(function(){ 
 				  // change to tick_counter (not - 1)
-				  active_block = 't' + (tick_counter - 1);
+				  active_block = 't' + (tick_counter);
 				  console.log('active block = ' + active_block);
+				  total_time = 0;
 			  }, 1000);
 			  
 			  render_state();
@@ -349,6 +353,7 @@
 	  var active_block = 0;
 	  var game_running = 0;
 	  var tick_counter = 0;
+	  var total_time = 0;
 	  var elapsed = 0;
 	  var prev = 0;
 	  
@@ -389,7 +394,6 @@
 			  try {
 				 incoming = JSON.parse(event.data);
 				 console.log(incoming);
-				 console.log(incoming.t - 1);
 				 tick_counter = incoming.t;
 				 
 				 if (tick_counter > 1){
@@ -400,7 +404,8 @@
 						 'p1': {},
 						 'p2': {},
 						 'e': [],
-						 's': []
+						 's': [],
+						 'units': []
 					 }
 					 
 					 
@@ -411,6 +416,7 @@
 					 for (i = 0; i < incoming.p1.length; i++){
 						 var spir_id = incoming.p1[i][0];
 						 game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3], incoming.p1[i][4]];
+						 game_blocks['t' + tick_counter].units.push(incoming.p1[i][0]);
 						 //console.log('previous tick');
 						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
 							 //console.log('location');
@@ -428,26 +434,34 @@
 							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
 								oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
 								oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
-								//console.log('went here');
+								
+	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
+	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
+	   							game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
+	   							game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
+							 
+	   							game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
 							 } else {
 								// new spirit instance
-								 console.log('create spirit');
+								console.log('spirit born (probably)');
+								 
+ 	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
+ 	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
+ 	   							game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
+ 	   							game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
+							 
+ 	   							game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+ 	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
 							 }
-							 game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
-							 game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
-							 game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
-							 game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
-							 
-							 game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
-							 game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
-							 
 							 
 						 }
 					 }
 					 
-					 for (j = 0; j < incoming.p1.length; j++){
+					 for (j = 0; j < incoming.p2.length; j++){
 						 var spir_id = incoming.p2[j][0];
 						 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3], incoming.p2[j][4]];
+						 game_blocks['t' + tick_counter].units.push(incoming.p2[j][0]);
 						 
 						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
 							 //console.log('location');
@@ -459,25 +473,33 @@
 							 
 							 if (spirit_lookup[spir_id] == undefined && pla2 != undefined){
 								 create_spirit_p2(spir_id);
+								 console.log('spirit created ' + spir_id);
 							 }
 							 
 							 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
 							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
 								oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
 								oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
-								//console.log('went here');
+								
+	   							game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
+	   							game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
+	   							game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
+	   							game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
+							 
+	   							game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+	   							game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
 							 } else {
 								// new spirit instance
-								 console.log('create spirit');
+								 console.log('spirit born (probably)');
+								 
+								 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
+								 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
+								 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
+								 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
+							 
+								 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+								 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
 							 }
-							 game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
-							 game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
-							 game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
-							 game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
-							 
-							 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-							 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
-							 
 						 }
 					 }
 					 
@@ -719,7 +741,7 @@
 				 
 				 
 			  } catch (e) {
-				  console.log(e);
+				  //console.log(e);
 			  }
 		  
 			  //world_initiation
@@ -766,7 +788,7 @@
 				 taylor_UI();
 			 
 			  } catch (e) {
-				  console.log(e);
+				  //console.log(e);
 			  }
 		  
 		  

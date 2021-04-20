@@ -1526,7 +1526,7 @@ if (!isMainThread){
 			if (base_lookup['base_' + players['p2']].energy >= spirit_p2_cost){
 				if (p2_defend != 1){
 					top_q++;
-					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2820, 1760], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
+					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2620, 1760], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
 					base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;
 					//global[players['p2'] + top_q].move([2800, 1760]);
 					//console.log(top_q);
