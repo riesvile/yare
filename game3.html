@@ -403,6 +403,8 @@
 					 game_blocks['t' + tick_counter] = {
 						 'p1': {},
 						 'p2': {},
+						 'b1': [],
+						 'b2': [],
 						 'e': [],
 						 's': [],
 						 'units': []
@@ -505,6 +507,11 @@
 					 
 					 game_blocks['t' + tick_counter]['e'] = incoming.e;
 					 game_blocks['t' + tick_counter]['s'] = incoming.s;
+					 game_blocks['t' + tick_counter]['b1'] = incoming.b1;
+					 game_blocks['t' + tick_counter]['b2'] = incoming.b2;
+					 
+					 game_blocks['t' + tick_counter]['b1'][3] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
+					 game_blocks['t' + tick_counter]['b2'][3] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
 					 
 					 console.log(game_blocks);
 					 run_it();

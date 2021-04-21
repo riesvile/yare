@@ -252,15 +252,15 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 	var hover_content = [];
 	
 	for (i = 0; i < living_spirits.length; i++){
-		if(living_spirits[i].hp ==0) continue;
+		if(living_spirits[i].hp == 0) continue;
 		if (Math.abs(living_spirits[i].position[0] - board_xx) <= 10 && Math.abs(living_spirits[i].position[1] - board_yy) <= 10){
-			hover_content.push(['spirit', living_spirits[i].id, living_spirits[i].energy]);
+			hover_content.push(['spirit', living_spirits[i].id, Math.floor(living_spirits[i].energy)]);
 		}
 	}
 	
 	for (b = 0; b < bases.length; b++){
 		if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
-			hover_content.push(['base', bases[b].id, bases[b].energy, bases[b].position, bases[b].def_status]);
+			hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status]);
 		}
 	}
 	
@@ -761,6 +761,16 @@ class Spirit {
 		
 	}
 	
+	size_change(prev_size, new_size){
+		if (prev_size != new_size){
+			//console.log('changing size from ' + prev_size + ' to ' + new_size);
+			this.size = prev_size;
+			this.size = prev_size + ((new_size - prev_size) * (total_time / 1000));
+			this.energy_capacity = (prev_size * 10) + ((new_size - prev_size) * 10) * (total_time / 1000);
+		}
+	}
+	
+	
 	
 	divide(){
 		var that = this;
@@ -824,14 +834,7 @@ class Spirit {
 			var spirit_percent_energy = this.energy / this.energy_capacity;
 			var drawing_size = this.size / 2;
 			var gradient = this.color;
-			try {
-				gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 20);
-				gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] * spirit_percent_energy) / 20 + ')');
-				gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
-			} catch (e) {
-				console.log(this.position[0])
-				console.log(e);
-			}
+			
 			
 		
 			if (this.size <= 0.1){
@@ -842,6 +845,15 @@ class Spirit {
 				drawing_size = 4 + ((this.size - 3) / 2);
 			} else {
 				drawing_size = 8 + ((this.size - 11) / 4);
+			}
+			
+			try {
+				gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 5);
+				gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] * spirit_percent_energy) / 20 + ')');
+				gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
+			} catch (e) {
+				//console.log(this.position[0])
+				//console.log(e);
 			}
 		
 			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
@@ -866,9 +878,11 @@ class Spirit {
 			c.fill();
 			
 			c.beginPath();
-			c.arc(this.position[0], this.position[1], drawing_size * 20, 0, Math.PI * 2, false);
+			c.arc(this.position[0], this.position[1], drawing_size * 5, 0, Math.PI * 2, false);
 			c.fillStyle = gradient;
 			c.fill();
+			
+			//console.log('drawing size = ' + drawing_size);
 		}
 	}
 }
@@ -978,7 +992,16 @@ class Base {
 		c.stroke();
 	}
 	
+	charge(prev_energy, new_energy){
+		if (prev_energy > new_energy){
+			this.energy = new_energy;
+		} else if (prev_energy < new_energy){
+			this.energy = prev_energy;
+			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
+		}
+	}
 	
+	/*
 	charge() {
 		var color_parts = this.color.match(/[.?\d]+/g);
 		//logic on slowing down production when amount of spirits > x
@@ -997,6 +1020,7 @@ class Base {
 		c_base.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.5 + ')';
 		c_base.stroke();
 	}
+	*/
 }
 
 function draw_energize(origin, target, energy_strength, color){
@@ -1091,6 +1115,7 @@ function render_state(timestamp){
 			try {
 				spirit_lookup[all_spirits[i]].move([game_blocks[active_block].p1[all_spirits[i]][0][4], game_blocks[active_block].p1[all_spirits[i]][0][5]], [game_blocks[active_block].p1[all_spirits[i]][0][2], game_blocks[active_block].p1[all_spirits[i]][0][3]]);
 				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2]);
+				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p1[all_spirits[i]][4], game_blocks[active_block].p1[all_spirits[i]][1]);
 			} catch (e) {
 				console.log(e)
 			}
@@ -1099,6 +1124,7 @@ function render_state(timestamp){
 			try {
 				spirit_lookup[all_spirits[i]].move([game_blocks[active_block].p2[all_spirits[i]][0][4], game_blocks[active_block].p2[all_spirits[i]][0][5]], [game_blocks[active_block].p2[all_spirits[i]][0][2], game_blocks[active_block].p2[all_spirits[i]][0][3]]);
 				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2]);
+				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p2[all_spirits[i]][4], game_blocks[active_block].p2[all_spirits[i]][1]);
 			} catch (e) {
 				console.log(e)
 			}
@@ -1128,10 +1154,18 @@ function render_state(timestamp){
 		draw_energize(energy_origin.position, energy_target.position, energy_blocks[i][2], energy_color);
 	}
 	
+	bases[0].charge(game_blocks[active_block].b1[3], game_blocks[active_block].b1[0]);
+	bases[1].charge(game_blocks[active_block].b2[3], game_blocks[active_block].b2[0]);
+	bases[0].draw();
+	bases[1].draw();
+	
+	/*
 	world_bases = bases.length;
 	for (i = 0; i < world_bases; i++){
+		base_lookup[bases[i].id].charge()
 		base_lookup[bases[i].id].draw();
 	}
+	*/
 	
 	
 	//objects energize

@@ -1429,6 +1429,8 @@ if (!isMainThread){
 				't': 0,
 				'p1': [],
 				'p2': [],
+				'b1': [],
+				'b2': [],
 				'e': [],
 				's': [],
 				'er1': [],
@@ -2139,6 +2141,8 @@ if (!isMainThread){
 		
 			
 			render_data3.t = game_duration;
+			render_data3.b1 = [bases[0].energy, spirit_p1_cost, p1_defend];
+			render_data3.b2 = [bases[1].energy, spirit_p2_cost, p2_defend];
 		
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
