@@ -712,9 +712,32 @@ class Spirit {
 		this.position[1] = origin[1] + (incr[1] * (total_time / 1000));
 	}
 	
-	energize(prev_energy, new_energy){
-		this.energy = prev_energy;
-		this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
+	energize(prev_energy, new_energy, hp){
+		if (this.hp != 0){
+			this.energy = prev_energy;
+			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
+		
+			if (hp == 0){
+				console.log('death calling');
+				var that = this;
+				var counter_death = 0;
+				var alpha = 8;
+				var start_size = this.size;
+				var interval_death = setInterval(function() {
+				    if (counter_death > 8) {
+						//var index = living_spirits.findIndex(x => x.id == that.id);
+						//living_spirits.splice(index);
+				        clearInterval(interval_death);
+						that.hp = 0;
+				    }
+					that.size += 0.1 * start_size //that.size + (0.1 * that.size);
+					that.color = that.color.replace(/[^,]+(?=\))/, alpha/8);
+					counter_death++;
+					alpha--;
+				}, 16);
+			}
+		}
+		
 	}
 	
 	merge(target) {
@@ -1114,7 +1137,7 @@ function render_state(timestamp){
 		if (spirit_lookup[all_spirits[i]].player_id == pla1){
 			try {
 				spirit_lookup[all_spirits[i]].move([game_blocks[active_block].p1[all_spirits[i]][0][4], game_blocks[active_block].p1[all_spirits[i]][0][5]], [game_blocks[active_block].p1[all_spirits[i]][0][2], game_blocks[active_block].p1[all_spirits[i]][0][3]]);
-				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2]);
+				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2], game_blocks[active_block].p1[all_spirits[i]][3]);
 				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p1[all_spirits[i]][4], game_blocks[active_block].p1[all_spirits[i]][1]);
 			} catch (e) {
 				console.log(e)
@@ -1123,7 +1146,7 @@ function render_state(timestamp){
 		} else if (spirit_lookup[all_spirits[i]].player_id == pla2){
 			try {
 				spirit_lookup[all_spirits[i]].move([game_blocks[active_block].p2[all_spirits[i]][0][4], game_blocks[active_block].p2[all_spirits[i]][0][5]], [game_blocks[active_block].p2[all_spirits[i]][0][2], game_blocks[active_block].p2[all_spirits[i]][0][3]]);
-				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2]);
+				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2], game_blocks[active_block].p2[all_spirits[i]][3]);
 				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p2[all_spirits[i]][4], game_blocks[active_block].p2[all_spirits[i]][1]);
 			} catch (e) {
 				console.log(e)
@@ -1151,7 +1174,10 @@ function render_state(timestamp){
 		
 		if (energy_origin.id.startsWith('star')) energy_color = energy_target.color;
 		
-		draw_energize(energy_origin.position, energy_target.position, energy_blocks[i][2], energy_color);
+		if (energy_origin.hp != 0 && energy_target.hp != 0){
+			draw_energize(energy_origin.position, energy_target.position, energy_blocks[i][2], energy_color);
+		}
+		
 	}
 	
 	bases[0].charge(game_blocks[active_block].b1[3], game_blocks[active_block].b1[0]);
