@@ -16,6 +16,7 @@
 	<link rel="stylesheet" href="../style.css">
 	<link rel="stylesheet" href="../style-mobile.css">
 	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../anime.min.js"></script>
   </head>
   <body>
@@ -114,6 +115,7 @@
   </div>
   
   <div id="panel" class="panel_start">
+    <div id="panel_dragger"></div>
 	  
 	  
 	
@@ -211,6 +213,11 @@
 	  var nqq = editor.getSession().getValue().split("\n").length; // To count total no. of lines
 	  //editor.gotoLine(nqq); //Go to end
 	  
+	  editor.setOptions({
+	      enableBasicAutocompletion: true,
+		  enableSnippets: true,
+   	   	  enableLiveAutocompletion: true
+	  });
 	  editor.commands.addCommand({
 	      name: "update_code",
 	      exec: function() {update_code();},

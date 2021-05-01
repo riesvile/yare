@@ -73,8 +73,8 @@ code {
 
 #editor_container {
 	background-color: transparent;
-	backdrop-filter: blur(0px);
-	-webkit-backdrop-filter: blur(0px);
+	/* backdrop-filter: blur(0px); */
+	/* -webkit-backdrop-filter: blur(0px); */
 	height: calc(100% - 200px);
 	width: 800px;
 	position: relative;
@@ -482,6 +482,16 @@ input[type=submit] {
 	left: 0;
 	/* background-color: #436; */
 	overflow-y: scroll;
+}
+
+#panel_dragger {
+	width: 20px;
+	background-color: #f00;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 999999;
 }
 
 .panel_start {

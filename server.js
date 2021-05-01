@@ -1812,7 +1812,11 @@ app.get('/documentation.css', (req, res) => res.sendFile(__dirname + '/documenta
 app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
 app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
 app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
+app.get('/src-min-noconflict/ext-language_tools.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ext-language_tools.js'));
+app.get('/src-min-noconflict/snippets/javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/snippets/javascript.js'));
 app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
+app.get('/copenhagen.0-1-4.css', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.css'));
+app.get('/copenhagen.0-1-4.min.js', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.min.js'));
 app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
 app.get('/webker.js', (req, res) => res.sendFile(__dirname + '/webker.js'));
 

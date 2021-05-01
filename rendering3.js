@@ -143,8 +143,14 @@ function onPointerDown(e){
 		var el_id = (e.target || e.srcElement).id;
 		//console.log('down id= ' + el_id);
 	
-		//console.log(el_id);
-		if (el_id != 'base_canvas'){
+		console.log(el_id);
+		if (el_id == 'panel_dragger'){
+			disableSelection = 1;
+			panel_dragging = 1;
+			console.log('panel_el.style = ');
+			console.log(panel_el.getBoundingClientRect());
+			panel_el_widtho = panel_el.getBoundingClientRect().width;
+		} else if (el_id != 'base_canvas'){
 			return;
 		} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
 			//console.log('thissisis');
@@ -179,6 +185,7 @@ function onPointerDown(e){
 
 function onPointerMove(e){
 	e = e || window.event;
+	console.log(panel_dragging);
 	
 	if (scaling) {
 	    pinchMove(e);
@@ -202,13 +209,27 @@ function onPointerMove(e){
 			//console.log('mouse moving');
 			panning = 1;
 			//console.log(x + " / " + y);
+			
+			if (panel_dragging == 1){
+				console.log('dragging panel');
+				console.log('x delta = ' + (x - pointer_originX));
+				var panel_width_delta = x - pointer_originX;
+				var new_panel_width = panel_el_widtho + panel_width_delta;
+				
+				if (new_panel_width < 100){
+					new_panel_width = 100;
+				} else if (new_panel_width > 1000) {
+					new_panel_width = 1000;
+				}
+				
+				panel_el.style.width = new_panel_width + 'px';
+			} else {
+				pointer_offsetX = (x - pointer_originX) * multiplier;
+				pointer_offsetY = (y - pointer_originY) * multiplier;
 		
-		
-			pointer_offsetX = (x - pointer_originX) * multiplier;
-			pointer_offsetY = (y - pointer_originY) * multiplier;
-		
-			offsetX = pointer_offsetX + current_offsetX;
-			offsetY = pointer_offsetY + current_offsetY;
+				offsetX = pointer_offsetX + current_offsetX;
+				offsetY = pointer_offsetY + current_offsetY;
+			}
 			//offsetUpdate();
 		} else {
 			board_x = x*multiplier - offsetX;
@@ -237,6 +258,7 @@ function onPointerUp(e){
 	
 	mousey = 0;
 	panning = 0;
+	panel_dragging = 0;
 	disableSelection = 0;
 	offsetUpdate();
 }
@@ -384,6 +406,12 @@ var prev_offsetY = 0;
 var xxx = 0;
 var yyy = 0;
 
+var panel_dragging = 0;
+var panel_el = document.getElementById('panel');
+var panel_el_widtho = 0;
+
+
+
 //var canvasTouch = document.getElementById("base_canvas");
 //canvasTouch.addEventListener("ontouchstart")
 
@@ -409,7 +437,7 @@ document.getElementById("panel").addEventListener("mousedown", function(e) {
 
 document.getElementById("panel").addEventListener("mouseleave", function(e) {
 	if (mousey != 1){
-		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0)";
+		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
 		document.getElementById("panel").style.backdropFilter = "blur(0px)";
 	}
 
