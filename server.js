@@ -354,6 +354,7 @@ function bot_game(req, res, pl_id){
 	var tut_servers = Object.keys(server_occupancy_tutorial);
 	var load_threshold = 40;
 	var chosen_server = 't3';
+	//var color_code = get_color(req.body.user_color);
 	
 	for (i = 0; i < tut_servers.length; i++){
 		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
@@ -423,6 +424,7 @@ function medium_bot_game(req, res, pl_id){
 	var tut_servers = Object.keys(server_occupancy_tutorial);
 	var load_threshold = 40;
 	var chosen_server = 'd1';
+	var color_code = get_color(req.body.user_color);
 	
 	/*
 	for (i = 0; i < tut_servers.length; i++){
@@ -461,9 +463,9 @@ function medium_bot_game(req, res, pl_id){
 		player2: 'medium-bot',
 		p1_session_id: req.body.session_id,
 		p2_session_id: 'bot',
-		p1_shape: 'circles',
+		p1_shape: req.body.user_shape,
 		p2_shape: 'circles',
-		p1_color: 'color1',
+		p1_color: color_code,
 		p2_color: 'color2',
 		p1_rating: 1000,
 		p2_rating: 100,

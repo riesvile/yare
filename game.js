@@ -160,6 +160,7 @@ parentPort.on("message", message => {
 				'bases': [],
 				'players': [],
 				'colors': [],
+				'shapes': [],
 				'tut': 1
 			}
 	    } else {
@@ -168,7 +169,8 @@ parentPort.on("message", message => {
 				'stars': [],
 				'bases': [],
 				'players': [],
-				'colors': []
+				'colors': [],
+				'shapes': [],
 			}
 	    }
 		var all_spirits = living_spirits.length;
@@ -189,6 +191,9 @@ parentPort.on("message", message => {
 		
 		init_data.colors[0] = colors['player1'];
 		init_data.colors[1] = colors['player2'];
+		
+		init_data.shapes[0] = shapes['player1'];
+		init_data.shapes[1] = shapes['player2'];
 		
 		if (players_update['p1'] != 'old'){
 			init_data.players[0] = players_update['p1'];
@@ -260,13 +265,14 @@ parentPort.on("message", message => {
   } else if (message.data == "start world"){
 	  players['p1'] = message.player1;
 	  players['p2'] = message.player2;
-	  players['p1_shape'] = message.p1_shape;
-	  players['p2_shape'] = message.p2_shape;
+	  shapes['player1'] = message.p1_shape;
+	  shapes['player2'] = message.p2_shape;
 	  colors['player1'] = color_palettes[message.p1_color];
 	  colors['player2'] = color_palettes[message.p2_color];
 	  console.log('game started');
 	  console.log(players);
 	  console.log(colors);
+	  console.log(shapes);
 	  game_start();
 	  
 	  Game.find({game_id: workerData[0]})
@@ -1006,6 +1012,7 @@ if (workerData[1] == 'tutorial'){
 }
 
 var colors = {};
+var shapes = {};
 colors['player1'] = "rgba(255, 0, 0, 1)";
 colors['player2'] = "rgba(0, 100, 255, 1)";
 var color_palettes = {};
@@ -2745,6 +2752,10 @@ if (!isMainThread){
 		top_s = start_num_spirits;
 		top_q = start_num_spirits;
 		*/
+		
+		if (shapes['player1'] == 'squares'){
+			console.log('player 1 has squares!!!');
+		}
 
 		var start_num_spirits = 7;
 		for (s = 1; s < 1+start_num_spirits ; s++){

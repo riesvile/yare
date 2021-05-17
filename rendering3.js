@@ -218,11 +218,16 @@ function onPointerMove(e){
 				
 				if (new_panel_width < 100){
 					new_panel_width = 100;
+					document.getElementById('panel_dragger').style.width = "100px";
 				} else if (new_panel_width > 1000) {
 					new_panel_width = 1000;
+				} else {
+					document.getElementById('panel_dragger').style.width = "20px";
 				}
 				
 				panel_el.style.width = new_panel_width + 'px';
+				editor_container_el.style.width = new_panel_width + 'px';
+				editor.resize();
 			} else {
 				pointer_offsetX = (x - pointer_originX) * multiplier;
 				pointer_offsetY = (y - pointer_originY) * multiplier;
@@ -301,6 +306,9 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
 		} else if (hover_content[0][0] == 'base'){
 			hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+			if (hover_content[0][4] == 1){
+				hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
+			}
 			hoveroid.style.bottom = window.innerHeight - yy - 20 + 'px';
 			hoveroid.style.left = xx + 50 + 'px';
 		} else if (hover_content[0][0] == 'star'){
@@ -408,6 +416,7 @@ var yyy = 0;
 
 var panel_dragging = 0;
 var panel_el = document.getElementById('panel');
+var editor_container_el = document.getElementById('editor_container')
 var panel_el_widtho = 0;
 
 
@@ -438,7 +447,7 @@ document.getElementById("panel").addEventListener("mousedown", function(e) {
 document.getElementById("panel").addEventListener("mouseleave", function(e) {
 	if (mousey != 1){
 		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
-		document.getElementById("panel").style.backdropFilter = "blur(0px)";
+		document.getElementById("panel").style.backdropFilter = "blur(12px)";
 	}
 
 }, false);
@@ -508,6 +517,7 @@ var player1_color;
 var player2_color;
 
 var colors = {};
+var shapes = {};
 colors['color1'] = 'rgba(128,140,255,1)';
 colors['color2'] = 'rgba(232,97,97,1)';
 
@@ -991,6 +1001,10 @@ class Star {
 	}
 }
 
+function mapValues(the_number, in_min, in_max, out_min, out_max) {
+  return (the_number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 class Base {
 	constructor(id, position, energy, player, color, def_status = 0){
 		this.id = id
@@ -1019,26 +1033,36 @@ class Base {
 		}
 		var production_percent = this.energy / new_when;
 		
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c.lineWidth = 4;
-		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.69 + ')';
-		c.stroke();
 		
+		//inner circle
+		
+		if (this.def_status == 1){
+			c.beginPath();
+			c.setLineDash([2, 4]);
+		}
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], this.size, Math.PI * 0, Math.PI * 2, false);
+		c.closePath();
+		c.lineWidth = mapValues(this.def_status, 0, 1, 4, 1);
+		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
+		c.stroke();
+		c.setLineDash([]);
+		
+		//outer circle
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], (this.size + 10), 0, Math.PI * 2, false);
-		c.lineWidth = 2;
+		c.lineWidth = mapValues(this.def_status, 0, 1, 2, 14 * (this.energy / this.energy_capacity));
 		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.49 + ')';
 		c.stroke();
 		
-		
+		//production %
 		var r_start_angle = -90 / 360 * 2 * Math.PI; 
 		var r_end_angle = ((360 * production_percent - 90) / 360) * 2 * Math.PI; 
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], (this.size + 10), r_start_angle, r_end_angle, false);
 		//console.log('production_percent');
 		//console.log(production_percent);
-		c.lineWidth = 2;
+		c.lineWidth = c.lineWidth = mapValues(this.def_status, 0, 1, 2, 0.1);;
 		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.69 + ')';
 		c.stroke();
 	}
@@ -1049,6 +1073,15 @@ class Base {
 		} else if (prev_energy < new_energy){
 			this.energy = prev_energy;
 			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
+		}
+	}
+	
+	defend(new_status){
+		//def_status is number between 0 and 1 (0 and 1 values obvious, everything inbetween for animation purposes)
+		if (new_status != this.def_status){
+			this.def_status = Math.abs((new_status * (total_time / 1000)) + ((new_status - 1) * ((total_time / 1000) - 1)));
+			if (Math.abs(this.def_status - new_status) < 0.05) this.def_status = new_status;
+			console.log('this.def_status = ' + this.def_status);
 		}
 	}
 	
@@ -1210,6 +1243,8 @@ function render_state(timestamp){
 	
 	bases[0].charge(game_blocks[active_block].b1[3], game_blocks[active_block].b1[0]);
 	bases[1].charge(game_blocks[active_block].b2[3], game_blocks[active_block].b2[0]);
+	bases[0].defend(game_blocks[active_block].b1[2]);
+	bases[1].defend(game_blocks[active_block].b2[2]);
 	bases[0].draw();
 	bases[1].draw();
 	

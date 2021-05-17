@@ -115,7 +115,7 @@
   </div>
   
   <div id="panel" class="panel_start">
-    <div id="panel_dragger"></div>
+    <div id="panel_dragger"><div id="drag_line1"></div><div id="drag_line2"></div></div>
 	  
 	  
 	
@@ -125,7 +125,7 @@
   <div id="tutorial">
 	  <div id="tutorial_wrap">
 	  	<p id="tut_helper" class="tutorial_text">yare.io is a game where you control your units&nbsp;(spirits) with JavaScript</p>
-		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position);">COPY</span> into the code block below and press <span id="send_intro">SEND CODE</span>.
+		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position);">COPY</span> into the code block below and press <span id="send_intro">SEND CODE</span>.</p>
 		<!-- <p id="tut_helper" class="tutorial_text">You can hover over the code snippet above for more information about each part</p> -->
 	  </div>
   </div>
@@ -520,6 +520,7 @@
 					 game_blocks['t' + tick_counter]['b1'][3] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
 					 game_blocks['t' + tick_counter]['b2'][3] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
 					 
+					 console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
 					 console.log(game_blocks);
 					 run_it();
 					 
@@ -795,6 +796,8 @@
 				 pla2 = incoming.players[1];
 				 colors['color1'] = incoming.colors[0];
 				 colors['color2'] = incoming.colors[1];
+				 shapes['shape1'] = incoming.shapes[0];
+				 shapes['shape2'] = incoming.shapes[1];
 				 
 				 //console.log(game_type);
 				 //console.log(tutorial_phase);
