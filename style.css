@@ -198,6 +198,10 @@ input:focus {
 	font-size:16px;
 }
 
+.new_when {
+	color: rgba(242, 246, 250, 0.49);
+}
+
 .under_attack {
 	color: rgba(255, 182, 182, 0.89);
 }

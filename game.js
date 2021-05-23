@@ -953,6 +953,28 @@ players['p2'] = 'zx2';
 var players_update = {};
 players_update['p1'] = 'old';
 
+function spirit_cost(p_num, alives){
+	if (p_num == 1){
+		if (shapes["player1"] == 'circles'){
+			if (alives <= 100) base_lookup['base_' + players['p1']].current_spirit_cost = 50;
+			if (alives > 100) base_lookup['base_' + players['p1']].current_spirit_cost = 100;
+			if (alives > 200) base_lookup['base_' + players['p1']].current_spirit_cost = 200;
+			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
+		} else if (shapes["player1"] == 'squares'){
+			if (alives <= 100) base_lookup['base_' + players['p1']].current_spirit_cost = 200;
+		}
+	} else if (p_num == 2){
+		if (shapes["player2"] == 'circles'){
+			if (alives <= 100) base_lookup['base_' + players['p2']].current_spirit_cost = 50;
+			if (alives > 100) base_lookup['base_' + players['p2']].current_spirit_cost = 100;
+			if (alives > 200) base_lookup['base_' + players['p2']].current_spirit_cost = 200;
+			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
+		}
+	}
+		
+}
+
+
 var spirit_p1_cost = 100;
 var spirit_p2_cost = 100;
 var p1_defend = 0;
@@ -1154,12 +1176,13 @@ vm2.freeze(base_lookup, 'bases');
 
 if (!isMainThread){
 	class Spirit {
-		constructor(id, position, size, energy, player, color, cost){
+		constructor(id, position, size, energy, player, color, shape){
 			this.id = id
 			this.position = position;
 			this.size = size;
 			this.energy = energy;
 			this.color = color;
+			this.shape = shape;
 		
 			this.sight = {
 				friends: [],
@@ -1175,7 +1198,6 @@ if (!isMainThread){
 			this.move_speed = 1;
 			this.energy_capacity = size * 10;
 			this.player_id = player;
-			this.cost = cost;
 		
 			living_spirits.push(this);
 			birth_queue.push(this);
@@ -1402,7 +1424,7 @@ if (!isMainThread){
 	}
 	
 	class Base {
-		constructor(id, position, player, color){
+		constructor(id, position, player, color, shape){
 			this.id = id
 			this.position = position;
 			this.size = 40;
@@ -1415,10 +1437,13 @@ if (!isMainThread){
 			}
 			
 			this.hp = 1;
-			this.energy_capacity = 200;
+			this.energy_capacity = 400;
 			this.player_id = player;
 			this.color = color;
+			this.shape = shape;
 			//this.energy = energy;
+			
+			this.current_spirit_cost = 100;
 		
 			bases.push(this);
 		}
@@ -1938,14 +1963,14 @@ if (!isMainThread){
 		
 			//objects birth
 			
-			if (base_lookup['base_' + players['p1']].energy >= spirit_p1_cost){
+			if (base_lookup['base_' + players['p1']].energy >= base_lookup['base_' + players['p1']].current_spirit_cost){
 				if (workerData[1] == 'tutorial' && top_s > 20){
 					console.log('can not have more than 20 spirits in tutorial');
 				} else {
 					if (p1_defend != 1){
 						top_s++;
-						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 1, 10, players['p1'], colors['player1'], spirit_p1_cost);
-						base_lookup['base_' + players['p1']].energy -= spirit_p1_cost;
+						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 1, 10, players['p1'], colors['player1'], shapes['player1']);
+						base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
 						//global[players['p1'] + top_s].move([1600, 660]);
 						//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 						if (workerData[1] == 'tutorial'){
@@ -1959,11 +1984,11 @@ if (!isMainThread){
 					}
 				}
 			}
-			if (base_lookup['base_' + players['p2']].energy >= spirit_p2_cost){
+			if (base_lookup['base_' + players['p2']].energy >= base_lookup['base_' + players['p2']].current_spirit_cost){
 				if (p2_defend != 1){
 					top_q++;
-					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2620, 1760], 1, 10, players['p2'], colors['player2'], spirit_p2_cost);
-					base_lookup['base_' + players['p2']].energy -= spirit_p2_cost;
+					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2620, 1760], 1, 10, players['p2'], colors['player2'], shapes['player2']);
+					base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
 					//global[players['p2'] + top_q].move([2800, 1760]);
 					//console.log(top_q);
 				}
@@ -2461,27 +2486,29 @@ if (!isMainThread){
 				
 				//var m_origin = merge_queue[i][0];
 				//var m_dest = merge_queue[i][1];
+				if (merge_queue[i][0].hp != 0 && merge_queue[i][1].hp != 0){
+					merge_queue[i][1].merged.push(merge_queue[i][0].id);
 				
-				merge_queue[i][1].merged.push(merge_queue[i][0].id);
+					for (m = 0; m < merge_queue[i][0].merged.length; m++){
+						merge_queue[i][1].merged.push(merge_queue[i][0].merged[m])
+					}
 				
-				for (m = 0; m < merge_queue[i][0].merged.length; m++){
-					merge_queue[i][1].merged.push(merge_queue[i][0].merged[m])
+					merge_queue[i][1].size += merge_queue[i][0].size;
+					merge_queue[i][1].energy += merge_queue[i][0].energy;
+					merge_queue[i][1].energy_capacity = merge_queue[i][1].size * 10;
+				
+					merge_queue[i][0].hp = 0;
+					merge_queue[i][0].size = 0;
+					merge_queue[i][0].energy = 0;
+					merge_queue[i][0].position = merge_queue[i][1].position;
+					//merge_queue[i][0].position = JSON.parse(JSON.stringify(merge_queue[i][1].position));
+				
+				
+					render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
+					render_data3.s.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
+					//render_data2.death.push(merge_queue[i][0].id);
 				}
 				
-				merge_queue[i][1].size += merge_queue[i][0].size;
-				merge_queue[i][1].energy += merge_queue[i][0].energy;
-				merge_queue[i][1].energy_capacity = merge_queue[i][1].size * 10;
-				
-				merge_queue[i][0].hp = 0;
-				merge_queue[i][0].size = 0;
-				merge_queue[i][0].energy = 0;
-				merge_queue[i][0].position = merge_queue[i][1].position;
-				//merge_queue[i][0].position = JSON.parse(JSON.stringify(merge_queue[i][1].position));
-				
-				
-				render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
-				render_data3.s.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
-				//render_data2.death.push(merge_queue[i][0].id);
 				
 				merge_queue.splice(i, 1);
 			
@@ -2575,8 +2602,8 @@ if (!isMainThread){
 		
 			
 			render_data3.t = game_duration;
-			render_data3.b1 = [bases[0].energy, spirit_p1_cost, p1_defend];
-			render_data3.b2 = [bases[1].energy, spirit_p2_cost, p2_defend];
+			render_data3.b1 = [bases[0].energy, base_lookup['base_' + players['p1']].current_spirit_cost, p1_defend];
+			render_data3.b2 = [bases[1].energy, base_lookup['base_' + players['p2']].current_spirit_cost, p2_defend];
 		
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
@@ -2593,6 +2620,8 @@ if (!isMainThread){
 			if (temp_flag == 0){
 				var p1_top = 0;
 				var p2_top = 0;
+				var p1_living = 0;
+				var p2_living = 0;
 				for (i = 0; i < living_spirits.length; i++){
 					spt = living_spirits[i];
 					//console.log(spt);	
@@ -2606,6 +2635,7 @@ if (!isMainThread){
 						pl2_units[spt.id] = spt;
 						
 						//if (spt.hp != 0) {
+							if (spt.hp == 1) p2_living++;
 							my_spirits2[p2_top] = spt;
 							p2_top++;
 						//}
@@ -2642,6 +2672,7 @@ if (!isMainThread){
 						pl1_units[spt.id] = spt;
 						
 						//if (spt.hp != 0) {
+							if (spt.hp == 1) p1_living++;
 							my_spirits1[p1_top] = spt;
 							p1_top++;
 						//}
@@ -2676,8 +2707,9 @@ if (!isMainThread){
 				temp_flag = 0;
 				//console.log('my_spirits1.length = ' + my_spirits1.length);
 				console.log('living_spirits.length = ' + living_spirits.length
-					+ " p1 = " + p1_top + " p2 = " + p2_top );
-				//console.log('my_spirits1.length = ' + my_spirits1.length);
+					+ " p1 = " + p1_living + " p2 = " + p2_living );
+					spirit_cost(1, p1_living);
+					spirit_cost(2, p2_living);
 			} 
 			
 			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: workerData[0], meta: ''});
@@ -2760,11 +2792,11 @@ if (!isMainThread){
 		var start_num_spirits = 7;
 		for (s = 1; s < 1+start_num_spirits ; s++){
 			if (s > 4){
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], 1, 10, players['p1'], colors['player1'], 100);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], 1, 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], 1, 10, players['p1'], colors['player1'], 100);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], 1, 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			}
@@ -2773,11 +2805,11 @@ if (!isMainThread){
 
 		for (q = 1; q < 1+start_num_spirits ; q++){
 			if (q > 4){
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2750+q*20,1800], 1, 10, players['p2'], colors['player2'], 100);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2750+q*20,1800], 1, 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2820+q*20,1820], 1, 10, players['p2'], colors['player2'], 100);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2820+q*20,1820], 1, 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}
@@ -2788,8 +2820,8 @@ if (!isMainThread){
 		// -- //
 	
 	
-		global['base_' + players['p1']] = new Base('base_' + players['p1'], [1600, 700], players['p1'], colors['player1']);
-		global['base_' + players['p2']] = new Base('base_' + players['p2'], [2600, 1700], players['p2'], colors['player2']);
+		global['base_' + players['p1']] = new Base('base_' + players['p1'], [1600, 700], players['p1'], colors['player1'], shapes['player1']);
+		global['base_' + players['p2']] = new Base('base_' + players['p2'], [2600, 1700], players['p2'], colors['player2'], shapes['player2']);
 	
 		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
