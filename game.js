@@ -961,7 +961,8 @@ function spirit_cost(p_num, alives){
 			if (alives > 200) base_lookup['base_' + players['p1']].current_spirit_cost = 200;
 			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
 		} else if (shapes["player1"] == 'squares'){
-			if (alives <= 100) base_lookup['base_' + players['p1']].current_spirit_cost = 200;
+			if (alives <= 10) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
+			if (alives > 10) base_lookup['base_' + players['p1']].current_spirit_cost = 800;
 		}
 	} else if (p_num == 2){
 		if (shapes["player2"] == 'circles'){
@@ -970,8 +971,12 @@ function spirit_cost(p_num, alives){
 			if (alives > 200) base_lookup['base_' + players['p2']].current_spirit_cost = 200;
 			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
 		}
-	}
-		
+	}	
+}
+
+function get_def_size(pshape){
+	if (pshape == 'circles') return 1;
+	if (pshape == 'squares') return 10;
 }
 
 
@@ -1177,12 +1182,12 @@ vm2.freeze(base_lookup, 'bases');
 if (!isMainThread){
 	class Spirit {
 		constructor(id, position, size, energy, player, color, shape){
+			this.shape = shape;
 			this.id = id
 			this.position = position;
 			this.size = size;
 			this.energy = energy;
 			this.color = color;
-			this.shape = shape;
 		
 			this.sight = {
 				friends: [],
@@ -1350,6 +1355,10 @@ if (!isMainThread){
 				var err_msg = "You can't merge spirit into itself";
 				fill_error(this.player_id, err_msg);
 				return;
+			} else if (this.shape != 'circles'){
+				var err_msg = "Only circles can use merge(). See Documentation for available methods.";
+				fill_error(this.player_id, err_msg);
+				return;
 			}
 			
 			var entry_index3 = merge_queue.findIndex(entry3 => entry3[0]['id'] === this.id);
@@ -1425,6 +1434,7 @@ if (!isMainThread){
 	
 	class Base {
 		constructor(id, position, player, color, shape){
+			this.shape = shape;
 			this.id = id
 			this.position = position;
 			this.size = 40;
@@ -1437,10 +1447,14 @@ if (!isMainThread){
 			}
 			
 			this.hp = 1;
-			this.energy_capacity = 400;
+			if (this.shape == 'circles'){
+				this.energy_capacity = 400;
+			} else if (this.shape == 'squares'){
+				this.energy_capacity = 1000;
+			}
+			
 			this.player_id = player;
 			this.color = color;
-			this.shape = shape;
 			//this.energy = energy;
 			
 			this.current_spirit_cost = 100;
@@ -1969,7 +1983,7 @@ if (!isMainThread){
 				} else {
 					if (p1_defend != 1){
 						top_s++;
-						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], 1, 10, players['p1'], colors['player1'], shapes['player1']);
+						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 						base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
 						//global[players['p1'] + top_s].move([1600, 660]);
 						//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
@@ -1987,7 +2001,7 @@ if (!isMainThread){
 			if (base_lookup['base_' + players['p2']].energy >= base_lookup['base_' + players['p2']].current_spirit_cost){
 				if (p2_defend != 1){
 					top_q++;
-					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2620, 1760], 1, 10, players['p2'], colors['player2'], shapes['player2']);
+					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2620, 1760], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 					base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
 					//global[players['p2'] + top_q].move([2800, 1760]);
 					//console.log(top_q);
@@ -2785,31 +2799,33 @@ if (!isMainThread){
 		top_q = start_num_spirits;
 		*/
 		
-		if (shapes['player1'] == 'squares'){
-			console.log('player 1 has squares!!!');
-		}
-
+				
 		var start_num_spirits = 7;
-		for (s = 1; s < 1+start_num_spirits ; s++){
+		var start_num_adjust1 = 0;
+		var start_num_adjust2 = 0;
+		if (shapes['player1'] == 'squares') start_num_adjust1 = 5;
+		if (shapes['player2'] == 'squares') start_num_adjust2 = 5;
+		
+		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
 			if (s > 4){
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], 1, 10, players['p1'], colors['player1'], shapes['player1']);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], 1, 10, players['p1'], colors['player1'], shapes['player1']);
+				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			}
 			
 		}
 
-		for (q = 1; q < 1+start_num_spirits ; q++){
+		for (q = 1; q < 1+start_num_spirits-start_num_adjust2; q++){
 			if (q > 4){
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2750+q*20,1800], 1, 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2750+q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2820+q*20,1820], 1, 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2820+q*20,1820], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}

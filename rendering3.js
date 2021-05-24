@@ -666,11 +666,13 @@ function resolve_energy_point(energy_point){
 function create_spirit_p1(spir_id){
 	
 	var spir_position = [game_blocks['t' + tick_counter].p1[spir_id][0][0], game_blocks['t' + tick_counter].p1[spir_id][0][1]];
-	var spir_size = game_blocks['t' + tick_counter].p1[spir_id][1];
+	if (shapes['shape1'] == 'circles') var spir_size = 1;
+	if (shapes['shape1'] == 'squares') var spir_size = 10;
 	var spir_energy = game_blocks['t' + tick_counter].p1[spir_id][2];
 	var spir_hp = game_blocks['t' + tick_counter].p1[spir_id][3];
 	var spir_player = pla1;
 	var spir_color = colors['color1'];
+	var spir_shape = shapes['shape1'];
 
 	/*
 	if (spir_id.startsWith(pla1)) {
@@ -689,18 +691,20 @@ function create_spirit_p1(spir_id){
 	*/
 
 	//console.log('creating spirit ' + spir_id);
-	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_hp);
-	
+	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
+	console.log(spirit_lookup[spir_id]);
 }
 
 function create_spirit_p2(spir_id){
 	
 	var spir_position = [game_blocks['t' + tick_counter].p2[spir_id][0][0], game_blocks['t' + tick_counter].p2[spir_id][0][1]];
-	var spir_size = game_blocks['t' + tick_counter].p2[spir_id][1];
+	if (shapes['shape2'] == 'circles') var spir_size = 1;
+	if (shapes['shape2'] == 'squares') var spir_size = 10;
 	var spir_energy = game_blocks['t' + tick_counter].p2[spir_id][2];
 	var spir_hp = game_blocks['t' + tick_counter].p2[spir_id][3];
 	var spir_player = pla2;
 	var spir_color = colors['color2'];
+	var spir_shape = shapes['shape2'];
 
 	/*
 	if (spir_id.startsWith(pla1)) {
@@ -719,13 +723,14 @@ function create_spirit_p2(spir_id){
 	*/
 
 	console.log('creating spirit ' + spir_id);
-	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_hp);
+	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
 	
 }
 
 
 class Spirit {
-	constructor(id, position, size, energy, player, color, hp = 1){
+	constructor(id, position, size, energy, player, color, shape, hp = 1){
+		this.shape = shape;
 		this.id = id
 		this.position = position;
 		this.size = size;
@@ -915,32 +920,43 @@ class Spirit {
 				//console.log(this.position[0])
 				//console.log(e);
 			}
-		
-			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], drawing_size, 0, Math.PI * 2, false);
-			if (this.size < 2){
-				c.lineWidth = 0.75;
-			} else if (this.size < 8){
-				c.lineWidth = 0.5 + ((this.size - 1) / 4);
-			} else {
-				c.lineWidth = 2;
-			}
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.8) + ')';
-			//if (this.hp > 0){
-				c.stroke();
-			//}
-		
-		
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], drawing_size * (spirit_percent_energy), 0, Math.PI * 2, false);
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
-			c.fill();
 			
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], drawing_size * 5, 0, Math.PI * 2, false);
-			c.fillStyle = gradient;
-			c.fill();
+			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
+			
+			if (this.shape == 'circles'){
+				c.beginPath();
+				c.arc(this.position[0], this.position[1], drawing_size, 0, Math.PI * 2, false);
+				if (this.size < 2){
+					c.lineWidth = 0.75;
+				} else if (this.size < 8){
+					c.lineWidth = 0.5 + ((this.size - 1) / 4);
+				} else {
+					c.lineWidth = 2;
+				}
+				c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.8) + ')';
+				//if (this.hp > 0){
+					c.stroke();
+				//}
+		
+				c.beginPath();
+				c.arc(this.position[0], this.position[1], drawing_size * (spirit_percent_energy), 0, Math.PI * 2, false);
+				c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
+				c.fill();
+			
+				c.beginPath();
+				c.arc(this.position[0], this.position[1], drawing_size * 5, 0, Math.PI * 2, false);
+				c.fillStyle = gradient;
+				c.fill();
+			} else if (this.shape == 'squares'){
+				c.lineWidth = 2;
+				c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
+				c.strokeRect((this.position[0] - this.size / 2), (this.position[1] - this.size / 2), this.size, this.size);
+				
+				c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
+				c.fillRect((this.position[0] - (this.size * (spirit_percent_energy)) / 2), (this.position[1] - (this.size * (spirit_percent_energy)) / 2), this.size * (spirit_percent_energy), this.size * (spirit_percent_energy));
+			}
+		
+			
 			
 			//console.log('drawing size = ' + drawing_size);
 		}
@@ -1063,8 +1079,6 @@ class Base {
 			var r_end_angle = ((360 * production_percent - 90) / 360) * 2 * Math.PI; 
 			c.beginPath();
 			c.arc(this.position[0], this.position[1], (this.size + 10), r_start_angle, r_end_angle, false);
-			//console.log('production_percent');
-			//console.log(production_percent);
 			c.lineWidth = c.lineWidth = mapValues(this.def_status, 0, 1, 2, 0.1);;
 			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.69 + ')';
 			c.stroke();
@@ -1095,6 +1109,7 @@ class Base {
 			//left
 			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(production_percent, 0.75, 1, 0, 1) + ')';
 			c.fillRect((this.position[0] - outer_width / 2 - 2), (this.position[1] - outer_width / 2 - 2), 4, outer_width);
+		} else if (this.shape == 'triangles'){
 			
 		}
 		
