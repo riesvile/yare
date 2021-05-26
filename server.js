@@ -1820,6 +1820,7 @@ app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(_
 app.get('/copenhagen.0-1-4.css', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.css'));
 app.get('/copenhagen.0-1-4.min.js', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.min.js'));
 app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
+app.get('/sound.js', (req, res) => res.sendFile(__dirname + '/sound.js'));
 app.get('/webker.js', (req, res) => res.sendFile(__dirname + '/webker.js'));
 
 
@@ -1836,6 +1837,9 @@ app.get('/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/
 app.get('/asset/ico_long_arr_blue.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_blue.png'));
 app.get('/asset/ico_long_arr_purp.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_purp.png'));
 app.get('/asset/ico_long_arr_gold.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_gold.png'));
+
+app.get('/sound/outfoxing.mp3', (req, res) => res.sendFile(__dirname + '/sound/outfoxing.mp3'));
+app.get('/sound/enemy_incoming.mp3', (req, res) => res.sendFile(__dirname + '/sound/enemy_incoming.mp3'));
 
 app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
 app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));

@@ -21,6 +21,13 @@
   </head>
   <body>
 	  
+  <audio src="../sound/outfoxing.mp3" crossorigin="anonymous" id="audio_test"></audio>
+  <audio src="../sound/enemy_incoming.mp3" crossorigin="anonymous" id="au_enemy_incoming"></audio>
+  
+  <button data-playing="false" role="switch" aria-checked="false" style="position: absolute; top: 50%; left: 80%; z-index: 9999999999">
+      <span>Play/Pause</span>
+  </button>
+	  
   <div id="new_account_wrap">
 	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
 	  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
@@ -1043,6 +1050,7 @@
   <script src="../tutorial_texts.js"></script>
   <script src="../rendering3.js"></script>
   <script src="../basics.js"></script>
+  <script src="../sound.js"></script>
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
