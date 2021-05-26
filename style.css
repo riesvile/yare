@@ -1381,14 +1381,156 @@ h1#pnf {
 	color: rgba(242, 246, 250, 0.2);
 }
 
+/* index stuff */
+
 #index_intro {
-	position: absolute;
-	top: calc(50% + 200px);
-	left: 50%;
-	transform: translate(-50%, -50%);
-	font-weight: 500;
-	color: rgba(242, 246, 250, 0.01);
+	margin-top: calc(100px + 10vh);
+	margin-left: 16%;
+	width: 560px;
+	font-size: 32px;
+	font-weight: 600;
+	line-height: 48px;
+	color: rgba(242, 246, 250, 1);
 }
+
+#trailer_block {
+	width: calc(100% - 80px);
+	height: 600px;
+	margin-left: 40px;
+	background-color: rgba(30, 28, 36, 1);
+}
+
+.index_sep_line {
+	width: 68%;
+	margin-left: 16%;
+	height: 1px;
+	clear: both;
+	background-color: rgba(242, 246, 250, 0.2);
+	margin-top: 40px;
+	margin-bottom: 44px;
+}
+
+.sep_line_full {
+	width: 100%;
+	height: 1px;
+	clear: both;
+	background-color: rgba(242, 246, 250, 0.2);
+	margin-top: 40px;
+	margin-bottom: 44px;
+}
+
+.index_spacer_large {
+	height: calc(80px + 10vh);
+	clear: both;
+}
+
+.index_spacer_medium {
+	height: calc(24px + 10vh);
+	clear: both;
+}
+
+.index_spacer_small {
+	height: calc(4px + 4vh);
+	clear: both;
+}
+
+.index_head {
+	margin-bottom: 24px;
+	margin-left: 40px;
+	font-size: 13px;
+	color: rgba(242, 246, 250, 0.55);
+	letter-spacing: 1px;
+	font-weight: 400;
+}
+
+.action_head {
+	margin-bottom: 20px;
+	margin-left: 0px;
+	font-size: 13px;
+	color: rgba(242, 246, 250, 0.55);
+	letter-spacing: 1px;
+	font-weight: 400;
+}
+
+.action_block {
+	width: 68%;
+	margin-left: 16%;
+	position: relative;
+	cursor: pointer;
+}
+
+.action_desc {
+	font-size: 28px;
+	font-weight: 500;
+	line-height: 40px;
+	max-width: 50%;
+	color: rgba(133, 186, 234, 1);
+}
+
+#action_start_playing .action_desc {
+	color: rgba(128, 140, 255, 1);
+}
+
+.action_block:hover .action_desc {
+	color: rgba(253, 211, 180, 1) !important;
+}
+
+.action_block:hover .ico_arrow {
+	background: url('./asset/ico_long_arr_gold.png') no-repeat scroll;
+	background-size: cover;
+}
+
+.ico_arrow {
+	width: 150px;
+	height: 20px;
+	background-color: #023;
+	position: absolute;
+	top: 50%;
+	right: 0;
+}
+
+.arrow_tut {
+	background: url('./asset/ico_long_arr_blue.png') no-repeat scroll;
+	background-size: cover;
+}
+
+.arrow_start_playing {
+	background: url('./asset/ico_long_arr_purp.png') no-repeat scroll;
+	background-size: cover;
+}
+
+.index_outro {
+	margin-left: 16%;
+	max-width: 760px;
+}
+
+h2.index_he {
+	font-size: 28px;
+	font-weight: 500;
+}
+
+.index_outro p {
+	font-size: 28px;
+	line-height: 48px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	margin-top: 52px;
+}
+
+a.index_link {
+	margin-top: 0px;
+	font-size: 28px;
+	line-height: 68px;
+	font-weight: 500;
+	display: block;
+	max-width: 400px;
+}
+
+a.index_link:hover {
+	color: rgba(159, 157, 232, 1);
+}
+
+/* ----- */
 
 .g_con {
 	display: block;

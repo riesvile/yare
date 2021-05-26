@@ -31,8 +31,9 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 		if (window.location.pathname.length <= 1) {
 			setCookie('user_id', 'anonymous');
 			setCookie('session_id', generateUniqueString(3), 1);
-			new_game();
+			//new_game();
 		}
+		
 		//load game by session_id
 	}
 	
@@ -63,11 +64,7 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 				  setCookie('session_id', response.data, 7);
 				  console.log('storing cookie');
 				  
-				  if (window.location.pathname.length <= 1) {
-				      window.location = './hub';
-				  } else {
-					  login_success(response.username);
-				  }
+				  login_success(response.username);
 				 
 			  }
 		  })
@@ -85,7 +82,7 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 		setCookie('user_id', 'anonymous');
 		setCookie('session_id', generateUniqueString(3), 1);
 		console.log(getCookie('user_id'))
-		new_game();
+		//new_game();
 	}
 }
 

@@ -1833,6 +1833,9 @@ app.get('/asset/method-energize2.gif', (req, res) => res.sendFile(__dirname + '/
 app.get('/asset/method-merge.gif', (req, res) => res.sendFile(__dirname + '/assets/method-merge.gif'));
 app.get('/asset/method-divide.gif', (req, res) => res.sendFile(__dirname + '/assets/method-divide.gif'));
 app.get('/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/tr-loader.gif'));
+app.get('/asset/ico_long_arr_blue.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_blue.png'));
+app.get('/asset/ico_long_arr_purp.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_purp.png'));
+app.get('/asset/ico_long_arr_gold.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_gold.png'));
 
 app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
 app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));

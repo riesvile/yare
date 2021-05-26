@@ -4,21 +4,103 @@
     <title>yare.io</title>
 	<style>
 	</style>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./style-mobile.css">
+	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./anime.min.js"></script>
   </head>
   <body>
 	  
+  <div id="new_account_wrap">
+	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+		  <span id="user_err_message">Something's wrong</span>
+	  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+		  <span id="password_err_message">Something's wrong</span>
+		  <br>
+		   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
+	  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+	  </form>
+  </div>
+
+  <div id="login_wrap">
+	  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
+	  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
+		  <span id="login_err_message">Something's wrong</span>
+		  <br>
+	  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+	  </form>
+  </div>
+  
+  <div id="profile_links">  
+	  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
+	  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
+	  	<a href="#" class="profile_link" id="log_out">Log out</a>
+  </div>
+  
+  <div id="hector">
+	  <h1 id="logo"><a href="https://yare.io">yare<span class="logo_lowlight">.io</span></a></h1>
+	  <div class="menu">
+		  <div class="menu_line desktop_only"></div>
+		  <div class="menu_link new_acc" id="new_account">New account</div>
+		  <div class="menu_link" id="login">Log in</div>
+		  <div class="menu_link" id="signed_in">username</div>
+	  </div>
+  </div>  
+  
+  <div id="overlay"></div>
+	  
 	 
 	  
-    <div id="wait_container">
-		 <h1 id="index_intro">RTS game where you control your units with JavaScript</h1>
-  		<div id="tr_loader"></div>
-  	</div>
-	  
+
+		 <h1 id="index_intro">Real-Time Strategy game where you control your units by writing
+JavaScript code.</h1>
+
+		<div class="index_spacer_large"></div>
+		<h3 class="index_head">TRAILER</h3>
+  		<div id="trailer_block"></div>
+		
+		<div class="index_spacer_medium"></div>
+		
+		<div class="action_block" id="action_tut">
+			<h4 class="action_head">TUTORIAL</h4>
+			<p class="action_desc">Learn the basics of the game in an interactive tutorial</p>
+			<div class="ico_arrow arrow_tut"></div>
+		</div>
+		<div class="index_sep_line"></div>
+		<div class="action_block" id="action_start_playing">
+			<h4 class="action_head">START PLAYING</h4>
+			<p class="action_desc">Create an account and play for free against real people</p>
+			<div class="ico_arrow arrow_start_playing"></div>
+		</div>
+		
+		<div class="index_spacer_medium"></div>
+		<div class="sep_line_full"></div>
+		
+		<div class="index_spacer_medium"></div>
+		<div class="index_outro">
+		    <h2 class="index_he">Easy to learn, difficult to master</h2>
+			<p>1 versus 1, harvest energy from stars and use it to create new spirits (the game’s units), attack, and defend yourself.</p>
+			<p>Write real JavaScript code, create functions and adjust your code in real-time, reacting to the current game state. Or feel free to try writing a fully autonomous code without supervision.</p>
+			
+			<div class="index_spacer_small"></div>
+			
+			<a href="https://yare.io/documentation" class="index_link">Documentation</a>
+			<a href="https://reddit.com/r/yaregame" class="index_link">r/yaregame</a>
+			<a href="https://discord.gg/tWDV7daRnB" class="index_link">Discord server</a>
+			
+	    </div>
+		
+		<div class="index_spacer_large"></div>
 	  
   
   
@@ -26,6 +108,7 @@
   
   </body>
  
+  <script src="../animations.js"></script>
   <script src="./basics.js"></script>
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
