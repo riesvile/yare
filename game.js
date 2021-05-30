@@ -936,6 +936,7 @@ var move_queue_ids = [];
 var energize_queue = [];
 var merge_queue = [];
 var divide_queue = [];
+var jump_queue = [];
 var birth_queue = [];
 var death_queue = [];
 var star_zxq;
@@ -1397,7 +1398,13 @@ if (!isMainThread){
 		
 		divide(){
 			
-			var entry_index4 = merge_queue.findIndex(entry4 => entry4[0]['id'] === this.id);
+			if (this.shape != 'circles'){
+				var err_msg = "Only circles can use divide(). See Documentation for available methods.";
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			
+			var entry_index4 = divide_queue.findIndex(entry4 => entry4[0]['id'] === this.id);
 			
 			if (this.hp != 0 && this.merged.length > 0){
 				if (entry_index4 == -1){
@@ -1409,6 +1416,25 @@ if (!isMainThread){
 			
 		}
 		
+		jump(target){
+			if (this.shape != 'squares'){
+				var err_msg = "Only squaress can use jump(). See Documentation for available methods.";
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			
+			var entry_index5 = jump_queue.findIndex(entry5 => entry5[0]['id'] === this.id);
+			
+			if (this.hp != 0 && this.energy > this.energy_capacity / 2){
+				if (entry_index5 == -1){
+					jump_queue.push(this);
+				} else {
+					jump_queue[entry_index5] = this;
+				}
+			}
+			
+			
+		}
 		
 		
 		//kill() { }???????
