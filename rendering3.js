@@ -143,12 +143,12 @@ function onPointerDown(e){
 		var el_id = (e.target || e.srcElement).id;
 		//console.log('down id= ' + el_id);
 	
-		console.log(el_id);
+		//console.log(el_id);
 		if (el_id == 'panel_dragger'){
 			disableSelection = 1;
 			panel_dragging = 1;
-			console.log('panel_el.style = ');
-			console.log(panel_el.getBoundingClientRect());
+			//console.log('panel_el.style = ');
+			//console.log(panel_el.getBoundingClientRect());
 			panel_el_widtho = panel_el.getBoundingClientRect().width;
 		} else if (el_id != 'base_canvas'){
 			return;
@@ -185,7 +185,7 @@ function onPointerDown(e){
 
 function onPointerMove(e){
 	e = e || window.event;
-	console.log(panel_dragging);
+	//console.log(panel_dragging);
 	
 	if (scaling) {
 	    pinchMove(e);
@@ -211,8 +211,8 @@ function onPointerMove(e){
 			//console.log(x + " / " + y);
 			
 			if (panel_dragging == 1){
-				console.log('dragging panel');
-				console.log('x delta = ' + (x - pointer_originX));
+				//console.log('dragging panel');
+				//console.log('x delta = ' + (x - pointer_originX));
 				var panel_width_delta = x - pointer_originX;
 				var new_panel_width = panel_el_widtho + panel_width_delta;
 				
@@ -557,7 +557,7 @@ function game_over(winner){
         .then(response => {
 		  p111_rating = response.p1_rating;
 		  p222_rating = response.p2_rating;
-  		  console.log(response);
+  		  //console.log(response);
 	  	  //document.getElementById('player1_rating').innerHTML = p111_rating + "<span class='player_delta' id='player1_delta'>+10</span>";
 	  	  //document.getElementById('player2_rating').innerHTML = p222_rating + "<span class='player_delta' id='player1_delta'>-9</span>";
 	  	  document.getElementById('player1_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color1'] + "'></span>";
@@ -599,7 +599,7 @@ function game_over(winner){
   			  	  document.getElementById('player2_rating').innerHTML = p222_rating + p222_delta_string;
   	    	  })
   	          .catch(err => {
-  	    		  console.log(err);
+  	    		  //console.log(err);
   	    	  });
 			
 		  }, 1000);
@@ -607,7 +607,7 @@ function game_over(winner){
 	    	
   	  })
         .catch(err => {
-  		  console.log(err);
+  		  //console.log(err);
   	  });
 	
 	if (tutorial_phase > 1){
@@ -696,7 +696,7 @@ function create_spirit_p1(spir_id){
 
 	//console.log('creating spirit ' + spir_id);
 	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
-	console.log(spirit_lookup[spir_id]);
+	//console.log(spirit_lookup[spir_id]);
 }
 
 function create_spirit_p2(spir_id){
@@ -730,7 +730,7 @@ function create_spirit_p2(spir_id){
 	}
 	*/
 
-	console.log('creating spirit ' + spir_id);
+	//console.log('creating spirit ' + spir_id);
 	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
 	
 }
@@ -760,7 +760,7 @@ class Spirit {
 		//console.log('move_called');
 		
 		if (Math.abs(incr[0]) >= 50 && Math.abs(incr[1]) >= 50){
-			console.log('spirit jumping');
+			//console.log('spirit jumping');
 			this.size = 1;
 		} else {
 			this.size = this.temp_size;
@@ -779,7 +779,7 @@ class Spirit {
 			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
 		
 			if (hp == 0){
-				console.log('death calling');
+				//console.log('death calling');
 				var that = this;
 				var counter_death = 0;
 				var alpha = 8;
@@ -865,8 +865,8 @@ class Spirit {
 		var original_size = that.size;
 		var size_decr = (original_size - 1)/10
 		
-		console.log('size before divide')
-		console.log(original_size);
+		//console.log('size before divide')
+		//console.log(original_size);
 		
 		var interval_divide = setInterval(function() {
 			that.size -= size_decr;
@@ -881,11 +881,11 @@ class Spirit {
 		
 		
 		that.energy = original_energy / original_size;
-		console.log('that.original_energy_capacity = ' + original_energy_capacity);
-		console.log('that.original_size = ' + original_size);
-		console.log('that.energy_capacity = ' + that.energy_capacity);
+		//console.log('that.original_energy_capacity = ' + original_energy_capacity);
+		//console.log('that.original_size = ' + original_size);
+		//console.log('that.energy_capacity = ' + that.energy_capacity);
 		that.energy_capacity = original_energy_capacity / original_size;
-		console.log('that.energy_capacity = ' + that.energy_capacity);
+		//console.log('that.energy_capacity = ' + that.energy_capacity);
 		//var spirit_percent_energy = this.energy / this.energy_capacity;
 	}
 	
@@ -1151,7 +1151,7 @@ class Base {
 		if (new_status != this.def_status){
 			this.def_status = Math.abs((new_status * (total_time / 1000)) + ((new_status - 1) * ((total_time / 1000) - 1)));
 			if (Math.abs(this.def_status - new_status) < 0.05) this.def_status = new_status;
-			console.log('this.def_status = ' + this.def_status);
+			//console.log('this.def_status = ' + this.def_status);
 		}
 	}
 	
@@ -1186,8 +1186,8 @@ function draw_energize(origin, target, energy_strength, color){
 		grad.addColorStop(0.06, 'rgba(' + (Number(color_parts[0]) + 80) + ', ' + (Number(color_parts[1]) + 50) + ', ' + (Number(color_parts[2]) + 50) + ', ' + color_parts[3] + ')');
 		grad.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
 	} catch (e) {
-		console.log(e);
-		console.log(origin, target);
+		//console.log(e);
+		//console.log(origin, target);
 	}
 	
 	c.beginPath();
@@ -1202,7 +1202,7 @@ function draw_energize(origin, target, energy_strength, color){
 }
 
 function initiate_world(){
-	console.log('rendering3');
+	//console.log('rendering3');
 	offsetUpdate();
 	//spirit_lookup = {};
 	//star_lookup = {};
@@ -1217,7 +1217,7 @@ function initiate_world(){
 	for (i = 0; i < world_bases; i++){
 		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].energy,  bases_queue[i].player_id, bases_queue[i].color, bases_queue[i].shape);
 		base_lookup[bases_queue[i].id].draw();
-		console.log('base drawn ' + bases_queue[i].id);
+		//console.log('base drawn ' + bases_queue[i].id);
 	}
 	
 	star_lookup['star_zxq'] = new Star('star_zxq', [1000, 1000]);
@@ -1271,7 +1271,7 @@ function render_state(timestamp){
 				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2], game_blocks[active_block].p1[all_spirits[i]][3]);
 				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p1[all_spirits[i]][4], game_blocks[active_block].p1[all_spirits[i]][1]);
 			} catch (e) {
-				console.log(e)
+				//console.log(e)
 			}
 			
 		} else if (spirit_lookup[all_spirits[i]].player_id == pla2){
@@ -1280,7 +1280,7 @@ function render_state(timestamp){
 				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2], game_blocks[active_block].p2[all_spirits[i]][3]);
 				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p2[all_spirits[i]][4], game_blocks[active_block].p2[all_spirits[i]][1]);
 			} catch (e) {
-				console.log(e)
+				//console.log(e)
 			}
 			
 		}

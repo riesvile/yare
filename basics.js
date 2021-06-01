@@ -51,7 +51,7 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 
 	    }).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
+			  //console.log(response);
 			  if (response.data == "expired session"){
 			  	  eraseCookie('user_id');
 			  	  eraseCookie('user_session');
@@ -62,14 +62,14 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 				  //TODO: This might not work
 				  setCookie('user_id', response.username);
 				  setCookie('session_id', response.data, 7);
-				  console.log('storing cookie');
+				  //console.log('storing cookie');
 				  
 				  login_success(response.username);
 				 
 			  }
 		  })
 	      .catch(err => {
-			  console.log(err);
+			  //console.log(err);
 		  });
 		  
 		  active_session = 1;
@@ -77,11 +77,11 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 	
 } else {
 	if (window.location.pathname.length <= 1) {
-		console.log('window.location.pathname.length');
-		console.log(window.location.pathname.length);
+		//console.log('window.location.pathname.length');
+		//console.log(window.location.pathname.length);
 		setCookie('user_id', 'anonymous');
 		setCookie('session_id', generateUniqueString(3), 1);
-		console.log(getCookie('user_id'))
+		//console.log(getCookie('user_id'))
 		//new_game();
 	}
 }
@@ -101,7 +101,7 @@ function new_game(type){
 	}).then(response => response.json())
       .then(response => {
 		  //redirect to game id
-		  console.log(response);
+		  //console.log(response);
 		  game_id = response.g_id;
 		  if (response.meta == 'easy-bot'){
 			 //setCookie('game_id', game_id);
@@ -117,16 +117,16 @@ function new_game(type){
 		 
 	  })
       .catch(err => {
-		  console.log(err);
+		  //console.log(err);
 	  });
-	  console.log(getCookie('user_id'));
+	  //console.log(getCookie('user_id'));
 }
 
 function waiting_for_p2(g_id){
 	//interval – keep checking with server if p2 connected
-	console.log('waiting for player 2 for game' + g_id);
+	//console.log('waiting for player 2 for game' + g_id);
 	knockknock = setInterval(function(){
-		console.log('checking with server');
+		//console.log('checking with server');
 		fetch('/check-status/' + g_id, {
 	        method: "POST",
 	        headers: {
@@ -139,7 +139,7 @@ function waiting_for_p2(g_id){
 		}).then(response => response.json())
 	      .then(response => {
 			  //redirect to game id
-			  console.log(response);
+			  //console.log(response);
 			  if (link_filled == 0){
 				  link_filled = 1;
 				  document.getElementById('ch_link').innerHTML = 'https://yare.io/challenge/' + g_id;
@@ -147,9 +147,9 @@ function waiting_for_p2(g_id){
 			  }
 			  
 			  if (response.data == 'not yet'){
-				  console.log('still nothing');
+				  //console.log('still nothing');
 			  } else if (response.data == 'ready'){
-				  console.log('game is ready');
+				  //console.log('game is ready');
 				  //document.getElementById("get_in").style.display = "block";
 				  window.location = './' + response.server + 'n/' + game_id;
 			  }
@@ -157,7 +157,7 @@ function waiting_for_p2(g_id){
 		 
 		  })
 	      .catch(err => {
-			  console.log(err);
+			  //console.log(err);
 		  });
 	}, 1000);
 }
@@ -225,34 +225,34 @@ try {
 
 	    }).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
+			  //console.log(response);
 			  if (response.data == "no such user"){
-		  		  console.log('does not exist');
+		  		  //console.log('does not exist');
 				  login_error('user does not exist');
 				  resume_client();
 			  } else if (response.data == "wrong password"){
 				  login_error('wrong password');
 				  resume_client();
-				  console.log('wrong pass');
+				  //console.log('wrong pass');
 			  } else {
 				  setCookie('user_id', response.user_id);
 				  setCookie('session_id', response.data, 7);
-				  console.log('storing cookie');
+				  //console.log('storing cookie');
 				  login_success(response.user_id);
 				  //window.location = './hub';
 			  }
 		  })
 	      .catch(err => {
-			  console.log(err);
+			  //console.log(err);
 		  });
 	  
 	});
 } catch (e) {
-	//console.log(e);
+	////console.log(e);
 }
 
 function submit_test(){
-	console.log('submit teest');
+	//console.log('submit teest');
 }
 
 
@@ -280,7 +280,7 @@ try {
 
 	    }).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
+			  //console.log(response);
 			  if (response.data == "user created"){
 				  console.log('all good');
 				  console.log('session_id = ' + getCookie('session_id'));
@@ -292,7 +292,7 @@ try {
 					  console.log(e);
 				  }
 				  
-				  console.log('session_id = ' + getCookie('session_id'));
+				  //console.log('session_id = ' + getCookie('session_id'));
 				  login_success(response.user_id);
 				  update_code();
 			  } else if (response.data == "exists"){
@@ -314,7 +314,7 @@ try {
 			  } else {
 				  setCookie('user_id', response.username);
 				  setCookie('session_id', response.data, 7);
-				  console.log('storing cookie');
+				  //console.log('storing cookie');
 				  //window.location = './hub';
 			  }
 		  })

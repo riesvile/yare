@@ -186,11 +186,11 @@
   <script>
 	  
 	  function webker_msg_received(msg){
-		  console.log('received ' + msg.data);
+		  //console.log('received ' + msg.data);
 	  }
 
 	  function webker_error(err_msg){
-		  console.log(err_msg);
+		  //console.log(err_msg);
 	  }
 	  
 	  if (window.Worker) {
@@ -203,7 +203,7 @@
 		
 		
 	  } else {
-		  console.log('no worker support');
+		  //console.log('no worker support');
 	  }
 	  
 	  
@@ -237,14 +237,14 @@
 		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
 			  game_running = 1;
-			  console.log('GAME IS RUNNING');
+			  //console.log('GAME IS RUNNING');
 			  
 			  active_block = 't' + (tick_counter);
-			  console.log('active block = ' + active_block);
+			  //console.log('active block = ' + active_block);
 			  setInterval(function(){ 
 				  // change to tick_counter (not - 1)
 				  active_block = 't' + (tick_counter);
-				  console.log('active block = ' + active_block);
+				  //console.log('active block = ' + active_block);
 				  total_time = 0;
 			  }, 1000);
 			  
@@ -271,7 +271,7 @@
 					  offsetY = -1100 + temp_availHeight; //-350
 					  scale = 0.6;
 					  multiplier = 1/scale;
-					  console.log(scale + 'scale');
+					  //console.log(scale + 'scale');
 				  } else {
 					  offsetX = -1700 + temp_availWidth; //-670
 					  offsetY = -1400 + temp_availHeight; //-350
@@ -340,7 +340,7 @@
 	  var logs = [];
 	  var tempURLThing = document.URL.replace('#', '');
 	  var this_game_id = /[^/]*$/.exec(tempURLThing)[0];
-	  console.log(this_game_id);
+	  //console.log(this_game_id);
 	  
 	  var pla1 = '';
 	  var pla2 = '';
@@ -390,7 +390,7 @@
 		  
 		  //socket.binaryType = "arraybuffer";
 		  socket.addEventListener('open', function(event){
-			  console.log('Connected to wsws server');
+			  //console.log('Connected to wsws server');
 		  })
 	  
 		  socket.addEventListener('message', function(event){
@@ -404,7 +404,7 @@
 		  
 			  try {
 				 incoming = JSON.parse(event.data);
-				 console.log(incoming);
+				 //console.log(incoming);
 				 tick_counter = incoming.t;
 				 
 				 if (tick_counter > 1){
@@ -457,7 +457,7 @@
 	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
 							 } else {
 								// new spirit instance
-								console.log('spirit born (probably)');
+								//console.log('spirit born (probably)');
 								 
  	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
  	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
@@ -486,7 +486,7 @@
 							 
 							 if (spirit_lookup[spir_id] == undefined && pla2 != undefined){
 								 create_spirit_p2(spir_id);
-								 console.log('spirit created ' + spir_id);
+								 //console.log('spirit created ' + spir_id);
 							 }
 							 
 							 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
@@ -503,7 +503,7 @@
 	   							game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
 							 } else {
 								// new spirit instance
-								 console.log('spirit born (probably)');
+								 //console.log('spirit born (probably)');
 								 
 								 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
 								 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
@@ -524,8 +524,8 @@
 					 game_blocks['t' + tick_counter]['b1'][3] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
 					 game_blocks['t' + tick_counter]['b2'][3] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
 					 
-					 console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
-					 console.log(game_blocks);
+					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
+					 //console.log(game_blocks);
 					 run_it();
 					 
 				 }
@@ -592,7 +592,7 @@
 							 //console.error(incoming.err2[cns]);
 					 	 }
 						 
-						 console.log('t')
+						 //console.log('t')
 						 var console_content_height = document.getElementById("console_in").clientHeight;
 						 update_console_height(console_content_height);
 						 
@@ -728,7 +728,7 @@
 							 alert('tut ended');
 							 break;
 						 default:
-							 console.log('tutorial defaulted');
+							 //console.log('tutorial defaulted');
 					 }
 				 
 				 	 setTimeout(function(){
@@ -795,7 +795,7 @@
 			 
 				 //console.log('incoming =======================================');
 				 //console.log(incoming);
-				 console.log('here is initiation');
+				 //console.log('here is initiation');
 				 pla1 = incoming.players[0];
 				 pla2 = incoming.players[1];
 				 colors['color1'] = incoming.colors[0];
@@ -852,7 +852,7 @@
 	  }
 	  
 	  function tutorial_signup(nick) {
-		  console.log('this_game_id = ' + this_game_id);
+		  //console.log('this_game_id = ' + this_game_id);
 	  	fetch('/' + this_server + '/tutorial-signup', {
 	  	        method: "POST",
 	  	        headers: {
@@ -866,20 +866,20 @@
 
 	      }).then(response => response.json())
 	        .then(response => {
-	  		  console.log(response);
+	  		  //console.log(response);
 	  		  if (response.data == "no game found"){
-	  			  console.log('no game found');
+	  			  //console.log('no game found');
 	  		  } else if (response.data == "updated"){
-	  			  //console.log('user exists already');
-	  			  console.log('anonymous updated')
+	  			  ////console.log('user exists already');
+	  			  //console.log('anonymous updated')
 	  		  } else if (response.data == "something went wrong"){
-	  			  console.log('something went wrong');
+	  			  //console.log('something went wrong');
 	  		  } else {
-				  console.log('strange case');
+				  //console.log('strange case');
 	  		  }
 	  	  })
 	        .catch(err => {
-	  		  console.log(err);
+	  		  //console.log(err);
 	  	  });
 	  }
 	  
@@ -935,7 +935,7 @@
 		      var msg = successful ? 'successful' : 'unsuccessful';
 		      code_copy_success(target);
 		    } catch (err) {
-		      console.log('Oops, unable to copy');
+		      //console.log('Oops, unable to copy');
 		    }
 		
 		  document.body.removeChild(copyTextArea);
