@@ -2827,7 +2827,7 @@ if (!isMainThread){
 				//console.log('objects processing');
 				temp_flag = 0;
 				//console.log('my_spirits1.length = ' + my_spirits1.length);
-				//console.log('living_spirits.length = ' + living_spirits.length
+				console.log('living_spirits.length = ' + living_spirits.length
 					+ " p1 = " + p1_living + " p2 = " + p2_living );
 					spirit_cost(1, p1_living);
 					spirit_cost(2, p2_living);
