@@ -61,6 +61,7 @@
 		  </div>
 		  <div class="menu">
 			  <a href="https://yare.io/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
+			  <a href="https://yare.io/newgame" class="menu_link new_g" id="new_g">New game</a>
 			  <div class="menu_line desktop_only"></div>
 			  <div class="menu_link new_acc" id="new_account">New account</div>
 			  <div class="menu_link" id="login">Log in</div>
@@ -87,7 +88,7 @@
 		  
 		<section id="doc_intro">
 		  <p class="p_intro">yare.io is a real-time 2-player (1v1) strategy game where you control your units (spirits) via JavaScript. You win by destroying the opponent’s base.</p>
-		  <p id="early_access">Yare is now in early access. It will <span class="highlight" style="font-weight: 700;">launch on May 15.</span></p>
+		  <p id="early_access">Yare.io is still in beta. Please share any bugs you find on our <a href="https://discord.gg/tWDV7daRnB" target="_blank">Discord server</a></p>
 		  <div class="sep_large"></div>
 		  <div class="sep_large"></div>
 		  <div id="trailer_placeholder"><span>placeholder for trailer video</span></div>
@@ -329,6 +330,32 @@
 					
 				</div>
 			</div>
+		  	<div id="exp_jump_method_wrap" class="row_doc">
+				<div id="exp_jump_method" class="row_in_doc">
+					<span class="table_doc_method">jump(<span class="target_lowlight">target</span>)</span>
+					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
+					<span class="table_doc_usedby">
+						<span class="g_con method_nouse"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
+						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
+						<span class="g_con method_nouse"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
+					</span>
+					<span id="expand_for_jump" class="expando_more"><span class="ico_expand"></span></span>
+						
+					<div class="exp_content">
+						<div class="sep_small"></div>
+						<p class="p_method_desc">Teleports a spirit into a new location up to 500 units away. Costs half of spirit's energy_capacity.</p>
+						
+						<div class="sep_small"></div>
+						<div class="sep_small"></div>
+						
+						<div class="method_gif_example">
+							<div id="gif_move" class="gif_in"></div>
+							<code class="example_code">mySpirits[0].jump([800, 900])</code>
+						</div>
+					</div>
+					
+				</div>
+			</div>
 		  </div>
 		  
 		  <div class="sep_medium"></div>
@@ -350,9 +377,10 @@
 		  <div class="sep_medium"></div>
 		  <p class="p_somewhat_important">Energy needed to generate a new spirit <span class="lowlight">(happens automatically </span>once per tick<span class="lowlight">)</span></p>
 		  <span class="energy_needed">
-			<span class="g_con"><span class="ico_circle"></span> 200</span>
-			<span class="g_con"><span class="ico_square"></span> 500</span>
-			<span class="g_con"><span class="ico_triangle"></span> 500</span>
+			<span class="g_con"><span class="ico_circle"></span> 50-400</span>
+			<span class="g_con"><span class="ico_square"></span> 400–800</span>
+			<span class="g_con"><span class="ico_triangle"></span> 200</span>
+			<span id="info_birth" class="expando_info">?</span>
 		  </span>
 		  
 		  <div class="sep_medium"></div>
@@ -495,7 +523,8 @@
 		  
 		<section id="doc_credits">
 		  <h2 class="h_sec_head">Credits</h2>
-		   <p class="p_sec_intro">Yare.io was made by Lev Miseri. Contact me at levmiseri@gmail.com</p>
+		   <p class="p_sec_intro">Yare.io was made by Vilem Ries. Feel free to reach out over <a href="https://discord.gg/tWDV7daRnB">Discord</a> </p>
+		   <p class="p_sec_intro2">Medium and Hard bots were made by <a href="j2m.cz/~jm/">jm</a></p>
 		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>
@@ -650,7 +679,11 @@
 		  case 'expand_for_divide':
 			  expand_documentation('exp_divide_method', this.id)
 			  break;
+		  case 'expand_for_jump':
+			  expand_documentation('exp_jump_method', this.id)
+			  break;
 		  }
+		  
 	  }
 	  
   

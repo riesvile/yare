@@ -312,6 +312,7 @@ function login_success(user_name){
 	try {
 		document.getElementById('new_account').style.display = 'none';	
 		document.getElementById('login').style.display = 'none';
+		document.getElementById('new_g').style.display = 'block';
 	} catch (error) {
 	  //console.error(error);
 	}
@@ -947,6 +948,8 @@ function show_info_snippet(elid, leftPos, topPos){
 			break;
 		case "info_base_sight":
 			info_content.innerHTML = "<pre class='code_sample'>base.sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>structures:</span> []&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy spirit within 400 radius around the base</p>			<pre class='code_sample'>base.sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
+		case "info_birth":
+			info_content.innerHTML = "<span class='g_con'><span class='ico_circle'></span> Circles new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–100 spirits</td><td>50 energy</td></tr><tr><td>100–200</td><td>100 energy</td></tr><tr><td>200–300</td><td>200 energy</td></tr><tr><td>300+ spirits</td><td>400 energy</td></tr></table><div class='sep_mini'></div><div class='sep_small'></div><span class='g_con'><span class='ico_square'></span> Squares new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–10 spirits</td><td>400 energy</td></tr><tr><td>10+ spirits</td><td>800 energy</td></tr></table><div class='sep_mini'></div><div class='sep_small'></div>";
 			break;
 	}
 	
@@ -1057,6 +1060,13 @@ function game_switch_view(){
 }
 
 
+function check_login(){
+	if (getCookie('session_id') != null && getCookie('user_id') != null && getCookie('user_id') != "anonymous"){
+		window.location = './hub';
+	} else {
+		new_account();
+	}
+}
 
 
 
@@ -1086,6 +1096,12 @@ try {
 	
 } catch (error) {
   //console.error(error);
+}
+
+try {
+	document.getElementById('action_start_playing').addEventListener('click', check_login, false);
+} catch (error){
+	
 }
 
 try {

@@ -40,24 +40,27 @@
 	  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
 	  </form>
   </div>
-  
+
   <div id="profile_links">  
 	  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
 	  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
 	  	<a href="#" class="profile_link" id="log_out">Log out</a>
   </div>
-  
+
+
   <div id="hector">
 	  <h1 id="logo"><a href="https://yare.io">yare<span class="logo_lowlight">.io</span></a></h1>
 	  <div class="menu">
+		  <a href="https://yare.io/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
 		  <div class="menu_line desktop_only"></div>
 		  <div class="menu_link new_acc" id="new_account">New account</div>
 		  <div class="menu_link" id="login">Log in</div>
 		  <div class="menu_link" id="signed_in">username</div>
 	  </div>
-  </div>  
+  </div>
   
   <div id="overlay"></div>
+  <div id="grad_top2"></div>
 	  
 	 
 	  
@@ -66,12 +69,32 @@
 JavaScript code.</h1>
 
 		<div class="index_spacer_large"></div>
-		<h3 class="index_head">TRAILER</h3>
-  		<div id="trailer_block"></div>
+		<h3 class="index_head">GALLERY</h3>
+  		<!-- <div id="trailer_block"></div> -->
+		<div id="gallery_block">
+			<div id="gallery_block_in">
+				<div class="gal_el">
+					<div id="gal_img1"><img src="./asset/gal1.png"></div>
+					<p class="img_description">Two players in the middle of a battle</p>
+				</div>
+				<div class="gal_el">
+					<div id="gal_img2"><img src="./asset/gal2.png"></div>
+					<p class="img_description">Spirits harvesting energy from a star...</p>
+				</div>
+				<div class="gal_el">
+					<div id="gal_img3"><img src="./asset/gal3.png"></div>
+					<p class="img_description">... and sending it to the base</p>
+				</div>
+				<div class="gal_el">
+					<div id="gal_img4"><img src="./asset/gal4.png"></div>
+					<p class="img_description">Spirits going into fight</p>
+				</div>
+			</div>
+		</div>
 		
 		<div class="index_spacer_medium"></div>
 		
-		<div class="action_block" id="action_tut">
+		<div class="action_block" id="action_tut" onclick="new_game('easy-bot')">
 			<h4 class="action_head">TUTORIAL</h4>
 			<p class="action_desc">Learn the basics of the game in an interactive tutorial</p>
 			<div class="ico_arrow arrow_tut"></div>
@@ -107,9 +130,36 @@ JavaScript code.</h1>
   
   
   </body>
+  
+  <script>
+	  
+	  let el = document.querySelector("#gallery_block");
+	  let drag_x = 0, drag_y = 0, drag_top = 0, drag_left = 0;
+
+	  let draggingFunction = (e) => {
+	      document.addEventListener('mouseup', () => {
+	          document.removeEventListener("mousemove", draggingFunction);
+	      });
+
+	      el.scrollLeft = drag_left - e.pageX + drag_x;
+	      el.scrollTop = drag_top - e.pageY + drag_y;
+	  };
+
+	  el.addEventListener('mousedown', (e) => {
+	      e.preventDefault();
+
+	      drag_y = e.pageY;
+	      drag_x = e.pageX;
+	      drag_top = el.scrollTop;
+	      drag_left = el.scrollLeft;
+
+	      document.addEventListener('mousemove', draggingFunction);
+	  });
+	  
+  </script>
  
   <script src="../animations.js"></script>
-  <script src="./basics.js"></script>
+  <script src="../basics.js"></script>
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>

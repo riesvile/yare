@@ -673,6 +673,10 @@ function create_spirit_p1(spir_id){
 	var spir_player = pla1;
 	var spir_color = colors['color1'];
 	var spir_shape = shapes['shape1'];
+	
+	if (game_type == 'tutorial'){
+		spir_size = 5;
+	}
 
 	/*
 	if (spir_id.startsWith(pla1)) {
@@ -705,6 +709,10 @@ function create_spirit_p2(spir_id){
 	var spir_player = pla2;
 	var spir_color = colors['color2'];
 	var spir_shape = shapes['shape2'];
+
+	if (game_type == 'tutorial'){
+		spir_size = 5;
+	}
 
 	/*
 	if (spir_id.startsWith(pla1)) {
@@ -744,14 +752,25 @@ class Spirit {
 		this.player_id = player;
 		//this.player_id = player; set up later
 		living_spirits.push(this);
+		this.temp_size = size;
 	}
 
 	move(origin, incr) {
 	//incr is array [incrX, incrY]
 		//console.log('move_called');
+		
+		if (Math.abs(incr[0]) >= 50 && Math.abs(incr[1]) >= 50){
+			console.log('spirit jumping');
+			this.size = 1;
+		} else {
+			this.size = this.temp_size;
+		}
+		
 		this.position = origin;
 		this.position[0] = origin[0] + (incr[0] * (total_time / 1000));
 		this.position[1] = origin[1] + (incr[1] * (total_time / 1000));
+		
+		
 	}
 	
 	energize(prev_energy, new_energy, hp){

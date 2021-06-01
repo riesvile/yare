@@ -112,7 +112,7 @@ function new_game(type){
 			  window.location.href = './' + response.server + 'n/' + response.g_id;
 		  } else if (response.meta == 'waiting for p2'){
 			  waiting_for_p2(response.g_id);
-		  }
+		  } 
 		  
 		 
 	  })
@@ -286,7 +286,12 @@ try {
 				  console.log('session_id = ' + getCookie('session_id'));
 				  setCookie('user_id', response.user_id);
 				  setCookie('session_id', response.session_id);
-				  tutorial_signup(response.user_id);
+				  try {
+				  	tutorial_signup(response.user_id);
+				  } catch (e) {
+					  console.log(e);
+				  }
+				  
 				  console.log('session_id = ' + getCookie('session_id'));
 				  login_success(response.user_id);
 				  update_code();

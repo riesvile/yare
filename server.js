@@ -1837,6 +1837,10 @@ app.get('/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/
 app.get('/asset/ico_long_arr_blue.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_blue.png'));
 app.get('/asset/ico_long_arr_purp.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_purp.png'));
 app.get('/asset/ico_long_arr_gold.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_gold.png'));
+app.get('/asset/gal1.png', (req, res) => res.sendFile(__dirname + '/assets/gal1.png'));
+app.get('/asset/gal2.png', (req, res) => res.sendFile(__dirname + '/assets/gal2.png'));
+app.get('/asset/gal3.png', (req, res) => res.sendFile(__dirname + '/assets/gal3.png'));
+app.get('/asset/gal4.png', (req, res) => res.sendFile(__dirname + '/assets/gal4.png'));
 
 app.get('/sound/outfoxing.mp3', (req, res) => res.sendFile(__dirname + '/sound/outfoxing.mp3'));
 app.get('/sound/enemy_incoming.mp3', (req, res) => res.sendFile(__dirname + '/sound/enemy_incoming.mp3'));

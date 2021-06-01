@@ -971,8 +971,17 @@ function spirit_cost(p_num, alives){
 			if (alives > 100) base_lookup['base_' + players['p2']].current_spirit_cost = 100;
 			if (alives > 200) base_lookup['base_' + players['p2']].current_spirit_cost = 200;
 			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
+		} else if (shapes["player2"] == 'squares'){
+			if (alives <= 10) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
+			if (alives > 10) base_lookup['base_' + players['p2']].current_spirit_cost = 800;
 		}
-	}	
+	}
+	
+	if (workerData[1] == 'tutorial'){
+		base_lookup['base_' + players['p1']].current_spirit_cost = 100;
+		base_lookup['base_' + players['p2']].current_spirit_cost = 50;
+	}
+		
 }
 
 function get_def_size(pshape){
@@ -1157,6 +1166,15 @@ function fill_error(plid, err_msg){
 		user_error1.push(err_msg);
 	} else if (plid == players['p2']){
 		user_error2.push(err_msg);
+	}
+}
+
+function jump_danger_zone(loc){
+	if (Math.abs(stars[0].position[0] - loc[0]) < 100 && Math.abs(stars[0].position[1] - loc[1]) < 100
+ 	 || Math.abs(stars[1].position[0] - loc[0]) < 100 && Math.abs(stars[1].position[1] - loc[1]) < 100){
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -1423,13 +1441,53 @@ if (!isMainThread){
 				return;
 			}
 			
+			if (Array.isArray(target) == false){
+				var err_msg = '.jump() argument must be an array. E.g. my_spirits[0].jump([100, 100]). Received: ' + target;
+				
+				fill_error(this.player_id, err_msg);
+				return;
+			} else if (target.length != 2){
+				var err_msg = '.jump() argument must be an array of length 2. E.g. my_spirits[0].jump([100, 100]). Received: ' + target;
+			
+				fill_error(this.player_id, err_msg);
+				return;
+				
+			} else if (this.energy < this.energy_capacity / 2){
+				var err_msg = 'Not enough energy to jump. Cost: ' + this.energy_capacity / 2 + ' energy';
+			
+				fill_error(this.player_id, err_msg);
+				return;
+				
+			} else {
+				try {
+					if (Math.abs(target[0] - this.position[0]) > 500 || Math.abs(target[1] - this.position[1]) > 500){
+						var err_msg = 'Target is too far away. Max. distance is 500 units in both x and y direction.';
+			
+						fill_error(this.player_id, err_msg);
+						return;
+					} else if (Math.abs(target[0] - this.position[0]) < 50 && Math.abs(target[1] - this.position[1]) < 50){
+						var err_msg = 'Target is too close. Min. distance is 50 units in both x and y direction.';
+			
+						fill_error(this.player_id, err_msg);
+						return;
+					} else if (jump_danger_zone(target)){
+						var err_msg = 'Target is too close to a star or a base.';
+			
+						fill_error(this.player_id, err_msg);
+						return;
+					}
+				} catch (e) {
+					console.log(e);
+				}
+			}
+			
 			var entry_index5 = jump_queue.findIndex(entry5 => entry5[0]['id'] === this.id);
 			
-			if (this.hp != 0 && this.energy > this.energy_capacity / 2){
+			if (this.hp != 0){
 				if (entry_index5 == -1){
-					jump_queue.push(this);
+					jump_queue.push([this, target]);
 				} else {
-					jump_queue[entry_index5] = this;
+					jump_queue[entry_index5] = [this, target];
 				}
 			}
 			
@@ -1941,18 +1999,22 @@ if (!isMainThread){
 			
 			
 			if (workerData[1] == 'tutorial'){
-				render_data2 = {
-					'move': [],
-					'energize': [],
-					'special': [],
-					'death': [],
-					'birth': [],
-					'error_msg1': [],
-					'error_msg2': [],
-					'console1': [],
-					'console2': [],
-					'tutorial': []
-				}
+				
+				render_data3 = {
+					't': 0,
+					'p1': [],
+					'p2': [],
+					'b1': [],
+					'b2': [],
+					'e': [],
+					's': [],
+					'er1': [],
+					'er2': [],
+					'c1': [],
+					'c2': [],
+					'tutorial': [],
+					'end': end_winner
+				};
 				
 				//console.log(tutorial_phase);
 				
@@ -1976,18 +2038,20 @@ if (!isMainThread){
 					tutorial_phase[0] = 'end';
 				}
 			} else {
-				render_data2 = {
-					'move': [],
-					'energize': [],
-					'special': [],
-					'death': [],
-					'birth': [],
-					'error_msg1': [],
-					'error_msg2': [],
-					'console1': [],
-					'console2': [],
+				render_data3 = {
+					't': 0,
+					'p1': [],
+					'p2': [],
+					'b1': [],
+					'b2': [],
+					'e': [],
+					's': [],
+					'er1': [],
+					'er2': [],
+					'c1': [],
+					'c2': [],
 					'end': end_winner
-				}
+				};
 				if (game_duration == 300){
 					if (top_s == 7){
 						end_game(0, 0);
@@ -2038,7 +2102,7 @@ if (!isMainThread){
 			birthlings = birth_queue.length;
 			for (i = birthlings - 1; i >= 0; i--){
 				spt = birth_queue[i];	
-				render_data2.birth.push(birth_queue[i]);
+				//render_data2.birth.push(birth_queue[i]);
 				spirit_lookup[spt.id] = spt;
 				birth_queue.splice(i, 1);
 			}
@@ -2262,7 +2326,7 @@ if (!isMainThread){
 				
 					//render_data2.move.push([move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1], move_queue[i][2]]);
 				
-					render_data2.move.push([move_queue[i][0].id, [posX, posY], move_queue[i][1], move_queue[i][2]]);
+					//render_data2.move.push([move_queue[i][0].id, [posX, posY], move_queue[i][1], move_queue[i][2]]);
 				}
 			
 				
@@ -2296,7 +2360,7 @@ if (!isMainThread){
 			//console.log(spirit_lookup['sp1'].sight);
 		
 			//
-			//objects energize
+			// objects energize
 			//
 			
 			var energize_apply = [];
@@ -2326,7 +2390,7 @@ if (!isMainThread){
 								energize_queue[i][0].energy += energy_value * energize_queue[i][0].size;
 								if (energize_queue[i][0].energy > energize_queue[i][0].energy_capacity) energize_queue[i][0].energy = energize_queue[i][0].energy_capacity;
 								//render energize: [origin, target, energy]
-								render_data2.energize.push([star_lookup[energize_queue[i][0].sight.structures[j]].id, energize_queue[i][0].id, energy_value * energize_queue[i][0].size]);
+								//render_data2.energize.push([star_lookup[energize_queue[i][0].sight.structures[j]].id, energize_queue[i][0].id, energy_value * energize_queue[i][0].size]);
 								render_data3.e.push([star_lookup[energize_queue[i][0].sight.structures[j]].id, energize_queue[i][0].id, energy_value * energize_queue[i][0].size]);
 							} else {
 								//console.log('out of reach');
@@ -2405,10 +2469,10 @@ if (!isMainThread){
 							energize_queue[i][0].energy -= energy_value * energize_queue[i][0].size;
 							energize_queue[i][1].energy += energy_value * energize_queue[i][0].size;
 							if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
-							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value * energize_queue[i][0].size]);
+							//render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value * energize_queue[i][0].size]);
 							render_data3.e.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value * energize_queue[i][0].size]);
 						} else if (energize_queue[i][0].energy > 0){
-							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][0].energy]);
+							//render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][0].energy]);
 							render_data3.e.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][0].energy]);
 							energize_queue[i][1].energy += energize_queue[i][0].energy;
 							energize_queue[i][0].energy = 0;
@@ -2432,7 +2496,7 @@ if (!isMainThread){
 							strength = energy_value * energize_queue[i][0].size;
 							energize_apply.push([energize_queue[i][0], strength * (-1)]);
 							energize_apply.push([energize_queue[i][1], strength * (-2)]);
-							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
+							//render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
 							render_data3.e.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
 							//if below 0, kill
 							
@@ -2440,7 +2504,7 @@ if (!isMainThread){
 							strength = energize_queue[i][0].energy;
 							energize_apply.push([energize_queue[i][0], strength * (-1)]);
 							energize_apply.push([energize_queue[i][1], strength * (-2)]);
-							render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
+							//render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
 							render_data3.e.push([energize_queue[i][0].id, energize_queue[i][1].id, 2 * strength]);
 						} else {
 							//console.log('no energy to give');
@@ -2505,7 +2569,7 @@ if (!isMainThread){
 				
 				death_queue[i].hp = 0;
 				console.log(death_queue[i]);
-				render_data2.death.push(death_queue[i].id);
+				//render_data2.death.push(death_queue[i].id);
 				
 				//delete spirit_lookup[suid];
 				//var index = living_spirits.findIndex(x => x.id == death_queue[i].id);
@@ -2519,7 +2583,7 @@ if (!isMainThread){
 			
 			
 			//
-			//objects merge
+			// objects merge
 			//
 			
 			for (i = (merge_queue.length - 1); i >= 0; i--){
@@ -2544,7 +2608,7 @@ if (!isMainThread){
 					//merge_queue[i][0].position = JSON.parse(JSON.stringify(merge_queue[i][1].position));
 				
 				
-					render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
+					//render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
 					render_data3.s.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
 					//render_data2.death.push(merge_queue[i][0].id);
 				}
@@ -2556,7 +2620,7 @@ if (!isMainThread){
 			
 			
 			//
-			//objects divide
+			// objects divide
 			//
 			
 			for (i = (divide_queue.length - 1); i >= 0; i--){
@@ -2591,7 +2655,7 @@ if (!isMainThread){
 					//console.log(divided.position);
 					//console.log(prev_position[original.id]);
 					
-					render_data2.move.push([divided.id, prev_position[original.id], [adj1, adj2], [divided.position[0] + adj1, divided.position[1] + adj2]]);
+					//render_data2.move.push([divided.id, prev_position[original.id], [adj1, adj2], [divided.position[0] + adj1, divided.position[1] + adj2]]);
 					
 					divided.position[0] += adj1;
 					divided.position[1] += adj2;
@@ -2606,10 +2670,27 @@ if (!isMainThread){
 				original.energy_capacity = original.energy_capacity / original_size;
 				
 				
-				render_data2.special.push(['d', divide_queue[i].id]);
+				//render_data2.special.push(['d', divide_queue[i].id]);
 				render_data3.s.push(['d', divide_queue[i].id]);
 				
 				divide_queue.splice(i, 1);
+			}
+			
+			
+			
+			//
+			// objects jump
+			//
+			
+			for (i = (jump_queue.length - 1); i >= 0; i--){
+				
+				jump_queue[i][0].position = jump_queue[i][1];
+				jump_queue[i][0].energy -= jump_queue[i][0].energy_capacity / 2;
+			
+				
+				render_data3.s.push(['j', jump_queue[i][0].id]);
+				
+				jump_queue.splice(i, 1);
 			}
 			
 			
@@ -2620,10 +2701,10 @@ if (!isMainThread){
 			if (log2.length > 30) log2.length = 30;
 		
 			//errors
-			render_data2.error_msg1 = user_error1;
-			render_data2.error_msg2 = user_error2;
-			render_data2.console1 = log1;
-			render_data2.console2 = log2;
+			//render_data2.error_msg1 = user_error1;
+			//render_data2.error_msg2 = user_error2;
+			//render_data2.console1 = log1;
+			//render_data2.console2 = log2;
 			
 			render_data3.er1 = user_error1;
 			render_data3.er2 = user_error2;
@@ -2636,7 +2717,7 @@ if (!isMainThread){
 		
 			//tutorial data update
 			if (workerData[1] == 'tutorial'){
-				render_data2.tutorial.push(tutorial_phase);
+				render_data3.tutorial.push(tutorial_phase);
 			}
 		
 		
@@ -2781,21 +2862,21 @@ if (!isMainThread){
 		
 		// --- if tutorial --- //
 		
-		 /*
+		 ///*
 
 		for (s = 1; s < 2; s++){
-			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1400+s*10,580], 5, 0, players['p1'], colors['player1'], 100);
+			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*10,620], 5, 0, players['p1'], colors['player1']);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
 		for (q = 1; q < 2; q++){
-			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2500+q*10,1520], 5, 0, players['p2'], colors['player2'], 100);
+			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2820+q*10,1820], 5, 0, players['p2'], colors['player2']);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
 		}
 		
-		 */
+		 //*/
 		
 		// -- //
 		
@@ -2803,28 +2884,7 @@ if (!isMainThread){
 		
 		// --- if real --- //
 		
-		///*
-		
 		/*
-		var start_num_spirits = 100;
-		var one_row = Math.round(Math.sqrt(start_num_spirits));
-		for (i = 0; i < start_num_spirits ; i++){
-			var row = Math.floor(i / one_row);
-			var col = i % one_row;
-
-			var name = players['p1'] + (i + 1);
-			global[name] = new Spirit(name, [1250 +col*20 + (col%2)* 0, 620+row*20], 1, 0, players['p1'], colors['player1'], 100);
-			spirits.push(global[name]);
-
-			name = players['p2'] + (i + 1);
-			global[name] = new Spirit(name, [2970+col*20 + (col%2)* 0,1800+row*20], 1, 0, players['p2'], colors['player2'], 100);
-			spirits2.push(global[name]);
-		}
-
-		top_s = start_num_spirits;
-		top_q = start_num_spirits;
-		*/
-		
 				
 		var start_num_spirits = 7;
 		var start_num_adjust1 = 0;
@@ -2857,7 +2917,7 @@ if (!isMainThread){
 			}
 		}
 		
-		//*/
+		*/
 		
 		// -- //
 	
