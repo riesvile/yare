@@ -2353,7 +2353,7 @@ if (!isMainThread){
 			get_sight_fast();
 			var diff = process.hrtime(start);
 			var took2 = (diff[0] * 1000000000 + diff[1]) / 1000000;
-			console.log('get_sight_fast took = ' + took2);
+			//console.log('get_sight_fast took = ' + took2);
 
 			//console.log('spirit_lookup[s1].sight');
 			//console.log(spirit_lookup['s1'].sight);
@@ -2827,7 +2827,7 @@ if (!isMainThread){
 				//console.log('objects processing');
 				temp_flag = 0;
 				//console.log('my_spirits1.length = ' + my_spirits1.length);
-				console.log('living_spirits.length = ' + living_spirits.length
+				//console.log('living_spirits.length = ' + living_spirits.length
 					+ " p1 = " + p1_living + " p2 = " + p2_living );
 					spirit_cost(1, p1_living);
 					spirit_cost(2, p2_living);
@@ -2862,7 +2862,7 @@ if (!isMainThread){
 		
 		// --- if tutorial --- //
 		
-		 ///*
+		 /*
 
 		for (s = 1; s < 2; s++){
 			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*10,620], 5, 0, players['p1'], colors['player1']);
@@ -2876,7 +2876,7 @@ if (!isMainThread){
 			top_q = q;
 		}
 		
-		 //*/
+		 */
 		
 		// -- //
 		
@@ -2884,7 +2884,7 @@ if (!isMainThread){
 		
 		// --- if real --- //
 		
-		/*
+		///*
 				
 		var start_num_spirits = 7;
 		var start_num_adjust1 = 0;
@@ -2917,7 +2917,7 @@ if (!isMainThread){
 			}
 		}
 		
-		*/
+		//*/
 		
 		// -- //
 	

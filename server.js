@@ -47,8 +47,8 @@ var server_occupancy = {
 	d4: 20
 };
 var connections = {};
-var this_server = 't2';
-var this_server_type = 'tutorial'; //'real'
+var this_server = 'd1';
+var this_server_type = 'real'; //'real'
 
 
 //connect to mongodb
