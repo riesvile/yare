@@ -2353,7 +2353,7 @@ if (!isMainThread){
 			get_sight_fast();
 			var diff = process.hrtime(start);
 			var took2 = (diff[0] * 1000000000 + diff[1]) / 1000000;
-			//console.log('get_sight_fast took = ' + took2);
+			console.log('get_sight_fast took = ' + took2);
 
 			//console.log('spirit_lookup[s1].sight');
 			//console.log(spirit_lookup['s1'].sight);

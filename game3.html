@@ -12,12 +12,12 @@
 	<link rel="manifest" href="/site.webmanifest">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../d1a/colors.css">
-	<link rel="stylesheet" href="../d1a/style.css">
-	<link rel="stylesheet" href="../d1a/style-mobile.css">
-	<script src="../d1a/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../d1a/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../d1a/anime.min.js"></script>
+	<link rel="stylesheet" href="../colors.css">
+	<link rel="stylesheet" href="../style.css">
+	<link rel="stylesheet" href="../style-mobile.css">
+	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../anime.min.js"></script>
   </head>
   <body>
 
@@ -237,15 +237,17 @@
 		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
 			  game_running = 1;
+			  tick_local = tick_counter;
 			  //console.log('GAME IS RUNNING');
 			  
-			  active_block = 't' + (tick_counter);
+			  active_block = 't' + (tick_local);
 			  //console.log('active block = ' + active_block);
 			  setInterval(function(){ 
 				  // change to tick_counter (not - 1)
-				  active_block = 't' + (tick_counter);
+				  active_block = 't' + (tick_local);
 				  //console.log('active block = ' + active_block);
 				  total_time = 0;
+				  tick_local++;
 			  }, 1000);
 			  
 			  render_state();
@@ -364,6 +366,7 @@
 	  var active_block = 0;
 	  var game_running = 0;
 	  var tick_counter = 0;
+	  var tick_local = 0;
 	  var total_time = 0;
 	  var elapsed = 0;
 	  var prev = 0;
@@ -378,11 +381,11 @@
 	  var offsetY_adjust = 0;
 	  
 	  
-	  var this_server = 'd1';
+	  var this_server = 't1';
 	  
 	  load_start();
 	  
-	  const socket = new WebSocket('wss://yare.io:443/' + this_server + '/' + this_game_id); // wss://yare.io:443
+	  const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
 	  //function connectSocket(){
 		  
@@ -526,6 +529,7 @@
 					 
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
 					 //console.log(game_blocks);
+					 //console.log('t' + tick_counter + ' processed');
 					 run_it();
 					 
 				 }
@@ -1044,9 +1048,9 @@
 	  
 	  
   </script>
-  <script src="../d1a/tutorial_texts.js"></script>
-  <script src="../d1a/rendering3.js"></script>
-  <script src="../d1a/basics.js"></script>
+  <script src="../tutorial_texts.js"></script>
+  <script src="../rendering3.js"></script>
+  <script src="../basics.js"></script>
   <!--<script src="../sound.js"></script>-->
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

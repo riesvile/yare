@@ -137,6 +137,11 @@ function new_account(){
 		duration: 300
 	});
 	
+	try {
+		if (from_nongame) temp_from_nongame = 1;
+	} catch (e){
+		console.log(e)
+	}
 	
 	
 	
@@ -177,7 +182,11 @@ function login(){
 		duration: 300
 	});
 	
-	
+	try {
+		if (from_nongame) temp_from_nongame = 1;
+	} catch (e){
+		console.log(e)
+	}
 	
 	document.getElementById("user_name").focus();
 	document.getElementById('overlay').style.pointerEvents = 'auto';
@@ -312,9 +321,14 @@ function login_success(user_name){
 	try {
 		document.getElementById('new_account').style.display = 'none';	
 		document.getElementById('login').style.display = 'none';
-		document.getElementById('new_g').style.display = 'block';
 	} catch (error) {
 	  //console.error(error);
+	}
+	
+	try {
+		document.getElementById('new_g').style.display = 'block';
+	} catch (error){
+		console.log(error);
 	}
 	
 	document.getElementById('signed_in').innerHTML = user_name;
@@ -338,6 +352,13 @@ function login_success(user_name){
 			duration: 4000
 		});
 	}
+	
+	try {
+		if (temp_from_nongame) window.location = 'https://yare.io/hub';
+	} catch (e){
+		console.log(e);
+	}
+	
 	
 	try {
 		if (tutorial_phase == 0){
@@ -1086,6 +1107,7 @@ var account_creation = 0;
 var account_login = 0;
 var dismiss_intent = 1;
 var resign_open = 0;
+var temp_from_nongame = 0;
 
 
 //document.getElementById('new_account').addEventListener('pointerdown', dismiss_helper, false);

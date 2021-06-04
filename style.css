@@ -1407,9 +1407,15 @@ h1#pnf {
 
 #gallery_block {
 	width: calc(100% - 40px);
-	height: 640px;
+	height: 660px;
 	padding-left: 40px;
 	overflow: scroll;
+	overflow-y: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
 }
 
 #gallery_block_in {

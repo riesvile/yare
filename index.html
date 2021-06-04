@@ -52,6 +52,7 @@
 	  <h1 id="logo"><a href="https://yare.io">yare<span class="logo_lowlight">.io</span></a></h1>
 	  <div class="menu">
 		  <a href="https://yare.io/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
+		  <a href="https://yare.io/newgame" class="menu_link" id="new_g"><span class="desktop_only">New Game</span></a>
 		  <div class="menu_line desktop_only"></div>
 		  <div class="menu_link new_acc" id="new_account">New account</div>
 		  <div class="menu_link" id="login">Log in</div>
@@ -67,6 +68,8 @@
 
 		 <h1 id="index_intro">Real-Time Strategy game where you control your units by writing
 JavaScript code.</h1>
+
+		<span class='temp_message' style='margin-left: 16%; line-height: 100px; font-weight: 500; color: rgba(255, 146, 160, 0.69)'>Server maintance in progress, game will be fully functional again in 5 minutes.</span>
 
 		<div class="index_spacer_large"></div>
 		<h3 class="index_head">GALLERY</h3>
@@ -132,7 +135,7 @@ JavaScript code.</h1>
   </body>
   
   <script>
-	  
+	  var from_nongame = 1;
 	  let el = document.querySelector("#gallery_block");
 	  let drag_x = 0, drag_y = 0, drag_top = 0, drag_left = 0;
 
