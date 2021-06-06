@@ -60,6 +60,7 @@
 	  </div>
 	  
 	  <div id="overlay"></div>
+	  <div id="overlay_bots"></div>
 	  
 	  <div id="newgame_wrap">
 		  
@@ -112,14 +113,33 @@
 		  
 		  <div id="start_area">
 			  <div id="pre_game">
-				  <div id="start_game_btn">Start game</div>
+				  <div id="start_game_btn">Auto-match game <p class="btn_desc">Play against another human</p></div>
+				  
+				  
+				  <div id="bot_game_btn"><span id="bot_sel_lbl">Play against a bot</span> <p class="btn_desc" id="btn_desc_bot">Test and build your scripts</p>
+				  	<div id="bot_selection_wrap">
+				  		<div class="select_bot_block" id="sel_dumb_bot">
+				  			<p class="bot_name">dumb-bot</p>
+							<p class="bot_desc">Peaceful bot that doesn’t attack. Only defends itself.</p>
+				  		</div>
+				  		<div class="select_bot_block" id="sel_medium_bot">
+				  			<p class="bot_name">medium-bot</p>
+							<p class="bot_desc">Beat it and you might be ready to play against humans.</p>
+				  		</div>
+				  	</div>
+				  
+				  </div>
+				  
+				  
 				  <span class="game_or">or</span>
 				  <div id="challenge_friend_btn">Challenge a friend</div>
 		  	  </div>
 			  <div id="waiting_game">
 				  <a href="./hub" id="cancel_game_btn">Cancel</a>
+				  <!--
 				  <span class="cancel_or">or</span>
 				  <div id="play_bot_btn">Play a bot instead</div>
+					  -->
 			  </div>
 			  
 			  <div id="waiting_challenge">
@@ -338,8 +358,9 @@
 		  document.getElementById('start_area').style.opacity = 1;
 		  document.getElementById('start_area').style.cursor = 'default';
 		  document.getElementById('start_game_btn').style.cursor = 'pointer';
+		  document.getElementById('bot_game_btn').style.cursor = 'pointer';
 		  document.getElementById('challenge_friend_btn').style.cursor = 'pointer';
-		  document.getElementById('play_bot_btn').style.cursor = 'pointer';
+		  //document.getElementById('play_bot_btn').style.cursor = 'pointer';
 		  
 		  console.log('chosen shape = ' + ch_shape);
 		  switch(ch_shape){
@@ -390,6 +411,12 @@
 			  
 		  }
 	  }
+	  
+	  function pre_select_bot(){
+		  console.log('selecting bot type');
+		  expand_bot_selection();
+	  }
+	  
 	  
 	  
 	  function am_knock(usid){
@@ -466,7 +493,7 @@
 	  			 //setCookie('game_id', game_id);
 	  		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
 	  			 //document.location.reload(true);
-	  		  } else if (response.meta == 'medium-bot'){
+	  		  } else if (response.meta == 'medium-bot' || response.meta == 'dumb-bot'){
 			  	  window.location.href = './' + response.server + 'n/' + response.g_id;
 		  	  } else if (response.meta == 'waiting for p2'){
 	  			  waiting_for_p2(response.g_id);
@@ -531,8 +558,13 @@
 	  var triangles_el = document.getElementById('shape_triangles');
 	  
 	  document.getElementById('start_game_btn').addEventListener('click', start_game.bind(null, 'automatch'), false);
+	  document.getElementById('bot_game_btn').addEventListener('click', pre_select_bot, false);
 	  document.getElementById('challenge_friend_btn').addEventListener('click', start_game.bind(null, 'challenge'), false);
-	  document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
+	  //document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
+	  
+	  //bots
+	  document.getElementById('sel_dumb_bot').addEventListener('click', start_game.bind(null, 'dumb-bot'), false);
+	  document.getElementById('sel_medium_bot').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
 	  
 	  gblue_el.addEventListener('click', color_selection.bind(null, 'gblue'), false);
 	  purply_el.addEventListener('click', color_selection.bind(null, 'purply'), false);
@@ -553,6 +585,6 @@
   
   </script>
   
-  <script src="../animations.js"></script>
+  <script src="./animations.js"></script>
   <script src="../basics.js"></script>
   </html>

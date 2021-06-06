@@ -486,6 +486,77 @@ function medium_bot_game(req, res, pl_id){
 		})
 }
 
+
+function dumb_bot_game(req, res, pl_id){
+	
+	// REMOVE FROM AUTO-MATCH QUEUE
+	actively_waiting[req.body.user_id] = 0;
+	
+	var tut_servers = Object.keys(server_occupancy_tutorial);
+	var load_threshold = 40;
+	var chosen_server = 'd1';
+	var color_code = get_color(req.body.user_color);
+	
+	/*
+	for (i = 0; i < tut_servers.length; i++){
+		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
+			chosen_server = tut_servers[i];
+			server_occupancy_tutorial[chosen_server]--;
+			console.log(server_occupancy_tutorial);
+			console.log('chosen server = ' + chosen_server);
+			break;
+		}
+		if (i == (tut_servers.length - 1)){
+			console.log('all servers busy, increasing load');
+			if (load_threshold <= 0){
+				console.log('maximum server capacity reached');
+			} else {
+				load_threshold -= 10; 
+				i = -1;
+			}
+		}
+		
+	}*/
+	
+	g_id = new_game(pl_id, 'dumb-bot', 1, chosen_server);
+	
+
+	res.status(200).send({
+		g_id: g_id,
+		meta: 'dumb-bot',
+		server: chosen_server
+    });
+	
+	const game = new Game({
+		game_id: g_id,
+		server: chosen_server,
+		player1: req.body.user_id,
+		player2: 'dumb-bot',
+		p1_session_id: req.body.session_id,
+		p2_session_id: 'bot',
+		p1_shape: req.body.user_shape,
+		p2_shape: 'circles',
+		p1_color: color_code,
+		p2_color: 'color2',
+		p1_rating: 1000,
+		p2_rating: 100,
+		winner: '',
+		ranked: 0,
+		active: 0.5,
+		game_duration: 0,
+		observers: 0
+	});
+	
+	game.save()
+		.then((result) => {
+			console.log('game saved to db');
+			console.log(result);
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+}
+
 function friend_challenge(req, res){
 	
 	var friend_servers = Object.keys(server_occupancy);
@@ -574,6 +645,8 @@ app.post('/new-game', (req, res) => {
 			bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'medium-bot'){
 			medium_bot_game(req, res, req.body.user_id);
+		} else if (req.body.type == 'dumb-bot'){
+			dumb_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'challenge'){
 			friend_challenge(req, res);
 		} else if (req.body.type == 'automatch'){
@@ -1210,6 +1283,10 @@ app.post('/populate-hub', (req, res) => {
 		        	data: "no results"
 		        });
 			} else {
+				for (i = 0; i < result.length; i++){
+					result[i]['passwrd'] = '0';
+					result[i]['session_id'] = '0';
+				}
 				res.status(200).send({
 		        	data: "populate",
 					stream: result
@@ -1236,6 +1313,10 @@ app.post('/populate-leaderboard', (req, res) => {
 		        	data: "no results"
 		        });
 			} else {
+				for (i = 0; i < result.length; i++){
+					result[i]['passwrd'] = '0';
+					result[i]['session_id'] = '0';
+				}
 				res.status(200).send({
 		        	data: "populate",
 					stream: result

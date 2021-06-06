@@ -1301,6 +1301,7 @@ function render_state(timestamp){
 	for (i = 0; i < energy_blocks.length; i++){
 		//console.log(energy_blocks[i]);
 		var energy_origin = resolve_energy_point(energy_blocks[i][0]);
+		//console.log(energy_blocks[i][1]);
 		var energy_target = resolve_energy_point(energy_blocks[i][1]);
 		var energy_color = energy_origin.color;
 		

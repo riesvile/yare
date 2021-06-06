@@ -282,101 +282,7 @@ parentPort.on("message", message => {
 			if (result[0].player2 == 'medium-bot'){
 				player2_code = `
 					
-				/*
-				var this_player_id = players['p2'];		
 				
-				//var my_spirits = [];
-				
-				
-				
-				//for (q = 0; q < (Object.keys(spirits)).length; q++){
-				//	if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
-				//		my_spirits.push(spirits[Object.keys(spirits)[q]]);
-				//	}
-				//}
-				
-				global['base'] = Object.values(bases)[1];
-				global['enemy_base'] = Object.values(bases)[0];
-				global['star_zxq'] = stars['star_zxq'];
-				global['star_a1c'] = stars['star_a1c'];
-				
-				for (i=0; i<my_spirits.length; i++){
-					my_spirits[i].move(star_a1c.position);
-					my_spirits[i].energize(my_spirits[i]);
-	
-				    if (my_spirits[i].energy == my_spirits[i].energy_capacity){
-						memory[my_spirits[i].id] = 'charging';
-					} else if (my_spirits[i].energy == 0){
-						memory[my_spirits[i].id] = 'harvesting';
-					}
-
-					if (memory[my_spirits[i].id] == 'charging'){
-				    	my_spirits[i].move(base.position);
-				    	my_spirits[i].energize(base);
-					} else if (memory[my_spirits[i].id] == 'harvesting'){
-				    	my_spirits[i].move(star_a1c.position);
-						my_spirits[i].energize(my_spirits[i]);
-					}
-				}
-
-				if (base.sight.enemies.length > 0){
-					console.log('i see you');
-					var invader = spirits[base.sight.enemies[0]];
-					for (j=0; j<my_spirits.length; j++){
-						if (my_spirits[j].energy == my_spirits[j].energy_capacity){
-							memory[my_spirits[j].id] = "attacker";
-						}
-						if (memory[my_spirits[j].id] == "attacker" && j < my_spirits.length / 2){
-							console.log('this should be last');
-							my_spirits[j].move(invader.position);
-							my_spirits[j].energize(invader);
-						}
-					}
-	
-				} else {
-					memory['atck'] = 0; 
-				}
-
-				if (my_spirits.length >= 600 && memory['phase'] != 1){
-				    if (memory['phase'] == undefined || memory['phase'] == ''){
-				        memory['phase'] = 1;
-				    }
-				}
-
-				if (memory['phase'] == 1){
-				    for (j = 0; j < 11; j++){
-				        if (my_spirits[j].energy == my_spirits[j].energy_capacity){
-				    		memory[my_spirits[j].id] = 'invader';
-				    		my_spirits[j].move([2600, 1050]);
-					    }
-						memory[my_spirits[0].id] = 'bait';
-					    my_spirits[0].move([2150,1250]);
-				    }
-				}
-
-				if (memory['phase'] == 1 && my_spirits[1].position[0] == 2600 && my_spirits[5].position[0] == 2600){
-				    memory['phase'] = 2;
-				}
-
-				if (memory['phase'] == 2){
-				    for (j=1; j<11; j++){
-				        my_spirits[j].move(enemy_base.position);
-				        my_spirits[j].energize(enemy_base)
-				    }
-					
-					if (my_spirits[0].sight.enemies.length > 0){
-						var enemy = spirits[my_spirits[0].sight.enemies[0]];
-						if (Math.abs(enemy.position[0] - my_spirits[0].position[0]) < 250 && Math.abs(enemy.position[1] - my_spirits[0].position[1]) < 250){
-							my_spirits[0].move(base.position);
-						} else {
-							my_spirits[0].move([1000, 800])
-						}
-					} else {
-						my_spirits[0].move([1000, 800])
-					}
-				    
-				}
-				*/
 
 var bot_code = true;
 if(bot_code){
@@ -810,6 +716,104 @@ console.log('T ' + memory['time'] + ' total ' +my_alive.length + " / H "+ harves
             ' / BE ' +base.sight.enemies.length + ' / ' + team_counts);
 */
 				`;
+			} else if (result[0].player2 == 'dumb-bot'){
+				player2_code = `
+				
+				var this_player_id = players['p2'];		
+				
+				//var my_spirits = [];
+				
+				
+				
+				//for (q = 0; q < (Object.keys(spirits)).length; q++){
+				//	if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
+				//		my_spirits.push(spirits[Object.keys(spirits)[q]]);
+				//	}
+				//}
+				
+				global['base'] = Object.values(bases)[1];
+				global['enemy_base'] = Object.values(bases)[0];
+				global['star_zxq'] = stars['star_zxq'];
+				global['star_a1c'] = stars['star_a1c'];
+				
+				for (i=0; i<my_spirits.length; i++){
+					my_spirits[i].move(star_a1c.position);
+					my_spirits[i].energize(my_spirits[i]);
+	
+				    if (my_spirits[i].energy == my_spirits[i].energy_capacity){
+						memory[my_spirits[i].id] = 'charging';
+					} else if (my_spirits[i].energy == 0){
+						memory[my_spirits[i].id] = 'harvesting';
+					}
+
+					if (memory[my_spirits[i].id] == 'charging'){
+				    	my_spirits[i].move(base.position);
+				    	my_spirits[i].energize(base);
+					} else if (memory[my_spirits[i].id] == 'harvesting'){
+				    	my_spirits[i].move(star_a1c.position);
+						my_spirits[i].energize(my_spirits[i]);
+					}
+				}
+
+				if (base.sight.enemies.length > 0){
+					console.log('i see you');
+					var invader = spirits[base.sight.enemies[0]];
+					for (j=0; j<my_spirits.length; j++){
+						if (my_spirits[j].energy == my_spirits[j].energy_capacity){
+							memory[my_spirits[j].id] = "attacker";
+						}
+						if (memory[my_spirits[j].id] == "attacker" && j < my_spirits.length / 2){
+							console.log('this should be last');
+							my_spirits[j].move(invader.position);
+							my_spirits[j].energize(invader);
+						}
+					}
+	
+				} else {
+					memory['atck'] = 0; 
+				}
+
+				if (my_spirits.length >= 600 && memory['phase'] != 1){
+				    if (memory['phase'] == undefined || memory['phase'] == ''){
+				        memory['phase'] = 1;
+				    }
+				}
+
+				if (memory['phase'] == 1){
+				    for (j = 0; j < 11; j++){
+				        if (my_spirits[j].energy == my_spirits[j].energy_capacity){
+				    		memory[my_spirits[j].id] = 'invader';
+				    		my_spirits[j].move([2600, 1050]);
+					    }
+						memory[my_spirits[0].id] = 'bait';
+					    my_spirits[0].move([2150,1250]);
+				    }
+				}
+
+				if (memory['phase'] == 1 && my_spirits[1].position[0] == 2600 && my_spirits[5].position[0] == 2600){
+				    memory['phase'] = 2;
+				}
+
+				if (memory['phase'] == 2){
+				    for (j=1; j<11; j++){
+				        my_spirits[j].move(enemy_base.position);
+				        my_spirits[j].energize(enemy_base)
+				    }
+					
+					if (my_spirits[0].sight.enemies.length > 0){
+						var enemy = spirits[my_spirits[0].sight.enemies[0]];
+						if (Math.abs(enemy.position[0] - my_spirits[0].position[0]) < 250 && Math.abs(enemy.position[1] - my_spirits[0].position[1]) < 250){
+							my_spirits[0].move(base.position);
+						} else {
+							my_spirits[0].move([1000, 800])
+						}
+					} else {
+						my_spirits[0].move([1000, 800])
+					}
+				    
+				}
+				
+				`;
 			}
 			
 			console.log('starting rating update');
@@ -937,6 +941,7 @@ var energize_queue = [];
 var merge_queue = [];
 var divide_queue = [];
 var jump_queue = [];
+var shout_queue = [];
 var birth_queue = [];
 var death_queue = [];
 var star_zxq;
@@ -1171,7 +1176,9 @@ function fill_error(plid, err_msg){
 
 function jump_danger_zone(loc){
 	if (Math.abs(stars[0].position[0] - loc[0]) < 100 && Math.abs(stars[0].position[1] - loc[1]) < 100
- 	 || Math.abs(stars[1].position[0] - loc[0]) < 100 && Math.abs(stars[1].position[1] - loc[1]) < 100){
+ 	 || Math.abs(stars[1].position[0] - loc[0]) < 100 && Math.abs(stars[1].position[1] - loc[1]) < 100
+	 || Math.abs(bases[0].position[0] - loc[0]) < 50 && Math.abs(bases[0].position[1] - loc[1]) < 50
+	 || Math.abs(bases[1].position[0] - loc[0]) < 50 && Math.abs(bases[1].position[1] - loc[1]) < 50){
 		return true;
 	} else {
 		return false;
@@ -1234,8 +1241,9 @@ if (!isMainThread){
 		
 	
 		move(target) {
-			var adj1 = Math.floor(Math.random() * 100) / 70;
-			var adj2 = Math.floor(Math.random() * 100) / 70;
+			var plus_minus = Math.random() < 0.5 ? -1 : 1;
+			var adj1 = Math.floor(Math.random() * 100) / 70 * plus_minus;
+			var adj2 = Math.floor(Math.random() * 100) / 70 * plus_minus;
 			//check that target is array, otherwise throw error
 			if (Array.isArray(target) == false){
 				//user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
@@ -1494,12 +1502,41 @@ if (!isMainThread){
 			
 		}
 		
-		
 		//kill() { }???????
 		kill(suid){
 			delete spirit_lookup[suid];
 			var index = living_spirits.findIndex(x => x.id == suid);
 			living_spirits.splice(index);
+		}
+		
+		
+		shout(msg){
+			if (typeof msg !== 'string'){
+				var err_msg = "Shout argument must be a string. Received: " + msg;
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			if (msg.length > "20"){
+				var err_msg = "Max length of shout message is 20 characters";
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			
+			var entry_index6 = jump_queue.findIndex(entry6 => entry6[0]['id'] === this.id);
+			
+			if (this.hp != 0){
+				if (entry_index6 == -1){
+					shout_queue.push([this.id, this.player_id, msg]);
+				} else {
+					shout_queue[entry_index6] = [this.id, this.player_id, msg];
+				}
+			}
+			
+			console.log(msg);
+			
+			
+			
+			
 		}
 	
 	}
@@ -2073,7 +2110,7 @@ if (!isMainThread){
 				} else {
 					if (p1_defend != 1){
 						top_s++;
-						global[players['p1'] + top_s] = new Spirit(players['p1'] + top_s, [1580, 640], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+						global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [1580, 640], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 						base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
 						//global[players['p1'] + top_s].move([1600, 660]);
 						//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
@@ -2091,7 +2128,7 @@ if (!isMainThread){
 			if (base_lookup['base_' + players['p2']].energy >= base_lookup['base_' + players['p2']].current_spirit_cost){
 				if (p2_defend != 1){
 					top_q++;
-					global[players['p2'] + top_q] = new Spirit(players['p2'] + top_q, [2620, 1760], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+					global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [2620, 1760], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 					base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
 					//global[players['p2'] + top_q].move([2800, 1760]);
 					//console.log(top_q);
@@ -2108,9 +2145,26 @@ if (!isMainThread){
 			}
 		
 		
+			//
+		    // shouting
+			//
+			
+			shouts = shout_queue.length;
+			
+			for (i = (shouts - 1); i >= 0; i--){
+				render_data3.s.push(['sh', shout_queue[i][0], shout_queue[i][2]]);
+				
+				shout_queue.splice(i, 1);
+			}
+		
+		
+		
+		
+		
+		
 		
 			//
-		    //objects move
+		    // objects move
 			//
 			
 			moveables = move_queue.length;
@@ -2865,13 +2919,13 @@ if (!isMainThread){
 		 /*
 
 		for (s = 1; s < 2; s++){
-			global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*10,620], 5, 0, players['p1'], colors['player1']);
+			global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1230+s*10,620], 5, 0, players['p1'], colors['player1']);
 			spirits.push(global[players['p1'] + s]);
 			top_s = s;
 		}
 
 		for (q = 1; q < 2; q++){
-			global[players['p2'] + q] = new Spirit(players['p2'] + q, [2820+q*10,1820], 5, 0, players['p2'], colors['player2']);
+			global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2820+q*10,1820], 5, 0, players['p2'], colors['player2']);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
 		}
@@ -2894,11 +2948,11 @@ if (!isMainThread){
 		
 		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
 			if (s > 4){
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1230+s*20,620], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1230+s*20,620], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + s, [1300+s*20,600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1300+s*20,600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			}
@@ -2907,11 +2961,11 @@ if (!isMainThread){
 
 		for (q = 1; q < 1+start_num_spirits-start_num_adjust2; q++){
 			if (q > 4){
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2750+q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2750+q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + q, [2820+q*20,1820], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2820+q*20,1820], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}

@@ -76,6 +76,10 @@ function dismissals(){
 	if (resign_open == 1){
 		dont_resign();
 	}
+	
+	if (bot_sel_open == 1){
+		collapse_bot_selection();
+	}
 }
 
 function dismiss_helper(){
@@ -671,6 +675,100 @@ function dont_resign(){
 	document.getElementById('resign_btn').style.display = 'none';
 	document.getElementById('cancel_resign_btn').style.display = 'none';
 }
+
+
+function expand_bot_selection(){
+	console.log('connected');
+	bot_sel_open = 1;
+	
+	document.getElementById('bot_selection_wrap').style.display = 'block';
+	
+	anime({
+		targets: '#bot_game_btn',
+		height: 210,
+		translateY: -146,
+		easing: 'easeOutQuad',
+		duration: 100
+	});
+	
+	anime({
+		targets: '#bot_sel_lbl', 
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 40
+	});
+	
+	anime({
+		targets: '#btn_desc_bot',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 40
+	});
+	
+	anime({
+		targets: '#bot_selection_wrap',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 100
+	});
+	
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0.69)',
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	
+	document.getElementById('overlay').style.pointerEvents = 'auto';
+	
+}
+
+function collapse_bot_selection(){
+	
+	bot_sel_open = 0;
+	
+	anime({
+		targets: '#bot_game_btn',
+		height: 64,
+		translateY: 0,
+		easing: 'easeOutQuad',
+		duration: 100
+	});
+	
+	anime({
+		targets: '#bot_sel_lbl', 
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 40
+	});
+	
+	anime({
+		targets: '#btn_desc_bot',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 40
+	});
+	
+	anime({
+		targets: '#bot_selection_wrap',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 100
+	});
+	
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0)',
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	document.getElementById('overlay').style.pointerEvents = 'none';
+	document.getElementById('bot_selection_wrap').style.display = 'none';
+	
+}
+
 
 function update_console_height(hght){
 	//console.log('was triggered');

@@ -1263,14 +1263,17 @@ span.shape_name {
 	opacity: 0.4;
 }
 
-#start_game_btn, #cancel_game_btn, #cancel_challenge_btn {
+#start_game_btn, #bot_game_btn, #cancel_game_btn, #cancel_challenge_btn {
 	font-size: 16px;
 	font-weight: 500;
 	background-color: rgba(65, 63, 177, 1);
-	padding: 22px 53px;
+	padding: 0px 53px;
+	height: 64px;
 	display: inline-block;
 	border-radius: 8px;
 	float: left;
+	position: relative;
+	line-height: 64px;
 }
 
 #cancel_game_btn, #cancel_challenge_btn {
@@ -1282,6 +1285,87 @@ span.shape_name {
 
 #start_game_btn:hover {
 	background-color: rgba(85, 83, 197, 1);
+}
+
+#bot_game_btn {
+	background-color: transparent;
+	border: 2px solid rgba(168, 168, 222);
+	box-sizing: border-box;
+	padding: 20px 52px;
+}
+
+#bot_game_btn {
+	background-color: transparent;
+	border: 2px solid rgba(168, 168, 222, 0.89);
+	box-sizing: border-box;
+	padding: 0px 0;
+	width: 260px;
+	height: 64px;
+	text-align: center;
+	margin-left: 16px;
+	color: rgba(190, 190, 241, 1);
+	line-height: 62px;
+	overflow: hidden;
+	z-index: 999999;
+}
+
+#bot_game_btn:hover {
+	border: 2px solid rgba(188, 188, 242, 1);
+	color: rgba(210, 210, 251, 1);
+}
+
+
+p.btn_desc {
+	font-size: 13px;
+	position: absolute;
+	top: 46px;
+	left: 0;
+	color: rgba(242, 246, 250, 0.55);
+}
+
+#bot_selection_wrap {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	display: none;
+	opacity: 0;
+}
+
+.select_bot_block {
+	width: 100%;
+	height: 104px;
+	position: relative;
+	
+}
+
+.select_bot_block:hover {
+	background-color: rgba(120, 120, 232, 0.16);
+}
+
+.select_bot_block:first-of-type {
+	border-bottom: 1px solid rgba(168, 168, 222, 0.4);
+}
+
+p.bot_name {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	line-height: normal;
+	font-size: 16px;
+	text-align: left;
+}
+
+p.bot_desc {
+	position: absolute;
+	top: 48px;
+	left: 20px;
+	width: calc(100% - 32px);
+	font-size: 13px;
+	line-height: 20px;
+	font-weight: 500;
+	text-align: left;
+	color: rgba(232, 232, 252, 0.55);
 }
 
 span.game_or, span.cancel_or {
