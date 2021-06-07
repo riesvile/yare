@@ -709,6 +709,7 @@ function expand_bot_selection(){
 		targets: '#bot_selection_wrap',
 		opacity: 1,
 		easing: 'easeOutQuad',
+		delay: 50,
 		duration: 100
 	});
 	
@@ -719,7 +720,7 @@ function expand_bot_selection(){
 		duration: 200
 	});
 	
-	
+	document.getElementById('bot_game_btn').style.oveflow = 'hidden';
 	document.getElementById('overlay').style.pointerEvents = 'auto';
 	
 }
@@ -766,6 +767,7 @@ function collapse_bot_selection(){
 	
 	document.getElementById('overlay').style.pointerEvents = 'none';
 	document.getElementById('bot_selection_wrap').style.display = 'none';
+	document.getElementById('bot_game_btn').style.oveflow = 'visible';
 	
 }
 

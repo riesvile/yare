@@ -522,6 +522,8 @@ var shapes = {};
 colors['color1'] = 'rgba(128,140,255,1)';
 colors['color2'] = 'rgba(232,97,97,1)';
 
+var shouting = {};
+
 
 
 var dumb_cycler = 0;
@@ -1234,6 +1236,11 @@ function initiate_world(){
 	world_initiated = 1;
 }
 
+function handle_shout(spir_id, shout_msg, bxx, byy){
+	console.log(spir_id + ' is saying ' + shout_msg);
+}
+
+
 function render_state(timestamp){
 	
 	elapsed = timestamp - prev;
@@ -1264,7 +1271,13 @@ function render_state(timestamp){
 	}
 	
 	//all_living = living_spirits.length;
-	all_spirits = game_blocks[active_block].units;
+	
+	try {
+		all_spirits = game_blocks[active_block].units;
+	} catch (e) {
+		console.log(e);
+	}
+	
 	for (i = 0; i < all_spirits.length; i++){
 		if (spirit_lookup[all_spirits[i]].player_id == pla1){
 			try {
@@ -1310,8 +1323,25 @@ function render_state(timestamp){
 		if (energy_origin.hp != 0 && energy_target.hp != 0){
 			draw_energize(energy_origin.position, energy_target.position, energy_blocks[i][2], energy_color);
 		}
-		
 	}
+	
+	var specials = game_blocks[active_block].s;
+	for (i = 0; i < specials.length; i++){
+		if (specials[i][0] == 'sh'){
+			//console.log(specials[i][2]);
+			
+			if (shouting[specials[i][1]] == null || shouting[specials[i][1]][1] <= 0){
+				shouting[specials[i][1]] = [1, 180];
+				handle_shout(specials[i][1], specials[i][2], board_x, board_y);
+			} else {
+				shouting[specials[i][1]][1] -= 1;
+			}
+			
+			
+			
+		}
+	}
+	
 	
 	bases[0].charge(game_blocks[active_block].b1[3], game_blocks[active_block].b1[0]);
 	bases[1].charge(game_blocks[active_block].b2[3], game_blocks[active_block].b2[0]);

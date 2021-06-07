@@ -1214,6 +1214,7 @@ if (!isMainThread){
 			this.size = size;
 			this.energy = energy;
 			this.color = color;
+			this.mark = '';
 		
 			this.sight = {
 				friends: [],
@@ -1468,8 +1469,8 @@ if (!isMainThread){
 				
 			} else {
 				try {
-					if (Math.abs(target[0] - this.position[0]) > 500 || Math.abs(target[1] - this.position[1]) > 500){
-						var err_msg = 'Target is too far away. Max. distance is 500 units in both x and y direction.';
+					if (Math.abs(target[0] - this.position[0]) > 300 || Math.abs(target[1] - this.position[1]) > 300){
+						var err_msg = 'Target is too far away. Max. distance is 300 units in both x and y direction.';
 			
 						fill_error(this.player_id, err_msg);
 						return;
@@ -1507,6 +1508,22 @@ if (!isMainThread){
 			delete spirit_lookup[suid];
 			var index = living_spirits.findIndex(x => x.id == suid);
 			living_spirits.splice(index);
+		}
+		
+		
+		set_mark(mrk){
+			if (typeof mrk !== 'string'){
+				var err_msg = "mark must be a string. Received: " + mrk;
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			if (mrk.length > "60"){
+				var err_msg = "Max length of mark is 60 characters";
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			
+			this.mark = mrk;
 		}
 		
 		
@@ -2519,18 +2536,25 @@ if (!isMainThread){
 					
 					target_close = fast_dist_lt(energize_queue[i][0].position, energize_queue[i][1].position, min_beam);
 					if (target_close){
+						var strength = 0;
 						if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
-							energize_queue[i][0].energy -= energy_value * energize_queue[i][0].size;
-							energize_queue[i][1].energy += energy_value * energize_queue[i][0].size;
-							if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
+							//energize_queue[i][0].energy -= energy_value * energize_queue[i][0].size;
+							//energize_queue[i][1].energy += energy_value * energize_queue[i][0].size;
+							strength = energy_value * energize_queue[i][0].size;
+							energize_apply.push([energize_queue[i][0], strength * (-1)]);
+							energize_apply.push([energize_queue[i][1], strength * (1)]);
+							//if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
 							//render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value * energize_queue[i][0].size]);
 							render_data3.e.push([energize_queue[i][0].id, energize_queue[i][1].id, energy_value * energize_queue[i][0].size]);
 						} else if (energize_queue[i][0].energy > 0){
 							//render_data2.energize.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][0].energy]);
+							strength = energize_queue[i][0].energy;
 							render_data3.e.push([energize_queue[i][0].id, energize_queue[i][1].id, energize_queue[i][0].energy]);
-							energize_queue[i][1].energy += energize_queue[i][0].energy;
-							energize_queue[i][0].energy = 0;
-							if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
+							energize_apply.push([energize_queue[i][0], strength * (-1)]);
+							energize_apply.push([energize_queue[i][1], strength * (1)]);
+							//energize_queue[i][1].energy += energize_queue[i][0].energy;
+							//energize_queue[i][0].energy = 0;
+							//if (energize_queue[i][1].energy > energize_queue[i][1].energy_capacity) energize_queue[i][1].energy = energize_queue[i][1].energy_capacity;
 							
 						} else {
 							//console.log('no energy to give');
@@ -2596,6 +2620,8 @@ if (!isMainThread){
 						end_game(p1won, p2won);
 						
 					}
+				} else if (energize_apply[i][0].energy > energize_apply[i][0].energy_capacity){
+					energize_apply[i][0] = energize_apply[i][0].energy_capacity
 				}
 				energize_apply.splice(i, 1);			
 			}
@@ -2940,19 +2966,19 @@ if (!isMainThread){
 		
 		///*
 				
-		var start_num_spirits = 7;
+		var start_num_spirits = 11;
 		var start_num_adjust1 = 0;
 		var start_num_adjust2 = 0;
-		if (shapes['player1'] == 'squares') start_num_adjust1 = 5;
-		if (shapes['player2'] == 'squares') start_num_adjust2 = 5;
+		if (shapes['player1'] == 'squares') start_num_adjust1 = 9;
+		if (shapes['player2'] == 'squares') start_num_adjust2 = 9;
 		
 		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
-			if (s > 4){
+			if (s > 6){
 				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1230+s*20,620], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1300+s*20,600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1340+s*20,600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			}
@@ -2960,12 +2986,12 @@ if (!isMainThread){
 		}
 
 		for (q = 1; q < 1+start_num_spirits-start_num_adjust2; q++){
-			if (q > 4){
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2750+q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+			if (q > 6){
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2630+q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2820+q*20,1820], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2740+q*20,1820], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}

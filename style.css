@@ -1305,7 +1305,6 @@ span.shape_name {
 	margin-left: 16px;
 	color: rgba(190, 190, 241, 1);
 	line-height: 62px;
-	overflow: hidden;
 	z-index: 999999;
 }
 
