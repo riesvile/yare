@@ -677,7 +677,7 @@ function create_spirit_p1(spir_id){
 	var spir_hp = game_blocks['t' + tick_counter].p1[spir_id][3];
 	var spir_player = pla1;
 	var spir_color = colors['color1'];
-	console.log(spir_color);
+	//console.log(spir_color);
 	var spir_shape = shapes['shape1'];
 	
 	if (game_type == 'tutorial'){

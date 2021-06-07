@@ -320,7 +320,7 @@ function un_error(){
 }
 
 function login_success(user_name){
-	console.log('login success');
+	//console.log('login success');
 	
 	try {
 		document.getElementById('new_account').style.display = 'none';	
@@ -337,7 +337,7 @@ function login_success(user_name){
 	
 	document.getElementById('signed_in').innerHTML = user_name;
 	document.getElementById('signed_in').style.display = 'block';
-	console.log('iodsjfoidsjf');
+	//console.log('iodsjfoidsjf');
 	
 	if (account_creation == 1){
 		dismissals();

@@ -213,7 +213,7 @@
 	  
 	  
 	  function fill_leaderboard(lb_data){
-		  console.log(lb_data);
+		  //console.log(lb_data);
 		  var tbl = document.getElementById('lbfill');
 		  var tbl_data = '';
 		  
@@ -243,7 +243,7 @@
 		  if (response.data == 'no results'){
 			  console.log('Nothing to show');
 		  } else {
-			  console.log('populate table');
+			  //console.log('populate table');
 			  fill_leaderboard(response.stream);
 		  }
 	  })

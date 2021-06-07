@@ -1,5 +1,5 @@
 function msg_from_main(msg){
-	console.log(msg);
+	//console.log(msg);
 	self.postMessage('got it');
 }
 
