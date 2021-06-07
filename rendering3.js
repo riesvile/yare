@@ -748,6 +748,7 @@ class Spirit {
 		this.final_size = size;
 		this.energy = energy;
 		this.color = color;
+		this.color_store = color;
 		
 		//const properties
 		this.hp = hp;
@@ -794,12 +795,16 @@ class Spirit {
 				        clearInterval(interval_death);
 						that.hp = 0;
 				    }
-					that.size += 0.1 * start_size //that.size + (0.1 * that.size);
+					that.size += 0.1 * start_size; //that.size + (0.1 * that.size);
 					that.color = that.color.replace(/[^,]+(?=\))/, alpha/8);
 					counter_death++;
 					alpha--;
 				}, 16);
 			}
+		} else if (hp != 0){
+			this.hp = 1;
+			this.energy = new_energy;
+			this.color = this.color_store;
 		}
 		
 	}
@@ -854,6 +859,8 @@ class Spirit {
 			this.size = prev_size;
 			this.size = prev_size + ((new_size - prev_size) * (total_time / 1000));
 			this.energy_capacity = (prev_size * 10) + ((new_size - prev_size) * 10) * (total_time / 1000);
+		} else if (new_size != this.size){
+			this.size = new_size;
 		}
 	}
 	
@@ -919,6 +926,10 @@ class Spirit {
 		if (this.hp != 0){
 			var color_parts = this.color.match(/[.?\d]+/g);
 			var spirit_percent_energy = this.energy / this.energy_capacity;
+			if (spirit_percent_energy > 1){
+				//console.log('spirit_percent_energy = ' + spirit_percent_energy);
+				spirit_percent_energy = 1;
+			}
 			var drawing_size = this.size / 2;
 			var gradient = this.color;
 			
