@@ -2621,7 +2621,7 @@ if (!isMainThread){
 						
 					}
 				} else if (energize_apply[i][0].energy > energize_apply[i][0].energy_capacity){
-					energize_apply[i][0] = energize_apply[i][0].energy_capacity
+					energize_apply[i][0].energy = energize_apply[i][0].energy_capacity
 				}
 				energize_apply.splice(i, 1);			
 			}
@@ -2836,7 +2836,10 @@ if (!isMainThread){
 						pl2_units[spt.id] = spt;
 						
 						//if (spt.hp != 0) {
-							if (spt.hp == 1) p2_living++;
+							if (spt.hp == 1){
+								p2_living++;
+								if (spt.shape == 'circles' && spt.size > 1) p2_living += spt.size - 1;
+							}
 							my_spirits2[p2_top] = spt;
 							p2_top++;
 						//}
@@ -2873,7 +2876,10 @@ if (!isMainThread){
 						pl1_units[spt.id] = spt;
 						
 						//if (spt.hp != 0) {
-							if (spt.hp == 1) p1_living++;
+							if (spt.hp == 1){
+								p1_living++;
+								if (spt.shape == 'circles' && spt.size > 1) p1_living += spt.size - 1;
+							}
 							my_spirits1[p1_top] = spt;
 							p1_top++;
 						//}
@@ -2907,8 +2913,7 @@ if (!isMainThread){
 				//console.log('objects processing');
 				temp_flag = 0;
 				//console.log('my_spirits1.length = ' + my_spirits1.length);
-				console.log('living_spirits.length = ' + living_spirits.length
-					+ " p1 = " + p1_living + " p2 = " + p2_living );
+				console.log('living_spirits.length = ' + living_spirits.length + " p1 = " + p1_living + " p2 = " + p2_living );
 					spirit_cost(1, p1_living);
 					spirit_cost(2, p2_living);
 			} 
