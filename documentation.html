@@ -188,6 +188,13 @@
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
+					<span class="table_doc_property">mark</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">Custom string you can assign to the spirit via <code>set_mark()</code> method.</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
 					<span class="table_doc_property">sight</span>
 					<span class="table_doc_type">object</span>
 					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
@@ -207,35 +214,6 @@
 					<span class="table_doc_argument">Argument</span>
 					<span class="table_doc_usedby">Can be used by</span>
 				</div>
-		  	<div id="exp_move_method_wrap" class="row_doc">
-				<div id="exp_move_method" class="row_in_doc">
-					<span class="table_doc_method">move(<span class="target_lowlight">target</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_move" class="expando_more"><span class="ico_expand"></span></span>
-						
-					
-					
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Moves spirit to <span class="target_lowlight">target</span> with a speed of 20 units per tick</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].move([800, 900]);</code>
-						</div>
-					</div>
-					
-					
-				</div>
-			</div>
 		  	<div id="exp_energize_method_wrap" class="row_doc">
 				<div id="exp_energize_method" class="row_in_doc">
 					<span class="table_doc_method">energize(<span class="target_lowlight">target</span>)</span>
@@ -274,6 +252,35 @@
 						<div class="sep_small"></div>
 						<p class="p_normal">If a spirit or a base has 0 energy, the next hit, however small, will destroy it.</p>
 					</div>
+					
+				</div>
+			</div>	
+		  	<div id="exp_move_method_wrap" class="row_doc">
+				<div id="exp_move_method" class="row_in_doc">
+					<span class="table_doc_method">move(<span class="target_lowlight">target</span>)</span>
+					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
+					<span class="table_doc_usedby">
+						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
+						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
+						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
+					</span>
+					<span id="expand_for_move" class="expando_more"><span class="ico_expand"></span></span>
+						
+					
+					
+					<div class="exp_content">
+						<div class="sep_small"></div>
+						<p class="p_method_desc">Moves spirit to <span class="target_lowlight">target</span> with a speed of 20 units per tick</p>
+						
+						<div class="sep_small"></div>
+						<div class="sep_small"></div>
+						
+						<div class="method_gif_example">
+							<div id="gif_move" class="gif_in"></div>
+							<code class="example_code">my_spirits[0].move([800, 900]);</code>
+						</div>
+					</div>
+					
 					
 				</div>
 			</div>
@@ -323,8 +330,8 @@
 						<div class="sep_small"></div>
 						
 						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].move([800, 900])</code>
+							<div id="gif_divide" class="gif_in"></div>
+							<code class="example_code">my_spirits[9].divide()</code>
 						</div>
 					</div>
 					
@@ -350,12 +357,60 @@
 						
 						<div class="method_gif_example">
 							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">mySpirits[0].jump([800, 900])</code>
+							<code class="example_code">my_spirits[0].jump([800, 900])</code>
 						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="sep_mini"></div>
+			
+		  	<div id="exp_shout_method_wrap" class="row_doc">
+				<div id="exp_shout_method" class="row_in_doc" style="border-top: 1px solid rgba(242, 246, 250, 0.12);">
+					<span class="table_doc_method">shout(<span class="target_lowlight">message</span>)</span>
+					<span class="table_doc_argument"><span class="target_lowlight">message</span> is a string (max. 20 char)</span>
+					<span class="table_doc_usedby">
+						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
+						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
+						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
+					</span>
+					<span id="expand_for_shout" class="expando_more"><span class="ico_expand"></span></span>
+						
+					<div class="exp_content">
+						<div class="sep_small"></div>
+						<p class="p_method_desc">Shows a message above the spirit as a light-weight in-game communication. Useful for some debugging as well.</p>
+						
+						<div class="sep_small"></div>
+						<div class="sep_small"></div>
+						
 					</div>
 					
 				</div>
 			</div>
+		  	<div id="exp_mark_method_wrap" class="row_doc">
+				<div id="exp_mark_method" class="row_in_doc" style="border-top: 1px solid rgba(242, 246, 250, 0.12);">
+					<span class="table_doc_method">set_mark(<span class="target_lowlight">label</span>)</span>
+					<span class="table_doc_argument"><span class="target_lowlight">label</span> is a string (max. 60 char)</span>
+					<span class="table_doc_usedby">
+						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
+						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
+						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
+					</span>
+					<span id="expand_for_mark" class="expando_more"><span class="ico_expand"></span></span>
+						
+					<div class="exp_content">
+						<div class="sep_small"></div>
+						<p class="p_method_desc">Updates the mark property of the spirit. That can be useful for e.g. marking which spirit is doing what</p>
+						
+						<div class="sep_small"></div>
+						<div class="sep_small"></div>
+						
+					</div>
+					
+				</div>
+			</div>
+			
+			
 		  </div>
 		  
 		  <div class="sep_medium"></div>
@@ -523,7 +578,7 @@
 		  
 		<section id="doc_credits">
 		  <h2 class="h_sec_head">Credits</h2>
-		   <p class="p_sec_intro">Yare.io was made by Vilem Ries. Feel free to reach out over <a href="https://discord.gg/tWDV7daRnB">Discord</a> </p>
+		   <p class="p_sec_intro">Yare.io was made by <a href="http://ries.cz">Vilem Ries</a>. Feel free to reach out over <a href="https://discord.gg/tWDV7daRnB">Discord</a> </p>
 		   <p class="p_sec_intro2">Medium and Hard bots were made by <a href="j2m.cz/~jm/">jm</a></p>
 		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>
@@ -681,6 +736,12 @@
 			  break;
 		  case 'expand_for_jump':
 			  expand_documentation('exp_jump_method', this.id)
+			  break;
+		  case 'expand_for_mark':
+			  expand_documentation('exp_mark_method', this.id)
+			  break;
+		  case 'expand_for_shout':
+			  expand_documentation('exp_shout_method', this.id)
 			  break;
 		  }
 		  

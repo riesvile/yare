@@ -523,6 +523,9 @@ colors['color1'] = 'rgba(128,140,255,1)';
 colors['color2'] = 'rgba(232,97,97,1)';
 
 var shouting = {};
+var shouting_helper = {};
+var shouting_count_p1 = 0;
+var shouting_count_p2 = 0;
 
 
 
@@ -757,6 +760,8 @@ class Spirit {
 		//this.player_id = player; set up later
 		living_spirits.push(this);
 		this.temp_size = size;
+		
+		this.shout = '';
 	}
 
 	move(origin, incr) {
@@ -923,6 +928,7 @@ class Spirit {
 	}
 	
 	draw() {
+		
 		if (this.hp != 0){
 			var color_parts = this.color.match(/[.?\d]+/g);
 			var spirit_percent_energy = this.energy / this.energy_capacity;
@@ -988,6 +994,19 @@ class Spirit {
 				c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
 				c.fillRect((this.position[0] - (this.size * (spirit_percent_energy)) / 2), (this.position[1] - (this.size * (spirit_percent_energy)) / 2), this.size * (spirit_percent_energy), this.size * (spirit_percent_energy));
 			}
+			
+			if (this.shout != ''){
+				if (shouting_helper[this.id] == null || shouting_helper[this.id] <= 0){
+					shouting_helper[this.id] = 180;
+				} else {
+					shouting_helper[this.id] -= 1;
+				}
+				c.font = '13px sans-serif';
+				c.fillStyle = 'rgba(' + color_parts[0] * 1.4 + ', ' + color_parts[1] * 1.4 + ', ' + color_parts[2] * 1.4 + ', ' + color_parts[3] * (shouting_helper[this.id] / 180) + ')';
+				c.textAlign = 'center';
+				c.fillText(this.shout, this.position[0], this.position[1] - 8);
+			}
+			
 		
 			
 			
@@ -1247,12 +1266,21 @@ function initiate_world(){
 	world_initiated = 1;
 }
 
-function handle_shout(spir_id, shout_msg, bxx, byy){
-	console.log(spir_id + ' is saying ' + shout_msg);
+function handle_shout(spir_id, shout_msg){
+	//console.log(spir_id + ' is saying ' + shout_msg);
+	spirit_lookup[spir_id].shout = shout_msg;
+	
+	setTimeout(function(){
+		shouting[spir_id] = 0;
+		spirit_lookup[spir_id].shout = '';
+	}, 3000);
+	
 }
 
 
 function render_state(timestamp){
+	
+	//console.log(incoming.t);
 	
 	elapsed = timestamp - prev;
 	prev = timestamp;
@@ -1338,20 +1366,27 @@ function render_state(timestamp){
 	
 	var specials = game_blocks[active_block].s;
 	for (i = 0; i < specials.length; i++){
-		if (specials[i][0] == 'sh'){
+		if (specials[i][0] == 'sh' && spirit_lookup[specials[i][1]].player_id == pla1 && shouting_count_p1 < 100){
 			//console.log(specials[i][2]);
 			
-			if (shouting[specials[i][1]] == null || shouting[specials[i][1]][1] <= 0){
-				shouting[specials[i][1]] = [1, 180];
-				handle_shout(specials[i][1], specials[i][2], board_x, board_y);
-			} else {
-				shouting[specials[i][1]][1] -= 1;
+			if (shouting[specials[i][1]] == null || shouting[specials[i][1]] == 0){
+				shouting[specials[i][1]] = 3;
+				handle_shout(specials[i][1], specials[i][2]);
 			}
+			shouting_count_p1++;
+		} else if (specials[i][0] == 'sh' && spirit_lookup[specials[i][1]].player_id == pla2 && shouting_count_p2 < 100){
 			
-			
+			if (shouting[specials[i][1]] == null || shouting[specials[i][1]] == 0){
+				shouting[specials[i][1]] = 3;
+				handle_shout(specials[i][1], specials[i][2]);
+			}
+			shouting_count_p2++;
 			
 		}
 	}
+	
+	shouting_count_p1 = 0;
+	shouting_count_p2 = 0;
 	
 	
 	bases[0].charge(game_blocks[active_block].b1[3], game_blocks[active_block].b1[0]);
