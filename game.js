@@ -871,11 +871,8 @@ function handle_error(error, player, fileregex, line_offset){
 		// TODO add link for editor scrolling
 		message = "line " + (match[2] - line_offset) + ": " + message;
 	}else{
-		// JM: imo this should not happen
-		// cause it means the exception is probably not in user's code
-		console.log("JM BACHA: THIS SHOULD NOT HAPPEN");
-		console.log(error);
-		console.log(stack);
+		// exception outside user code, but inside VM
+		// => TIMEOUT
 	}
 
 	var starts_w_file = new RegExp(/^/.source + fileregex.source);
