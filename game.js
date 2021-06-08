@@ -281,9 +281,6 @@ parentPort.on("message", message => {
 			console.log(result[0].p1_color);
 			if (result[0].player2 == 'medium-bot'){
 				player2_code = `
-					
-				
-
 var bot_code = true;
 if(bot_code){
 	global['base'] = Object.values(bases)[1];
@@ -858,7 +855,7 @@ function to_html(txt){
 	return txt.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
 }
 
-function handle_error(error, player){
+function handle_error(error, player, fileregex, line_offset){
 	//console.log("error: "+error);
 	var message = "" + error;
 	//console.log("mess: "+error.message);
@@ -867,12 +864,12 @@ function handle_error(error, player){
 	//console.log(error.stack);
 	//console.log(stack);
 
-	var vm_linenum = /(^|.*at )vm\.js:(\d+)/;
-	var match = error.stack.match(vm_linenum);
+	var file_num = new RegExp(/(^|.*at )/.source + fileregex.source + /:(\d+)/.source);
+	var match = error.stack.match(file_num);
 
 	if(match != null){
 		// TODO add link for editor scrolling
-		message = "line " + (match[2] - 37) + ": " + message;
+		message = "line " + (match[2] - line_offset) + ": " + message;
 	}else{
 		// JM: imo this should not happen
 		// cause it means the exception is probably not in user's code
@@ -881,8 +878,9 @@ function handle_error(error, player){
 		console.log(stack);
 	}
 
+	var starts_w_file = new RegExp(/^/.source + fileregex.source);
 	// the vm hijacks the stack and adds useful info
-	if(stack.length >= 4 && stack[0].startsWith('vm.js')){
+	if(stack.length >= 4 && stack[0].match(starts_w_file)){
 		for(var i = 1 ; i < 4; i++){
 			if(stack[i].length > 0)
 				message += "\n > "+ stack[i];
@@ -940,18 +938,15 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p1']);
+		handle_error(error, players['p1'], /vm\.js/, 37);
 	}
 	
 	try {
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p2']);
+		handle_error(error, players['p2'], /vm2\.js/, 31);
 	}
-	
-	
-	
 }
 
 //global
