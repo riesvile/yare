@@ -1348,7 +1348,13 @@ function render_state(timestamp){
 	//
 	
 	
-	
+	try {
+		var energy_blocks = game_blocks[active_block].e;
+	} catch (e) {
+		console.log(e);
+		console.log('resynchronizing game state');
+		tick_local--;
+	}
 	var energy_blocks = game_blocks[active_block].e;
 	for (i = 0; i < energy_blocks.length; i++){
 		//console.log(energy_blocks[i]);
