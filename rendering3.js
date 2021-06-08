@@ -1352,8 +1352,15 @@ function render_state(timestamp){
 		var energy_blocks = game_blocks[active_block].e;
 	} catch (e) {
 		console.log(e);
-		console.log('resynchronizing game state');
-		tick_local--;
+		try {
+			var energy_blocks = game_blocks[active_block - 1].e;
+			console.log('resynchronizing game state');
+			tick_local -= 1;
+		} catch (e2) {
+			var energy_blocks = game_blocks[active_block - 2].e;
+			console.log('resync2');
+			tick_local -= 2;
+		}
 	}
 	var energy_blocks = game_blocks[active_block].e;
 	for (i = 0; i < energy_blocks.length; i++){
