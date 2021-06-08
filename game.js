@@ -854,6 +854,64 @@ console.log('T ' + memory['time'] + ' total ' +my_alive.length + " / H "+ harves
   }
 });
 
+function to_html(txt){
+	return txt.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+}
+
+function handle_error(error, player){
+	//console.log("error: "+error);
+	var message = "" + error;
+	//console.log("mess: "+error.message);
+
+	var stack = error.stack.split("\n");
+	//console.log(error.stack);
+	//console.log(stack);
+
+	var vm_linenum = /(^|.*at )vm\.js:(\d+)/;
+	var match = error.stack.match(vm_linenum);
+
+	if(match != null){
+		// TODO add link for editor scrolling
+		message = "line " + (match[2] - 37) + ": " + message;
+	}else{
+		// JM: imo this should not happen
+		// cause it means the exception is probably not in user's code
+		console.log("JM BACHA: THIS SHOULD NOT HAPPEN");
+		console.log(error);
+		console.log(stack);
+	}
+
+	// the vm hijacks the stack and adds useful info
+	if(stack.length >= 4 && stack[0].startsWith('vm.js')){
+		for(var i = 1 ; i < 4; i++){
+			if(stack[i].length > 0)
+				message += "\n > "+ stack[i];
+		}
+	}
+
+	//console.log('message:' +message);
+	fill_error(player, to_html(message));
+
+	return;
+
+	/*
+	try {
+		//var regex = /\((.*):(\d+):(\d+)\)$/;
+		var stack = error.stack.split("\n");
+		var eline = stack[1].match(/\d+/)[0];
+		//console.log(stack[1].match(/\d+/)[0]);
+		//var line = match[1];
+		//console.log(error.stack);
+		fill_error(player, error.message + " | line " + (eline - 37));
+		//console.error(error);
+	} catch (e) {
+		//console.log(error);
+		console.log(e);
+		fill_error(player, "Something went wrong. Probably a Syntax Error.");
+	}
+	*/
+}
+
 function user_code(){
 	//try {
 	//	eval(player1_code);
@@ -865,7 +923,7 @@ function user_code(){
 	//for (i = 1; i < 18; i++){
 	//	spirits[i].move([i*10 + 600, i*10 + 200]);
 	//}
-	
+	//
 	
 	try {
 		if (workerData[1] == 'tutorial'){
@@ -882,41 +940,14 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		try {
-			var regex = /\((.*):(\d+):(\d+)\)$/;
-			var eline_temp = error.stack.split("\n");
-			var eline = eline_temp[1].match(/\d+/)[0];
-			//console.log(eline_temp[1].match(/\d+/)[0]);
-			//var line = match[1];
-			//console.log(error.stack);
-			fill_error(players['p1'], error.message + " | line " + (eline - 37));
-			//console.error(error);
-		} catch (e) {
-			//console.log(error);
-			console.log(e);
-			fill_error(players['p1'], "Something went wrong. Probably a Syntax Error.");
-		}
+		handle_error(error, players['p1']);
 	}
 	
 	try {
 		vm2.run(player2_code, 'vm2.js');
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		//console.log(error);
-		try {
-			var regex = /\((.*):(\d+):(\d+)\)$/;
-			var eline_temp = error.stack.split("\n");
-			var eline = eline_temp[1].match(/\d+/)[0];
-			//console.log(eline_temp[1].match(/\d+/)[0]);
-			//var line = match[1];
-			//console.log(error.stack);
-			fill_error(players['p2'], error.message + " | line " + (eline - 31));
-			//console.error(error);
-		} catch (e) {
-			//console.log(error);
-			console.log(e);
-			fill_error(players['p2'], "Something went wrong. Probably a Syntax Error.");
-		}
+		handle_error(error, players['p2']);
 	}
 	
 	
