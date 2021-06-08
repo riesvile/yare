@@ -244,10 +244,17 @@
 			  //console.log('active block = ' + active_block);
 			  setInterval(function(){ 
 				  // change to tick_counter (not - 1)
+				  console.log('local tick = ' + tick_local);
+				  console.log('incoming.t = ' + incoming.t);
+				  
+				  
 				  active_block = 't' + (tick_local);
 				  //console.log('active block = ' + active_block);
 				  total_time = 0;
 				  tick_local++;
+				  
+				  
+				  
 			  }, 1000);
 			  
 			  render_state();
@@ -1045,6 +1052,16 @@
 	  
 	  
 	  document.getElementById('switch_view').addEventListener('click', game_switch_view, false);
+	  
+	  
+	  document.addEventListener("visibilitychange", function() {
+	        if (document.hidden) {
+	          //console.log("Hidden");
+	        }
+	        else {
+				if (incoming.t - tick_local > 2) tick_local = incoming.t - 1;
+	        }
+	  });
 	  
 	  
   </script>
