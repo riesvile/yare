@@ -2385,7 +2385,11 @@ if (!isMainThread){
 			
 			e_applies = energize_apply.length;
 			for (i = (e_applies - 1); i >= 0; i--){
-				energize_apply[i][0].energy += energize_apply[i][1];
+				if (energize_apply[i][0].structure_type == 'base'){
+					base_lookup[energize_apply[i][0].id].energy += energize_apply[i][1];
+				} else {
+					spirit_lookup[energize_apply[i][0].id].energy += energize_apply[i][1];
+				}
 			}
 			
 			
@@ -2409,7 +2413,11 @@ if (!isMainThread){
 						
 					}
 				} else if (energize_apply[i][0].energy > energize_apply[i][0].energy_capacity){
-					energize_apply[i][0].energy = energize_apply[i][0].energy_capacity
+					if (energize_apply[i][0].structure_type == 'base'){
+						base_lookup[energize_apply[i][0].id].energy = base_lookup[energize_apply[i][0].id].energy_capacity;
+					} else {
+						spirit_lookup[energize_apply[i][0].id].energy = spirit_lookup[energize_apply[i][0].id].energy_capacity
+					}
 				}
 				energize_apply.splice(i, 1);			
 			}
