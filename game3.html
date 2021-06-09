@@ -244,14 +244,16 @@
 			  //console.log('active block = ' + active_block);
 			  setInterval(function(){ 
 				  // change to tick_counter (not - 1)
-				  console.log('local tick = ' + tick_local);
-				  console.log('incoming.t = ' + incoming.t);
+				  //console.log('local tick = ' + tick_local);
+				  //console.log('incoming.t = ' + incoming.t);
 				  
 				  
 				  active_block = 't' + (tick_local);
 				  //console.log('active block = ' + active_block);
 				  total_time = 0;
 				  tick_local++;
+				  if (tick_local > incoming.t) tick_local--;
+				  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
 				  
 				  
 				  

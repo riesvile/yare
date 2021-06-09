@@ -932,14 +932,28 @@ function user_code(){
 				tutorial_flag1 = 1;
 			}
 		}
+		
+		//p1_process_time = process.hrtime();
+		
 		vm.run(player1_code, 'vm.js');
+		
+		//p1_process_time_check = process.hrtime(p1_process_time);
+		//p1_process_time_res = (p1_process_time_check[0] * 1000000000 + p1_process_time_check[1]) / 1000000;
+		//console.log('p1 calculated in = ' + p1_process_time_res);
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
 		handle_error(error, players['p1'], /vm\.js/, 37);
 	}
 	
 	try {
+		//p2_process_time = process.hrtime();
+		
 		vm2.run(player2_code, 'vm2.js');
+		
+		//p2_process_time_check = process.hrtime(p2_process_time);
+		//p2_process_time_res = (p1_process_time_check[0] * 1000000000 + p2_process_time_check[1]) / 1000000;
+		//console.log('p2 calculated in = ' + p2_process_time_res);
+		
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
 		handle_error(error, players['p2'], /vm2\.js/, 31);
@@ -981,6 +995,13 @@ players['p1'] = 'ab1';
 players['p2'] = 'zx2';
 var players_update = {};
 players_update['p1'] = 'old';
+
+
+var p1_process_time = 0;
+var p1_process_time_check = 0;
+var p1_process_time_res = 0;
+var p2_process_time_check = 0;
+var p2_process_time_res = 0;
 
 function spirit_cost(p_num, alives){
 	if (p_num == 1){
@@ -2731,31 +2752,37 @@ if (!isMainThread){
 				
 				//var m_origin = merge_queue[i][0];
 				//var m_dest = merge_queue[i][1];
-				if (merge_queue[i][0].hp != 0 && merge_queue[i][1].hp != 0){
-					merge_queue[i][1].merged.push(merge_queue[i][0].id);
+				try {
+					if (merge_queue[i][0].hp != 0 && merge_queue[i][1].hp != 0){
+						merge_queue[i][1].merged.push(merge_queue[i][0].id);
 				
-					for (m = 0; m < merge_queue[i][0].merged.length; m++){
-						merge_queue[i][1].merged.push(merge_queue[i][0].merged[m])
+						for (m = 0; m < merge_queue[i][0].merged.length; m++){
+							merge_queue[i][1].merged.push(merge_queue[i][0].merged[m])
+						}
+				
+						merge_queue[i][1].size += merge_queue[i][0].size;
+						merge_queue[i][1].energy += merge_queue[i][0].energy;
+						merge_queue[i][1].energy_capacity = merge_queue[i][1].size * 10;
+				
+						merge_queue[i][0].hp = 0;
+						merge_queue[i][0].size = 0;
+						merge_queue[i][0].energy = 0;
+						merge_queue[i][0].position = merge_queue[i][1].position;
+						//merge_queue[i][0].position = JSON.parse(JSON.stringify(merge_queue[i][1].position));
+				
+				
+						//render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
+						render_data3.s.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
+						//render_data2.death.push(merge_queue[i][0].id);
 					}
 				
-					merge_queue[i][1].size += merge_queue[i][0].size;
-					merge_queue[i][1].energy += merge_queue[i][0].energy;
-					merge_queue[i][1].energy_capacity = merge_queue[i][1].size * 10;
 				
-					merge_queue[i][0].hp = 0;
-					merge_queue[i][0].size = 0;
-					merge_queue[i][0].energy = 0;
-					merge_queue[i][0].position = merge_queue[i][1].position;
-					//merge_queue[i][0].position = JSON.parse(JSON.stringify(merge_queue[i][1].position));
-				
-				
-					//render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
-					render_data3.s.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
-					//render_data2.death.push(merge_queue[i][0].id);
+					merge_queue.splice(i, 1);
+				} catch (e) {
+					console.log(e)
 				}
 				
 				
-				merge_queue.splice(i, 1);
 			
 			}
 			
@@ -2765,55 +2792,53 @@ if (!isMainThread){
 			//
 			
 			for (i = (divide_queue.length - 1); i >= 0; i--){
-				var original = divide_queue[i]
-				var original_size = original.size
 				
-				for (d = 0; d < divide_queue[i].merged.length; d++){
+				try {
+					var original = divide_queue[i]
+					var original_size = original.size
+				
+					for (d = 0; d < divide_queue[i].merged.length; d++){
 					
-					var divided = spirit_lookup[divide_queue[i].merged[d]]
-					//console.log('dividing ' + divided.id);
-					var temp_posX = JSON.parse(JSON.stringify(original.position[0])); 
-					var temp_posY = JSON.parse(JSON.stringify(original.position[1])); 
+						var divided = spirit_lookup[divide_queue[i].merged[d]]
+						//console.log('dividing ' + divided.id);
+						var temp_posX = JSON.parse(JSON.stringify(original.position[0])); 
+						var temp_posY = JSON.parse(JSON.stringify(original.position[1])); 
 					 
-					//divided.position[0] = temp_posX;
-					//divided.position[1] = temp_posY; 
-					divided.position = JSON.parse(JSON.stringify(prev_position[original.id]));
-					divided.hp = 1;
-					divided.size = 1;
-					divided.energy = Math.floor(original.energy / original_size);
+						//divided.position[0] = temp_posX;
+						//divided.position[1] = temp_posY; 
+						divided.position = JSON.parse(JSON.stringify(prev_position[original.id]));
+						divided.hp = 1;
+						divided.size = 1;
+						divided.energy = Math.floor(original.energy / original_size);
 					
-					//var adj1 = 5;
-					//var adj2 = 5;
+						//var adj1 = 5;
+						//var adj2 = 5;
 					
-					var adj1 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
-					var adj2 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
-					
-					//var adj1 = Math.floor(Math.random() * 100) / 20;
-					//var adj2 = Math.floor(Math.random() * 100) / 20;
-					//console.log('divided');
-					//console.log(divided);
-					
-					//console.log(divided.position);
-					//console.log(prev_position[original.id]);
-					
-					//render_data2.move.push([divided.id, prev_position[original.id], [adj1, adj2], [divided.position[0] + adj1, divided.position[1] + adj2]]);
-					
-					divided.position[0] += adj1;
-					divided.position[1] += adj2;
+						var adj1 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
+						var adj2 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
 					
 					
+						divided.position[0] += adj1;
+						divided.position[1] += adj2;
+					
+					
+					}
+				
+					original.merged = [];
+					original.size = 1;
+					original.energy = Math.floor(original.energy / original_size);
+					original.energy_capacity = original.energy_capacity / original_size;
+				
+				
+					//render_data2.special.push(['d', divide_queue[i].id]);
+					render_data3.s.push(['d', divide_queue[i].id]);
+				
+					divide_queue.splice(i, 1);
+				} catch (e) {
+					console.log(e);
 				}
 				
-				original.merged = [];
-				original.size = 1;
-				original.energy = Math.floor(original.energy / original_size);
-				original.energy_capacity = original.energy_capacity / original_size;
 				
-				
-				//render_data2.special.push(['d', divide_queue[i].id]);
-				render_data3.s.push(['d', divide_queue[i].id]);
-				
-				divide_queue.splice(i, 1);
 			}
 			
 			
@@ -2989,6 +3014,7 @@ if (!isMainThread){
 			processTime2 = process.hrtime(processTime1);
 			processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
 			console.log('calculated in = ' + processTimeRes);
+			if (processTimeRes > 1000) cancel_game();
 			//user_error = 'calculated in = ' + processTimeRes;
 			
 			
