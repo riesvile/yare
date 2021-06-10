@@ -1616,6 +1616,12 @@ wss.on('connection', function connection(ws, req) {
 		d1 = process.hrtime();
 		console.log('message');
 		console.log('received: ' + message);
+		let active_game = active_games[g_id];
+		if(active_game == undefined){
+			console.log('ignoring message from '+ message['u_id'] + ' game ' + g_id + ' is no longer active');
+			return;
+		}
+
 		if (message == 'reinitiate'){
 			console.log('reinitiating the world for g_id = ' + g_id);
 			initiate_world(ws.client_id, g_id);
@@ -1623,25 +1629,25 @@ wss.on('connection', function connection(ws, req) {
 			message = JSON.parse(message);
 			if (message.meta == "resign"){
 				console.log(message.u_id + ' is resigning');
-				if (message['u_id'] == active_games[g_id][1]) resigning1 = 1;
-				if (message['u_id'] == active_games[g_id][2]) resigning2 = 1;
+				if (message['u_id'] == active_game[1]) resigning1 = 1;
+				if (message['u_id'] == active_game[2]) resigning2 = 1;
 			} else {
 				console.log('message');
 		    	console.log('received: %s', message);
 				resigning1 = 0;
 				resigning2 = 0;
 			}
-			
 		}
+
 		connections[ws.client_id] = ws;
 		//player1_code = message;
 		try {
 			if (message['u_id'].length > 1){
 				console.log('code sent by');
 				//console.log(message['u_id']);
-				//console.log(active_games[g_id][1])
+				//console.log(active_game[1])
 			}
-			if (message['u_id'] == active_games[g_id][1] || active_games[g_id][1] == 'anonymous'){
+			if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
 				//code_temps['player1_session'] = message['session_id'];
 				
@@ -1658,7 +1664,7 @@ wss.on('connection', function connection(ws, req) {
 				` + message['u_code'];
 
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
-			} else if (message['u_id'] == active_games[g_id][2]){
+			} else if (message['u_id'] == active_game[2]){
 				//code_temps['player2'] = message['u_code'];
 				//code_temps['player2_session'] = message['session_id'];
 				
