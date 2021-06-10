@@ -251,14 +251,14 @@ var workers = {};
 var active_games = {};
 var tutorial_finishings = {};
 var server_occupancy_tutorial = {
-	t1: 50,
-	t2: 50,
+	t1: 0,
+	t2: 500,
 	t3: 50
 }
 var server_occupancy = {
-	d1: 20,
+	d1: 2000,
 	d2: 20,
-	d3: 20,
+	d3: 0,
 	d4: 20
 };
 var connections = {};
