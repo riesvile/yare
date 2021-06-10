@@ -1290,7 +1290,7 @@ if (!isMainThread){
 		
 	
 		move(target) {
-			JSON.parse(JSON.stringify(target));
+			target = JSON.parse(JSON.stringify(target));
 			var plus_minus = Math.random() < 0.5 ? -1 : 1;
 			var adj1 = Math.floor(Math.random() * 100) / 70 * plus_minus;
 			var adj2 = Math.floor(Math.random() * 100) / 70 * plus_minus;
