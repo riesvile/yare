@@ -856,55 +856,43 @@ function to_html(txt){
 }
 
 function handle_error(error, player, fileregex, line_offset){
-	//console.log("error: "+error);
-	var message = "" + error;
-	//console.log("mess: "+error.message);
+	let message = "" + error;
 
-	var stack = error.stack.split("\n");
-	//console.log(error.stack);
-	//console.log(stack);
-
-	var file_num = new RegExp(/(^|.*at )/.source + fileregex.source + /:(\d+)/.source);
-	var match = error.stack.match(file_num);
+	let stack = error.stack.split("\n");
+	let file_num = new RegExp(/(^|.*at )/.source + fileregex.source + /:(\d+)/.source);
+	let match = error.stack.match(file_num);
 
 	if(match != null){
 		// TODO add link for editor scrolling
-		message = "line " + (match[2] - line_offset) + ": " + message;
+		let linenum = (match[2] - line_offset);
+		message = "line " + linenum + ": " + message;
+
+		if(!(linenum > 0)){
+			console.log('WTF: linenum not positive');
+			console.log("error: "+error);
+			console.log(stack);
+		}
 	}else{
 		// exception outside user code, but inside VM
 		// => TIMEOUT
 	}
 
-	var starts_w_file = new RegExp(/^/.source + fileregex.source);
+	let starts_w_file = new RegExp(/^/.source + fileregex.source);
 	// the vm hijacks the stack and adds useful info
 	if(stack.length >= 4 && stack[0].match(starts_w_file)){
-		for(var i = 1 ; i < 4; i++){
+		for(let i = 1 ; i < 4; i++){
 			if(stack[i].length > 0)
 				message += "\n > "+ stack[i];
 		}
 	}
 
-	//console.log('message:' +message);
-	fill_error(player, to_html(message));
-
-	return;
-
 	/*
-	try {
-		//var regex = /\((.*):(\d+):(\d+)\)$/;
-		var stack = error.stack.split("\n");
-		var eline = stack[1].match(/\d+/)[0];
-		//console.log(stack[1].match(/\d+/)[0]);
-		//var line = match[1];
-		//console.log(error.stack);
-		fill_error(player, error.message + " | line " + (eline - 37));
-		//console.error(error);
-	} catch (e) {
-		//console.log(error);
-		console.log(e);
-		fill_error(player, "Something went wrong. Probably a Syntax Error.");
-	}
-	*/
+	console.log("error: "+error);
+	console.log(stack);
+	console.log('message:' +message);
+	// */
+	//
+	fill_error(player, to_html(message));
 }
 
 function user_code(){
