@@ -2248,7 +2248,9 @@ if (!isMainThread){
 				if (energize_queue[i][0] == energize_queue[i][1]){
 					for (j = 0; j < energize_queue[i][0].sight.structures.length; j++){
 						//console.log('ilook here');
-						//console.log(energize_queue[i][0].sight.structures[j]);
+						if(energize_queue[i][0].sight.structures[j] == undefined)
+							console.log("WTF StartsWith 1");
+
 						if ((energize_queue[i][0].sight.structures[j]).startsWith('star') == true){
 							//console.log('its a star its a star its a star its a star its a star its a star its a star its a star');
 							var star = star_lookup[energize_queue[i][0].sight.structures[j]].position;
@@ -2280,6 +2282,9 @@ if (!isMainThread){
 				else if (energize_queue[i][0].player_id == energize_queue[i][1].player_id){
 					
 					if (workerData[1] == 'tutorial'){
+						if(energize_queue[i][1].id == undefined)
+							console.log("WTF StartsWith 2");
+
 						if (energize_queue[i][1].id.startsWith('base') && energize_queue[i][0].energy < 10 && energize_queue[i][0].id == 'anonymous1'){
 							console.log('tutorial phase 4 done');
 							tutorial_phase[3] = 1;
@@ -2542,7 +2547,9 @@ if (!isMainThread){
 						//console.log(' ------------------------------- structure potential collisions');
 						//console.log(potential_structure_collisions[k]);
 						
-						
+						if(potential_structure_collisions[k] == undefined)
+							console.log("WTF StartsWith 3");
+
 						if (potential_structure_collisions[k].startsWith('star') == true){
 							var object_position = star_lookup[potential_structure_collisions[k]].position;
 							var min_distance = 100;
