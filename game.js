@@ -864,11 +864,17 @@ function handle_error(error, player, fileregex, line_offset){
 
 	if(match != null){
 		// TODO add link for editor scrolling
-		let linenum = (match[2] - line_offset);
-		message = "line " + linenum + ": " + message;
+		let raw_line_num = match[2];
 
-		if(!(linenum > 0)){
-			console.log('WTF: linenum not positive');
+		// error on line in user code
+		if(raw_line_num > line_offset){
+			let linenum = raw_line_num - line_offset;
+			message = "line " + linenum + ": " + message;
+		}
+		// raw_line_num == 1 means e.g. multiple definitions of the same var, or similar
+		// between 1 and line_offset => we have bug in player init code (see server.js)
+		if(raw_line_num > 1 && raw_line_num <= line_offset){
+			console.log('WTF: linenum not positive, either bug in our player_code prefix, or in bot around start');
 			console.log("error: "+error);
 			console.log(stack);
 		}
@@ -930,7 +936,7 @@ function user_code(){
 		//console.log('p1 calculated in = ' + p1_process_time_res);
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p1'], /vm\.js/, 37);
+		handle_error(error, players['p1'], /vm\.js/, 10);
 	}
 	
 	try {
@@ -944,7 +950,7 @@ function user_code(){
 		
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p2'], /vm2\.js/, 31);
+		handle_error(error, players['p2'], /vm2\.js/, 10);
 	}
 }
 

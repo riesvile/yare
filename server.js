@@ -1644,80 +1644,36 @@ wss.on('connection', function connection(ws, req) {
 			if (message['u_id'] == active_games[g_id][1] || active_games[g_id][1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
 				//code_temps['player1_session'] = message['session_id'];
-				player1_code = `
-				//all = spirits.length;
-				//for (s = 0; s < all; s++){
-				//	global['s' + s] = spirits[s];
-				//}
 				
-				var this_player_id = players['p1'];
-				
-				//var my_spirits = [];
-				//
-				//for (q = 0; q < (Object.keys(spirits)).length; q++){
-				//	if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
-				//		my_spirits.push(spirits[Object.keys(spirits)[q]]);
-				//		global['s' + (q+1)] = spirits[Object.keys(spirits)[q]];
-				//	}
-				//}
-				//
-				
-				if (my_spirits[0].id == 'anonymous1'){
-					for (y = 0; y < my_spirits.length; y++){
-						global['s' + (y+1)] = my_spirits[y];
+				player1_code = `// line 1
+					var this_player_id = players['p1'];				
+					for (let y = 0; y < my_spirits.length; y++){
+						let spirit_name = my_spirits[0].id == 'anonymous1' ? 's' + (y+1) : my_spirits[y].id;
+						global[spirit_name] = my_spirits[y];
 					}
-				} else {
-					for (y = 0; y < my_spirits.length; y++){
-						global[my_spirits[y].id] = my_spirits[y];
-					}
-				}
-				
-				
-				
-				
-				
-				global['base'] = Object.values(bases)[0];
-				global['enemy_base'] = Object.values(bases)[1];
-				global['star_zxq'] = stars['star_zxq'];
-				global['star_a1c'] = stars['star_a1c'];
-				
+					global['base'] = Object.values(bases)[0];
+					global['enemy_base'] = Object.values(bases)[1];
+					global['star_zxq'] = stars['star_zxq'];
+					global['star_a1c'] = stars['star_a1c']; 		// line 10
 				` + message['u_code'];
+
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
 			} else if (message['u_id'] == active_games[g_id][2]){
 				//code_temps['player2'] = message['u_code'];
 				//code_temps['player2_session'] = message['session_id'];
-				player2_code = `
-				//all = spirits.length;
-				//for (s = 0; s < all; s++){
-				//	global['s' + s] = spirits[s];
-				//}
+				
+				player2_code = `// line 1
+					var this_player_id = players['p2'];
+
+					for (let y = 0; y < my_spirits.length; y++)
+						global[my_spirits[y].id] = my_spirits[y];
 					
-				var this_player_id = players['p2'];		
-				
-				//var my_spirits = [];
-				
-				//for (q = 0; q < (Object.keys(spirits)).length; q++){
-				//	if(spirits[Object.keys(spirits)[q]].hp > 0 && this_player_id == spirits[Object.keys(spirits)[q]].player_id){
-				//		my_spirits.push(spirits[Object.keys(spirits)[q]]);
-				//		//it is s2 here you moron
-				//		global['s' + (q+1)] = spirits[Object.keys(spirits)[q]];
-				//	}
-				//}
-				//
-				
-				
-				for (y = 0; y < my_spirits.length; y++){
-					global[my_spirits[y].id] = my_spirits[y];
-				}
-				
-				
-				
-				global['base'] = Object.values(bases)[1];
-				global['enemy_base'] = Object.values(bases)[0];
-				global['star_zxq'] = stars['star_zxq'];
-				global['star_a1c'] = stars['star_a1c'];
-				
+					global['base'] = Object.values(bases)[1];
+					global['enemy_base'] = Object.values(bases)[0];
+					global['star_zxq'] = stars['star_zxq'];
+					global['star_a1c'] = stars['star_a1c'];			// line 10
 				` + message['u_code'];
+
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
 			}
 		} catch (error) {
