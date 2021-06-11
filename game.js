@@ -1616,11 +1616,12 @@ if (!isMainThread){
 	}
 
 	class Star {
-		constructor(id, position){
+		constructor(id, position, energy){
 			this.id = id
 			this.position = position;
 			this.size = 220;
 			this.structure_type = 'star';
+			this.energy = energy;
 			//this.energy = energy;
 		
 			stars.push(this);
@@ -2129,17 +2130,17 @@ if (!isMainThread){
 				
 				//console.log(tutorial_phase);
 				
-				if (game_duration == 200){
+				if (game_duration == 400){
 					if (tutorial_phase[0] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 300){
+				} else if (game_duration == 500){
 					if (tutorial_phase[1] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 400){
+				} else if (game_duration == 800){
 					if (tutorial_phase[2] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
@@ -2163,7 +2164,7 @@ if (!isMainThread){
 					'c2': [],
 					'end': end_winner
 				};
-				if (game_duration == 300){
+				if (game_duration == 600){
 					if (top_s == 11){
 						end_game(0, 0);
 					}
@@ -2710,6 +2711,13 @@ if (!isMainThread){
 		
 			
 			
+			
+			// stars energy update
+			
+			for (i = 0; i < stars.length; i++){
+				stars[i].energy += 2 + (stars[i].energy * 1.1);
+			}
+			
 		
 		
 			//objects death & vm sandbox objects update
@@ -3101,10 +3109,10 @@ if (!isMainThread){
 		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 	
-		star_zxq = new Star('star_zxq', [1000, 1000]);
+		star_zxq = new Star('star_zxq', [1000, 1000], 20);
 		star_lookup['star_zxq'] = star_zxq;
 	
-		star_a1c = new Star('star_a1c', [3200, 1400]);
+		star_a1c = new Star('star_a1c', [3200, 1400], 20);
 		star_lookup['star_a1c'] = star_a1c;
 		
 		
