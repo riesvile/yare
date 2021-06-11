@@ -1027,17 +1027,18 @@ function deactivate_game(game_id){
 }
 
 app.get('/' + this_server + 'n/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	//if (active_games[game_id_url][0] == 1){
-	//	res.redirect('/' + this_server + '/' + game_id_url);
+	let g_id = req.params.game_id;
+	// JM if uncomment, fix the active_games[g_id] == undefined possibility
+	//if (active_games[g_id][0] == 1){
+	//	res.redirect('/' + this_server + '/' + g_id);
 	//} else {
 	res.sendFile(__dirname + '/wait.html');
 	//}
 	
 });
 
-function findAgain(req, res){
-	Game.find({game_id: game_id_url})
+function findAgain(req, res, g_id){
+	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
 			console.log('db result');
@@ -1047,8 +1048,8 @@ function findAgain(req, res){
 		        	data: "no game found"
 		        });
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
-				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
+				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is ready');
 						res.status(200).send({
@@ -1074,20 +1075,19 @@ function findAgain(req, res){
 }
 
 app.post('/' + this_server + 'ns/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	
+	let g_id = req.params.game_id;
 	
 	console.log('finding game via mongoooooooooooooooooooose');
-	Game.find({game_id: game_id_url})
+	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
 			console.log('db result');
 			console.log(result);
 			if (result.length == 0){
-				findAgain(req, res);
+				findAgain(req, res, g_id);
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
-				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
+				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is ready');
 						res.status(200).send({
@@ -1116,11 +1116,12 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 
 
 app.get('/' + this_server + '/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	if (active_games[game_id_url] == undefined){
+	let g_id = req.params.game_id;
+	let active_game = active_games[g_id];
+	if (active_game == undefined){
 		//add a simple page stating the result and stats of a game
 		console.log('game ended or does not exist');
-		Game.find({game_id: game_id_url})
+		Game.find({game_id: g_id})
 			.then((result) => {
 				//res.send(result);
 				console.log('dbdb result');
@@ -1137,16 +1138,15 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 			.catch((error) => {
 				console.log(error);
 			})
-	} else if (active_games[game_id_url][0] == 1){
+	} else if (active_game[0] == 1){
 		res.sendFile(__dirname + '/game3.html');
 	} else {
-		if (this_server_type == "tutorial" && active_games[game_id_url][0] == 0){
+		if (this_server_type == "tutorial" && active_game[0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
 		} else {
 			console.log('not sure what happened here');
 			res.send(404);
 		}
-		
 	}
 });
 
@@ -1352,23 +1352,31 @@ app.get('/t2f/est', (req, res) => {
 
 
 app.get('/challenge/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	if (active_games[game_id_url][0] == 1){
+	let active_game = active_games[req.params.game_id];
+	if(active_game == undefined){
+		// TODO VILEM CHECK - is this proper handling?
+		// or do we return something else?
+		res.send(404);
+		return;
+	}
+
+	if (active_game[0] == 1){
 		res.sendFile(__dirname + '/game3.html');
-	} else if (active_games[game_id_url][0] == 0.5){
+	} else if (active_game[0] == 0.5){
 		//pending – waiting for p2 to connect
 		res.sendFile(__dirname + '/challenge.html');
-		//active_games[game_id_url] = 1;
+		//active_games[g_id] = 1;
 	} else {
 		res.send(404);
 	}
 });
 
 app.post('/validate-challenge/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
+	let g_id = req.params.game_id;
+
 	//find via mongoose, check if player1 != player2
 	console.log('finding game via mongoooooooooooooooooooose');
-	Game.find({game_id: game_id_url})
+	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
 			console.log('db result');
@@ -1383,34 +1391,54 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 		        });
 			
 			} else {
-				Game.updateOne({game_id: game_id_url}, {player2: req.body.user_id, p2_session_id: req.body.session_id}, {upsert: true})
+				Game.updateOne({game_id: g_id}, {player2: req.body.user_id, p2_session_id: req.body.session_id}, {upsert: true})
 					.then((qq) => {
-						active_games[game_id_url][2] = req.body.user_id;
-						console.log('p2_session_id updated');
-						//start_world(game_id_url);
+						let active_game = active_games[g_id];
+						if(active_game != undefined){
+							active_game[2] = req.body.user_id;
+							console.log('p2_session_id updated');
+							//start_world(g_id);
+						} else{
+							console.log('WTF game ' + g_id + ' probably canceled in the meantime? race condition?');
+						}
+
 					});
 				
-				//create_worker(game_id_url, 'nonranked');
+				//create_worker(g_id, 'nonranked');
 				res.status(200).send({
 		        	data: "challenge connected"
 		        });
-				//active_games[game_id_url] = 1;
+				//active_games[g_id] = 1;
 			}
 		})
 		.catch((error) => {
 			console.log(error);
+			res.status(404).send({
+				data: "no game found"
+			});
 		})
 });
 
 app.post('/confirm-challenge/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
+	let g_id = req.params.game_id;
+	let active_game = active_games[g_id];
+
+	if(active_game == undefined){
+		// TODO VILEM CHECK - is this proper handling?
+		// or do we return something else?
+		res.status(404).send({
+			data: "no game found"
+		});
+		return;
+	}
+
 	//find via mongoose, check if player1 != player2
-	if (active_games[game_id_url][0] == 0.5){
+	if (active_game[0] == 0.5){
 		//access mongoose and update game document
-		active_games[game_id_url][2] = req.body.user_id;
-		active_games[game_id_url][0] = 1;
+		active_game[2] = req.body.user_id;
+		active_game[0] = 1;
 		
-		Game.find({game_id: game_id_url})
+		Game.find({game_id: g_id})
 			.then((result) => {
 				//res.send(result);
 				console.log('updating p2 in db');
@@ -1419,28 +1447,32 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 			        	data: "no game found"
 			        });
 				} else {
-					Game.updateOne({game_id: game_id_url}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_shape: req.body.user_shape, p2_color: get_color(req.body.user_color)}, {upsert: true})
+					Game.updateOne({game_id: g_id}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_shape: req.body.user_shape, p2_color: get_color(req.body.user_color)}, {upsert: true})
 						.then((qq) => {
-							active_games[game_id_url][2] = req.body.user_id;
-							console.log('p2_details updated');
-							//start_world(game_id_url);
+							let active_game = active_games[g_id];
+							if(active_game != undefined){
+								active_game[2] = req.body.user_id;
+								console.log('p2_details updated');
+							} else
+								console.log('WTF 2 game ' + g_id + ' probably canceled in the meantime? race condition?');
+
+							//start_world(g_id);
 						});
 				
-					//create_worker(game_id_url, 'nonranked');
+					//create_worker(g_id, 'nonranked');
 					res.status(200).send({
 			        	data: "waiting for p1 to start",
-						server: active_games[game_id_url][3]
+						server: active_game[3]
 			        });
-					//active_games[game_id_url] = 1;
 				}
 			})
 			.catch((error) => {
 				console.log(error);
 			})
 		
-	} else if (active_games[game_id_url][0] == 1){
+	} else if (active_game[0] == 1){
 		//if player1 confirming, redirect to game and start it (allow code change)
-		Game.find({game_id: game_id_url})
+		Game.find({game_id: g_id})
 			.then((result) => {
 				//res.send(result);
 				console.log('db result');
@@ -1459,7 +1491,6 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 					res.status(200).send({
 			        	data: "not owner"
 			        });
-					//active_games[game_id_url] = 1;
 				}
 			})
 			.catch((error) => {
@@ -1618,6 +1649,8 @@ wss.on('connection', function connection(ws, req) {
 		console.log('received: ' + message);
 		let active_game = active_games[g_id];
 		if(active_game == undefined){
+			// TODO VILEM CHECK - is this proper handling?
+			// or do we return something else?
 			console.log('ignoring message from '+ message['u_id'] + ' game ' + g_id + ' is no longer active');
 			return;
 		}
@@ -1710,17 +1743,17 @@ wss.on('connection', function connection(ws, req) {
 
 
 app.get('/d1n/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	//if (active_games[game_id_url][0] == 1){
-	//	res.redirect('/' + d1 + '/' + game_id_url);
+	let g_id = req.params.game_id;
+	//if (active_games[g_id][0] == 1){
+	//	res.redirect('/' + d1 + '/' + g_id);
 	//} else {
 	res.sendFile(__dirname + '/wait.html');
 	//}
 	
 });
 
-function findAgain(req, res){
-	Game.find({game_id: game_id_url})
+function findAgain(req, res, g_id){
+	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
 			console.log('db result');
@@ -1730,8 +1763,8 @@ function findAgain(req, res){
 		        	data: "no game found"
 		        });
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
-				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
+				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is ready');
 						res.status(200).send({
@@ -1757,11 +1790,10 @@ function findAgain(req, res){
 }
 
 app.post('/d1ns/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	
+	let g_id = req.params.game_id;
 		
 	console.log('finding game via mongoooooooooooooooooooose');
-	Game.find({game_id: game_id_url})
+	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
 			console.log('db result');
@@ -1769,8 +1801,8 @@ app.post('/d1ns/:game_id', (req, res) => {
 			if (result.length == 0){
 				findAgain(req, res);
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
-				init_game(game_id_url, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
-				Game.updateOne({game_id: game_id_url}, {active: 1}, {upsert: true})
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
+				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						console.log('game is reeeady');
 						res.status(200).send({
@@ -1799,11 +1831,12 @@ app.post('/d1ns/:game_id', (req, res) => {
 
 
 app.get('/d1/:game_id', (req, res) => {
-	game_id_url = req.params.game_id;
-	if (active_games[game_id_url] == undefined){
+	let g_id = req.params.game_id;
+	let active_game = active_games[g_id];
+	if (active_game == undefined){
 		//add a simple page stating the result and stats of a game
 		console.log('game ended or does not exist');
-		Game.find({game_id: game_id_url})
+		Game.find({game_id: g_id})
 			.then((result) => {
 				//res.send(result);
 				console.log('dbdb result');
@@ -1820,10 +1853,13 @@ app.get('/d1/:game_id', (req, res) => {
 			.catch((error) => {
 				console.log(error);
 			})
-	} else if (active_games[game_id_url][0] == 1){
+		return;
+	}
+
+	if (active_game[0] == 1){
 		res.sendFile(__dirname + '/game3.html');
 	} else {
-		if (this_server_type == "tutorial" && active_games[game_id_url][0] == 0){
+		if (this_server_type == "tutorial" && active_game[0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
 		} else {
 			console.log('not sure what happened here');
