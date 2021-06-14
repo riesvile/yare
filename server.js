@@ -1693,6 +1693,7 @@ wss.on('connection', function connection(ws, req) {
 					global['base'] = Object.values(bases)[0];
 					global['enemy_base'] = Object.values(bases)[1];
 					global['star_zxq'] = stars['star_zxq'];
+					global['star_p89'] = stars['star_p89'];
 					global['star_a1c'] = stars['star_a1c']; 		// line 10
 				` + message['u_code'];
 
@@ -1710,6 +1711,7 @@ wss.on('connection', function connection(ws, req) {
 					global['base'] = Object.values(bases)[1];
 					global['enemy_base'] = Object.values(bases)[0];
 					global['star_zxq'] = stars['star_zxq'];
+					global['star_p89'] = stars['star_p89'];
 					global['star_a1c'] = stars['star_a1c'];			// line 10
 				` + message['u_code'];
 

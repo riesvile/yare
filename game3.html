@@ -536,8 +536,12 @@
 					 game_blocks['t' + tick_counter]['b1'][3] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
 					 game_blocks['t' + tick_counter]['b2'][3] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
 					 
+					 game_blocks['t' + tick_counter]['st'] = incoming.st;
+					 
+					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
+					 
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
-					 //console.log(game_blocks);
+					 console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
 					 run_it();
 					 

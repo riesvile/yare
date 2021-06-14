@@ -293,7 +293,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 	
 	for (s = 0; s < stars.length; s++){
 		if (Math.abs(stars[s].position[0] - board_xx) <= 50 && Math.abs(stars[s].position[1] - board_yy) <= 50){
-			hover_content.push(['star', stars[s].id]);
+			hover_content.push(['star', stars[s].id, stars[s].energy]);
 		}
 	}
 	
@@ -314,6 +314,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			hoveroid.style.left = xx + 50 + 'px';
 		} else if (hover_content[0][0] == 'star'){
 			hoveroid.innerHTML = "<span class='star_id'>" + hover_content[0][1] + "</span>";
+			hoveroid.innerHTML += "<span class='star_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
 			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
 			hoveroid.style.left = xx - 20 + 'px';
 		}
@@ -510,9 +511,11 @@ var fps = 60;
 var living_spirits = [];
 var stars = [];
 var bases = [];
+var outposts = [];
 var spirit_lookup = {};
 var star_lookup = {};
 var base_lookup = {};
+var outpost_lookup = {};
 
 var player1_color;
 var player2_color;
@@ -663,6 +666,8 @@ function resolve_energy_point(energy_point){
 		return base_lookup[energy_point];
 	} else if (energy_point.startsWith('star')){
 		return star_lookup[energy_point];
+	} else if (energy_point.startsWith('outpost')){
+		return outpost_lookup[energy_point];
 	} else {
 		return spirit_lookup[energy_point];
 	}
@@ -1016,11 +1021,12 @@ class Spirit {
 }
 
 class Star {
-	constructor(id, position){
+	constructor(id, position, energy, size){
 		this.id = id
 		this.position = position;
-		this.size = 220;
+		this.size = size;
 		this.structure_type = 'star';
+		this.energy = energy;
 		stars.push(this);
 	}
 	
@@ -1031,27 +1037,27 @@ class Star {
 		c_base.fillStyle = "rgba(255, 255, 255, 0.2)";
 		//c_base.fill();
 		
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 5, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(248, 247, 255, 1)";
-		c_base.fill();
+		//c_base.beginPath();
+		//c_base.arc(this.position[0], this.position[1], 5, 0, Math.PI * 2, false);
+		//c_base.fillStyle = "rgba(248, 247, 255, 1)";
+		//c_base.fill();
 		
 		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 420, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(54, 195, 255, 0.02)";
+		c_base.arc(this.position[0], this.position[1], 200 + this.size, 0, Math.PI * 2, false);
+		c_base.fillStyle = "rgba(54, 195, 255, " + this.size / 10000 +")";
 		c_base.fill();
 		
 		c_base.save();
 		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 225, 0, Math.PI * 2, false);
+		c_base.arc(this.position[0], this.position[1], 5 + this.size, 0, Math.PI * 2, false);
 		c_base.clip();
 		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 235, 0, Math.PI * 2, false);
+		c_base.arc(this.position[0], this.position[1], 15 + this.size, 0, Math.PI * 2, false);
 		c_base.fillStyle = "rgba(254, 15, 25, 0.2)";
 		//c_base.fill();
 		c_base.strokeStyle = 'rgba(255,255,255,1)';
-		c_base.shadowColor='rgba(205, 240, 250, 0.8)';
-		c_base.shadowBlur=100;
+		c_base.shadowColor='rgba(205, 240, 250, ' + this.size / 275 + ')';
+		c_base.shadowBlur= this.size / 2;
 		c_base.lineWidth = 10;
 		c_base.stroke();
 		c_base.shadowColor=null;
@@ -1062,15 +1068,46 @@ class Star {
 		var teX = this.position[0];
 		var teY = this.position[1];
 		
-		
-		
-		
 	}
+	
+	
+	draw_energy() {
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], 1 + this.energy / 100, 0, Math.PI * 2, false);
+		c.fillStyle = "rgba(248, 247, 255, 1)";
+		c.fill();
+	}
+	
+	
+	update_resource(new_energy){
+		this.energy = new_energy;
+	}
+	
+	
 }
 
 function mapValues(the_number, in_min, in_max, out_min, out_max) {
   return (the_number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+function drawRotated(x, y, width, height, degrees, color){
+
+        // first save the untranslated/unrotated context
+        c.save();
+
+        c.beginPath();
+        c.translate(x+width/2, y+height/2 );
+        c.rotate(degrees*Math.PI/180);
+
+        c.rect(-width/2, -height/2, width, height);
+
+		c.lineWidth = 2;
+        c.strokeStyle = color;
+        c.stroke();
+
+        c.restore();
+
+    }
 
 class Base {
 	constructor(id, position, energy, player, color, shape, def_status = 0){
@@ -1210,6 +1247,89 @@ class Base {
 	*/
 }
 
+class Outpost {
+	constructor(id, position, energy, control = ''){
+		this.id = id
+		this.position = position;
+		this.size = 20;
+		this.structure_type = 'outpost';
+		this.energy = energy;
+		this.energy_capacity = 1000;
+		this.range = 400;
+		this.control = control;
+		
+		if (this.control == pla1) this.color = colors[0];
+		if (this.control == pla2) this.color = colors[1];
+		if (this.control == '') this.color = "rgba(160, 160, 160, 1)";
+		
+		
+		outposts.push(this);
+	}
+	
+	draw(enrg, cntrl = '') {
+		if (cntrl == pla1) this.color = colors[0];
+		if (cntrl == pla2) this.color = colors[1];
+		if (cntrl == '') this.color = "rgba(160, 160, 160, 1)";
+		
+		this.energy = enrg;
+		
+		var energy_ratio = Math.floor(this.energy / (this.energy_capacity / 10));
+		
+		//console.log('this.color = ' + this.color);
+		let current_color = this.color;
+		//c.lineWidth = 4;
+		//c.strokeStyle = this.color;
+		//c.strokeRect((this.position[0] - 12), (this.position[1] - 12), 24, 24);
+		
+		
+		// rotated square
+		drawRotated(this.position[0] - 12, this.position[1] - 12, 24, 24, 45, current_color);
+
+		// inner-outer circle
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
+		c.closePath();
+		c.lineWidth = 2;
+		c.strokeStyle = this.color;
+		c.stroke();
+		
+		// inner-inner circle
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], energy_ratio, Math.PI * 0, Math.PI * 2, false);
+		c.closePath();
+		c.lineWidth = 2;
+		c.strokeStyle = this.color;
+		c.stroke();
+		
+		
+		
+	}
+	
+	
+	/*
+	charge() {
+		var color_parts = this.color.match(/[.?\d]+/g);
+		//logic on slowing down production when amount of spirits > x
+		var new_when = 100;
+		if(1 == 1){
+			new_when = 100;
+		}
+		var production_percent = this.energy / new_when;
+		var new_angle = Math.PI * 2 * production_percent
+		
+		c_base.beginPath();
+		c_base.arc(this.position[0], this.position[1], (this.size + 10), Math.PI * 1.5 + (new_angle), Math.PI * 2 * production_percent, false);
+		console.log('production_percent');
+		console.log(production_percent);
+		c_base.lineWidth = 2;
+		c_base.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.5 + ')';
+		c_base.stroke();
+	}
+	*/
+}
+
+
+
 function draw_energize(origin, target, energy_strength, color){
 	var color_parts = color.match(/[.?\d]+/g);
 	//console.log(Number(color_parts[0]) + 50)
@@ -1253,11 +1373,20 @@ function initiate_world(){
 		//console.log('base drawn ' + bases_queue[i].id);
 	}
 	
-	star_lookup['star_zxq'] = new Star('star_zxq', [1000, 1000]);
-	star_lookup['star_a1c'] = new Star('star_a1c', [3200, 1400]);	
+	star_lookup['star_zxq'] = new Star('star_zxq', [1000, 1000], 50, 220);
+	star_lookup['star_a1c'] = new Star('star_a1c', [3200, 1400], 50, 220);	
+	star_lookup['star_p89'] = new Star('star_p89', [2000, 1300], 50, 80);
+	
+	outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [2200, 1100], 0);	
+	
+	//star_energy_lookup['star_zxq'] = new Star_energy('star_zxq', [1000, 1000], 50);
+	//star_energy_lookup['star_a1c'] = new Star_energy('star_a1c', [3200, 1400], 50);
 	
 	star_lookup['star_zxq'].draw();
 	star_lookup['star_a1c'].draw();
+	star_lookup['star_p89'].draw();
+	
+	//outpost_lookup['outpost_mdo'].draw();
 	
 	//draw_grid();
 	offsetUpdate();
@@ -1414,6 +1543,20 @@ function render_state(timestamp){
 	bases[1].current_spirit_cost = game_blocks[active_block].b2[1];
 	bases[0].draw();
 	bases[1].draw();
+	
+	outposts[0].draw(game_blocks[active_block].ou[0], game_blocks[active_block].ou[1]);
+	
+	
+	// star is drawn on the other static canvas. Draw only the center?
+	//console.log(game_blocks[active_block].st[0]);
+	stars[0].update_resource(game_blocks[active_block].st[0]);
+	stars[1].update_resource(game_blocks[active_block].st[1]);
+	stars[2].update_resource(game_blocks[active_block].st[2]);
+	stars[0].draw_energy();
+	stars[1].draw_energy();
+	stars[2].draw_energy();
+	
+	
 	
 	/*
 	world_bases = bases.length;
