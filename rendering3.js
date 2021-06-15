@@ -297,6 +297,12 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 		}
 	}
 	
+	for (o = 0; o < outposts.length; o++){
+		if (Math.abs(outposts[o].position[0] - board_xx) <= 50 && Math.abs(outposts[o].position[1] - board_yy) <= 50){
+			hover_content.push(['outpost', outposts[o].control, outposts[o].energy]);
+		}
+	}
+	
 	
 	if (hover_content.length == 0){
 		hide_hover();
@@ -315,6 +321,11 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 		} else if (hover_content[0][0] == 'star'){
 			hoveroid.innerHTML = "<span class='star_id'>" + hover_content[0][1] + "</span>";
 			hoveroid.innerHTML += "<span class='star_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
+			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+			hoveroid.style.left = xx - 20 + 'px';
+		} else if (hover_content[0][0] == 'outpost'){
+			hoveroid.innerHTML = "<span class='outpost_control'>outpost_mdo <span class='lowlight'> · " + hover_content[0][1] + "</span></span>";
+			hoveroid.innerHTML += "<span class='outpost_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
 			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
 			hoveroid.style.left = xx - 20 + 'px';
 		}
@@ -1258,32 +1269,49 @@ class Outpost {
 		this.range = 400;
 		this.control = control;
 		
-		if (this.control == pla1) this.color = colors[0];
-		if (this.control == pla2) this.color = colors[1];
-		if (this.control == '') this.color = "rgba(160, 160, 160, 1)";
+		if (this.control == pla1) this.color = colors['color1'];
+		if (this.control == pla2) this.color = colors['color2'];
+		if (this.control == '') this.color = "rgba(89, 82, 108, 1)";
 		
 		
 		outposts.push(this);
 	}
 	
 	draw(enrg, cntrl = '') {
-		if (cntrl == pla1) this.color = colors[0];
-		if (cntrl == pla2) this.color = colors[1];
-		if (cntrl == '') this.color = "rgba(160, 160, 160, 1)";
+		if (cntrl == pla1) this.color = colors['color1'];
+		if (cntrl == pla2) this.color = colors['color2'];
+		if (cntrl == '') this.color = "rgba(89, 82, 108, 1)";
 		
 		this.energy = enrg;
+		this.control = cntrl;
 		
-		var energy_ratio = Math.floor(this.energy / (this.energy_capacity / 10));
+		var energy_ratio = Math.round(this.energy / (this.energy_capacity / 10));
 		
 		//console.log('this.color = ' + this.color);
 		let current_color = this.color;
 		//c.lineWidth = 4;
 		//c.strokeStyle = this.color;
 		//c.strokeRect((this.position[0] - 12), (this.position[1] - 12), 24, 24);
-		
+		var draw_angle = 45;
+		if (cntrl != ''){
+			if (this.energy < 500) {
+				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 135);
+			} else {
+				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 225);
+			}
+			
+			var color_parts = this.color.match(/[.?\d]+/g);
+			// outer circle
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], 400, Math.PI * 0, Math.PI * 2, false);
+			c.closePath();
+			c.lineWidth = 2;
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.06 + ')';
+			c.stroke();
+		}
 		
 		// rotated square
-		drawRotated(this.position[0] - 12, this.position[1] - 12, 24, 24, 45, current_color);
+		drawRotated(this.position[0] - 12, this.position[1] - 12, 24, 24, draw_angle, current_color);
 
 		// inner-outer circle
 		c.beginPath();
@@ -1297,9 +1325,10 @@ class Outpost {
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], energy_ratio, Math.PI * 0, Math.PI * 2, false);
 		c.closePath();
-		c.lineWidth = 2;
-		c.strokeStyle = this.color;
-		c.stroke();
+		c.fillStyle = this.color;
+		c.fill();
+		
+		
 		
 		
 		

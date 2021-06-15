@@ -1682,8 +1682,6 @@ wss.on('connection', function connection(ws, req) {
 			}
 			if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
-				//code_temps['player1_session'] = message['session_id'];
-				
 				player1_code = `// line 1
 					var this_player_id = players['p1'];				
 					for (let y = 0; y < my_spirits.length; y++){
@@ -1692,6 +1690,7 @@ wss.on('connection', function connection(ws, req) {
 					}
 					global['base'] = Object.values(bases)[0];
 					global['enemy_base'] = Object.values(bases)[1];
+					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
 					global['star_a1c'] = stars['star_a1c']; 		// line 10
@@ -1700,8 +1699,6 @@ wss.on('connection', function connection(ws, req) {
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
 			} else if (message['u_id'] == active_game[2]){
 				//code_temps['player2'] = message['u_code'];
-				//code_temps['player2_session'] = message['session_id'];
-				
 				player2_code = `// line 1
 					var this_player_id = players['p2'];
 
@@ -1710,6 +1707,7 @@ wss.on('connection', function connection(ws, req) {
 					
 					global['base'] = Object.values(bases)[1];
 					global['enemy_base'] = Object.values(bases)[0];
+					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
 					global['star_a1c'] = stars['star_a1c'];			// line 10

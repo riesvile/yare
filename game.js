@@ -1403,11 +1403,11 @@ if (!isMainThread){
 				fill_error(this.player_id, err_msg);
 				return;
 			} else if (typeof target !== 'object' || target === null){
-				var err_msg = ".energize() argument must be a spirit object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
+				var err_msg = ".energize() argument must be an object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
 				fill_error(this.player_id, err_msg);
 				return;
 			} else if (!target.position){
-				var err_msg = ".energize() argument must be a spirit object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
+				var err_msg = ".energize() argument must be an object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
 				fill_error(this.player_id, err_msg);
 				return;
 			}
@@ -1416,6 +1416,8 @@ if (!isMainThread){
 				if (typeof target.id === 'string' || target.id instanceof String){
 					if (target.structure_type == 'base'){
 						target = base_lookup[target.id];
+					} else if (target.structure_type == 'outpost') {
+						target = outpost_lookup[target.id];
 					} else {
 						target = spirit_lookup[target.id];
 					}
@@ -1664,6 +1666,7 @@ if (!isMainThread){
 			this.range = 300;
 			this.structure_type = 'outpost';
 			this.energy = 0;
+			this.energy_capacity = 1000;
 			//this.energy = energy;
 			
 			this.sight = {
@@ -2348,13 +2351,44 @@ if (!isMainThread){
 			
 			var energize_apply = [];
 			var energize_apply_star = [];
+			var energize_apply_outpost = [];
 			e_targets = energize_queue.length;
+			
+			for (i = 0; i < outposts.length; i++){
+				if (outposts[i].sight.enemies.length > 0){
+					var beam_strength = 1
+					var enemy = spirit_lookup[outposts[i].sight.enemies[outposts[i].sight.enemies.length * Math.random() | 0]]
+					if (outposts[i].energy >= 500) beam_strength = 4;
+					
+					energize_apply.push([enemy, beam_strength * (-2)]);
+					outposts[i].energy -= beam_strength;
+					render_data3.e.push(['outpost_mdo', enemy.id, beam_strength]);
+				}
+			}
 
 			// TODO RM dist checks, the queue now only contains close things
 			for (i = (e_targets - 1); i >= 0; i--){
 				//if (energize_queue[i][1].hp == 0) break;
+				
+				if (energize_queue[i][1].structure_type != undefined && energize_queue[i][1].structure_type == 'outpost'){
+					//console.log('ENERGIZING OUTPOST');
+					if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
+						strength = energy_value * energize_queue[i][0].size;
+						energize_apply_outpost.push([energize_queue[i][0], strength]);
+					} else if (energize_queue[i][0].energy > 0){
+						strength = energize_queue[i][0].energy;
+						energize_apply_outpost.push([energize_queue[i][0], strength]);
+					} else {
+						
+					}
+					
+					
+					
+				}
+				
+				
 				//if origin == target —> attempt harvest from star
-				if (energize_queue[i][0] == energize_queue[i][1]){
+				else if (energize_queue[i][0] == energize_queue[i][1]){
 					for (j = 0; j < energize_queue[i][0].sight.structures.length; j++){
 						//console.log('ilook here');
 						if (energize_queue[i][0].sight.structures[j] == undefined)
@@ -2575,9 +2609,63 @@ if (!isMainThread){
 				
 				energize_apply_star.splice(i, 1);
 			}
-		
-		
-		
+			
+			
+			e_applies_outpost = energize_apply_outpost.length;
+			var incoming_energy1 = 0;
+			var incoming_energy2 = 0;
+			var outpost_neutral = 0;
+			for (i = (e_applies_outpost - 1); i >= 0; i--){
+				//console.log('calculating outpost!!!!!!!!!!!!!!!!!!!!')
+				//outpost is neutral
+				if (outpost_lookup['outpost_mdo'].control == ''){
+					outpost_neutral = 1;
+					if (energize_apply_outpost[i][0].player_id == players['p1']){
+						incoming_energy1 += energize_apply_outpost[i][1];
+						energize_apply_outpost[i][0].energy -= energize_apply_outpost[i][1];
+						render_data3.e.push([energize_apply_outpost[i][0].id, 'outpost_mdo', energize_apply_outpost[i][1]]);
+					} else if (energize_apply_outpost[i][0].player_id == players['p2']){
+						incoming_energy2 += energize_apply_outpost[i][1];
+						energize_apply_outpost[i][0].energy -= energize_apply_outpost[i][1];
+						render_data3.e.push([energize_apply_outpost[i][0].id, 'outpost_mdo', energize_apply_outpost[i][1]]);
+					}
+				} else {
+					//friend
+					if (energize_apply_outpost[i][0].player_id == outpost_lookup['outpost_mdo'].control){
+						outpost_lookup['outpost_mdo'].energy += energize_apply_outpost[i][1];
+						energize_apply_outpost[i][0].energy -= energize_apply_outpost[i][1];
+						if (outpost_lookup['outpost_mdo'].energy >= outpost_lookup['outpost_mdo'].energy_capacity) outpost_lookup['outpost_mdo'].energy = outpost_lookup['outpost_mdo'].energy_capacity;
+						render_data3.e.push([energize_apply_outpost[i][0].id, 'outpost_mdo', energize_apply_outpost[i][1]]);
+					} else {
+						outpost_lookup['outpost_mdo'].energy -= 2 * energize_apply_outpost[i][1];
+						energize_apply_outpost[i][0].energy -= energize_apply_outpost[i][1];
+						render_data3.e.push([energize_apply_outpost[i][0].id, 'outpost_mdo', energize_apply_outpost[i][1]]);
+					}
+				}
+				
+			}
+			
+			if (outpost_neutral == 1){
+				console.log('incoming_energies');
+				console.log(incoming_energy1);
+				console.log(incoming_energy2);
+				if (incoming_energy1 > incoming_energy2){
+					outpost_lookup['outpost_mdo'].control = players['p1'];
+					outpost_lookup['outpost_mdo'].energy = incoming_energy1 - incoming_energy2;
+				} else if (incoming_energy2 > incoming_energy1){
+					outpost_lookup['outpost_mdo'].control = players['p2'];
+					outpost_lookup['outpost_mdo'].energy = incoming_energy2 - incoming_energy1;
+				} else {
+					outpost_lookup['outpost_mdo'].control = '';
+					outpost_lookup['outpost_mdo'].energy = 0;
+				}
+				
+			}
+			
+			if (outpost_lookup['outpost_mdo'].energy <= 0){
+				outpost_lookup['outpost_mdo'].control = '';
+				outpost_lookup['outpost_mdo'].energy = 0;
+			}
 		
 		
 		
@@ -2687,6 +2775,9 @@ if (!isMainThread){
 							var min_distance = 100;
 						} else if (potential_structure_collisions[k].startsWith('base') == true){
 							var object_position = base_lookup[potential_structure_collisions[k]].position;
+							var min_distance = 50;
+						} else if (potential_structure_collisions[k].startsWith('outpost') == true){
+							var object_position = outpost_lookup[potential_structure_collisions[k]].position;
 							var min_distance = 50;
 						}	
 						var spirit_position = move_queue[i][0].position;
@@ -3163,8 +3254,8 @@ if (!isMainThread){
 			processTime2 = process.hrtime(processTime1);
 			processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
 			console.log('calculated in = ' + processTimeRes);
-			console.log('outpost sight = ');
-			console.log(outposts[0].sight);
+			//console.log('outpost sight = ');
+			//console.log(outposts[0].sight);
 			if (processTimeRes > 1000) cancel_game();
 			//user_error = 'calculated in = ' + processTimeRes;
 			
