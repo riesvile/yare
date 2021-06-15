@@ -97,6 +97,83 @@
 		  <p class="p_normal">Yare.io is played on a board sized 4400&nbsp;×&nbsp;2700 units. It’s an Euclidian plane starting [0,&nbsp;0] at the top left and [4400,&nbsp;2700] at the bottom right. Star and player base positions shown below.</p>
 		  <div class="sep_small"></div>
 		  <img src="asset/board.png" class="board_img">
+		  
+		  <div class="sep_medium"></div>
+		  <h4 class="doc_h4">Game's global variables</h4>
+		  <div class="sep_small"></div>
+		  
+		  <div class="table_doc">
+				<div class="row_in_doc_head">
+					<span class="table_doc_property">Variable</span>
+					<span class="table_doc_type">Type</span>
+					<span class="table_doc_value">Description</span>
+				</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">memory</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Empty object. Use it to store values across ticks</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">base</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Your base</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">enemy_base</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Enemy base</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">star_zxq</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Top-left corner star</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">star_a1c</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Bottom-right corner star</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">star_p89</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Star in the middle</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">outpost</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Outpost</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">my_spirits</span>
+					<span class="table_doc_type">array</span>
+					<span class="table_doc_value">Contains only your spirits</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">spirits</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Contains all spirits. Access them by their id – spirits[‘jane_7’]</span>
+				</div>
+			</div>
+		  	
+		  </div>
+		  
 	    </section>
 		  
 	  	<section id="doc_spirit">
@@ -191,7 +268,14 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">mark</span>
 					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">Custom string you can assign to the spirit via <code>set_mark()</code> method.</span>
+					<span class="table_doc_value">Custom string assignable via <code>set_mark()</code> method.</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">last_energized</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">id of most recently energized object</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -492,9 +576,9 @@
 					<span class="table_doc_property">energy_capacity</span>
 					<span class="table_doc_type">number</span>
 					<span class="table_doc_value">
-						<span class="g_con"><span class="ico_circle"></span> 200</span>
-						<span class="g_con"><span class="ico_square"></span> 500</span>
-						<span class="g_con"><span class="ico_triangle"></span> 500</span>
+						<span class="g_con"><span class="ico_circle"></span> 400</span>
+						<span class="g_con"><span class="ico_square"></span> 1000</span>
+						<span class="g_con"><span class="ico_triangle"></span> 600</span>
 					</span>
 				</div>
 			</div>
@@ -530,7 +614,6 @@
 		  <h2 class="h_sec_head">Outpost</h2>
 		  <p class="p_sec_intro">Neutral structure in the middle of the map that provides strategic advantage for whoever controls it by automatically shooting at enemy targets within its range.</p>
 		  
-		  <div class="sep_medium"></div>
 		  
 		  <div class="sep_medium"></div>
 		  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">Who controls the outpost</span></p>
@@ -624,7 +707,9 @@
 		  <h2 class="h_sec_head">Energy</h2>
 		  <p class="p_sec_intro">Energy is the only resource in the game. Spirits harvest it from the stars, use it to create new spirits, transfer energy between themselves and attack with it.</p>
 		  <div class="sep_large"></div>
-		  <p class="p_intro">Stars are the source of infinite energy. <span class="lowlight">There is no limit to how much energy you can get from them.</span></p>
+		  <p class="p_intro">Stars are the source of energy. <span class="lowlight">Every tick (1 tick = 1 second), a star generates 3 energy + 1% of its current energy (rounded to a nearest integer)</span></p>
+		  
+		  <p class="p_intro"><span class="lowlight">The star in the middle of the map – <code>star_p89</code> – starts generating energy after the 100th tick.</span></p>
 			  
 		  <div class="star_ilu">
 		  	<div class="star_large"></div>
@@ -646,7 +731,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">id</span>
 					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“star_zxq“ and “star_a1c” (see <a href="#gm_board">game board</a>)</span>
+					<span class="table_doc_value">“star_zxq“, “star_a1c” and "star_p89" <a href="#gm_board">game board</a></span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -654,6 +739,13 @@
 					<span class="table_doc_property">structure_type</span>
 					<span class="table_doc_type">string</span>
 					<span class="table_doc_value">“star“</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">energy</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">star's current energy</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -666,6 +758,7 @@
 		  </div>
 		  
 		  <div class="sep_medium"></div>
+		  
 		  <p class="p_somewhat_important">All “movement” of energy in the game is done via the energize(<span class="lowlight">target</span>) method. See the <a href="#methods_ent">Spirit methods</a> section.</p>
 		  
 		  

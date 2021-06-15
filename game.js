@@ -1395,6 +1395,7 @@ if (!isMainThread){
 	
 	
 		energize(target) {
+			target = JSON.parse(JSON.stringify(target));
 			//console.log('target = ');
 			
 			
@@ -1466,6 +1467,7 @@ if (!isMainThread){
 		}
 		
 		merge(target){
+			target = JSON.parse(JSON.stringify(target));
 			
 			if (target.id == this.id){
 				var err_msg = "You can't merge spirit into itself";
@@ -1653,6 +1655,7 @@ if (!isMainThread){
 			this.size = size;
 			this.structure_type = 'star';
 			this.energy = energy;
+			this.last_energized = '';
 			//this.energy = energy;
 		
 			stars.push(this);
@@ -1669,6 +1672,7 @@ if (!isMainThread){
 			this.structure_type = 'outpost';
 			this.energy = 0;
 			this.energy_capacity = 1000;
+			this.last_energized = '';
 			//this.energy = energy;
 			
 			this.sight = {
@@ -2334,6 +2338,8 @@ if (!isMainThread){
 			for (i = (e_targets - 1); i >= 0; i--){
 				//if (energize_queue[i][1].hp == 0) break;
 				
+				energize_queue[i][0].last_energized = energize_queue[i][1].id;
+				
 				if (energize_queue[i][1].structure_type != undefined && energize_queue[i][1].structure_type == 'outpost'){
 					//console.log('ENERGIZING OUTPOST');
 					if (energize_queue[i][0].energy > energy_value * energize_queue[i][0].size){
@@ -2905,7 +2911,7 @@ if (!isMainThread){
 			// stars energy update
 			
 			for (i = 0; i < stars.length; i++){
-				stars[i].energy += Math.round(2 + (stars[i].energy * 0.01));
+				stars[i].energy += Math.round(3 + (stars[i].energy * 0.01));
 				if (stars[i].energy >= 1000) stars[i].energy = 1000;
 				console.log('star ' + i + ' energy = ' + stars[i].energy);
 				if (game_duration < 100){
