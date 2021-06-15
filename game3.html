@@ -235,6 +235,10 @@
 	  
 	  function run_it(){
 		  
+		  if (game_running == 0){
+		  	 if (localStorage.getItem("code_code") != null) update_code();
+		  }
+		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
 			  game_running = 1;
 			  tick_local = tick_counter;

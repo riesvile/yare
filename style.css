@@ -405,8 +405,42 @@ h1#logo {
 }
 
 #preferences_wrap {
-	opacity: 1;
-	display: block;
+/*	opacity: 1; */
+/*	display: block; */
+}
+
+.pref_toggle {
+	width: 480px;
+	height: 76px;
+	background-color: rgba(242, 246, 250, 0.2);
+	border-radius: 16px;
+	position: relative;
+	cursor: pointer;
+	margin-bottom: 12px;
+}
+
+.state_on {
+	background-color: rgba(112, 96, 216, 1);
+}
+
+.toggle_desc {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 24px;
+	color: rgba(242, 246, 250, 1);
+	position: absolute;
+	top: 50%;
+	left: 20px;
+	transform: translateY(-50%);
+	width: 280px;
+}
+
+.toggle_state {
+	font-weight: 500;
+	position: absolute;
+	top: 50%;
+	right: 24px;
+	transform: translateY(-50%);
 }
 
 #new_account_wrap p {
