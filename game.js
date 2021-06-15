@@ -1238,7 +1238,8 @@ function jump_danger_zone(loc){
  	 || Math.abs(stars[1].position[0] - loc[0]) < 100 && Math.abs(stars[1].position[1] - loc[1]) < 100
 	 || Math.abs(stars[2].position[0] - loc[0]) < 100 && Math.abs(stars[2].position[1] - loc[1]) < 100
 	 || Math.abs(bases[0].position[0] - loc[0]) < 50 && Math.abs(bases[0].position[1] - loc[1]) < 50
-	 || Math.abs(bases[1].position[0] - loc[0]) < 50 && Math.abs(bases[1].position[1] - loc[1]) < 50){
+	 || Math.abs(bases[1].position[0] - loc[0]) < 50 && Math.abs(bases[1].position[1] - loc[1]) < 50
+	 || Math.abs(outposts[0].position[0] - loc[0]) < 50 && Math.abs(outposts[0].position[1] - loc[1]) < 50){
 		return true;
 	} else {
 		return false;
@@ -1282,6 +1283,7 @@ if (!isMainThread){
 			this.position = position;
 			this.size = size;
 			this.energy = energy;
+			this.last_energized = '';
 			this.color = color;
 			this.mark = '';
 		

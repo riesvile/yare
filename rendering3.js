@@ -1285,6 +1285,8 @@ class Outpost {
 		this.energy = enrg;
 		this.control = cntrl;
 		
+		
+		
 		var energy_ratio = Math.round(this.energy / (this.energy_capacity / 10));
 		
 		//console.log('this.color = ' + this.color);
@@ -1296,14 +1298,16 @@ class Outpost {
 		if (cntrl != ''){
 			if (this.energy < 500) {
 				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 135);
+				this.range = 400;
 			} else {
 				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 225);
+				this.range = 600;
 			}
 			
 			var color_parts = this.color.match(/[.?\d]+/g);
 			// outer circle
 			c.beginPath();
-			c.arc(this.position[0], this.position[1], 400, Math.PI * 0, Math.PI * 2, false);
+			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
 			c.closePath();
 			c.lineWidth = 2;
 			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.06 + ')';

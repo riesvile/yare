@@ -350,15 +350,17 @@
 						
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Teleports a spirit into a new location up to 500 units away. Costs half of spirit's energy_capacity.</p>
+						<p class="p_method_desc">Teleports a spirit into a new location up to 500 units away. Costs half of spirit's energy_capacity. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star</span></p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
 						
+						<!--
 						<div class="method_gif_example">
 							<div id="gif_move" class="gif_in"></div>
 							<code class="example_code">my_spirits[0].jump([800, 900])</code>
 						</div>
+						-->
 					</div>
 				</div>
 			</div>
@@ -368,7 +370,7 @@
 		  	<div id="exp_shout_method_wrap" class="row_doc">
 				<div id="exp_shout_method" class="row_in_doc" style="border-top: 1px solid rgba(242, 246, 250, 0.12);">
 					<span class="table_doc_method">shout(<span class="target_lowlight">message</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">message</span> is a string (max. 20 char)</span>
+					<span class="table_doc_argument">max. 20 char string</span>
 					<span class="table_doc_usedby">
 						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
 						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
