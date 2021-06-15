@@ -946,7 +946,7 @@ function user_code(){
 		//console.log('p1 calculated in = ' + p1_process_time_res);
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p1'], /vm\.js/, 10);
+		handle_error(error, players['p1'], /vm\.js/, 12);
 	}
 	
 	try {
@@ -960,7 +960,7 @@ function user_code(){
 		
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p2'], /vm2\.js/, 10);
+		handle_error(error, players['p2'], /vm2\.js/, 12);
 	}
 }
 
