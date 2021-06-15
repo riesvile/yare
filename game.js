@@ -1663,7 +1663,7 @@ if (!isMainThread){
 			this.position = position;
 			this.size = 20;
 			this.control = '';
-			this.range = 300;
+			this.range = 400;
 			this.structure_type = 'outpost';
 			this.energy = 0;
 			this.energy_capacity = 1000;
@@ -2640,6 +2640,10 @@ if (!isMainThread){
 			if (outpost_lookup['outpost_mdo'].energy <= 0){
 				outpost_lookup['outpost_mdo'].control = '';
 				outpost_lookup['outpost_mdo'].energy = 0;
+			} else if (outpost_lookup['outpost_mdo'].energy <= 500){
+				outpost_lookup['outpost_mdo'].range = 400;
+			} else if (outpost_lookup['outpost_mdo'].energy > 500){
+				outpost_lookup['outpost_mdo'].range = 600;
 			}
 		
 		
