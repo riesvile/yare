@@ -1879,22 +1879,27 @@ if (!isMainThread){
 		}
 
 		let hist = {};
+		// per spirit processing
 		for (let i = 0; i < living_length; i++){
 			let spirit = living_spirits[i];
 			// ugh
 			if (spirit.hp == 0) continue;
-
 			let pos = spirit.position;
+
+			// 1. init histogram
 
 			let xbin = Math.floor(pos[0] / h_square);
 			let ybin = Math.floor(pos[1] / h_square);
-
 			if (hist[[xbin, ybin]] == undefined){
 				// first element is the x,y, since js has no tuples
 				// and converts the key to string
 				hist[[xbin, ybin]] = [[xbin, ybin, -1]];
 			}
 			hist[[xbin, ybin]].push(i);
+
+			// 2. compute sight for structures
+			// (no need to use the histogram, there is only a few structs, so this is quick
+			// O(1) for each spirit
 			
 			//stars
 			for (let k = 0; k < stars.length; k++){
@@ -1927,13 +1932,27 @@ if (!isMainThread){
 				}
 			}
 			//outposts
-			for (o = 0; o < outposts.length; o++){
-				//console.log(outposts[o]);
-				if (is_in_sight(living_spirits[i], outposts[o])){
-					living_spirits[i].sight.structures.push(outposts[o].id);
+			for (let o = 0; o < outposts.length; o++){
+				let outpost = outposts[o];
+				let dsq = dist_sq(spirit.position, outpost.position);
+
+				if(dsq < visible_sq){
+					let friend = outpost.control == spirit.player_id;
+					if (friend){
+						//outposts[o].sight.friends.push(spirit.id);
+					}else{
+						outposts[o].sight.enemies.push(spirit.id);
+					}
+
+					if(dsq < beamable_sq){
+						spirit.sight.structures.push(outpost.id);
+					}
 				}
 			}
 		}
+
+		// histogram, handle sights for all
+		// of the potentially O(N^2)-many spirit <> spirit pairs
 
 		Object.values(hist).forEach(function(bin){
 			// this bin, all are visible && beamable
@@ -1988,47 +2007,6 @@ if (!isMainThread){
 				p2_defend = trouble;
 			}
 		}
-		
-		
-		//outposts sight
-		for (o = 0; o < outposts.length; o++){
-  		  	outposts[o].sight = {
-  				enemies: []
-		    }
-			var outpost_pos = outposts[o].position;
-			var xbin = Math.floor(outpost_pos[0] / h_square);
-			var ybin = Math.floor(outpost_pos[1] / h_square);
-
-			for(dx = -3;dx < 3;dx++){
-				for(dy = -3;dy < 3;dy++){
-					var nb = hist[[xbin+dx, ybin+dy]];
-					if(nb == undefined)
-						continue;
-					for(i = 1; i < nb.length;i++){
-						var dsq = dist_sq(
-							living_spirits[nb[i]].position,
-							outpost_pos
-						);
-						var friend = outposts[o].control == living_spirits[nb[i]].player_id;
-						if(dsq < (2*min_beam)**2){
-							if (friend){
-								//outposts[o].sight.friends.push(living_spirits[nb[i]].id);
-							}else{
-								outposts[o].sight.enemies.push(living_spirits[nb[i]].id);
-							}
-						}
-						//if(dsq < min_beam**2){
-						//	if (friend){
-						//		outposts[o].sight.friends_beamable.push(living_spirits[nb[i]].id);
-						//	}else{
-						//		outposts[o].sight.enemies_beamable.push(living_spirits[nb[i]].id);
-						//	}
-						//}
-					}
-				}
-			}
-		}
-		
 	}
 
 
