@@ -189,13 +189,17 @@ input:focus {
 	opacity: 0;
 }
 
-.spirit_id, .spirit_energy, .base_id, .base_energy, .star_id, .under_attack {
+.spirit_id, .spirit_energy, .base_id, .base_energy, .star_id, .under_attack, .star_energy, .outpost_control, .outpost_energy {
 	display: block;
 	max-width: 160px;
 }
 
 .star_id {
 	font-size:16px;
+}
+
+.star_energy {
+	font-size:12px;
 }
 
 .new_when {
