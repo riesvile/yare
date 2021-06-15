@@ -56,6 +56,7 @@
 				  <a href="#doc_intro" id="doc_sec_link_intro" class="doc_sec_link">Intro & Gameplay</a>
 				  <a href="#doc_spirit" id="doc_sec_link_spirit" class="doc_sec_link doc_sec_active">Spirit</a>
 				  <a href="#doc_base" id="doc_sec_link_base" class="doc_sec_link">Base</a>
+				  <a href="#doc_outpost" id="doc_sec_link_outpost" class="doc_sec_link">Outpost</a>
 				  <a href="#doc_energy" id="doc_sec_link_energy" class="doc_sec_link">Energy</a>
 				  <a href="#doc_credits" id="doc_sec_link_credits" class="doc_sec_link">Credits</a>
 		  </div>
@@ -522,6 +523,101 @@
 		  </div>
 		  
 		</section>
+		
+		
+	  	<div class="sep_medium"></div>
+	  	<section id="doc_outpost">
+		  <h2 class="h_sec_head">Outpost</h2>
+		  <p class="p_sec_intro">Neutral structure in the middle of the map that provides strategic advantage for whoever controls it by automatically shooting at enemy targets within its range.</p>
+		  
+		  <div class="sep_medium"></div>
+		  
+		  <div class="sep_medium"></div>
+		  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">Who controls the outpost</span></p>
+		  <p class="p_normal" style="max-width: max-content;">The player that first sends energy into the outpost takes over its control. The outpost then automatically uses this energy to energize a random target within its <code>range</code>. Enemy can energize the outpost — e.g. <code>my_spirits[0].energize(outpost)</code> — to reduce its current energy (same way as if it was a spirit).</p>
+		  
+		  <p class="p_normal" style="max-width: max-content;">Once the outpost’s energy reaches 0 (either by using up all of its energy to attack or by the enemy damaging it), it becomes neutral again, available for any player to take control over it.</p>
+		  
+		  <p class="p_normal" style="max-width: max-content;"><span class="lowlight">If both players are trying to take over the outpost’s control at the same time, the player that sends more energy takes over it.</span></p>
+		  
+		  
+		  
+		  
+		  
+		  
+		  <div class="sep_medium"></div>
+		  <div class="sep_medium"></div>
+		  <h4 class="doc_h4">Properties</h4>
+		  <div class="sep_small"></div>
+		  
+		  <div class="table_doc">
+				<div class="row_in_doc_head">
+					<span class="table_doc_property">Property</span>
+					<span class="table_doc_type">Type</span>
+					<span class="table_doc_value">Value</span>
+				</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">id</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">"outpost_mdo"</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">structure_type</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">“outpost“</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">position</span>
+					<span class="table_doc_type">array</span>
+					<span class="table_doc_value">[2200, 1100]</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">size</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">20</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">energy_capacity</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">1000</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">energy</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">outpost’s current energy</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">range</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">400 (600 if outpost's energy >= 500)</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">sight</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
+					<span id="info_outpost_sight" class="expando_info">?</span>
+				</div>
+			</div>
+		  </div>
+		  
+		</section>
+		
+		
 		  
 		<div class="sep_medium"></div>
 		<section id="doc_energy">
@@ -643,6 +739,9 @@
 			  case 'doc_base':
 				  document.getElementById('doc_sec_link_base').classList.add('doc_sec_active');
 				  break;
+			  case 'doc_outpost':
+				  document.getElementById('doc_sec_link_outpost').classList.add('doc_sec_active');
+				  break;
 			  case 'doc_energy':
 				  document.getElementById('doc_sec_link_energy').classList.add('doc_sec_active');
 				  break;
@@ -680,6 +779,7 @@
 		  if (isElementInViewport(doc_intro_el, 36)) currentActive = doc_intro_el;
 		  if (isElementInViewport(doc_spirit_el, 36)) currentActive = doc_spirit_el;
 		  if (isElementInViewport(doc_base_el, 36)) currentActive = doc_base_el;
+		  if (isElementInViewport(doc_outpost_el, 36)) currentActive = doc_outpost_el;
 		  if (isElementInViewport(doc_energy_el, 36)) currentActive = doc_energy_el;
 		  if (isElementInViewport(doc_credits_el, 36)) currentActive = doc_credits_el;
 		  
@@ -697,6 +797,7 @@
 	  var doc_intro_el = document.getElementById('doc_intro');
 	  var doc_spirit_el = document.getElementById('doc_spirit');
 	  var doc_base_el = document.getElementById('doc_base');
+	  var doc_outpost_el = document.getElementById('doc_outpost');
 	  var doc_energy_el = document.getElementById('doc_energy');
 	  var doc_credits_el = document.getElementById('doc_credits');
 	  

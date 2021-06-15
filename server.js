@@ -1691,9 +1691,10 @@ wss.on('connection', function connection(ws, req) {
 					global['base'] = Object.values(bases)[0];
 					global['enemy_base'] = Object.values(bases)[1];
 					global['outpost_mdo'] = outposts['outpost_mdo'];
+					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c']; 		// line 12 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
+					global['star_a1c'] = stars['star_a1c']; 		// line 13 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
 				` + message['u_code'];
 
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
@@ -1708,9 +1709,10 @@ wss.on('connection', function connection(ws, req) {
 					global['base'] = Object.values(bases)[1];
 					global['enemy_base'] = Object.values(bases)[0];
 					global['outpost_mdo'] = outposts['outpost_mdo'];
+					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c'];			// line 12 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
+					global['star_a1c'] = stars['star_a1c'];			// line 13 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
 				` + message['u_code'];
 
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
