@@ -892,7 +892,7 @@ function handle_error(error, player, fileregex, line_offset){
 		}
 	}
 
-	/*
+	///*
 	console.log("error: "+error);
 	console.log(stack);
 	console.log('message:' +message);
@@ -1774,8 +1774,11 @@ if (!isMainThread){
 
 
 	function get_sight_fast(){
-		var living_length = living_spirits.length;
-		for (h = 0; h < living_length; h++){
+		const beamable_sq = min_beam**2;
+		const visible_sq = (2*min_beam)**2;
+		const living_length = living_spirits.length;
+
+		for (let h = 0; h < living_length; h++){
 		  living_spirits[h].sight = {
 				friends_beamable: [],
 				enemies_beamable: [],
@@ -1785,11 +1788,20 @@ if (!isMainThread){
 		  }
 		  living_spirits[h].qcollisions = [];
 		}
+		for (let m = 0; m < bases.length; m++){
+  		  	bases[m].sight = {
+				friends_beamable: [],
+				enemies_beamable: [],
+  				friends: [],
+  				enemies: [],
+  				structures: []
+		    }
+		}
 
 		function work(i, j){
 			//console.log('work ' + living_spirits[i].id + " " + living_spirits[j].id)
-			var pi = living_spirits[i].player_id;
-			var pj = living_spirits[j].player_id;
+			let pi = living_spirits[i].player_id;
+			let pj = living_spirits[j].player_id;
 			if (pi == pj){
 				// friend
 				living_spirits[i].sight.friends.push(living_spirits[j].id);
@@ -1803,8 +1815,8 @@ if (!isMainThread){
 		}
 
 		function work_beamable(i, j){
-			var pi = living_spirits[i].player_id;
-			var pj = living_spirits[j].player_id;
+			let pi = living_spirits[i].player_id;
+			let pj = living_spirits[j].player_id;
 			if (pi == pj){
 				// friend
 				living_spirits[i].sight.friends_beamable.push(living_spirits[j].id);
@@ -1817,52 +1829,60 @@ if (!isMainThread){
 			}
 		}
 
-		var hist = {};
-		for (i = 0; i < living_length; i++){
-			if (living_spirits[i].hp == 0) continue;
-			var pos = living_spirits[i].position;
+		let hist = {};
+		for (let i = 0; i < living_length; i++){
+			let spirit = living_spirits[i];
+			// ugh
+			if (spirit.hp == 0) continue;
 
-			var xbin = Math.floor(pos[0] / h_square);
-			var ybin = Math.floor(pos[1] / h_square);
+			let pos = spirit.position;
+
+			let xbin = Math.floor(pos[0] / h_square);
+			let ybin = Math.floor(pos[1] / h_square);
 
 			if (hist[[xbin, ybin]] == undefined){
 				// first element is the x,y, since js has no tuples
 				// and converts the key to string
-				hist[[xbin, ybin]] = [[xbin,ybin, -1]];
+				hist[[xbin, ybin]] = [[xbin, ybin, -1]];
 			}
 			hist[[xbin, ybin]].push(i);
 			
 			//stars
-			for (k = 0; k < stars.length; k++){
-				if (is_in_sight(living_spirits[i], stars[k])){
-					living_spirits[i].sight.structures.push(stars[k].id);
+			for (let k = 0; k < stars.length; k++){
+				if (is_in_sight(spirit, stars[k])){
+					spirit.sight.structures.push(stars[k].id);
 				}
 			}
 			//bases
-			for (l = 0; l < bases.length; l++){
-				if (is_in_sight(living_spirits[i], bases[l])){
-					living_spirits[i].sight.structures.push(bases[l].id);
+			for (let b = 0; b < bases.length; b++){
+				let dsq = dist_sq(pos, bases[b].position);
+				// base sees spirit
+				if(dsq < visible_sq){
+					let friend = bases[b].player_id == spirit.player_id;
+
+					if(friend){
+						bases[b].sight.friends.push(spirit.id);
+					}else{
+						bases[b].sight.enemies.push(spirit.id);
+					}
+
+					if(dsq < beamable_sq){
+						if(friend){
+							bases[b].sight.friends_beamable.push(spirit.id);
+						}else{
+							bases[b].sight.enemies_beamable.push(spirit.id);
+						}
+						// spirit sees base
+						spirit.sight.structures.push(bases[b].id);
+					}
 				}
 			}
 		}
 
 		Object.values(hist).forEach(function(bin){
-			/*
-			var bstr='';
-			for(i = 0; i <bin.length;i++){
-				var spir = living_spirits[bin[i]];
-				if(spir == undefined)
-					bstr += "N/A,";
-				else
-					bstr += spir.id + ",";
-			}
-
-			console.log("BIN: ["+bin+"] = [" + bstr+ "]");
-			*/
-			// assuming that visible == 2* min_beam
-			//
 			// this bin, all are visible && beamable
-			for(i = 1; i <bin.length;i++){
+			// because of h_square size
+			for(let i = 1; i <bin.length;i++){
 				for(j = i+1; j <bin.length;j++){
 					work(bin[i],bin[j]);
 					work_beamable(bin[i],bin[j]);
@@ -1875,86 +1895,41 @@ if (!isMainThread){
 				// lower left corner, too far away
 				if(d==21) continue;
 
-				var dy = Math.floor(d / 7);
-				var dx = (d % 7) - 3;
+				let dy = Math.floor(d / 7);
+				let dx = (d % 7) - 3;
 				if(dx==0 && dy==0) continue;
 
 				// neighbor bin
-				var nb = hist[[bin[0][0]+dx, bin[0][1]+dy]];
+				let nb = hist[[bin[0][0]+dx, bin[0][1]+dy]];
 				if(nb == undefined)
 					continue;
 
 				//console.log("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
 				// O(N^2) part
-				for(i = 1; i <bin.length;i++){
-					for(j = 1; j <nb.length;j++){
-						var dsq = dist_sq(
+				for(let i = 1; i <bin.length;i++){
+					for(let j = 1; j <nb.length;j++){
+						let dsq = dist_sq(
 							living_spirits[bin[i]].position,
 							living_spirits[nb[j]].position,
 						);
-						if(dsq < (2*min_beam)**2)
+						if(dsq < visible_sq)
 							work(bin[i],nb[j]);
-						if(dsq < min_beam**2)
+						if(dsq < beamable_sq)
 							work_beamable(bin[i],nb[j]);
 					}
 				}
 			}
 		});
 
-		//bases sight
-		for (m = 0; m < bases.length; m++){
-  		  	bases[m].sight = {
-				friends_beamable: [],
-				enemies_beamable: [],
-  				friends: [],
-  				enemies: [],
-  				structures: []
-		    }
-			var base_pos = bases[m].position;
-			var xbin = Math.floor(base_pos[0] / h_square);
-			var ybin = Math.floor(base_pos[1] / h_square);
+		//base set defend flag
+		for (let m = 0; m < bases.length; m++){
+			// convert bool to number
+			let trouble = 0 + (bases[m].sight.enemies.length > 0);
 
-			for(dx = -3;dx < 3;dx++){
-				for(dy = -3;dy < 3;dy++){
-					var nb = hist[[xbin+dx, ybin+dy]];
-					if(nb == undefined)
-						continue;
-					for(i = 1; i < nb.length;i++){
-						var dsq = dist_sq(
-							living_spirits[nb[i]].position,
-							base_pos
-						);
-						var friend = bases[m].player_id == living_spirits[nb[i]].player_id;
-						if(dsq < (2*min_beam)**2){
-							if(friend){
-								bases[m].sight.friends.push(living_spirits[nb[i]].id);
-							}else{
-								bases[m].sight.enemies.push(living_spirits[nb[i]].id);
-							}
-						}
-						if(dsq < min_beam**2){
-							if(friend){
-								bases[m].sight.friends_beamable.push(living_spirits[nb[i]].id);
-							}else{
-								bases[m].sight.enemies_beamable.push(living_spirits[nb[i]].id);
-							}
-						}
-					}
-				}
-			}
-			  
-			if (bases[m].sight.enemies.length > 0){
-				if (bases[m].player_id == players['p1']){
-					p1_defend = 1;
-				} else {
-					p2_defend = 1;
-				}
+			if (bases[m].player_id == players['p1']){
+				p1_defend = trouble;
 			} else {
-				if (bases[m].player_id == players['p1']){
-					p1_defend = 0;
-				} else {
-					p2_defend = 0;
-				}
+				p2_defend = trouble;
 			}
 		}
 	}
