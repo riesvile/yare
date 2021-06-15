@@ -252,7 +252,7 @@ var active_games = {};
 var tutorial_finishings = {};
 var server_occupancy_tutorial = {
 	t1: 0,
-	t2: 500,
+	t2: 900,
 	t3: 50
 }
 var server_occupancy = {
