@@ -2330,7 +2330,7 @@ if (!isMainThread){
 			e_targets = energize_queue.length;
 			
 			for (i = 0; i < outposts.length; i++){
-				if (outposts[i].sight.enemies.length > 0){
+				if (outposts[i].sight.enemies.length > 0 && outposts[i].control != ''){
 					var beam_strength = 1
 					var enemy = spirit_lookup[outposts[i].sight.enemies[outposts[i].sight.enemies.length * Math.random() | 0]]
 					if (outposts[i].energy >= 500) beam_strength = 4;
@@ -3316,10 +3316,10 @@ if (!isMainThread){
 		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 	
-		star_zxq = new Star('star_zxq', [1000, 1000], 50, 220);
+		star_zxq = new Star('star_zxq', [1000, 1000], 100, 220);
 		star_lookup['star_zxq'] = star_zxq;
 	
-		star_a1c = new Star('star_a1c', [3200, 1400], 50, 220);
+		star_a1c = new Star('star_a1c', [3200, 1400], 100, 220);
 		star_lookup['star_a1c'] = star_a1c;
 		
 		star_p89 = new Star('star_p89', [2000, 1300], 1, 80);

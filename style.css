@@ -394,7 +394,7 @@ h1#logo {
 	color: rgba(169, 212, 255, 1);
 }
 
-#new_account_wrap, #login_wrap {
+#new_account_wrap, #login_wrap, #preferences_wrap {
 	color: rgba(242, 246, 250, 0.55);
 	font-size: 14px;
 	position: absolute;
@@ -402,6 +402,11 @@ h1#logo {
 	z-index: 20000;
 	opacity: 0;
 	display: none;
+}
+
+#preferences_wrap {
+	opacity: 1;
+	display: block;
 }
 
 #new_account_wrap p {
