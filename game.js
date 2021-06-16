@@ -958,7 +958,7 @@ function user_code(){
 		//console.log('p1 calculated in = ' + p1_process_time_res);
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p1'], /vm\.js/, 12);
+		handle_error(error, players['p1'], /vm\.js/, 13);
 	}
 	
 	try {
@@ -972,7 +972,7 @@ function user_code(){
 		
 		//vm.run(player2_code, 'vm.js');
 	} catch (error){
-		handle_error(error, players['p2'], /vm2\.js/, 12);
+		handle_error(error, players['p2'], /vm2\.js/, 13);
 	}
 }
 
@@ -1402,6 +1402,7 @@ if (!isMainThread){
 	
 	
 		energize(target) {
+			target = JSON.parse(JSON.stringify(target));
 			//console.log('target = ');
 			
 			
@@ -1660,6 +1661,7 @@ if (!isMainThread){
 			this.size = size;
 			this.structure_type = 'star';
 			this.energy = energy;
+			this.last_energized = '';
 			//this.energy = energy;
 		
 			stars.push(this);
@@ -1676,6 +1678,7 @@ if (!isMainThread){
 			this.structure_type = 'outpost';
 			this.energy = 0;
 			this.energy_capacity = 1000;
+			this.last_energized = '';
 			//this.energy = energy;
 			
 			this.sight = {
@@ -1849,6 +1852,7 @@ if (!isMainThread){
 	function get_sight_fast(){
 		const beamable_sq = min_beam**2;
 		const visible_sq = (2*min_beam)**2;
+		const high_range_sq = (600)**2;
 		const living_length = living_spirits.length;
 
 		for (let h = 0; h < living_length; h++){
@@ -1868,6 +1872,11 @@ if (!isMainThread){
   				friends: [],
   				enemies: [],
   				structures: []
+		    }
+		}
+		for (let o = 0; o < outposts.length; o++){
+  		  	outposts[o].sight = {
+  				enemies: []
 		    }
 		}
 
@@ -1958,9 +1967,12 @@ if (!isMainThread){
 			//outposts
 			for (let o = 0; o < outposts.length; o++){
 				let outpost = outposts[o];
+				let use_range = visible_sq;
 				let dsq = dist_sq(spirit.position, outpost.position);
-
-				if(dsq < visible_sq){
+				
+				if (outpost.energy >= 500) use_range = high_range_sq;
+				
+				if (dsq < use_range){
 					let friend = outpost.control == spirit.player_id;
 					if (friend){
 						//outposts[o].sight.friends.push(spirit.id);
@@ -1968,7 +1980,7 @@ if (!isMainThread){
 						outposts[o].sight.enemies.push(spirit.id);
 					}
 
-					if(dsq < beamable_sq){
+					if (dsq < beamable_sq){
 						spirit.sight.structures.push(outpost.id);
 					}
 				}
@@ -2347,6 +2359,8 @@ if (!isMainThread){
 			// TODO RM dist checks, the queue now only contains close things
 			for (i = (e_targets - 1); i >= 0; i--){
 				//if (energize_queue[i][1].hp == 0) break;
+				
+				energize_queue[i][0].last_energized = energize_queue[i][1].id;
 				
 				if (energize_queue[i][1].structure_type != undefined && energize_queue[i][1].structure_type == 'outpost'){
 					//console.log('ENERGIZING OUTPOST');
