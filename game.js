@@ -1467,7 +1467,6 @@ if (!isMainThread){
 		}
 		
 		merge(target){
-			target = JSON.parse(JSON.stringify(target));
 			
 			if (target.id == this.id){
 				var err_msg = "You can't merge spirit into itself";
