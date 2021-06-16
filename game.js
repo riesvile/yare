@@ -302,9 +302,13 @@ if(memory['time'] == undefined)
 memory['time'] += 1;
 
 function dist_sq(coor1, coor2){
-	var a = coor1[0] - coor2[0];
-	var b = coor1[1] - coor2[1];
+	let a = coor1[0] - coor2[0];
+	let b = coor1[1] - coor2[1];
 	return a*a + b*b;
+}
+
+function norm_sq(coor){
+	return coor[0]**2 + coor[1]**2;
 }
 
 function dist(coor1, coor2){
@@ -312,15 +316,23 @@ function dist(coor1, coor2){
 }
 
 function mult(a, coor){
-	return [a * coor[0],a*coor[1]];
+	return [a * coor[0], a*coor[1]];
 }
 
 function add(coor1, coor2){
-	return [coor1[0] + coor2[0],coor1[1] + coor2[1]];
+	return [coor1[0] + coor2[0], coor1[1] + coor2[1]];
 }
 
 function linc(coor1, coor2, alpha){
 	return add(mult(alpha, coor1), mult(1-alpha, coor2));
+}
+
+function sub(coor1, coor2){
+	return [coor1[0] - coor2[0], coor1[1] - coor2[1]];
+}
+
+function round_to(number, places){
+	return [+coor[0].toFixed(places), +coor[1].toFixed(places)];
 }
 
 var min_beam = 200;
@@ -976,6 +988,7 @@ var spirit_lookup = {};
 var star_lookup = {};
 var base_lookup = {};
 var outpost_lookup = {};
+var structure_lookup = {};
 var spirits = [];
 var spirits2 = [];
 var move_queue = [];
@@ -1264,6 +1277,7 @@ const vm2 = new VM({ timeout: 350, sandbox: {console: console2, memory: memory2}
 vm.freeze(players, 'players');
 vm.freeze(pl1_units, 'spirits');
 vm.freeze(my_spirits1, 'my_spirits');
+vm.freeze(structure_lookup, 'structures');
 vm.freeze(star_lookup, 'stars');
 vm.freeze(base_lookup, 'bases');
 vm.freeze(outpost_lookup, 'outposts');
@@ -1271,9 +1285,12 @@ vm.freeze(outpost_lookup, 'outposts');
 vm2.freeze(players, 'players');
 vm2.freeze(pl2_units, 'spirits');
 vm2.freeze(my_spirits2, 'my_spirits');
+vm2.freeze(structure_lookup, 'structures');
 vm2.freeze(star_lookup, 'stars');
 vm2.freeze(base_lookup, 'bases');
 vm2.freeze(outpost_lookup, 'outposts');
+
+
 
 if (!isMainThread){
 	class Spirit {
@@ -1304,44 +1321,36 @@ if (!isMainThread){
 		
 			living_spirits.push(this);
 			birth_queue.push(this);
-			move_queue.push([this, [0,0], this.position]);
+			move_queue.push([this.id, this.position[0], this.position[1]]);
 		}
-	
+
 		birth() {
 		
 		}
 		
-	
 		move(target) {
-			target = JSON.parse(JSON.stringify(target));
-			var plus_minus = Math.random() < 0.5 ? -1 : 1;
-			var adj1 = Math.floor(Math.random() * 100) / 70 * plus_minus;
-			var adj2 = Math.floor(Math.random() * 100) / 70 * plus_minus;
-			//if (this.player_id != 'dumb-bot'){
-			//	console.log(target);
-			//}
-			//check that target is array, otherwise throw error
-			if (Array.isArray(target) == false){
-				//user_error = '.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position)';
-				console.log(this.player_id);
-				var err_msg = '.move() argument must be an array. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position). Received: ' + target;
+			if (!Array.isArray(target) || target.length != 2){
+				let err_msg = '.move() argument must be an array of 2 numbers.\n > E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position).\n > Received: ' + target;
 				
-				fill_error(this.player_id, err_msg);
-				
-				return;
-			} else {
-				if (target.length != 2){
-					console.log('player id');
-					console.log(this.player_id);
-					var err_msg = '.move() argument must be an array of length 2. E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position). Received: ' + target;
-				
-					fill_error(this.player_id, err_msg);
-					return;
-				}
+				throw new Error(err_msg);
 			}
+
+			const tarX = Number(target[0]);
+			const tarY = Number(target[1]);
+			
+			if(isNaN(tarX) || isNaN(tarY)){
+				throw new Error('.move() arguments must be numbers, got ['+ tarX + ", " + tarY + ']');
+			}
+
+			move_queue.push([this.id, tarX, tarY]);
+			return;
+
+			// JM TU
+			let plus_minus = Math.random() < 0.5 ? -1 : 1;
+			let adj1 = Math.floor(Math.random() * 100) / 70 * plus_minus;
+			let adj2 = Math.floor(Math.random() * 100) / 70 * plus_minus;
+
 		
-			var tarX = target[0];
-			var tarY = target[1];
 			var incr = [0, 0];
 			var entry_index = move_queue.findIndex(entry => entry[0]['id'] === this.id);
 			//console.log('entry_index = ' + entry_index);
@@ -1384,13 +1393,11 @@ if (!isMainThread){
 						incr[1] = tarY - this.position[1];
 					}
 					
-				} else {
 					//console.log('spirit is dead');
+					move_queue[entry_index] = [this, incr, target];
+				} else {
 				}
-						
 			}
-		
-			move_queue[entry_index] = [this, incr, target];
 		}
 	
 	
@@ -1711,17 +1718,10 @@ if (!isMainThread){
 	}
 
 	function initiate_world(ws){
-		
-	
 		console.log(init_data);
 		ws.send(JSON.stringify(init_data));
 	}
 
-
-	function get_distance(item1, item2){
-		return Math.hypot(item2[0]-item1[0], item2[1]-item1[1]);
-	}
-	
 	function dist_sq(item1, item2){
 		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2);
 	}
@@ -1734,11 +1734,33 @@ if (!isMainThread){
 		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) < range**2;
 	}
 
-	
+	function norm_sq(coor){
+		return coor[0]**2 + coor[1]**2;
+	}
+
+	function mult(a, coor){
+		return [a * coor[0], a*coor[1]];
+	}
+
+	function add(coor1, coor2){
+		return [coor1[0] + coor2[0], coor1[1] + coor2[1]];
+	}
+
+	function linc(coor1, coor2, alpha){
+		return add(mult(alpha, coor1), mult(1-alpha, coor2));
+	}
+
+	function sub(coor1, coor2){
+		return [coor1[0] - coor2[0], coor1[1] - coor2[1]];
+	}
+
+	function round_to(number, places){
+		return +number.toFixed(places);
+	}
 	
 	function intersection(x0, y0, r0, x1, y1, r1) {
-	        var a, dx, dy, d, h, rx, ry;
-	        var x2, y2;
+	        let a, dx, dy, d, h, rx, ry;
+	        let x2, y2;
 
 	        /* dx and dy are the vertical and horizontal distances between
 	         * the circle centers.
@@ -1783,12 +1805,12 @@ if (!isMainThread){
 	        ry = dx * (h/d);
 
 	        /* Determine the absolute intersection points. */
-	        var xi = x2 + rx;
-	        var xi_prime = x2 - rx;
-	        var yi = y2 + ry;
-	        var yi_prime = y2 - ry;
+	        let xi = x2 + rx;
+	        let xi_prime = x2 - rx;
+	        let yi = y2 + ry;
+	        let yi_prime = y2 - ry;
 
-	        return [xi, xi_prime, yi, yi_prime];
+	        return [[xi, yi], [xi_prime, yi_prime]];
 	    }
 
 
@@ -2143,11 +2165,105 @@ if (!isMainThread){
 	
 	}
 
-	function process_queues(){
-			var qcollisions_stay = {};
-			var prev_position = {};
+	function jitter(scale){
+		return 2 * (Math.random() - 0.5) * scale;
+	}
+
+	function move_objects(){
+		const prev_position = {};
+
+		for (let i = move_queue.length - 1; i >= 0; i--){
+			const target = move_queue[i];
+			const id = target[0];
+			const spirit = spirit_lookup[id];
+
+			if (spirit.hp == 0 || prev_position[id] != undefined) continue;
+			const tpos = [target[1], target[2]];
+			const pos = spirit.position;
+			prev_position[id] = pos;
+
+			//tutorial
+			if (workerData[1] == 'tutorial' && i == 0){
+				try {
+					//console.log('tutorial, star position');
+					//console.log(move_queue[0][2]);
+					if (t_x == 1000 && t_y == 1000){
+						//console.log('tutorial phase 1 done');
+						tutorial_phase[0] = 1;
+						if (qqmonitoring[0] == 0){
+							qqmonitoring[0] = 1;
+							parentPort.postMessage({data: 1, game_id: workerData[0], meta: 'monitoring'});
+						}
+					} else if (t_x == 1600 && t_y == 700){
+						console.log('tutorial phase 3 done');
+						tutorial_phase[2] = 1;
+						if (qqmonitoring[2] == 0){
+							qqmonitoring[2] = 1;
+							parentPort.postMessage({data: 3, game_id: workerData[0], meta: 'monitoring'});
+						}
+					}
+				} catch (error){
+					console.log(error);
+				}
+			}
+			
+			// move_queue[entry_index] = [this, incr, target];
+			
+			let incr = sub(tpos, pos);
+
+			/*
+			incr = incr.map((d) => d + jitter(100/70));
+			if (dist_sq(pos, tpos) < 0.6**2){
+				incr = [0, 0]
+			}
+			//*/
+
+			// JM TU
 		
-		
+			let len_sq = norm_sq(incr);
+			// work with data only if there is movement
+			if (len_sq > 0){
+				// if not getting there in one tick
+				if(len_sq > base_speed**2){
+					// norm the incr vector so that its len is base_speed
+					incr = mult(base_speed / Math.sqrt(len_sq), incr);
+				}
+				spirit.position = add(pos, incr).map((c) => round_to(c, 5));
+
+				let potential_structure_collisions = spirit.sight.structures;
+				for (let k = 0; k < potential_structure_collisions.length; k++){
+					//console.log(' ------------------------------- structure potential collisions');
+					//console.log(potential_structure_collisions[k]);
+					let object_name = potential_structure_collisions[k];
+					let min_distance = object_name.startsWith('star') ? 100 : 50;
+					let object_position = structure_lookup[object_name].position;
+
+					let spirit_before = pos;
+					// JM TODO check - tady se to spirit before dopocitava
+					// tzn, odecita se PUVODNI inkrement & nebere se v potaz jitter
+					// spirit_before[0] = spirit.position[0] - move_queue[i][1][0];
+					// spirit_before[1] = spirit.position[1] - move_queue[i][1][1];
+
+					if (fast_dist_lt(spirit.position, object_position, min_distance)){
+						let inter_coor = intersection(spirit_before[0], spirit_before[1], base_speed,
+														object_position[0], object_position[1], min_distance);
+						if (inter_coor == false) continue;
+						
+						let quick_dist1 = dist_sq(inter_coor[0], tpos);
+						let quick_dist2 = dist_sq(inter_coor[1], tpos);
+						
+						let pick_first = quick_dist1 < quick_dist2 || Math.abs(quick_dist1 - quick_dist2) <= 5;
+						spirit.position = inter_coor[pick_first ? 0 : 1];
+					}
+				}
+			}
+		}
+
+		return prev_position;
+	}
+
+	function process_stuff(){
+			let qcollisions_stay = {};
 
 			//objects birth
 			
@@ -2534,239 +2650,7 @@ if (!isMainThread){
 			}
 
 
-
-
-
-	
-		//
-		// objects move
-		//
-		
-		moveables = move_queue.length;
-		//console.log('moveables = ' + moveables);
-		for (i = (moveables - 1); i >= 0; i--){
-			if (move_queue[i][0].hp == 0) continue;
-			prev_position[move_queue[i][0].id] = JSON.parse(JSON.stringify(move_queue[i][0].position));
-			
-			//tutorial
-			if (workerData[1] == 'tutorial'){
-				try {
-					//console.log('tutorial, star position');
-					//console.log(move_queue[0][2]);
-					if (move_queue[0][2][0] == 1000 && move_queue[0][2][1] == 1000){
-						//console.log('tutorial phase 1 done');
-						tutorial_phase[0] = 1;
-						if (qqmonitoring[0] == 0){
-							qqmonitoring[0] = 1;
-							parentPort.postMessage({data: 1, game_id: workerData[0], meta: 'monitoring'});
-						}
-					} else if (move_queue[0][2][0] == 1600 && move_queue[0][2][1] == 700){
-						console.log('tutorial phase 3 done');
-						tutorial_phase[2] = 1;
-						if (qqmonitoring[2] == 0){
-							qqmonitoring[2] = 1;
-							parentPort.postMessage({data: 3, game_id: workerData[0], meta: 'monitoring'});
-						}
-						
-					}
-				} catch (error){
-					console.log(error);
-				}
-				
-			}
-		
-			if (Math.abs(move_queue[i][2][0] - move_queue[i][0].position[0]) < 0.6 && Math.abs(move_queue[i][2][1] - move_queue[i][0].position[1]) < 0.6){
-				move_queue[i][1] = [0,0];
-			}
-		
-			// work with data only if there is movement
-			if ((Math.abs(move_queue[i][1][0]) > 0) || (Math.abs(move_queue[i][1][1]) > 0)){
-				var posX = move_queue[i][0].position[0];
-				var posY = move_queue[i][0].position[1];
-				var incrX = move_queue[i][1][0];
-				var incrY = move_queue[i][1][1];
-				var targetX = move_queue[i][2][0];
-				var targetY = move_queue[i][2][1];
-			
-				//basic pathfinding here? save position into obstacle_queue and then check against it?
-			
-				move_queue[i][0].position[0] = Number((move_queue[i][0].position[0] + move_queue[i][1][0]).toFixed(5));
-				move_queue[i][0].position[1] = Number((move_queue[i][0].position[1] + move_queue[i][1][1]).toFixed(5));
-			
-				potential_collisions = move_queue[i][0].sight.friends.length;
-				for (j = 0; j < potential_collisions; j++){
-					collidie = spirit_lookup[move_queue[i][0].sight.friends[j]];
-					if (isCollision(move_queue[i][0], collidie)){
-						//this is always false now, until you figure out how to do this
-						
-						//console.log('COLLISION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-						//move_queue[i][0].position[0]
-						var incrX_sign;
-						var incrY_sign;
-						(incrX > 0) ? incrX_sign = -1 : incrX_sign = 1;
-						(incrY > 0) ? incrY_sign = -1 : incrY_sign = 1;
-					
-						tempX = collidie.position[0] + (collidie.size + move_queue[i][0].size)*incrX_sign;
-						tempY = collidie.position[1] + (collidie.size + move_queue[i][0].size)*incrY_sign;
-						//collidie.position = [200,200];
-					
-						if (Math.abs(tempX - move_queue[i][0].position[0]) < Math.abs(tempY - move_queue[i][0].position[1])){
-							move_queue[i][0].position[0] = tempX;
-							move_queue[i][1][0] = move_queue[i][0].position[0] - posX;
-						} else {
-							move_queue[i][0].position[1] = tempY;
-							move_queue[i][1][1] = move_queue[i][0].position[1] - posY;
-						}
-										
-					}
-				}
-				
-				//console.log('qcollisions');
-				//console.log(move_queue[i][0]);
-				
-				var potential_structure_collisions = move_queue[i][0].sight.structures;
-				for (k = 0; k < potential_structure_collisions.length; k++){
-					//console.log(' ------------------------------- structure potential collisions');
-					//console.log(potential_structure_collisions[k]);
-					
-					if(potential_structure_collisions[k] == undefined)
-						console.log("WTF StartsWith 3");
-
-					if (potential_structure_collisions[k].startsWith('star') == true){
-						var object_position = star_lookup[potential_structure_collisions[k]].position;
-						var min_distance = 100;
-					} else if (potential_structure_collisions[k].startsWith('base') == true){
-						var object_position = base_lookup[potential_structure_collisions[k]].position;
-						var min_distance = 50;
-					} else if (potential_structure_collisions[k].startsWith('outpost') == true){
-						var object_position = outpost_lookup[potential_structure_collisions[k]].position;
-						var min_distance = 50;
-					}	
-					var spirit_position = move_queue[i][0].position;
-					var spirit_before = [0,0];
-					spirit_before[0] = move_queue[i][0].position[0] - move_queue[i][1][0];
-					spirit_before[1] = move_queue[i][0].position[1] - move_queue[i][1][1];
-						
-					//console.log('position now = ' + spirit_position);
-					//console.log('position before = ' + spirit_before);
-					if (fast_dist_lt(spirit_position, object_position, min_distance)){
-						//console.log('inside');
-						//intersection(x0, y0, r0, x1, y1, r1)
-						inter_points = intersection(spirit_before[0], spirit_before[1], base_speed, object_position[0], object_position[1], min_distance);
-						if (inter_points == false) continue;
-						//console.log('intersection points:');
-						//console.log(inter_points);
-						
-						
-						var quick_dist1 = dist_sq([inter_points[0], inter_points[2]], move_queue[i][2]);
-						var quick_dist2 = dist_sq([inter_points[1], inter_points[3]], move_queue[i][2]);
-						
-						if (Math.abs(quick_dist1 - quick_dist2) > 5){
-							if (quick_dist1 < quick_dist2){
-								move_queue[i][0].position[0] = inter_points[0];
-								move_queue[i][0].position[1] = inter_points[2];
-								move_queue[i][1][0] = inter_points[0] - spirit_before[0];
-								move_queue[i][1][1] = inter_points[2] - spirit_before[1];
-							} else {
-								move_queue[i][0].position[0] = inter_points[1];
-								move_queue[i][0].position[1] = inter_points[3];
-								move_queue[i][1][0] = inter_points[1] - spirit_before[0];
-								move_queue[i][1][1] = inter_points[3] - spirit_before[1];
-							}
-						} else {
-							move_queue[i][0].position[0] = inter_points[0];
-							move_queue[i][0].position[1] = inter_points[2];
-							move_queue[i][1][0] = inter_points[0] - spirit_before[0];
-							move_queue[i][1][1] = inter_points[2] - spirit_before[1];
-						}
-						
-					}
-						
-				}
-				
-				if (qcollisions_stay[move_queue[i][0].id] != 1){
-					for (q = (move_queue[i][0].qcollisions.length - 1); q >= 0; q--){
-						//make min_distance the larger size of the two
-				
-						//console.log('collision processed');
-						//console.log(qcollisions_stay);
-						
-						
-						/*
-					
-						var col_min_distance = 3;
-						var spirit_position = move_queue[i][0].position;
-						var qollie = spirit_lookup[move_queue[i][0].qcollisions[q]].position;
-						var spirit_before = [0,0];
-						spirit_before[0] = move_queue[i][0].position[0] - move_queue[i][1][0];
-						spirit_before[1] = move_queue[i][0].position[1] - move_queue[i][1][1];
-					
-						if (get_distance(spirit_position, qollie) < col_min_distance){
-							
-							console.log([spirit_position[0], spirit_position[1], 2, qollie[0], qollie[1], col_min_distance]);
-							q_points = intersection(spirit_position[0], spirit_position[1], 2, qollie[0], qollie[1], col_min_distance);
-							console.log('q_points');
-							console.log(q_points);
-							
-							if (q_points != false){
-								var quick_dist1 = dist_sq([q_points[0], q_points[2]], move_queue[i][0].position);
-								var quick_dist2 = dist_sq([q_points[1], q_points[3]], move_queue[i][0].position);
-								
-								if (quick_dist1 < quick_dist2){
-									move_queue[i][0].position[0] = q_points[0];
-									move_queue[i][0].position[1] = q_points[2];
-									move_queue[i][1][0] = q_points[0] - spirit_before[0];
-									move_queue[i][1][1] = q_points[2] - spirit_before[1];
-								} else {
-									move_queue[i][0].position[0] = q_points[1];
-									move_queue[i][0].position[1] = q_points[3];
-									move_queue[i][1][0] = q_points[1] - spirit_before[0];
-									move_queue[i][1][1] = q_points[3] - spirit_before[1];
-								}
-								
-								
-							
-								qcollisions_stay[move_queue[i][0].id] = 1;
-								qcollisions_stay[spirit_lookup[move_queue[i][0].qcollisions[q]].id] = 1;
-							}
-						
-							
-						}
-					
-						*/
-					
-					}
-				}
-				
-				
-					
-					
-					//if (get_distance(move_queue[i][0], )
-					
-				
-			
-				//console.log('move_queue[i][0].sight.friends');
-				//console.log(move_queue[i][0].sight.friends);
-			
-				//if (isCollision(move_queue[i], ))
-			
-				/*
-				console.log('---');
-				console.log(move_queue[i][0].id);
-				console.log(move_queue[i][0].position);
-				console.log(move_queue[i][1]);
-				console.log(move_queue[i][2]);
-				*/
-			
-				//render_data2.move.push([move_queue[i][0].id, move_queue[i][0].position, move_queue[i][1], move_queue[i][2]]);
-			
-				//render_data2.move.push([move_queue[i][0].id, [posX, posY], move_queue[i][1], move_queue[i][2]]);
-			}
-		
-			
-					
-		}
-	
+		let prev_position = move_objects();
 	
 	
 		//objects sight
@@ -3157,7 +3041,7 @@ if (!isMainThread){
 			
 		
 		
-			process_queues();
+			process_stuff();
 		
 			
 			
@@ -3299,6 +3183,7 @@ if (!isMainThread){
 	
 		global['base_' + players['p1']] = new Base('base_' + players['p1'], [1600, 700], players['p1'], colors['player1'], shapes['player1']);
 		global['base_' + players['p2']] = new Base('base_' + players['p2'], [2600, 1700], players['p2'], colors['player2'], shapes['player2']);
+
 	
 		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
@@ -3314,6 +3199,13 @@ if (!isMainThread){
 		
 		outpost_mdo = new Outpost('outpost_mdo', [2200, 1100])
 		outpost_lookup['outpost_mdo'] = outpost_mdo;
+
+		structure_lookup['outpost_mdo'] = outpost_mdo;
+		structure_lookup['star_zxq'] = star_zxq;
+		structure_lookup['star_a1c'] = star_a1c;
+		structure_lookup['star_p89'] = star_p89;
+		structure_lookup['base_' + players['p1']] = global['base_' + players['p1']];
+		structure_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 		
 		
 		user_code();
