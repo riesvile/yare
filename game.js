@@ -2778,9 +2778,6 @@ if (!isMainThread){
 			} catch (e) {
 				console.log(e)
 			}
-			
-			
-		
 		}
 		
 		
@@ -3085,14 +3082,11 @@ if (!isMainThread){
 			user_error1 = [];
 			user_error2 = [];
 		
-		
 			//tutorial data update
 			if (workerData[1] == 'tutorial'){
 				render_data3.tutorial.push(tutorial_phase);
 			}
 		
-		
-			
 			render_data3.t = game_duration;
 			render_data3.b1 = [bases[0].energy, base_lookup['base_' + players['p1']].current_spirit_cost, p1_defend];
 			render_data3.b2 = [bases[1].energy, base_lookup['base_' + players['p2']].current_spirit_cost, p2_defend];
@@ -3107,7 +3101,6 @@ if (!isMainThread){
 			
 			
 			update_vm_sandbox();
-
 
 		
 			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: workerData[0], meta: ''});
