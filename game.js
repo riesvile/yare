@@ -2525,9 +2525,8 @@ if (!isMainThread){
 			}
 		}
 		
-		Object.keys(outpost_lookup).forEach((outpost) => {
-			if(outpost.id == undefined)
-				return;
+		for(let i = 0 ; i < outposts.length; i++){
+			let outpost = outposts[i];
 
 			let from_p1 = incoming_p1[outpost.id] || 0;
 			let from_p2 = incoming_p2[outpost.id] || 0;
@@ -2548,7 +2547,7 @@ if (!isMainThread){
 				outpost.control = '';
 			outpost.energy = Math.max(0, Math.min(outpost.energy, outpost.energy_capacity));
 			outpost.range = outpost.energy <= 500 ? 400 : 600;
-		});
+		}
 	}
 
 	function process_stuff(){
@@ -2609,23 +2608,20 @@ if (!isMainThread){
 		//
 		
 		energize_objects();
+		energize_queue = [];
 
 		//
 		// objects move
 		//
 
 		let prev_position = move_objects();
+		move_queue = [];
 		
-
-		// JM TODO clean energy & move queues
-	
-	
+		//
 		//objects sight
-		//console.log('spirit_lookup[sp1].sight');
-		//console.log(spirit_lookup['sp1'].sight);
 		//
 		
-	/*
+		/*
 		var start = process.hrtime();
 		get_sight();
 		var diff = process.hrtime(start);
@@ -2643,13 +2639,11 @@ if (!isMainThread){
 		//console.log('spirit_lookup[s1].sight');
 		//console.log(spirit_lookup['s1'].sight);
 		//console.log(spirit_lookup['sp1'].sight);
-	
-		
 		
 		
 		// stars energy update
 		
-		for (i = 0; i < stars.length; i++){
+		for (let i = 0; i < stars.length; i++){
 			stars[i].energy += Math.round(2 + (stars[i].energy * 0.01));
 			if (stars[i].energy >= 1000) stars[i].energy = 1000;
 			console.log('star ' + i + ' energy = ' + stars[i].energy);
@@ -2662,22 +2656,11 @@ if (!isMainThread){
 	
 		//objects death & vm sandbox objects update
 		// JM TODO death_qu may contain duplicates
-		deaths = death_queue.length;
-		for (i = (deaths - 1); i >= 0; i--){
+		for (let i = death_queue.length - 1; i >= 0; i--){
 			console.log(death_queue[i].id + ' died');
 			if (workerData[1] == 'tutorial'){
-				try {
-					if (death_queue[i].id == 'easy-bot2'){
-						console.log('tutorial phase 8 done');
-						tutorial_phase[7] = 1;
-						if (qqmonitoring[7] == 0){
-							qqmonitoring[7] = 1;
-							parentPort.postMessage({data: 8, game_id: workerData[0], meta: 'monitoring'});
-						}
-					}
-				} catch (error){
-					console.log(error);
-				}
+				if (death_queue[i].id == 'easy-bot2')
+					progress_tut(8, true);
 			}
 			
 			death_queue[i].hp = 0;
