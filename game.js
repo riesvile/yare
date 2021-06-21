@@ -1064,6 +1064,7 @@ if (!isMainThread){
 			this.size = size;
 			this.structure_type = 'star';
 			this.energy = energy;
+			this.energy_capacity = 1000;
 			this.last_energized = '';
 			//this.energy = energy;
 		
@@ -1692,7 +1693,7 @@ if (!isMainThread){
 			let beam_strength = outpost.energy >= 500 ? 4 : 1;
 			let enemy = spirit_lookup[enemies[enemies.length * Math.random() | 0]];
 			
-			energize_apply.push([enemy, -2 *beam_strength]);
+			energize_apply.push([enemy, -2 * beam_strength]);
 			outpost.energy -= beam_strength;
 			render_data3.e.push([outpost.id, enemy.id, 2 * beam_strength]);
 		}
@@ -1758,6 +1759,7 @@ if (!isMainThread){
 			if (to_obj.id.startsWith('outpost')){
 				energize_apply.push([from_obj, -beam_strength]);
 				energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
+				render_data3.e.push([from_id, to_id, beam_strength]);
 			} 
 			else if (!friendly_beam){
 				energize_apply.push([from_obj, -beam_strength]);
