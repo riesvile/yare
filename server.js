@@ -14,220 +14,7 @@ function generateUniqueString(prefix) {
     return (randomString(prefix) + out);
 }
 
-// ----- automatching -----
 
-
-var game_pairs = [];
-var automatch_looking = [];
-var paired_and_waiting = {};
-
-//checking if user is knocking on the server (didn't close browser window)
-var actively_waiting = {};
-
-//rewrite this entire stupidity later, you fucking moron. What were you even doing, the fuck?
-
-function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2color, p1rating, p2rating){
-	
-	const game = new Game({
-		game_id: gid,
-		server: srvr,
-		player1: p1id,
-		player2: p2id,
-		p1_session_id: '',
-		p2_session_id: '',
-		p1_shape: p1shape,
-		p2_shape: p2shape,
-		p1_color: p1color,
-		p2_color: p2color,
-		p1_rating: p1rating,
-		p2_rating: p2rating,
-		winner: '',
-		ranked: 1,
-		active: 0.5,
-		game_duration: 0,
-		observers: 0
-	});
-
-	game.save()
-		.then((result) => {
-			console.log('am game saved to db');
-			console.log(result);
-			try {
-				fetch('https://yare.io/' + srvr + 'ns/' + gid, {
-			        method: "POST",
-			        headers: {
-			          Accept: "application/json",
-			          "Content-Type": "application/json"
-			        },
-			        body: JSON.stringify({
-				        game_id: gid
-				    })
-				}).then(response => response.json())
-			      .then(response => {
-					  active_games[gid][0] = 1;
-					  console.log(active_games[gid]);
-					  console.log(response);
-				  })
-			      .catch(err => {
-					  console.log(err);
-				  });
-			} catch (error) {
-				console.log(error);
-			}
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-	
-}
-
-function games_paired(){
-	
-	
-	//players are matched, check server loads, redirect to the right server and start a game worker there
-	
-	for (j = 0; j < game_pairs.length; j++){
-		
-		var am_servers = Object.keys(server_occupancy);
-		var am_load_threshold = 10;
-		var am_chosen_server = 'd4';
-		var p1p1 = game_pairs[j][0];
-		var p2p2 = game_pairs[j][1];
-	
-		for (i = 0; i < am_servers.length; i++){
-			if (server_occupancy[am_servers[i]] > am_load_threshold){
-				am_chosen_server = am_servers[i];
-				server_occupancy[am_chosen_server]--;
-				console.log(server_occupancy);
-				console.log('chosen server = ' + am_chosen_server);
-				break;
-			}
-			if (i == (am_servers.length - 1)){
-				console.log('all serverrrrrs busy, increasing load');
-				if (am_load_threshold <= 0){
-					console.log('maximum server capacity reached');
-				} else {
-					am_load_threshold -= 5; 
-					i = -1;
-				}
-			
-			}
-		
-		}
-	
-		g_id = new_game(p1p1[0], p2p2[0], init_status = 0.5, am_chosen_server);
-		
-		//add server
-		paired_and_waiting[p1p1[0]] = [g_id, am_chosen_server];
-		paired_and_waiting[p2p2[0]] = [g_id, am_chosen_server];
-		
-		update_game_db(g_id, am_chosen_server, p1p1[0], p2p2[0], p1p1[2], p2p2[2], p1p1[3], p2p2[3], p1p1[1], p2p2[1]);
-				
-	}
-	
-	game_pairs = [];
-	console.log('paired and waiting');
-	console.log(paired_and_waiting);
-	
-	//check if this works by extending the automatch tick time and trying matching multiple people
-	
-}
-
-
-	setInterval(function(){
-		if(automatch_looking.length > 0){
-			for (i = 0; i < automatch_looking.length; i++){
-				//[user_id, rating, shape, color, time_spent_in_queue, matched?]
-				console.log(automatch_looking[i]);
-				if (actively_waiting[automatch_looking[i][0]] == undefined){
-					console.log('undefined');
-					continue;
-				} else if (actively_waiting[automatch_looking[i][0]] == 0){
-					console.log(automatch_looking[i][0] + ' is not in the queue anymore');
-					paired_and_waiting[automatch_looking[i][0]] = 'interrupted';
-					automatch_looking[i][5] = 1;
-					delete actively_waiting[automatch_looking[i][0]]
-					continue;
-				} else if (actively_waiting[automatch_looking[i][0]] == 1){
-					console.log(automatch_looking[i][0] + ' is in queue');
-					actively_waiting[automatch_looking[i][0]] = 0;
-					//continue;
-				}
-				
-				
-				var looker1 = automatch_looking[i];
-				var topCandidate = '';
-				
-				if (looker1[5] == 1) continue;
-				
-				for (j = i+1; j < automatch_looking.length; j++){
-					var looker2 = automatch_looking[j];
-					
-					console.log('lookers');
-					console.log(looker1);
-					console.log(looker2);
-					console.log(Math.abs(looker1[1] - looker2[1]));
-					
-					var rating_difference = Math.abs(looker1[1] - looker2[1])
-					
-					if (looker1[0] == looker2[0]){
-						console.log('it is the same person!!!!!');
-						looker1[5] = 1;
-						continue;
-					}
-					
-					if (looker1[4] < 4100){
-						if (rating_difference < 100){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else if (looker1[4] < 8100){
-						if (rating_difference < 200){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else if (looker1[4] < 12100){
-						if (rating_difference < 300){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else {
-						if (rating_difference < 500){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					}
-				}
-			}
-			
-			//clearing out matched items from the automatch queue
-			for (i = automatch_looking.length - 1; i >= 0; i--){
-				if (automatch_looking[i][5] == 1){
-					automatch_looking.splice(i, 1);
-				}
-			}
-			
-			if (game_pairs.length > 0) {
-				console.log('paired players');
-				console.log(game_pairs);
-				games_paired();
-			}
-			
-			//add time_spent_in_queue
-			for (q = 0; q < automatch_looking.length; q++){
-				automatch_looking[q][4] += 4000;
-			}
-			
-		}
-		
-		console.log('automatch tick');
-		
-	}, 4000)
-	
 
 // -----
 // --------------__---_-___
@@ -252,7 +39,7 @@ var active_games = {};
 var tutorial_finishings = {};
 var server_occupancy_tutorial = {
 	t1: 0,
-	t2: 500,
+	t2: 900,
 	t3: 50
 }
 var server_occupancy = {
@@ -262,8 +49,8 @@ var server_occupancy = {
 	d4: 20
 };
 var connections = {};
-var this_server = 't1';
-var this_server_type = 'tutorial'; //'real'
+var this_server = 'd1';
+var this_server_type = 'real'; //'real'
 
 
 var user_sessions = {};
@@ -1755,7 +1542,8 @@ wss.on('connection', function connection(ws, req) {
 					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c']; 		// line 13 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
+					global['star_a1c'] = stars['star_a1c'];
+					global['tick'] = ticks['now']; 		// line 14 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
 				` + message['u_code'];
 
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
@@ -1773,7 +1561,8 @@ wss.on('connection', function connection(ws, req) {
 					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c'];			// line 13 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
+					global['star_a1c'] = stars['star_a1c'];
+					global['tick'] = ticks['now'];			// line 14 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
 				` + message['u_code'];
 
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
@@ -1936,64 +1725,64 @@ app.get('/d1/:game_id', (req, res) => {
 
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
-app.get('/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
-app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
-app.get('/game', (req, res) => res.sendFile(__dirname + '/game3.html'));
-app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
-app.get('/documentation', (req, res) => res.sendFile(__dirname + '/documentation.html'));
-app.get('/leaderboard', (req, res) => res.sendFile(__dirname + '/leaderboard.html'));
-app.get('/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
-app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
-app.get('/rendering3.js', (req, res) => res.sendFile(__dirname + '/rendering3.js'));
-app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
-app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
-app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
-app.get('/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
-app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
-app.get('/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
-app.get('/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
-app.get('/documentation.css', (req, res) => res.sendFile(__dirname + '/documentation.css'));
-app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
-app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
-app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
-app.get('/src-min-noconflict/ext-language_tools.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ext-language_tools.js'));
-app.get('/src-min-noconflict/snippets/javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/snippets/javascript.js'));
-app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
-app.get('/copenhagen.0-1-4.css', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.css'));
-app.get('/copenhagen.0-1-4.min.js', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.min.js'));
-app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
-app.get('/sound.js', (req, res) => res.sendFile(__dirname + '/sound.js'));
-app.get('/webker.js', (req, res) => res.sendFile(__dirname + '/webker.js'));
+app.get('/' + this_server + 'a/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
+app.get('/' + this_server + 'a/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
+app.get('/' + this_server + 'a/game', (req, res) => res.sendFile(__dirname + '/game3.html'));
+app.get('/' + this_server + 'a/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
+app.get('/' + this_server + 'a/documentation', (req, res) => res.sendFile(__dirname + '/documentation.html'));
+app.get('/' + this_server + 'a/leaderboard', (req, res) => res.sendFile(__dirname + '/leaderboard.html'));
+app.get('/' + this_server + 'a/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
+app.get('/' + this_server + 'a/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
+app.get('/' + this_server + 'a/rendering3.js', (req, res) => res.sendFile(__dirname + '/rendering3.js'));
+app.get('/' + this_server + 'a/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
+app.get('/' + this_server + 'a/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
+app.get('/' + this_server + 'a/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
+app.get('/' + this_server + 'a/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
+app.get('/' + this_server + 'a/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
+app.get('/' + this_server + 'a/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
+app.get('/' + this_server + 'a/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
+app.get('/' + this_server + 'a/documentation.css', (req, res) => res.sendFile(__dirname + '/documentation.css'));
+app.get('/' + this_server + 'a/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
+app.get('/' + this_server + 'a/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
+app.get('/' + this_server + 'a/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
+app.get('/' + this_server + 'a/src-min-noconflict/ext-language_tools.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ext-language_tools.js'));
+app.get('/' + this_server + 'a/src-min-noconflict/snippets/javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/snippets/javascript.js'));
+app.get('/' + this_server + 'a/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
+app.get('/' + this_server + 'a/copenhagen.0-1-4.css', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.css'));
+app.get('/' + this_server + 'a/copenhagen.0-1-4.min.js', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.min.js'));
+app.get('/' + this_server + 'a/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
+app.get('/' + this_server + 'a/sound.js', (req, res) => res.sendFile(__dirname + '/sound.js'));
+app.get('/' + this_server + 'a/webker.js', (req, res) => res.sendFile(__dirname + '/webker.js'));
 
 
-app.get('/asset/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
-app.get('/asset/dropdown.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown.png'));
-app.get('/asset/dropdown2.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown2.png'));
-app.get('/asset/board.png', (req, res) => res.sendFile(__dirname + '/assets/board.png'));
-app.get('/asset/method-move.gif', (req, res) => res.sendFile(__dirname + '/assets/method-move.gif'));
-app.get('/asset/method-energize1.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize1.gif'));
-app.get('/asset/method-energize2.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize2.gif'));
-app.get('/asset/method-merge.gif', (req, res) => res.sendFile(__dirname + '/assets/method-merge.gif'));
-app.get('/asset/method-divide.gif', (req, res) => res.sendFile(__dirname + '/assets/method-divide.gif'));
-app.get('/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/tr-loader.gif'));
-app.get('/asset/ico_long_arr_blue.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_blue.png'));
-app.get('/asset/ico_long_arr_purp.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_purp.png'));
-app.get('/asset/ico_long_arr_gold.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_gold.png'));
-app.get('/asset/gal1.png', (req, res) => res.sendFile(__dirname + '/assets/gal1.png'));
-app.get('/asset/gal2.png', (req, res) => res.sendFile(__dirname + '/assets/gal2.png'));
-app.get('/asset/gal3.png', (req, res) => res.sendFile(__dirname + '/assets/gal3.png'));
-app.get('/asset/gal4.png', (req, res) => res.sendFile(__dirname + '/assets/gal4.png'));
+app.get('/' + this_server + 'a/asset/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
+app.get('/' + this_server + 'a/asset/dropdown.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown.png'));
+app.get('/' + this_server + 'a/asset/dropdown2.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown2.png'));
+app.get('/' + this_server + 'a/asset/board.png', (req, res) => res.sendFile(__dirname + '/assets/board.png'));
+app.get('/' + this_server + 'a/asset/method-move.gif', (req, res) => res.sendFile(__dirname + '/assets/method-move.gif'));
+app.get('/' + this_server + 'a/asset/method-energize1.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize1.gif'));
+app.get('/' + this_server + 'a/asset/method-energize2.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize2.gif'));
+app.get('/' + this_server + 'a/asset/method-merge.gif', (req, res) => res.sendFile(__dirname + '/assets/method-merge.gif'));
+app.get('/' + this_server + 'a/asset/method-divide.gif', (req, res) => res.sendFile(__dirname + '/assets/method-divide.gif'));
+app.get('/' + this_server + 'a/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/tr-loader.gif'));
+app.get('/' + this_server + 'a/asset/ico_long_arr_blue.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_blue.png'));
+app.get('/' + this_server + 'a/asset/ico_long_arr_purp.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_purp.png'));
+app.get('/' + this_server + 'a/asset/ico_long_arr_gold.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_gold.png'));
+app.get('/' + this_server + 'a/asset/gal1.png', (req, res) => res.sendFile(__dirname + '/assets/gal1.png'));
+app.get('/' + this_server + 'a/asset/gal2.png', (req, res) => res.sendFile(__dirname + '/assets/gal2.png'));
+app.get('/' + this_server + 'a/asset/gal3.png', (req, res) => res.sendFile(__dirname + '/assets/gal3.png'));
+app.get('/' + this_server + 'a/asset/gal4.png', (req, res) => res.sendFile(__dirname + '/assets/gal4.png'));
 
-app.get('/sound/outfoxing.mp3', (req, res) => res.sendFile(__dirname + '/sound/outfoxing.mp3'));
-app.get('/sound/enemy_incoming.mp3', (req, res) => res.sendFile(__dirname + '/sound/enemy_incoming.mp3'));
+app.get('/' + this_server + 'a/sound/outfoxing.mp3', (req, res) => res.sendFile(__dirname + '/sound/outfoxing.mp3'));
+app.get('/' + this_server + 'a/sound/enemy_incoming.mp3', (req, res) => res.sendFile(__dirname + '/sound/enemy_incoming.mp3'));
 
-app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
-app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
-app.get('/nope', (req, res) => res.sendFile(__dirname + '/nope.html'));
-app.get('/site.webmanifest', (req, res) => res.sendFile(__dirname + '/site.webmanifest'));
-app.get('/apple-touch-icon.png', (req, res) => res.sendFile(__dirname + '/apple-touch-icon.png'));
-app.get('/favicon-32x32.png', (req, res) => res.sendFile(__dirname + '/favicon-32x32.png'));
-app.get('/favicon-16x16.png', (req, res) => res.sendFile(__dirname + '/favicon-16x16.png'));
+app.get('/' + this_server + 'a/est', (req, res) => res.sendFile(__dirname + '/est.html'));
+app.get('/' + this_server + 'a/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
+app.get('/' + this_server + 'a/nope', (req, res) => res.sendFile(__dirname + '/nope.html'));
+app.get('/' + this_server + 'a/site.webmanifest', (req, res) => res.sendFile(__dirname + '/site.webmanifest'));
+app.get('/' + this_server + 'a/apple-touch-icon.png', (req, res) => res.sendFile(__dirname + '/apple-touch-icon.png'));
+app.get('/' + this_server + 'a/favicon-32x32.png', (req, res) => res.sendFile(__dirname + '/favicon-32x32.png'));
+app.get('/' + this_server + 'a/favicon-16x16.png', (req, res) => res.sendFile(__dirname + '/favicon-16x16.png'));
 
 
 

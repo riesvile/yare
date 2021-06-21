@@ -12,12 +12,12 @@
 	<link rel="manifest" href="/site.webmanifest">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../colors.css">
-	<link rel="stylesheet" href="../style.css">
-	<link rel="stylesheet" href="../style-mobile.css">
-	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../anime.min.js"></script>
+	<link rel="stylesheet" href="../d1a/colors.css">
+	<link rel="stylesheet" href="../d1a/style.css">
+	<link rel="stylesheet" href="../d1a/style-mobile.css">
+	<script src="../d1a/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../d1a/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../d1a/anime.min.js"></script>
   </head>
   <body>
 
@@ -57,7 +57,7 @@
   <div id="hector">
 	  <h1 id="logo"><a href="https://yare.io">yare<span class="logo_lowlight">.io</span></a></h1>
 	  <div class="menu">
-		  <a href="https://yare.io/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
+		  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
 		  <div class="menu_line desktop_only"></div>
 		  <div class="menu_link new_acc" id="new_account">New account</div>
 		  <div class="menu_link" id="login">Log in</div>
@@ -182,7 +182,7 @@
   
   
   </body>
-  <script src="../animations.js"></script>
+  <script src="../d1a/animations.js"></script>
   <script>
 	  
 	  function webker_msg_received(msg){
@@ -394,11 +394,11 @@
 	  var offsetY_adjust = 0;
 	  
 	  
-	  var this_server = 't1';
+	  var this_server = 'd1';
 	  
 	  load_start();
 	  
-	  const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
+	  const socket = new WebSocket('wss://yare.io:443/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
 	  //function connectSocket(){
 		  
@@ -547,7 +547,7 @@
 					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
 					 
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
-					 console.log(game_blocks);
+					 //console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
 					 run_it();
 					 
@@ -1077,9 +1077,9 @@
 	  
 	  
   </script>
-  <script src="../tutorial_texts.js"></script>
-  <script src="../rendering3.js"></script>
-  <script src="../basics.js"></script>
+  <script src="../d1a/tutorial_texts.js"></script>
+  <script src="../d1a/rendering3.js"></script>
+  <script src="../d1a/basics.js"></script>
   <!--<script src="../sound.js"></script>-->
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

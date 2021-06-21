@@ -61,7 +61,7 @@
 				  <a href="#doc_credits" id="doc_sec_link_credits" class="doc_sec_link">Credits</a>
 		  </div>
 		  <div class="menu">
-			  <a href="https://yare.io/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
+			  <a href="/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
 			  <a href="https://yare.io/newgame" class="menu_link new_g" id="new_g">New game</a>
 			  <div class="menu_line desktop_only"></div>
 			  <div class="menu_link new_acc" id="new_account">New account</div>
@@ -169,6 +169,13 @@
 					<span class="table_doc_property">spirits</span>
 					<span class="table_doc_type">object</span>
 					<span class="table_doc_value">Contains all spirits. Access them by their id – spirits[‘jane_7’]</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">tick</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">Current game tick (e.g. 75). 1 tick = 1 second</span>
 				</div>
 			</div>
 		  	
@@ -435,7 +442,7 @@
 						
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Teleports a spirit into a new location up to 500 units away. Costs half of spirit's energy_capacity. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star</span></p>
+						<p class="p_method_desc">Teleports a spirit into a new location up to 300 units away. Costs half of spirit's energy_capacity. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star</span></p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
@@ -757,6 +764,13 @@
 					<span class="table_doc_property">energy</span>
 					<span class="table_doc_type">number</span>
 					<span class="table_doc_value">star's current energy</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">energy_capacity</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">1000</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
