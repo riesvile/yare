@@ -20,6 +20,11 @@ function cancel_game(){
 	}, 2000);
 }
 
+function elapsed_ms_from(t0) {
+	let diff = process.hrtime(t0);
+	return round_to((diff[0] * 1e9 + diff[1]) / 1e6, 3);
+}
+
 function end_game(was_p1 = 0, was_p2 = 0){
 	game_finished = 1;
 	console.log('GAME OVER');
@@ -381,53 +386,30 @@ function handle_error(error, player, fileregex, line_offset){
 }
 
 function user_code(){
-	//try {
-	//	eval(player1_code);
-	//} catch (error) {
-	//	console.error(error);
-	//}
-	
-	//spirit1.move(spirit2.position);
-	//for (i = 1; i < 18; i++){
-	//	spirits[i].move([i*10 + 600, i*10 + 200]);
-	//}
-	//
+	if (workerData[1] == 'tutorial'){
+		//console.log(player1_code);
+		var helper_count = (player1_code.match(/my_spirits/g) || []).length;
+		//console.log('my_spirits count');
+		//console.log(helper_count);
+		
+		if (helper_count > 2){
+			console.log('tutorial phase 6 half-done');
+			tutorial_flag1 = 1;
+		}
+	}
 	
 	try {
-		if (workerData[1] == 'tutorial'){
-			//console.log(player1_code);
-			var helper_count = (player1_code.match(/my_spirits/g) || []).length;
-			//console.log('my_spirits count');
-			//console.log(helper_count);
-			
-			if (helper_count > 2){
-				console.log('tutorial phase 6 half-done');
-				tutorial_flag1 = 1;
-			}
-		}
-		
-		//p1_process_time = process.hrtime();
-		
+		let p1_t0 = process.hrtime();
 		vm.run(player1_code, 'vm.js');
-		
-		//p1_process_time_check = process.hrtime(p1_process_time);
-		//p1_process_time_res = (p1_process_time_check[0] * 1000000000 + p1_process_time_check[1]) / 1000000;
-		//console.log('p1 calculated in = ' + p1_process_time_res);
-		//vm.run(player2_code, 'vm.js');
+		console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
 		handle_error(error, players['p1'], /vm\.js/, 13);
 	}
 	
 	try {
-		//p2_process_time = process.hrtime();
-		
+		let p2_t0 = process.hrtime();
 		vm2.run(player2_code, 'vm2.js');
-		
-		//p2_process_time_check = process.hrtime(p2_process_time);
-		//p2_process_time_res = (p1_process_time_check[0] * 1000000000 + p2_process_time_check[1]) / 1000000;
-		//console.log('p2 calculated in = ' + p2_process_time_res);
-		
-		//vm.run(player2_code, 'vm.js');
+		console.log('TIME: p2 = ' + elapsed_ms_from(p2_t0));
 	} catch (error){
 		handle_error(error, players['p2'], /vm2\.js/, 13);
 	}
@@ -563,10 +545,6 @@ var firstCode = 0;
 
 var energy_value = 1;
 
-
-var processTime1 = 0;
-var processTime2 = 0;
-var processTimeRes = 0;
 var game_finished = 0;
 
 var user_error1 = [];
@@ -653,7 +631,14 @@ var sandboxx = {
 	//star_zxq: star_zxq
 };
 
-
+function cutoff_log(log, cutoff){
+	if(log.length > cutoff){
+		let l1 = log.length;
+		log.length = cutoff;
+		log.push('WARN: output too long (>' + cutoff + ' lines), cutting off ' + (l1 - cutoff) + ' lines of log');
+	}
+	return log;
+}
 
 function fill_error(plid, err_msg){
 	if (plid == players['p1']){
@@ -706,7 +691,6 @@ vm2.freeze(structure_lookup, 'structures');
 vm2.freeze(star_lookup, 'stars');
 vm2.freeze(base_lookup, 'bases');
 vm2.freeze(outpost_lookup, 'outposts');
-
 
 
 if (!isMainThread){
@@ -1770,17 +1754,17 @@ if (!isMainThread){
 			let friendly_beam = from_obj.player_id == to_obj.player_id;
 			
 			if (to_obj.id.startsWith('outpost')){
-				energize_apply.push([from_obj, beam_strength * (-1)]);
+				energize_apply.push([from_obj, -beam_strength]);
 				energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
 			} 
 			else if (!friendly_beam){
-				energize_apply.push([from_obj, beam_strength * (-1)]);
-				energize_apply.push([to_obj, beam_strength * (-2)]);
-				render_data3.e.push([from_id, to_id, beam_strength * 2]);
+				energize_apply.push([from_obj, -beam_strength]);
+				energize_apply.push([to_obj, -2 * beam_strength]);
+				render_data3.e.push([from_id, to_id, 2 * beam_strength]);
 			}
 			else {
 				//else: target is friend
-				energize_apply.push([from_obj, beam_strength]);
+				energize_apply.push([from_obj, -beam_strength]);
 				energize_apply.push([to_obj, beam_strength]);
 				// JM TODO kolik str do render
 				render_data3.e.push([from_id, to_id, beam_strength]);
@@ -2008,11 +1992,9 @@ if (!isMainThread){
 		*/
 
 
-		var start = process.hrtime();
+		let sight_t0 = process.hrtime();
 		get_sight_fast();
-		var diff = process.hrtime(start);
-		var took2 = (diff[0] * 1000000000 + diff[1]) / 1000000;
-		console.log('get_sight_fast took = ' + took2);
+		console.log('TIME: get_sight_fast = ' + elapsed_ms_from(sight_t0));
 
 		//console.log('spirit_lookup[s1].sight');
 		//console.log(spirit_lookup['s1'].sight);
@@ -2272,6 +2254,7 @@ if (!isMainThread){
 			
 
 	function update_state(){
+		let update_t0 = process.hrtime();
 		game_duration++;
 		console.log('game_duration = ' + game_duration);
 		//after everything is calculated
@@ -2369,26 +2352,9 @@ if (!isMainThread){
 		
 			process_stuff();
 		
-			
-			
-			const cutoff = 30;
-			if(log1.length > cutoff){
-				let l1 = log1.length;
-				log1.length = cutoff;
-				log1.push('WARN: output too long (>' + cutoff + ' lines), cutting off ' + (l1 - cutoff) + ' lines of log');
-			}
-			if(log2.length > cutoff){
-				let l1 = log2.length;
-				log2.length = cutoff;
-				log2.push('WARN: output too long (>' + cutoff + ' lines), cutting off ' + (l1 - cutoff) + ' lines of log');
-			}
+			log1 = cutoff_log(log1, 30);
+			log2 = cutoff_log(log2, 30);
 		
-			//errors
-			//render_data2.error_msg1 = user_error1;
-			//render_data2.error_msg2 = user_error2;
-			//render_data2.console1 = log1;
-			//render_data2.console2 = log2;
-			
 			render_data3.er1 = user_error1;
 			render_data3.er2 = user_error2;
 			render_data3.c1 = log1;
@@ -2422,16 +2388,13 @@ if (!isMainThread){
 
 			log1 = [];
 			log2 = [];
-			
-			user_code();
 
-			processTime2 = process.hrtime(processTime1);
-			processTimeRes = (processTime2[0] * 1000000000 + processTime2[1]) / 1000000;
-			console.log('calculated in = ' + processTimeRes);
-			//console.log('outpost sight = ');
-			//console.log(outposts[0].sight);
-			if (processTimeRes > 1000) cancel_game();
-			//user_error = 'calculated in = ' + processTimeRes;
+			let update_no_players = elapsed_ms_from(update_t0);
+			user_code();
+			let update_total = elapsed_ms_from(update_t0);
+
+			console.log('TIME: update_state = ' + update_no_players + " (" + update_total + " total)");
+			if (update_total > 1000) cancel_game();
 	}
 	
 	
@@ -2533,7 +2496,6 @@ if (!isMainThread){
 		user_code();
 	
 		setInterval(function () {
-			processTime1 = process.hrtime();
 			update_state();
 			//ws.send('sending render_data');	
 			//ws.send(JSON.stringify(render_data2));
@@ -2544,23 +2506,5 @@ if (!isMainThread){
 		
 		}, game_tick);
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	
 }
-
-
-
-
-
-
-
-
-
 
