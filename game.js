@@ -403,7 +403,7 @@ function user_code(){
 		vm.run(player1_code, 'vm.js');
 		console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
-		handle_error(error, players['p1'], /vm\.js/, 13);
+		handle_error(error, players['p1'], /vm\.js/, 14);
 	}
 	
 	try {
@@ -411,7 +411,7 @@ function user_code(){
 		vm2.run(player2_code, 'vm2.js');
 		console.log('TIME: p2 = ' + elapsed_ms_from(p2_t0));
 	} catch (error){
-		handle_error(error, players['p2'], /vm2\.js/, 13);
+		handle_error(error, players['p2'], /vm2\.js/, 14);
 	}
 }
 
@@ -451,6 +451,7 @@ var player1_session = '';
 var player2_code;
 var player2_session = '';
 var players = {};
+var ticks = {};
 players['p1'] = 'ab1';
 players['p2'] = 'zx2';
 var players_update = {};
@@ -683,6 +684,7 @@ vm.freeze(structure_lookup, 'structures');
 vm.freeze(star_lookup, 'stars');
 vm.freeze(base_lookup, 'bases');
 vm.freeze(outpost_lookup, 'outposts');
+vm.freeze(ticks, 'ticks');
 //vm2.freeze(spirits2, 'spirits');
 vm2.freeze(players, 'players');
 vm2.freeze(pl2_units, 'spirits');
@@ -691,6 +693,7 @@ vm2.freeze(structure_lookup, 'structures');
 vm2.freeze(star_lookup, 'stars');
 vm2.freeze(base_lookup, 'bases');
 vm2.freeze(outpost_lookup, 'outposts');
+vm2.freeze(ticks, 'ticks');
 
 
 if (!isMainThread){
@@ -1998,7 +2001,7 @@ if (!isMainThread){
 
 		let sight_t0 = process.hrtime();
 		get_sight_fast();
-		console.log('TIME: get_sight_fast = ' + elapsed_ms_from(sight_t0));
+		//console.log('TIME: get_sight_fast = ' + elapsed_ms_from(sight_t0));
 
 		//console.log('spirit_lookup[s1].sight');
 		//console.log(spirit_lookup['s1'].sight);
@@ -2010,7 +2013,7 @@ if (!isMainThread){
 		for (let i = 0; i < stars.length; i++){
 			stars[i].energy += Math.round(2 + (stars[i].energy * 0.01));
 			if (stars[i].energy >= 1000) stars[i].energy = 1000;
-			console.log('star ' + i + ' energy = ' + stars[i].energy);
+			//console.log('star ' + i + ' energy = ' + stars[i].energy);
 			if (game_duration < 100){
 				if (stars[i].id == 'star_p89') stars[i].energy = 0;
 			}
@@ -2021,14 +2024,14 @@ if (!isMainThread){
 		//objects death & vm sandbox objects update
 		// JM TODO death_qu may contain duplicates
 		for (let i = death_queue.length - 1; i >= 0; i--){
-			console.log(death_queue[i].id + ' died');
+			//console.log(death_queue[i].id + ' died');
 			if (workerData[1] == 'tutorial'){
 				if (death_queue[i].id == 'easy-bot2')
 					progress_tut(8, true);
 			}
 			
 			death_queue[i].hp = 0;
-			console.log(death_queue[i]);
+			//console.log(death_queue[i]);
 			//render_data2.death.push(death_queue[i].id);
 			
 			//delete spirit_lookup[suid];
@@ -2250,7 +2253,7 @@ if (!isMainThread){
 			//console.log('objects processing');
 			temp_flag = 0;
 			//console.log('my_spirits1.length = ' + my_spirits1.length);
-			console.log('living_spirits.length = ' + living_spirits.length + " p1 = " + p1_living + " p2 = " + p2_living );
+			//console.log('living_spirits.length = ' + living_spirits.length + " p1 = " + p1_living + " p2 = " + p2_living );
 				spirit_cost(1, p1_living);
 				spirit_cost(2, p2_living);
 		} 
@@ -2260,7 +2263,8 @@ if (!isMainThread){
 	function update_state(){
 		let update_t0 = process.hrtime();
 		game_duration++;
-		console.log('game_duration = ' + game_duration);
+		ticks['now'] = game_duration;
+		//console.log('game_duration = ' + game_duration);
 		//after everything is calculated
 			
 	//console.log(player2_code);
