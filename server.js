@@ -266,6 +266,9 @@ var this_server = 't1';
 var this_server_type = 'tutorial'; //'real'
 
 
+var user_sessions = {};
+
+
 //connect to mongodb
 const mongoose = require('mongoose');
 const User = require('./models/users.js');
@@ -787,7 +790,7 @@ app.post('/session', (req, res) => {
 			console.log('db result');
 			if (result.length == 0){
 				res.status(404).send({
-		        	data: "something went wrong"
+		        	data: "something went wrongg"
 		        });
 			} else if (result[0]['session_id'] == req.body.session_id){
 				//all good, update session id and prolong expiration date
@@ -798,6 +801,14 @@ app.post('/session', (req, res) => {
 				console.log(session_expire);
 				User.updateOne({user_id: req.body.user_id}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
 					.then((qq) => {
+						if (user_sessions[req.body.user_id] == null){
+							user_sessions[req.body.user_id] = [];
+							user_sessions[req.body.user_id][0] = session_id;
+						} else {
+							user_sessions[req.body.user_id].unshift(session_id);
+							user_sessions[req.body.user_id].length = 3;
+						}
+						
 						res.status(200).send({
 							username: result[0]['user_id'],
 				        	data: session_id
@@ -805,12 +816,62 @@ app.post('/session', (req, res) => {
 					});
 				
 			} else {
-				console.log('session ids:::');
-				console.log(result[0]['session_id']);
-				console.log(req.body.session_id);
-				res.status(404).send({
-		        	data: "expired session"
-		        });
+				
+				var session_match = 0;
+				try {
+					if (user_sessions[req.body.user_id] == null){
+						//console.log(user_sessions[req.body.user_id][0]);
+						user_sessions[req.body.user_id] = [];
+					}
+					
+					if (user_sessions[req.body.user_id][0] != null){
+						for (i = 0; i < user_sessions[req.body.user_id].length; i++){
+							if (req.body.session_id == user_sessions[req.body.user_id][i]){
+								session_id = generateUniqueString(3);
+						        var session_expire = new Date();
+						        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
+								console.log('date');
+								console.log(session_expire);
+								User.updateOne({user_id: req.body.user_id}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
+									.then((qq) => {
+										user_sessions[req.body.user_id].unshift(session_id);
+										user_sessions[req.body.user_id].length = 3;
+										session_match = 1;
+										res.status(200).send({
+											username: result[0]['user_id'],
+								        	data: session_id
+								        });
+									});
+							}
+						}
+						
+					} else {
+						//need to login here
+						
+						
+						console.log('invalid session, login again!');
+						//console.log('session ids:::');
+						//console.log(result[0]['session_id']);
+						//console.log(req.body.session_id);
+						res.status(404).send({
+				        	data: "expired session"
+				        });
+					}
+					
+				} catch (e) {
+					console.log(e);
+					res.status(404).send({
+			        	data: "expired session or something, idk"
+			        });
+				}
+				
+					
+				if (session_match == 0){
+					res.status(404).send({
+			        	data: "expired session or something, idk"
+			        });
+				}
+				
 			}
 		})
 		.catch((error) => {
