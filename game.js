@@ -2011,7 +2011,7 @@ if (!isMainThread){
 		// stars energy update
 		
 		for (let i = 0; i < stars.length; i++){
-			stars[i].energy += Math.round(2 + (stars[i].energy * 0.01));
+			stars[i].energy += Math.round(3 + (stars[i].energy * 0.01));
 			if (stars[i].energy >= 1000) stars[i].energy = 1000;
 			//console.log('star ' + i + ' energy = ' + stars[i].energy);
 			if (game_duration < 100){
