@@ -1713,7 +1713,6 @@ if (!isMainThread){
 				continue;
 
 			last_beam[from_id] = to_id;
-			from_obj.last_energized = to_id;
 
 			// harvest star
 			if (from_id == to_id){
@@ -1729,6 +1728,7 @@ if (!isMainThread){
 					if (!star_close)
 						continue;
 
+					from_obj.last_energized = to_id;
 					energize_apply_star.push([from_obj, energy_value * from_obj.size, star]);
 
 					// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
@@ -1750,6 +1750,8 @@ if (!isMainThread){
 			let beam_strength = Math.min(energy_value * from_obj.size, from_obj.energy);
 			if(beam_strength <= 0)
 				continue;
+
+			from_obj.last_energized = to_id;
 
 			let friendly_beam = from_obj.player_id == to_obj.player_id;
 			
