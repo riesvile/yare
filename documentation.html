@@ -171,6 +171,13 @@
 					<span class="table_doc_value">Contains all spirits. Access them by their id – spirits[‘jane_7’]</span>
 				</div>
 			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">tick</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">Current game tick (e.g. 75). 1 tick = 1 second</span>
+				</div>
+			</div>
 		  	
 		  </div>
 		  
@@ -435,7 +442,7 @@
 						
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Teleports a spirit into a new location up to 500 units away. Costs half of spirit's energy_capacity. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star</span></p>
+						<p class="p_method_desc">Teleports a spirit into a new location up to 300 units away. Costs half of spirit's energy_capacity. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star</span></p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
@@ -761,6 +768,13 @@
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
+					<span class="table_doc_property">energy_capacity</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">1000</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
 					<span class="table_doc_property">position</span>
 					<span class="table_doc_type">array</span>
 					<span class="table_doc_value">[x, y] coordinates (see <a href="#gm_board">game board</a>)</span>
@@ -780,8 +794,7 @@
 		  
 		<section id="doc_credits">
 		  <h2 class="h_sec_head">Credits</h2>
-		   <p class="p_sec_intro">Yare.io was made by <a href="http://ries.cz">Vilem Ries</a>. Feel free to reach out over <a href="https://discord.gg/tWDV7daRnB">Discord</a> </p>
-		   <p class="p_sec_intro2">Medium and Hard bots were made by <a href="j2m.cz/~jm/">jm</a></p>
+		   <p class="p_sec_intro">Yare.io was made by <a href="http://ries.cz">Vilem Ries</a> and <a href="j2m.cz/~jm/">jm</a>. Feel free to reach out over <a href="https://discord.gg/tWDV7daRnB">Discord</a> </p>
 		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>

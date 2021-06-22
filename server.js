@@ -252,7 +252,7 @@ var active_games = {};
 var tutorial_finishings = {};
 var server_occupancy_tutorial = {
 	t1: 0,
-	t2: 500,
+	t2: 900,
 	t3: 50
 }
 var server_occupancy = {
@@ -1694,7 +1694,8 @@ wss.on('connection', function connection(ws, req) {
 					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c']; 		// line 13 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
+					global['star_a1c'] = stars['star_a1c'];
+					global['tick'] = ticks['now']; 		// line 14 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
 				` + message['u_code'];
 
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
@@ -1712,7 +1713,8 @@ wss.on('connection', function connection(ws, req) {
 					global['outpost'] = outposts['outpost_mdo'];
 					global['star_zxq'] = stars['star_zxq'];
 					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c'];			// line 13 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
+					global['star_a1c'] = stars['star_a1c'];
+					global['tick'] = ticks['now'];			// line 14 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
 				` + message['u_code'];
 
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
