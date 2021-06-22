@@ -398,6 +398,16 @@ function user_code(){
 		}
 	}
 	
+	queue_order = [];
+	energize_queues = [];
+	move_queues = [];
+
+	//
+	// first player
+	//
+	energize_queue = {};
+	move_queue = {};
+	
 	try {
 		let p1_t0 = process.hrtime();
 		vm.run(player1_code, 'vm.js');
@@ -405,6 +415,17 @@ function user_code(){
 	} catch (error){
 		handle_error(error, players['p1'], /vm\.js/, 14);
 	}
+
+	queue_order.push(players['p1']);
+	energize_queues.push(energize_queue);
+	move_queues.push(move_queue);
+
+	//
+	// second player
+	//
+	
+	energize_queue = {};
+	move_queue = {};
 	
 	try {
 		let p2_t0 = process.hrtime();
@@ -413,6 +434,10 @@ function user_code(){
 	} catch (error){
 		handle_error(error, players['p2'], /vm2\.js/, 14);
 	}
+
+	queue_order.push(players['p2']);
+	energize_queues.push(energize_queue);
+	move_queues.push(move_queue);
 }
 
 //global
@@ -430,10 +455,14 @@ var outpost_lookup = {};
 var structure_lookup = {};
 var spirits = [];
 var spirits2 = [];
-var move_queue = [];
-var move_queue_ids = [];
-var energize_queue = [];
-var merge_queue = [];
+
+var move_queue = {};
+var energize_queue = {};
+var move_queues = [];
+var energize_queues = [];
+var queue_order = [];
+
+var merge_queue = {};
 var divide_queue = [];
 var jump_queue = [];
 var shout_queue = [];
@@ -725,7 +754,7 @@ if (!isMainThread){
 		
 			living_spirits.push(this);
 			birth_queue.push(this);
-			move_queue.push([this.id, this.position[0], this.position[1]]);
+			move_queue[this.id] = [this.position[0], this.position[1]];
 		}
 
 		birth() {
@@ -746,61 +775,19 @@ if (!isMainThread){
 				throw new Error('.move() arguments must be numbers, got ['+ tarX + ", " + tarY + ']');
 			}
 
-			move_queue.push([this.id, tarX, tarY]);
-			/*
-			return;
-
-			// JM TU
-			let plus_minus = Math.random() < 0.5 ? -1 : 1;
-			let adj1 = Math.floor(Math.random() * 100) / 70 * plus_minus;
-			let adj2 = Math.floor(Math.random() * 100) / 70 * plus_minus;
-
-		
-			var incr = [0, 0];
-			var entry_index = move_queue.findIndex(entry => entry[0]['id'] === this.id);
-			//console.log('entry_index = ' + entry_index);
-		
-				
-			if (Math.abs(target[0] - this.position[0]) < 0.6 && Math.abs(target[1] - this.position[1]) < 0.6){
-				var update_needed = 0;
-				
-				//console.log('not going anywhere');
-				incr[0] = 0;
-				incr[1] = 0;
-				this.position[0] = target[0];
-				this.position[1] = target[1];
-				
-			} else {
-				//check if spirit still alive
-				if (this.hp != 0){
-					
-					var angle = Math.atan2(target[1] - this.position[1], target[0] - this.position[0]);
-					incr[0] = adj1 + Number(((Math.round(Math.cos(angle) * 10000) / 10000) * base_speed).toFixed(5));
-					incr[1] = adj2 + Number(((Math.round(Math.sin(angle) * 10000) / 10000) * base_speed).toFixed(5));
-		
-					if ( ((Math.abs(tarX - this.position[0]) <= Math.abs(incr[0])) && (Math.abs(tarY - this.position[1]) <= Math.abs(incr[1]))) || ((Math.abs(tarX - this.position[0]) <= 15) && (Math.abs(tarY - this.position[1]) <= 15)) )  {
-						incr[0] = tarX - this.position[0];
-						incr[1] = tarY - this.position[1];
-					}
-					
-					//console.log('spirit is dead');
-					move_queue[entry_index] = [this, incr, target];
-				} else {
-				}
-			}
-			*/
+			move_queue[String(this.id)] = [tarX, tarY];
 		}
 	
 	
 		energize(target) {
-			let id = null;
+			let target_id = null;
 			if(typeof target == 'object'){
-				id = target.id;
+				target_id = target.id;
 			}else if(typeof target == 'string'){
-				id = target;
+				target_id = target;
 			}
 
-			let bad = Array.isArray(target) || id == null || target == null;
+			let bad = Array.isArray(target) || target_id == null || target == null;
 			if(bad){
 				let example_id = this.player_id + "_2";
 				let err_msg = ".energize() argument must be a game object (e.g. spirit) with id, or its id (string).\n > E.g. my_spirits[0].energize(my_spirits[0])\n > or my_spirits[0].energize(spirits['" + example_id + "'])\n > or my_spirits[0].energize('" + example_id + "')\n > Received: " + target;
@@ -808,79 +795,10 @@ if (!isMainThread){
 				throw new Error(err_msg);
 			}
 			
-			energize_queue.push([String(this.id), String(id)]);
-			return;
-
-			/*
-
-			if () == true){
-				fill_error(this.player_id, err_msg);
-				return;
-			} else if (){
-				var err_msg = ".energize() argument must be an object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
-				fill_error(this.player_id, err_msg);
-				return;
-			} else if (!target.position){
-				var err_msg = ".energize() argument must be an object. E.g. my_spirits[0].energize(my_spirits[0]) or my_spirits[0].energize(spirits['" + this.player_id + "1']). Received: " + target;
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			
-			try {
-				if (typeof target.id === 'string' || target.id instanceof String){
-					if (target.structure_type == 'base'){
-						target = base_lookup[target.id];
-					} else if (target.structure_type == 'outpost') {
-						target = outpost_lookup[target.id];
-					} else {
-						target = spirit_lookup[target.id];
-					}
-				} else {
-					var err_msg = ".energize() received something it can't process as its argument. Received: " + target;
-					fill_error(this.player_id, err_msg);
-					return;
-				}
-			} catch (error){
-				console.error(error);
-			}
-
-			var entry_index2 = energize_queue.findIndex(entry2 => entry2[0]['id'] === this.id);
-			
-			if (target == null){
-				target = this;
-			}
-			
-			if (workerData[1] == 'tutorial'){
-				try {
-					if (target.id == 'easy-bot2'){
-						console.log('tutorial phase 7 done');
-						tutorial_phase[6] = 1;
-						if (qqmonitoring[6] == 0){
-							qqmonitoring[6] = 1;
-							parentPort.postMessage({data: 7, game_id: workerData[0], meta: 'monitoring'});
-						}
-					}
-				} catch (error){
-					console.log(error);
-				}
-			}
-			
-			
-			
-			//this, this.energy, this.size, target)
-			var are_beamable = fast_dist_lt(this.position, target.position, min_beam);
-			if (target.hp != 0 && are_beamable){
-				if (entry_index2 == -1){
-					energize_queue.push([this, target]);
-				} else {
-					energize_queue[entry_index2] = [this, target];
-				}
-			}
-			*/
+			energize_queue[String(this.id)] = String(target_id);
 		}
 		
 		merge(target){
-			
 			if (target.id == this.id){
 				var err_msg = "You can't merge spirit into itself";
 				fill_error(this.player_id, err_msg);
@@ -1006,12 +924,13 @@ if (!isMainThread){
 		}
 		
 		//kill() { }???????
+		/*
 		kill(suid){
 			delete spirit_lookup[suid];
 			var index = living_spirits.findIndex(x => x.id == suid);
 			living_spirits.splice(index);
 		}
-		
+		*/
 		
 		set_mark(mrk){
 			if (typeof mrk !== 'string'){
@@ -1041,7 +960,7 @@ if (!isMainThread){
 				return;
 			}
 			
-			var entry_index6 = jump_queue.findIndex(entry6 => entry6[0]['id'] === this.id);
+			var entry_index6 = shout_queue.findIndex(entry6 => entry6[0]['id'] === this.id);
 			
 			if (this.hp != 0){
 				if (entry_index6 == -1){
@@ -1608,80 +1527,90 @@ if (!isMainThread){
 	function move_objects(){
 		const prev_position = {};
 
-		for (let i = move_queue.length - 1; i >= 0; i--){
-			const target = move_queue[i];
-			const id = target[0];
+		for (let i = 0; i < move_queues.length; i++){
+			let queue = move_queues[i];
+			let queue_player = queue_order[i];
 
-			if (prev_position[id] != undefined)
-				continue;
-
-			const spirit = spirit_lookup[id];
-			if (spirit.hp == 0)
-				continue;
-
-			const tpos = [target[1], target[2]];
-			const pos = spirit.position;
-			prev_position[id] = pos;
-
-			//tutorial
-			if (workerData[1] == 'tutorial' && i == 0){
-				if (t_x == 1000 && t_y == 1000){
-					progress_tut(1);
-				} else if (t_x == 1600 && t_y == 700){
-					progress_tut(3, true);
+			Object.keys(queue).forEach((id) => {
+				if(!id || !id.startsWith(queue_player)){
+					console.log("WTF: null or possible hack: player " + queue_player + 
+						" calls "  + id + ".move()");
+					return;
 				}
-			}
-			
-			// move_queue[entry_index] = [this, incr, target];
-			
-			let incr = sub(tpos, pos);
-
-			/*
-			incr = incr.map((d) => d + jitter(100/70));
-			if (dist_sq(pos, tpos) < 0.6**2){
-				incr = [0, 0]
-			}
-			//*/
-
-			// JM TU
-		
-			let len_sq = norm_sq(incr);
-			// work with data only if there is movement
-			if (len_sq > 0){
-				// if not getting there in one tick
-				if(len_sq > base_speed**2){
-					// norm the incr vector so that its len is base_speed
-					incr = mult(base_speed / Math.sqrt(len_sq), incr);
+				// now, this check is not needed cause the queues are hash-maps
+				// so only last command is issued
+				if (prev_position[id] != undefined){
+					console.log("WTF ERROR: prev_position["+id+"] = "+prev_position[id]
+						+ " for player " + queue_player);
+					return;
 				}
-				spirit.position = add(pos, incr).map((c) => round_to(c, 5));
 
-				let potential_structure_collisions = spirit.sight.structures;
-				for (let k = 0; k < potential_structure_collisions.length; k++){
-					//console.log(' ------------------------------- structure potential collisions');
-					//console.log(potential_structure_collisions[k]);
-					let object_name = potential_structure_collisions[k];
-					let min_distance = object_name.startsWith('star') ? 100 : 50;
-					let object_position = structure_lookup[object_name].position;
+				const spirit = spirit_lookup[id];
+				if (spirit.hp == 0)
+					return;
 
-					let spirit_before = pos;
-					// JM TODO check - tady se to spirit before dopocitava
-					// tzn, odecita se PUVODNI inkrement & nebere se v potaz jitter
-					// spirit_before[0] = spirit.position[0] - move_queue[i][1][0];
-					// spirit_before[1] = spirit.position[1] - move_queue[i][1][1];
+				const tpos = queue[id];
+				const pos = spirit.position;
+				prev_position[id] = pos;
 
-					if (fast_dist_lt(spirit.position, object_position, min_distance)){
-						let inter_coor = intersection(spirit_before[0], spirit_before[1], base_speed,
-														object_position[0], object_position[1], min_distance);
-						if (inter_coor == false) continue;
-						
-						let quick_dist1 = dist_sq(inter_coor[0], tpos);
-						let quick_dist2 = dist_sq(inter_coor[1], tpos);
-						
-						let pick_first = quick_dist1 < quick_dist2 || Math.abs(quick_dist1 - quick_dist2) <= 5;
-						spirit.position = inter_coor[pick_first ? 0 : 1];
+				//tutorial
+				if (workerData[1] == 'tutorial' && i == 0){
+					if (t_x == 1000 && t_y == 1000){
+						progress_tut(1);
+					} else if (t_x == 1600 && t_y == 700){
+						progress_tut(3, true);
 					}
 				}
-			}
+				
+				let incr = sub(tpos, pos);
+
+				/*
+				incr = incr.map((d) => d + jitter(100/70));
+				if (dist_sq(pos, tpos) < 0.6**2){
+					incr = [0, 0]
+				}
+				//*/
+
+				// JM TU
+			
+				let len_sq = norm_sq(incr);
+				// work with data only if there is movement
+				if (len_sq > 0){
+					// if not getting there in one tick
+					if(len_sq > base_speed**2){
+						// norm the incr vector so that its len is base_speed
+						incr = mult(base_speed / Math.sqrt(len_sq), incr);
+					}
+					spirit.position = add(pos, incr).map((c) => round_to(c, 5));
+
+					let potential_structure_collisions = spirit.sight.structures;
+					for (let k = 0; k < potential_structure_collisions.length; k++){
+						//console.log(' ------------------------------- structure potential collisions');
+						//console.log(potential_structure_collisions[k]);
+						let object_name = potential_structure_collisions[k];
+						let min_distance = object_name.startsWith('star') ? 100 : 50;
+						let object_position = structure_lookup[object_name].position;
+
+						let spirit_before = pos;
+						// JM TODO check - tady se to spirit before dopocitava
+						// tzn, odecita se PUVODNI inkrement & nebere se v potaz jitter
+						// spirit_before[0] = spirit.position[0] - move_queue[i][1][0];
+						// spirit_before[1] = spirit.position[1] - move_queue[i][1][1];
+
+						if (fast_dist_lt(spirit.position, object_position, min_distance)){
+							let inter_coor = intersection(spirit_before[0], spirit_before[1], base_speed,
+															object_position[0], object_position[1], min_distance);
+							if (inter_coor == false) continue;
+							
+							let quick_dist1 = dist_sq(inter_coor[0], tpos);
+							let quick_dist2 = dist_sq(inter_coor[1], tpos);
+							
+							let pick_first = quick_dist1 < quick_dist2 || Math.abs(quick_dist1 - quick_dist2) <= 5;
+							spirit.position = inter_coor[pick_first ? 0 : 1];
+						}
+					}
+				}
+			});
 		}
 
 		return prev_position;
@@ -1707,95 +1636,100 @@ if (!isMainThread){
 		}
 
 		let last_beam = {};
-		for (let i = energize_queue.length - 1; i >= 0; i--){
-			const from_id = energize_queue[i][0];
-			const to_id = energize_queue[i][1];
-			if (from_id == null || to_id == null){
-				console.log("WTF null id " + from_id + " & " + to_id);
-				continue;
-			}
+		for (let i = 0; i < energize_queues.length; i++){
+			let queue = energize_queues[i];
+			let queue_player = queue_order[i];
 
-			if(last_beam[from_id] != undefined)
-				continue;
-			last_beam[from_id] = to_id;
-			
-			const from_obj = spirit_lookup[from_id] || structure_lookup[from_id];
-			const to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
-
-
-			// harvest star
-			if (from_id == to_id){
-				for (let j = 0; j < from_obj.sight.structures.length; j++){
-					//console.log('ilook here');
-					let struc_name = from_obj.sight.structures[j];
-
-					if (!struc_name.startsWith('star'))
-						continue;
-
-					let star = structure_lookup[struc_name];
-					let star_close = fast_dist_lt(from_obj.position, star.position, min_beam);
-					if (!star_close)
-						continue;
-
-					from_obj.last_energized = to_id;
-					energize_apply_star.push([from_obj, energy_value * from_obj.size, star]);
-
-					// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
-					// 						to nejde delat tutorial jako logged in user?
-					if (workerData[1] == 'tutorial' && from_obj.id == 'anonymous1')
-						progress_tut(2);
-
-					// only harvest one star at once
-					break;
+			Object.keys(queue).forEach((from_id) => {
+				const to_id = queue[from_id];
+				if(!from_id || !from_id.startsWith(queue_player) || !to_id){
+					console.log("WTF: null or possible hack player " + queue_player + 
+						" calls "  + from_id + ".energize(" + to_id+")");
+					return;
 				}
-				// no need to check other cases (outpost, friend, ...)
-				continue;
-			}
 
-			let target_close = fast_dist_lt(from_obj.position, to_obj.position, min_beam);
-			if(! target_close)
-				continue;
+				if(last_beam[from_id] != undefined)
+					return;
+				last_beam[from_id] = to_id;
+				
+				const from_obj = spirit_lookup[from_id] || structure_lookup[from_id];
+				const to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
 
-			let beam_strength = Math.min(energy_value * from_obj.size, from_obj.energy);
-			if(beam_strength <= 0)
-				continue;
 
-			from_obj.last_energized = to_id;
+				// harvest star
+				if (from_id == to_id){
+					for (let j = 0; j < from_obj.sight.structures.length; j++){
+						//console.log('ilook here');
+						let struc_name = from_obj.sight.structures[j];
 
-			let friendly_beam = from_obj.player_id == to_obj.player_id;
-			
-			if (to_obj.id.startsWith('outpost')){
-				energize_apply.push([from_obj, -beam_strength]);
-				energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
-				render_data3.e.push([from_id, to_id, beam_strength]);
-			} 
-			else if (!friendly_beam){
-				energize_apply.push([from_obj, -beam_strength]);
-				energize_apply.push([to_obj, -2 * beam_strength]);
-				render_data3.e.push([from_id, to_id, 2 * beam_strength]);
-			}
-			else {
-				//else: target is friend
-				energize_apply.push([from_obj, -beam_strength]);
-				energize_apply.push([to_obj, beam_strength]);
-				// JM TODO kolik str do render
-				render_data3.e.push([from_id, to_id, beam_strength]);
+						if (!struc_name.startsWith('star'))
+							continue;
 
-				// JM TODO refactor tutorial player code elsewhere
-				if (workerData[1] == 'tutorial'){
-					// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
-					// 						to nejde delat tutorial jako logged in user?
-					if (to_id.startsWith('base') && from_obj.energy < 10 && from_id == 'anonymous1'){
-						progress_tut(4, true);
+						let star = structure_lookup[struc_name];
+						let star_close = fast_dist_lt(from_obj.position, star.position, min_beam);
+						if (!star_close)
+							continue;
+
+						from_obj.last_energized = to_id;
+						energize_apply_star.push([from_obj, energy_value * from_obj.size, star]);
+
+						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
+						// 						to nejde delat tutorial jako logged in user?
+						if (workerData[1] == 'tutorial' && from_obj.id == 'anonymous1')
+							progress_tut(2);
+
+						// only harvest one star at once
+						break;
 					}
+					// no need to check other cases (outpost, friend, ...)
+					return;
+				}
 
-					// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
-					if (to_id.startsWith('base') && from_id == 'anonymous2' && tutorial_flag1 == 1){
-						progress_tut(6, true);
-						player2_code = botCodes['tutorial6'];
+				let target_close = fast_dist_lt(from_obj.position, to_obj.position, min_beam);
+				if(! target_close)
+					return;
+
+				let beam_strength = Math.min(energy_value * from_obj.size, from_obj.energy);
+				if(beam_strength <= 0)
+					return;
+
+				from_obj.last_energized = to_id;
+
+				let friendly_beam = from_obj.player_id == to_obj.player_id;
+				
+				if (to_obj.id.startsWith('outpost')){
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
+					render_data3.e.push([from_id, to_id, beam_strength]);
+				} 
+				else if (!friendly_beam){
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply.push([to_obj, -2 * beam_strength]);
+					render_data3.e.push([from_id, to_id, 2 * beam_strength]);
+				}
+				else {
+					//else: target is friend
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply.push([to_obj, beam_strength]);
+					// JM TODO kolik str do render
+					render_data3.e.push([from_id, to_id, beam_strength]);
+
+					// JM TODO refactor tutorial player code elsewhere
+					if (workerData[1] == 'tutorial'){
+						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
+						// 						to nejde delat tutorial jako logged in user?
+						if (to_id.startsWith('base') && from_obj.energy < 10 && from_id == 'anonymous1'){
+							progress_tut(4, true);
+						}
+
+						// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
+						if (to_id.startsWith('base') && from_id == 'anonymous2' && tutorial_flag1 == 1){
+							progress_tut(6, true);
+							player2_code = botCodes['tutorial6'];
+						}
 					}
 				}
-			}
+			});
 		}
 
 		//
@@ -1982,14 +1916,12 @@ if (!isMainThread){
 		//
 		
 		energize_objects();
-		energize_queue = [];
 
 		//
 		// objects move
 		//
 
 		let prev_position = move_objects();
-		move_queue = [];
 		
 		//
 		//objects sight
