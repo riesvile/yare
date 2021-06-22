@@ -1607,9 +1607,14 @@ if (!isMainThread){
 		for (let i = move_queue.length - 1; i >= 0; i--){
 			const target = move_queue[i];
 			const id = target[0];
-			const spirit = spirit_lookup[id];
 
-			if (spirit.hp == 0 || prev_position[id] != undefined) continue;
+			if (prev_position[id] != undefined)
+				continue;
+
+			const spirit = spirit_lookup[id];
+			if (spirit.hp == 0)
+				continue;
+
 			const tpos = [target[1], target[2]];
 			const pos = spirit.position;
 			prev_position[id] = pos;
@@ -1705,14 +1710,14 @@ if (!isMainThread){
 				console.log("WTF null id " + from_id + " & " + to_id);
 				continue;
 			}
+
+			if(last_beam[from_id] != undefined)
+				continue;
+			last_beam[from_id] = to_id;
 			
 			const from_obj = spirit_lookup[from_id] || structure_lookup[from_id];
 			const to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
 
-			if(last_beam[from_id] != undefined)
-				continue;
-
-			last_beam[from_id] = to_id;
 
 			// harvest star
 			if (from_id == to_id){
