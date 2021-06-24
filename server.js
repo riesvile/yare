@@ -633,16 +633,15 @@ function automatch(req, res){
 	
 }
 
-
-function discord_automatch_bot(usr){
-	fetch('https://discord.com/api/webhooks/857712958942609458/0VUkHZ9cqHj1ow0tCIelJQecBRY0lO92gkAeyn2IuCLqTkIhE9hdBCfn1lnwXunp0Pb-', {
+function discord_postmessage(hook, msg){
+	fetch(hook, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-	        content: usr + ' is waiting in the queue'
+	        content: msg
 	    })
 	}).then(response => response.json())
       .then(response => {
@@ -651,7 +650,11 @@ function discord_automatch_bot(usr){
       .catch(err => {
 		  console.log(err);
 	  });
+}
 
+
+function discord_automatch_bot(usr){
+	discord_postmessage(config.hooks.queue, usr + ' is waiting in the queue');
 }
 
 
@@ -1058,6 +1061,11 @@ function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server
 	active_games[game_id][5] = pla2_shape;
 	active_games[game_id][6] = pla1_color;
 	active_games[game_id][7] = pla2_color;
+
+	if(game_type == "real" && pla2 != "dumb-bot" && pla2 != "medium-bot") {
+		discord_postmessage(config.hooks.new_match, "New game started: https://yare.io/" + server_id + "/" + game_id);
+	}
+
 	start_world(game_id);
 }
 
