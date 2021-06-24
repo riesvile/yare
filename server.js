@@ -633,6 +633,28 @@ function automatch(req, res){
 	
 }
 
+
+function discord_automatch_bot(usr){
+	fetch('https://discord.com/api/webhooks/857712958942609458/0VUkHZ9cqHj1ow0tCIelJQecBRY0lO92gkAeyn2IuCLqTkIhE9hdBCfn1lnwXunp0Pb-', {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+	        content: usr + ' is waiting in the queue'
+	    })
+	}).then(response => response.json())
+      .then(response => {
+		  console.log(response);
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+
+}
+
+
 // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: true }));
 
@@ -661,6 +683,8 @@ app.post('/new-game', (req, res) => {
 					console.log(result);
 					console.log('...auto match added');
 					//[user_id, rating, shape, color, time_spent_in_queue, matched?]
+					
+					discord_automatch_bot(req.body.user_id);
 					
 					if (req.body.user_id == 'anonymous'){
 						res.status(200).send({
