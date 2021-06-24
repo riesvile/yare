@@ -143,7 +143,9 @@ const util = require('util');
 const mongoose = require('mongoose');
 const User = require('./models/users.js');
 const Game = require('./models/newgame.js');
-const dbURI = 'mongodb+srv://levmiseri:02468a13579A@cluster0.us90f.mongodb.net/yare-io?retryWrites=true&w=majority'
+const config = require('./config');
+
+const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to db'))
 	.catch((error) => console.log(error));
