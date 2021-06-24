@@ -245,6 +245,8 @@ const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
+const config = require('./config')
+
 var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
 //active games[game_id] = [status, player1_id, player2_id, server];
@@ -273,7 +275,7 @@ var user_sessions = {};
 const mongoose = require('mongoose');
 const User = require('./models/users.js');
 const Game = require('./models/newgame.js');
-const dbURI = 'mongodb+srv://levmiseri:02468a13579A@cluster0.us90f.mongodb.net/yare-io?retryWrites=true&w=majority'
+const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to dbb'))
 	.catch((error) => console.log(error));
