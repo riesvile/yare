@@ -113,7 +113,7 @@
 		  
 		  <div id="start_area">
 			  <div id="pre_game">
-				  <div id="start_game_btn">Auto-match game <p class="btn_desc">Play against another human</p></div>
+				  <div id="start_game_btn">Auto-match game <p class="btn_desc">Play against another human</p><span id="someone_in_queue">1 human is waiting</span></div>
 				  
 				  
 				  <div id="bot_game_btn"><span id="bot_sel_lbl">Play against a bot</span> <p class="btn_desc" id="btn_desc_bot">Test and build your scripts</p>
@@ -417,6 +417,37 @@
 		  expand_bot_selection();
 	  }
 	  
+	  function am_anyone(){
+  	  	knockanyone = setInterval(function(){
+  	  		//console.log('checking with server');
+  	  		fetch('/automatch-anyone', {
+  	  	        method: "POST",
+  	  	        headers: {
+  	  	          Accept: "application/json",
+  	  	          "Content-Type": "application/json"
+  	  	        },
+  	  	        body: JSON.stringify({
+  	  		        user_id: 'bla'
+  	  		    })
+  	  		}).then(response => response.json())
+  	  	      .then(response => {
+  	  			  //redirect to game id
+  	  			  //console.log(response);
+  	  			  if (response.data == 'yes-waiting'){
+  	  				  //console.log('1 person waiting');
+					  document.getElementById('someone_in_queue').style.display = "block";
+  	  			  } else if (response.data == 'no-noone'){
+  	  				  //console.log('nope, no one there');
+					  document.getElementById('someone_in_queue').style.display = "none";
+  	  			  }
+  	  		  })
+  	  	      .catch(err => {
+  	  			  console.log(err);
+  	  		  });
+  	  	}, 1300);
+		
+	  }
+	  
 	  
 	  
 	  function am_knock(usid){
@@ -580,7 +611,7 @@
 	  
 	  //document.getElementById('color_gblue_border').addEventListener('click', chosencolor, false)
 	  
-  
+  	  am_anyone();
   
   
   </script>

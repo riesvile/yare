@@ -1365,6 +1365,15 @@ p.btn_desc {
 	color: rgba(242, 246, 250, 0.55);
 }
 
+#someone_in_queue {
+	position: absolute;
+	top: 80px;
+	left: 0;
+	font-size: 14px;
+	color: rgba(133, 234, 143, 1);
+	display: none;
+}
+
 #bot_selection_wrap {
 	position: absolute;
 	top: 0;

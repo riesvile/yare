@@ -718,6 +718,19 @@ app.post('/automatch-status', (req, res) => {
 	
 });
 
+app.post('/automatch-anyone', (req, res) => {
+
+	if (automatch_looking.length > 0){
+		res.status(200).send({
+			data: 'yes-waiting'
+        });
+	} else {
+		res.status(200).send({
+			data: 'no-noone'
+        });
+	}
+});
+
 app.post('/check-status/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
 	if (active_games[game_id_url][0] == 0.5){
