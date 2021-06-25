@@ -1526,6 +1526,15 @@ if (!isMainThread){
 				}
 	}
 
+	function player_owns_spirit(id, name){
+		if(!id.startsWith(name))
+			return false;
+		// if the id does start with name, it is still not ok
+		// consider players "pepa" and "pepa_the_best"
+		let spirit_num = Number(id.slice(name.length + 1));
+		return id == (name + "_" + spirit_num);
+	}
+
 	function move_objects(){
 		const prev_position = {};
 
@@ -1534,7 +1543,7 @@ if (!isMainThread){
 			let queue_player = queue_order[i];
 
 			Object.keys(queue).forEach((id) => {
-				if(!id || !id.startsWith(queue_player)){
+				if(!id || !player_owns_spirit(id, queue_player)){
 					console.log("WTF: null or possible hack: player " + queue_player + 
 						" calls "  + id + ".move()");
 					return;
@@ -1573,8 +1582,6 @@ if (!isMainThread){
 				}
 				//*/
 
-				// JM TU
-			
 				let len_sq = norm_sq(incr);
 				// work with data only if there is movement
 				if (len_sq > 0){
@@ -1589,15 +1596,12 @@ if (!isMainThread){
 					for (let k = 0; k < potential_structure_collisions.length; k++){
 						//console.log(' ------------------------------- structure potential collisions');
 						//console.log(potential_structure_collisions[k]);
+						
 						let object_name = potential_structure_collisions[k];
+						// name prefix - safe (is structure)
 						let min_distance = object_name.startsWith('star') ? 100 : 50;
 						let object_position = structure_lookup[object_name].position;
-
 						let spirit_before = pos;
-						// JM TODO check - tady se to spirit before dopocitava
-						// tzn, odecita se PUVODNI inkrement & nebere se v potaz jitter
-						// spirit_before[0] = spirit.position[0] - move_queue[i][1][0];
-						// spirit_before[1] = spirit.position[1] - move_queue[i][1][1];
 
 						if (fast_dist_lt(spirit.position, object_position, min_distance)){
 							let inter_coor = intersection(spirit_before[0], spirit_before[1], base_speed,
@@ -1644,7 +1648,7 @@ if (!isMainThread){
 
 			Object.keys(queue).forEach((from_id) => {
 				const to_id = queue[from_id];
-				if(!from_id || !from_id.startsWith(queue_player) || !to_id){
+				if(!from_id || !player_owns_spirit(from_id, queue_player) || !to_id){
 					console.log("WTF: null or possible hack player " + queue_player + 
 						" calls "  + from_id + ".energize(" + to_id+")");
 					return;
@@ -1664,6 +1668,7 @@ if (!isMainThread){
 						//console.log('ilook here');
 						let struc_name = from_obj.sight.structures[j];
 
+						// name prefix - safe (is structure)
 						if (!struc_name.startsWith('star'))
 							continue;
 
@@ -1699,7 +1704,8 @@ if (!isMainThread){
 
 				let friendly_beam = from_obj.player_id == to_obj.player_id;
 				
-				if (to_obj.id.startsWith('outpost')){
+				// name prefix - safe (is outpost)
+				if (to_obj.id.startsWith('outpost') && outpost_lookup[to_obj]){
 					energize_apply.push([from_obj, -beam_strength]);
 					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
 					render_data3.e.push([from_id, to_id, beam_strength]);
@@ -1713,19 +1719,21 @@ if (!isMainThread){
 					//else: target is friend
 					energize_apply.push([from_obj, -beam_strength]);
 					energize_apply.push([to_obj, beam_strength]);
-					// JM TODO kolik str do render
 					render_data3.e.push([from_id, to_id, beam_strength]);
 
 					// JM TODO refactor tutorial player code elsewhere
 					if (workerData[1] == 'tutorial'){
 						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
 						// 						to nejde delat tutorial jako logged in user?
-						if (to_id.startsWith('base') && from_obj.energy < 10 && from_id == 'anonymous1'){
+						// name prefix - safe (is structure)
+						let to_base = to_id.startsWith('base') && structure_lookup[to_id];
+
+						if (to_base && from_obj.energy < 10 && from_id == 'anonymous1'){
 							progress_tut(4, true);
 						}
 
 						// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
-						if (to_id.startsWith('base') && from_id == 'anonymous2' && tutorial_flag1 == 1){
+						if (to_base && from_id == 'anonymous2' && tutorial_flag1 == 1){
 							progress_tut(6, true);
 							player2_code = botCodes['tutorial6'];
 						}
@@ -1758,8 +1766,9 @@ if (!isMainThread){
 		//  (imo je nespravedlivy, kdyby chcipli); pokud je tohle zamer, tak minimalne
 		//  je imo potreba aby uz pak ty mrtvoly netezily (pze pak se ztraci energie hvezdy)
 
-		// JM TODO discuss: kdyz tezi vic najednou tak by moh mozna dostat kazdy neco rovnym dilem
-		//  ted je to udelany tak, ze dostanou nahodny tezici spirity, to je asi taky ok
+		// JM TODO discuss: more simultaneous harvestors (& almost empty star) could be solved by all of them getting 
+		// 					some proportion
+		// now, it is first come, first served, probably also ok
 		shuffle_array(energize_apply_star);
 
 		// apply harvest
@@ -1958,7 +1967,6 @@ if (!isMainThread){
 	
 	
 		//objects death & vm sandbox objects update
-		// JM TODO death_qu may contain duplicates
 		for (let i = death_queue.length - 1; i >= 0; i--){
 			//console.log(death_queue[i].id + ' died');
 			if (workerData[1] == 'tutorial'){
