@@ -1768,9 +1768,6 @@ if (!isMainThread){
 			let amount = energize_apply_star[i][1];
 			let star = energize_apply_star[i][2];
 
-			// star is empty, no other spirits will get anything
-			if (star.energy <= 0) continue;
-
 			let can_harvest = Math.min(amount, star.energy);
 			if (can_harvest <= 0) continue;
 
