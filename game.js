@@ -477,9 +477,9 @@ var outpost_mdo;
 var base1;
 var base2;
 
-var player1_code;
+var player1_code = '';
 var player1_session = '';
-var player2_code;
+var player2_code = '';
 var player2_session = '';
 var players = {};
 var ticks = {};
