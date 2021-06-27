@@ -664,7 +664,7 @@ var init_data = {
 var memory1 = {a: 150};
 var memory2 = {a: 155};
 
-const {VM, VMScript} = require('vm2');
+const {VM} = require('vm2');
 
 
 var sandbox = {
