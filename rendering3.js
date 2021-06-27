@@ -1439,6 +1439,33 @@ function handle_shout(spir_id, shout_msg){
 	
 }
 
+function drawgqueue(gqueue) {
+	for(const g of gqueue) {
+		switch(g[0]) {
+			case 'st':
+				c.strokeStyle = g[1];
+				break;
+			case 'lw':
+				c.lineWidth = g[1];
+				break;
+			case 'c':
+				c.beginPath();
+				c.arc(g[1], g[2], g[3], 0, Math.PI * 2, false);
+				c.stroke();
+				break;
+			case 'l':
+				c.beginPath();
+				c.moveTo(g[1], g[2]);
+				c.lineTo(g[3], g[4]);
+				c.stroke();
+				break;
+			case 's':
+				c.strokeRect(g[1], g[2], g[3], g[4]);
+				break;
+		}
+	}
+}
+
 
 function render_state(timestamp){
 	
@@ -1602,8 +1629,17 @@ function render_state(timestamp){
 	
 	//objects energize
 	
-	
-	
+	if (game_blocks[active_block].g1.length > 0){
+		if (pla1 == getCookie('user_id')){
+			drawgqueue(game_blocks[active_block].g1);
+		}
+	}
+
+	if (game_blocks[active_block].g2.length > 0){
+		if (pla2 == getCookie('user_id')){
+			drawgqueue(game_blocks[active_block].g2);
+		}
+	}
 	
 	//console.log(spirit_lookup);
 	setTimeout(() => {
