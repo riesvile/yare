@@ -412,7 +412,7 @@ function user_code(){
 	
 	try {
 		let p1_t0 = process.hrtime();
-		vm.run(player1_code, 'vm.js');
+		vm.run(player1_code);
 		console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
 		handle_error(error, players['p1'], /vm\.js/, 14);
@@ -603,6 +603,32 @@ console2['log'] = function(stringo) {
 	return console.log.apply( console, arguments );
 };
 
+class Graphics {
+	constructor(){
+		this.queue = [];
+	}
+
+	set style(s) {
+		this.queue.push(['st', s]);
+	}
+	set linewidth(w) {
+		this.queue.push(['lw', w]);
+	}
+
+	circle(pos, r) {
+		this.queue.push(['c', pos[0], pos[1], r]);
+	}
+	line(start, end) {
+		this.queue.push(['l', start[0], start[1], end[0], end[1]]);
+	}
+	square(tl, br) {
+		this.queue.push(['s', tl[0], tl[1], br[0], br[1]]);
+	}
+}
+
+var graphics1 = new Graphics();
+var graphics2 = new Graphics();
+
 var render_data2 = {
 	'move': [],
 	'energize': [],
@@ -623,7 +649,9 @@ var render_data3 = {
 	'er1': [],
 	'er2': [],
 	'c1': [],
-	'c2': []
+	'c2': [],
+	'g1': [],
+	'g2': [],
 };
 
 var init_data = {
@@ -703,8 +731,8 @@ function shuffle_array(array) {
 
 
 //sandbox is the keyword, moron
-const vm = new VM({ timeout: 350, sandbox: {console: console1, memory: memory1} });
-const vm2 = new VM({ timeout: 350, sandbox: {console: console2, memory: memory2} });
+const vm = new VM({ timeout: 350, sandbox: {console: console1, memory: memory1, graphics: graphics1} });
+const vm2 = new VM({ timeout: 350, sandbox: {console: console2, memory: memory2, graphics: graphics2} });
 
 
 //vm.freeze(spirits, 'spirits');
@@ -2309,8 +2337,23 @@ if (!isMainThread){
 		
 			render_data3.er1 = user_error1;
 			render_data3.er2 = user_error2;
+
+			const gqueue_cutoff = 100;
+			render_data3.g1 = graphics1.queue;
+			render_data3.g2 = graphics2.queue;
+			if(render_data3.g1.length > gqueue_cutoff){
+				let l1 = render_data3.g1.length;
+				render_data3.g1.length = gqueue_cutoff;
+				log1.push('WARN: output too long (>' + gqueue_cutoff + ' lines), cutting off ' + (l1 - gqueue_cutoff) + ' commands');
+			}
+			if(render_data3.g2.length > gqueue_cutoff){
+				let l2 = render_data3.g2.length;
+				render_data3.g2.length = gqueue_cutoff;
+				log2.push('WARN: output too long (>' + gqueue_cutoff + ' lines), cutting off ' + (l2 - gqueue_cutoff) + ' commands');
+			}
 			render_data3.c1 = log1;
 			render_data3.c2 = log2;
+			
 			
 			user_error1 = [];
 			user_error2 = [];
@@ -2334,12 +2377,13 @@ if (!isMainThread){
 			
 			
 			update_vm_sandbox();
-
-		
+	
 			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: workerData[0], meta: ''});
 
 			log1 = [];
 			log2 = [];
+			graphics1.queue = [];
+			graphics2.queue = [];
 
 			let update_no_players = elapsed_ms_from(update_t0);
 			user_code();

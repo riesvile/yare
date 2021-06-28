@@ -434,7 +434,9 @@
 						 'b2': [],
 						 'e': [],
 						 's': [],
-						 'units': []
+						 'units': [],
+						 'g1': [],
+						 'g2': []
 					 }
 					 
 					 
@@ -545,7 +547,9 @@
 					 game_blocks['t' + tick_counter]['st'] = incoming.st;
 					 
 					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
-					 
+
+					 game_blocks['t' + tick_counter]['g1'] = incoming.g1;
+					 game_blocks['t' + tick_counter]['g2'] = incoming.g2;
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
 					 //console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
