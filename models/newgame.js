@@ -26,7 +26,8 @@ const game_schema = new Schema({
 	ranked: Number,
 	active: Number,
 	game_duration: Number,
-	observers: Number
+	observers: Number,
+	game_file: [String],
 }, {timestamps: true});
 
 

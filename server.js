@@ -45,7 +45,8 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 		ranked: 1,
 		active: 0.5,
 		game_duration: 0,
-		observers: 0
+		observers: 0,
+		game_file: []
 	});
 
 	game.save()
@@ -349,6 +350,9 @@ function get_color(color_name){
 		case 'yerange':
 			return 'color4';
 			break;
+		case 'wirple':
+			return 'color5';
+			break;
 		default:
 			return 'color1';
 	}
@@ -408,7 +412,8 @@ function bot_game(req, res, pl_id){
 		ranked: 0,
 		active: 0.5,
 		game_duration: 0,
-		observers: 0
+		observers: 0,
+		game_file: []
 	});
 	
 	game.save()
@@ -420,6 +425,80 @@ function bot_game(req, res, pl_id){
 			console.log(error);
 		})
 }
+
+
+function will_bot_game(req, res, pl_id){
+	
+	// REMOVE FROM AUTO-MATCH QUEUE
+	actively_waiting[req.body.user_id] = 0;
+	
+	var tut_servers = Object.keys(server_occupancy_tutorial);
+	var load_threshold = 40;
+	var chosen_server = 'd1';
+	var color_code = get_color(req.body.user_color);
+	
+	/*
+	for (i = 0; i < tut_servers.length; i++){
+		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
+			chosen_server = tut_servers[i];
+			server_occupancy_tutorial[chosen_server]--;
+			console.log(server_occupancy_tutorial);
+			console.log('chosen server = ' + chosen_server);
+			break;
+		}
+		if (i == (tut_servers.length - 1)){
+			console.log('all servers busy, increasing load');
+			if (load_threshold <= 0){
+				console.log('maximum server capacity reached');
+			} else {
+				load_threshold -= 10; 
+				i = -1;
+			}
+		}
+		
+	}*/
+	
+	g_id = new_game(pl_id, 'will-bot', 1, chosen_server);
+	
+
+	res.status(200).send({
+		g_id: g_id,
+		meta: 'will-bot',
+		server: chosen_server
+    });
+	
+	const game = new Game({
+		game_id: g_id,
+		server: chosen_server,
+		player1: req.body.user_id,
+		player2: 'will-bot',
+		p1_session_id: req.body.session_id,
+		p2_session_id: 'bot',
+		p1_shape: req.body.user_shape,
+		p2_shape: 'squares',
+		p1_color: color_code,
+		p2_color: 'color5',
+		p1_rating: 1000,
+		p2_rating: 100,
+		winner: '',
+		ranked: 0,
+		active: 0.5,
+		game_duration: 0,
+		observers: 0,
+		game_file: []
+	});
+	
+	game.save()
+		.then((result) => {
+			console.log('game saved to db');
+			console.log(result);
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+}
+
+
 
 function medium_bot_game(req, res, pl_id){
 	
@@ -478,7 +557,8 @@ function medium_bot_game(req, res, pl_id){
 		ranked: 0,
 		active: 0.5,
 		game_duration: 0,
-		observers: 0
+		observers: 0,
+		game_file: []
 	});
 	
 	game.save()
@@ -549,7 +629,8 @@ function dumb_bot_game(req, res, pl_id){
 		ranked: 0,
 		active: 0.5,
 		game_duration: 0,
-		observers: 0
+		observers: 0,
+		game_file: []
 	});
 	
 	game.save()
@@ -614,7 +695,8 @@ function friend_challenge(req, res){
 		ranked: 0,
 		active: 0.5,
 		game_duration: 0,
-		observers: 0
+		observers: 0,
+		game_file: []
 	});
 
 	game.save()
@@ -673,6 +755,8 @@ app.post('/new-game', (req, res) => {
 	} else {
 		if (req.body.type == 'easy-bot'){
 			bot_game(req, res, req.body.user_id);
+		} else if (req.body.type == 'will-bot'){
+			will_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'medium-bot'){
 			medium_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'dumb-bot'){
@@ -1062,7 +1146,7 @@ function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server
 	active_games[game_id][6] = pla1_color;
 	active_games[game_id][7] = pla2_color;
 
-	if(game_type == "real" && pla2 != "dumb-bot" && pla2 != "medium-bot") {
+	if(game_type == "real" && pla2 != "dumb-bot" && pla2 != "medium-bot" && pla2 != "will-bot") {
 		discord_postmessage(config.hooks.new_match, "New game started: https://yare.io/" + server_id + "/" + game_id);
 	}
 

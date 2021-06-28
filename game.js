@@ -41,6 +41,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	console.log('GAME OVER');
 	console.log('GAME OVER');
 	console.log('GAME OVER');
+	console.log(game_file);
 	
 	
 	
@@ -96,7 +97,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 		
 			console.log('result');
 			if (result[0]['ranked'] == 0) {
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true})
+				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_file: game_file}, {upsert: true})
 					.then((qq) => {
 						console.log('winner updated to ' + gameWinner);
 						setTimeout(function(){
@@ -277,6 +278,7 @@ parentPort.on("message", message => {
 		  }
 	  }
   } else if (message.data == "start world"){
+	  game_file = [];
 	  players['p1'] = message.player1;
 	  players['p2'] = message.player2;
 	  shapes['player1'] = message.p1_shape;
@@ -295,6 +297,8 @@ parentPort.on("message", message => {
 			console.log(result[0].p1_color);
 			if (result[0].player2 == 'medium-bot'){
 				player2_code = botCodes['medium-bot'];
+			} else if (result[0].player2 == 'will-bot'){
+				player2_code = botCodes['will-bot'];
 			} else if (result[0].player2 == 'dumb-bot'){
 				player2_code = botCodes['dumb-bot'];
 			}
@@ -488,6 +492,8 @@ players['p2'] = 'zx2';
 var players_update = {};
 players_update['p1'] = 'old';
 
+var game_file = [];
+
 
 var p1_process_time = 0;
 var p1_process_time_check = 0;
@@ -564,6 +570,7 @@ color_palettes['color1'] = 'rgba(128,140,255,1)';
 color_palettes['color2'] = 'rgba(232,97,97,1)';
 color_palettes['color3'] = 'rgba(58,197,240,1)';
 color_palettes['color4'] = 'rgba(201,161,101,1)';
+color_palettes['color5'] = 'rgba(116,10,192,1)';
 
 var pl1_units = {};
 var pl2_units = {};
@@ -2378,7 +2385,19 @@ if (!isMainThread){
 			
 			update_vm_sandbox();
 	
+			
+			
 			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: workerData[0], meta: ''});
+			
+			delete render_data3["er1"];
+			delete render_data3["er2"];
+			delete render_data3["c1"];
+			delete render_data3["c2"];
+			
+			if (workerData[1] != 'tutorial'){
+				game_file.push(JSON.stringify(render_data3));
+			}
+			
 
 			log1 = [];
 			log2 = [];

@@ -1387,15 +1387,15 @@ p.btn_desc {
 	width: 100%;
 	height: 104px;
 	position: relative;
-	
+	border-bottom: 1px solid rgba(168, 168, 222, 0.4);
 }
 
 .select_bot_block:hover {
 	background-color: rgba(120, 120, 232, 0.16);
 }
 
-.select_bot_block:first-of-type {
-	border-bottom: 1px solid rgba(168, 168, 222, 0.4);
+.select_bot_block:last-of-type {
+	border-bottom: 1px solid rgba(168, 168, 222, 0);
 }
 
 p.bot_name {

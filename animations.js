@@ -685,7 +685,7 @@ function expand_bot_selection(){
 	
 	anime({
 		targets: '#bot_game_btn',
-		height: 210,
+		height: 318,
 		translateY: -146,
 		easing: 'easeOutQuad',
 		duration: 100
