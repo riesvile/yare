@@ -65,14 +65,6 @@ module.exports = {
 //
 
 'dumb-bot': `
-		var this_player_id = players['p2'];		
-		
-		global['base'] = Object.values(bases)[1];
-		global['enemy_base'] = Object.values(bases)[0];
-		global['star_zxq'] = stars['star_zxq'];
-		global['star_a1c'] = stars['star_a1c'];
-		global['outpost'] = outposts['outpost_mdo'];
-		global['star_p89'] = stars['star_p89'];
 		
 		for (i=0; i<my_spirits.length; i++){
 			my_spirits[i].move(star_a1c.position);
@@ -158,15 +150,6 @@ module.exports = {
 
 'medium-bot': `
 		var bot_code = true;
-		if(bot_code){
-			global['base'] = Object.values(bases)[1];
-			global['enemy_base'] = Object.values(bases)[0];
-			global['star_zxq'] = stars['star_zxq'];
-			global['star_a1c'] = stars['star_a1c'];
-			global['outpost'] = outposts['outpost_mdo'];
-			global['star_p89'] = stars['star_p89'];
-		}
-
 		if(memory['time'] == undefined)
 			memory['time'] = 0;
 		memory['time'] += 1;
