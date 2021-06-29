@@ -1913,6 +1913,37 @@ a.index_link:hover {
 
 
 
+/* ----- REPLAY ----- */
+
+.widget_standard {
+	position: absolute;
+}
+
+
+#wg_game_stats {
+	bottom: 40px;
+	left: 40px;
+	width: 400px;
+	height: 106px;
+	background-color: rgba(42, 46, 48, 0.89);
+}
+
+#wg_replay {
+	bottom: 165px;
+	left: 40px;
+	width: 400px;
+	height: 88px;
+	background-color: rgba(42, 46, 48, 0.89);
+}
+
+
+
+
+/* ----- */
+
+
+
+
 
 
 

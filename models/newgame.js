@@ -27,7 +27,7 @@ const game_schema = new Schema({
 	active: Number,
 	game_duration: Number,
 	observers: Number,
-	game_file: [String],
+	game_file: String,
 }, {timestamps: true});
 
 

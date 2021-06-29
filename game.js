@@ -42,7 +42,22 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	console.log('GAME OVER');
 	console.log('GAME OVER');
 	console.log(game_file);
+	var compressed_file = zlib.deflateSync(JSON.stringify(game_file)).toString('base64');
 	
+	
+	var sssize = new TextEncoder().encode(JSON.stringify(game_file)).length;
+	var ssskb = sssize / 1024;
+	console.log('game file size = ' + ssskb);
+	
+	
+	var smallsize = zlib.deflateSync(JSON.stringify(game_file)).toString('base64');
+	var smallsizee = new TextEncoder().encode(smallsize).length; 
+	var smallkb = smallsizee / 1024;
+	var bigsize = zlib.inflateSync(new Buffer(smallsize, 'base64')).toString();
+	var bigsizee = new TextEncoder().encode(bigsize).length; 
+	var bigkb = bigsizee / 1024;
+	console.log('game file size = ' + smallkb);
+	console.log('game file size = ' + bigkb);
 	
 	
 	var p1won = was_p1;
@@ -97,7 +112,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 		
 			console.log('result');
 			if (result[0]['ranked'] == 0) {
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_file: game_file}, {upsert: true})
+				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_file: compressed_file}, {upsert: true})
 					.then((qq) => {
 						console.log('winner updated to ' + gameWinner);
 						setTimeout(function(){
@@ -139,6 +154,10 @@ function end_game(was_p1 = 0, was_p2 = 0){
 
 const { parentPort, workerData, isMainThread } = require("worker_threads");
 
+
+var zlib = require('zlib');
+
+//const LZString = require('LZstring');
 const botCodes = require('./bot-codes');
 const util = require('util');
 const mongoose = require('mongoose');

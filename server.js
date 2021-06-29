@@ -46,7 +46,7 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: []
+		game_file: ''
 	});
 
 	game.save()
@@ -413,7 +413,7 @@ function bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: []
+		game_file: ''
 	});
 	
 	game.save()
@@ -485,7 +485,7 @@ function will_bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: []
+		game_file: ''
 	});
 	
 	game.save()
@@ -558,7 +558,7 @@ function medium_bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: []
+		game_file: ''
 	});
 	
 	game.save()
@@ -630,7 +630,7 @@ function dumb_bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: []
+		game_file: ''
 	});
 	
 	game.save()
@@ -696,7 +696,7 @@ function friend_challenge(req, res){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: []
+		game_file: ''
 	});
 
 	game.save()
