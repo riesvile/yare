@@ -246,7 +246,8 @@ const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
-const config = require('./config')
+const config = require('./config');
+const zlib = require('zlib');
 
 var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
@@ -1397,6 +1398,38 @@ app.post('/gameinfo', (req, res) => {
 
 });
 
+app.post('/get_replay', (req, res) => {
+
+	Game.find({game_id: req.body.game_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('getting game info for replay');
+			if (result.length == 0){
+				console.log('no game');
+				res.status(200).send({
+		        	meta: "no game found"
+		        });
+			} else if (result[0]['game_file'] != ''){
+				var decompressed_file = zlib.inflateSync(new Buffer(result[0].game_file, 'base64')).toString();
+				console.log('replay file sent');
+				
+				res.status(200).send({
+		        	meta: "gotit",
+					data: decompressed_file
+		        });
+			} else {
+				console.log('somthinwrong');
+				res.status(200).send({
+		        	meta: "something went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+
+});
+
 
 app.post('/playerinfo', (req, res) => {
 	var p111_rating = 0;
@@ -2072,6 +2105,7 @@ app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 app.get('/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
 app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
 app.get('/game', (req, res) => res.sendFile(__dirname + '/game3.html'));
+app.get('/replay', (req, res) => res.sendFile(__dirname + '/replay3.html'));
 app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
 app.get('/documentation', (req, res) => res.sendFile(__dirname + '/documentation.html'));
 app.get('/leaderboard', (req, res) => res.sendFile(__dirname + '/leaderboard.html'));
