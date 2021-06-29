@@ -1740,7 +1740,7 @@ if (!isMainThread){
 				let friendly_beam = from_obj.player_id == to_obj.player_id;
 				
 				// name prefix - safe (is outpost)
-				if (to_obj.id.startsWith('outpost') && outpost_lookup[to_obj]){
+				if (to_obj.id.startsWith('outpost') && outpost_lookup[to_id]){
 					energize_apply.push([from_obj, -beam_strength]);
 					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
 					render_data3.e.push([from_id, to_id, beam_strength]);
