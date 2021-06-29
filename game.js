@@ -573,7 +573,7 @@ color_palettes['color1'] = 'rgba(128,140,255,1)';
 color_palettes['color2'] = 'rgba(232,97,97,1)';
 color_palettes['color3'] = 'rgba(58,197,240,1)';
 color_palettes['color4'] = 'rgba(201,161,101,1)';
-color_palettes['color5'] = 'rgba(116,10,192,1)';
+color_palettes['color5'] = 'rgba(120,12,196,1)';
 
 var pl1_units = {};
 var pl2_units = {};
