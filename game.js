@@ -471,7 +471,7 @@ var move_queues = [];
 var energize_queues = [];
 var queue_order = [];
 
-var merge_queue = {};
+var merge_queue = [];
 var divide_queue = [];
 var jump_queue = [];
 var shout_queue = [];
