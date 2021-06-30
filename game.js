@@ -416,6 +416,7 @@ function user_code(){
 	//
 	energize_queue = {};
 	move_queue = {};
+	gqueue = [];
 	
 	try {
 		let p1_t0 = process.hrtime();
@@ -424,6 +425,8 @@ function user_code(){
 	} catch (error){
 		handle_error(error, players['p1'], /vm\.js/, 14);
 	}
+	gqueue1 = gqueue;
+	gqueue = [];
 
 	queue_order.push(players['p1']);
 	energize_queues.push(energize_queue);
@@ -443,6 +446,8 @@ function user_code(){
 	} catch (error){
 		handle_error(error, players['p2'], /vm2\.js/, 14);
 	}
+	gqueue2 = gqueue;
+	gqueue = [];
 
 	queue_order.push(players['p2']);
 	energize_queues.push(energize_queue);
@@ -613,26 +618,72 @@ console2['log'] = function(stringo) {
 	return console.log.apply( console, arguments );
 };
 
+function typeOf( obj ) {
+	return ({}).toString.call( obj ).match(/\s(\w+)/)[1].toLowerCase();
+}
+
+function validate(types, ...args) {
+	var plain = [...args];
+	try {
+		return subValidate(types, ...args);
+	} catch {
+		throw Error("Expected " + String(types) + " got " + String(getTypes(...plain)))
+	}
+}
+
+function subValidate(types, ...args) {
+	var ret = [];
+	for(var t of types) {
+		if(Array.isArray(t)) {
+			ret.push(subValidate(t, ...args.shift()))
+		} else {
+			var v = args.shift();
+			if(typeOf(v) != t) {
+				throw "fail";
+			}
+			ret.push(v);
+		}
+	}
+	console.log(ret);
+	return ret;
+}
+
+function getTypes(types, ...args) {
+	var ret = [];
+	for(var t of types) {
+		console.log(t, typeof t);
+		if(Array.isArray(t)) {
+			ret.push(getTypes(t, ...args.shift()))
+		} else {
+			ret.push(typeof args.shift());
+		}
+	}
+	return ret;
+}
+
+var gqueue = [];
+var gqueue1 = [];
+var gqueue2 = [];
+
 class Graphics {
 	constructor(){
-		this.queue = [];
 	}
 
 	set style(s) {
-		this.queue.push(['st', s]);
+		gqueue.push(['st', ...validate(["String"], s)]);
 	}
 	set linewidth(w) {
-		this.queue.push(['lw', w]);
+		gqueue.push(['lw', ...validate(["String"], w)]);
 	}
 
 	circle(pos, r) {
-		this.queue.push(['c', pos[0], pos[1], r]);
+		gqueue.push(['c', ...validate([["Number", "Number"], "Number"], pos, r)]);
 	}
 	line(start, end) {
-		this.queue.push(['l', start[0], start[1], end[0], end[1]]);
+		gqueue.push(['l', ...validate([["Number", "Number"], ["Number", "Number"]], start, end)]);
 	}
 	square(tl, br) {
-		this.queue.push(['s', tl[0], tl[1], br[0], br[1]]);
+		gqueue.push(['s', ...validate([["Number", "Number"], ["Number", "Number"]], tl, br)]);
 	}
 }
 
@@ -661,7 +712,7 @@ var render_data3 = {
 	'c1': [],
 	'c2': [],
 	'g1': [],
-	'g2': [],
+	'g2': []
 };
 
 var init_data = {
@@ -2267,6 +2318,8 @@ if (!isMainThread){
 				'er2': [],
 				'c1': [],
 				'c2': [],
+				'g1': [],
+				'g2': [],
 				'end': end_winner
 			};
 			
@@ -2287,6 +2340,8 @@ if (!isMainThread){
 					'er2': [],
 					'c1': [],
 					'c2': [],
+					'g1': [],
+					'g2': [],
 					'tutorial': [],
 					'end': end_winner
 				};
@@ -2327,6 +2382,8 @@ if (!isMainThread){
 					'er2': [],
 					'c1': [],
 					'c2': [],
+					'g1': [],
+					'g2': [],
 					'end': end_winner
 				};
 				if (game_duration == 600){
@@ -2349,13 +2406,13 @@ if (!isMainThread){
 			render_data3.er2 = user_error2;
 
 			const gqueue_cutoff = 100;
-			render_data3.g1 = graphics1.queue;
-			render_data3.g2 = graphics2.queue;
+			render_data3.g1 = gqueue1;
 			if(render_data3.g1.length > gqueue_cutoff){
 				let l1 = render_data3.g1.length;
 				render_data3.g1.length = gqueue_cutoff;
 				log1.push('WARN: output too long (>' + gqueue_cutoff + ' lines), cutting off ' + (l1 - gqueue_cutoff) + ' commands');
 			}
+			render_data3.g2 = gqueue2;
 			if(render_data3.g2.length > gqueue_cutoff){
 				let l2 = render_data3.g2.length;
 				render_data3.g2.length = gqueue_cutoff;
@@ -2404,8 +2461,8 @@ if (!isMainThread){
 
 			log1 = [];
 			log2 = [];
-			graphics1.queue = [];
-			graphics2.queue = [];
+			gqueue1 = [];
+			gqueue2 = [];
 
 			let update_no_players = elapsed_ms_from(update_t0);
 			user_code();

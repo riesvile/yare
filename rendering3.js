@@ -1450,17 +1450,17 @@ function drawgqueue(gqueue) {
 				break;
 			case 'c':
 				c.beginPath();
-				c.arc(g[1], g[2], g[3], 0, Math.PI * 2, false);
+				c.arc(g[1][0], g[1][1], g[2], 0, Math.PI * 2, false);
 				c.stroke();
 				break;
 			case 'l':
 				c.beginPath();
-				c.moveTo(g[1], g[2]);
-				c.lineTo(g[3], g[4]);
+				c.moveTo(g[1][0], g[1][1]);
+				c.lineTo(g[2][0], g[2][1]);
 				c.stroke();
 				break;
 			case 's':
-				c.strokeRect(g[1], g[2], g[3], g[4]);
+				c.strokeRect(g[1][0], g[1][1], g[2][0], g[2][1]);
 				break;
 		}
 	}
