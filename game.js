@@ -740,7 +740,7 @@ function shuffle_array(array) {
 
 
 
-//sandbox is the keyword, moron
+//
 const vm = new VM({ timeout: 350, sandbox: {console: console1, memory: memory1, graphics: graphics1} });
 const vm2 = new VM({ timeout: 350, sandbox: {console: console2, memory: memory2, graphics: graphics2} });
 
@@ -2433,7 +2433,7 @@ if (!isMainThread){
 		}
 
 		for (q = 1; q < 2; q++){
-			global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2820+q*10,1820], 5, 0, players['p2'], colors['player2']);
+			global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2820+q*10,1820], 10, 0, players['p2'], colors['player2']);
 			spirits2.push(global[players['p2'] + q]);
 			top_q = q;
 		}

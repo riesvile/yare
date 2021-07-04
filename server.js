@@ -1501,8 +1501,8 @@ app.post('/populate-hub', (req, res) => {
 		.then((result) => {
 			//res.send(result);
 			console.log('dbdbdb result');
-			console.log(result);
-			console.log(result[0]);
+			//console.log(result);
+			//console.log(result[0]);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no results"
@@ -1511,6 +1511,7 @@ app.post('/populate-hub', (req, res) => {
 				for (i = 0; i < result.length; i++){
 					result[i]['passwrd'] = '0';
 					result[i]['session_id'] = '0';
+					result[i]['game_file'] = '';
 				}
 				res.status(200).send({
 		        	data: "populate",
@@ -1977,6 +1978,16 @@ app.get('/d1n/:game_id', (req, res) => {
 	//	res.redirect('/' + d1 + '/' + g_id);
 	//} else {
 	res.sendFile(__dirname + '/wait.html');
+	//}
+	
+});
+
+app.get('/replay/:game_id', (req, res) => {
+	let g_id = req.params.game_id;
+	//if (active_games[g_id][0] == 1){
+	//	res.redirect('/' + d1 + '/' + g_id);
+	//} else {
+	res.sendFile(__dirname + '/replay3.html');
 	//}
 	
 });
