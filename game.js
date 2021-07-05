@@ -2356,12 +2356,12 @@ if (!isMainThread){
 			if(render_data3.g1.length > gqueue_cutoff){
 				let l1 = render_data3.g1.length;
 				render_data3.g1.length = gqueue_cutoff;
-				log1.push('WARN: output too long (>' + gqueue_cutoff + ' lines), cutting off ' + (l1 - gqueue_cutoff) + ' commands');
+				log1.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l1 - gqueue_cutoff) + ' commands');
 			}
 			if(render_data3.g2.length > gqueue_cutoff){
 				let l2 = render_data3.g2.length;
 				render_data3.g2.length = gqueue_cutoff;
-				log2.push('WARN: output too long (>' + gqueue_cutoff + ' lines), cutting off ' + (l2 - gqueue_cutoff) + ' commands');
+				log2.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l2 - gqueue_cutoff) + ' commands');
 			}
 			render_data3.c1 = log1;
 			render_data3.c2 = log2;
