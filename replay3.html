@@ -178,7 +178,7 @@
   	  		  } else if (response.meta == "gotit"){
 				  game_file = response.data;
 				  console.log('got the file, start replay')
-  	  			  ////console.log('user exists already');
+  	  			  console.log(JSON.parse(response.data));
   	  			  //console.log('anonymous updated')
   	  		  } else if (response.meta == "something went wrong"){
 				  console.log('replay not available');

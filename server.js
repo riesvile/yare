@@ -1410,8 +1410,9 @@ app.post('/get_replay', (req, res) => {
 		        	meta: "no game found"
 		        });
 			} else if (result[0]['game_file'] != ''){
-				var decompressed_file = zlib.inflateSync(new Buffer(result[0].game_file, 'base64')).toString();
+				var decompressed_file = zlib.inflateSync(Buffer.from(result[0].game_file, 'base64')).toString();
 				console.log('replay file sent');
+				console.log(decompressed_file);
 				
 				res.status(200).send({
 		        	meta: "gotit",

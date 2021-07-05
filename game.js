@@ -43,6 +43,8 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	console.log('GAME OVER');
 	//console.log(game_file);
 	var compressed_file = zlib.deflateSync(JSON.stringify(game_file)).toString('base64');
+	console.log(JSON.stringify(game_file));
+	
 	
 	var p1won = was_p1;
 	var p2won = was_p2;
@@ -2398,7 +2400,7 @@ if (!isMainThread){
 			delete render_data3["c2"];
 			
 			if (workerData[1] != 'tutorial'){
-				game_file.push(JSON.stringify(render_data3));
+				game_file.push(render_data3);
 			}
 			
 
