@@ -593,26 +593,6 @@ module.exports = {
 //
 
 'will-bot': `
-					
-					
-					global['tick'] = ticks['now'];	
-					
-					var this_player_id = players['p2'];
-
-					for (let y = 0; y < my_spirits.length; y++)
-						global[my_spirits[y].id] = my_spirits[y];
-
-					global['base'] = Object.values(bases)[1];
-					global['enemy_base'] = Object.values(bases)[0];
-					global['outpost_mdo'] = outposts['outpost_mdo'];
-					global['outpost'] = outposts['outpost_mdo'];
-					global['star_zxq'] = stars['star_zxq'];
-					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c'];
-					global['tick'] = ticks['now'];	
-
-					
-					
 					startTime=new Date().getTime()
 					if (memory.spirits = Object.values(spirits), memory.bases = [base, enemy_base], memory.stars = Object.values(stars), memory.outposts = [outpost], memory.players = Object.values(players), memory.player_id = this_player_id, "1624808903467" != memory.wasm_cache) {
 						const A = (new Date).getTime();
