@@ -545,6 +545,8 @@ var shouting_helper = {};
 var shouting_count_p1 = 0;
 var shouting_count_p2 = 0;
 
+var explosions = {};
+
 
 
 var dumb_cycler = 0;
@@ -848,6 +850,7 @@ class Spirit {
 		
 		this.shout = '';
 		this.tria = 0;
+		this.exploding = 0;
 	}
 
 	move(origin, incr) {
@@ -871,6 +874,12 @@ class Spirit {
 	}
 	
 	energize(prev_energy, new_energy, hp){
+		if (this.exploding == 1){
+			setTimeout(function(){
+				this.hp = 0;
+				this.exploding = 0;
+			}, 1000);
+		}
 		if (this.hp != 0){
 			this.energy = prev_energy;
 			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
@@ -990,6 +999,29 @@ class Spirit {
 		that.energy_capacity = original_energy_capacity / original_size;
 		//console.log('that.energy_capacity = ' + that.energy_capacity);
 		//var spirit_percent_energy = this.energy / this.energy_capacity;
+	}
+	
+	explode(){
+		var color_parts = this.color.match(/[.?\d]+/g);
+		if (!explosions[this.id]) explosions[this.id] = 4;
+		//console.log(explosions[this.id]);
+		explosions[this.id] *= 1.1;
+		//let that = this;
+		//let counter_explosion = 0;
+		//
+		//let interval_explosion = setInterval(function() {
+		//	if (counter_explosion > 30){
+		//		clearInterval(interval_explosion);
+		//		that.hp = 0;
+		//	}
+		//	that.size += 1;
+		//	
+		//}, 16);
+		//console.log('calling explode')
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], explosions[this.id], 0, Math.PI * 2, false);
+		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (1 - explosions[this.id] / 100) + ')';
+		c.fill();
 	}
 	
 	
@@ -1710,6 +1742,9 @@ function render_state(timestamp){
 			}
 			shouting_count_p2++;
 			
+		} else if (specials[i][0] == 'ex'){
+			spirit_lookup[specials[i][1]].explode();
+			//console.log('exploding');
 		}
 	}
 	
