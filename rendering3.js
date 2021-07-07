@@ -1367,6 +1367,10 @@ class Base {
 		  
 		  //console.log(incoming.t);
 		  
+		  let progress_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * production_percent + ')';
+		  
+		  draw_polygon(this.position[0],this.position[1],3,15,2,progress_color,0,incoming.t + 60)
+		  
 		  
 		}
 		
