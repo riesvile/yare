@@ -1721,7 +1721,8 @@ if (!isMainThread){
 				energize_apply.push([boom_targets[k], -10]);
 			}
 			
-			energize_apply.push([explodee, -100])
+			energize_apply.push([explodee, -100]);
+			render_data3.s.push(['ex', explode_queue[i]]);
 		}
 		
 		explode_queue = [];
