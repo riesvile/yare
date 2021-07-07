@@ -1746,7 +1746,7 @@ a.index_link:hover {
 	margin-left: 28px;
 }
 
-.ico_circle {
+.ico_circle, .ico_circles {
 	width: 14px;
 	height: 14px;
 	background-color: rgba(204, 174, 220, 1);
@@ -1757,7 +1757,7 @@ a.index_link:hover {
 	margin-right: 10px;
 }
 
-.ico_square {
+.ico_square, .ico_squares {
 	width: 13px;
 	height: 13px;
 	background-color: rgba(204, 174, 220, 1);
@@ -1770,7 +1770,7 @@ a.index_link:hover {
 
 
 
-.ico_triangle {
+.ico_triangle, .ico_triangles {
 	position: relative;
 	background-color: rgba(204, 174, 220, 1);
 	text-align: left;
@@ -1782,26 +1782,32 @@ a.index_link:hover {
 	margin-right: 10px;
 }
 .ico_triangle:before,
-.ico_triangle:after {
+.ico_triangle:after,
+.ico_triangles:before,
+.ico_triangles:after
+ {
 	content: '';
 	position: absolute;
 	background-color: inherit;
 }
 .ico_triangle,
 .ico_triangle:before,
-.ico_triangle:after {
+.ico_triangle:after,
+.ico_triangles,
+.ico_triangles:before,
+.ico_triangles:after  {
 	width:  8px;
 	height: 8px;
 	border-top-right-radius: 30%;
 }
 
-.ico_triangle {
+.ico_triangle, .ico_triangles {
 	transform: rotate(-60deg) skewX(-30deg) scale(1,.866);
 }
-.ico_triangle:before {
+.ico_triangle:before, .ico_triangles:before {
 	transform: rotate(-135deg) skewX(-45deg) scale(1.414,.707) translate(0,-50%);
 }
-.ico_triangle:after {
+.ico_triangle:after, .ico_triangles:after {
 	transform: rotate(135deg) skewY(-45deg) scale(.707,1.414) translate(50%);
 }
 
@@ -1936,6 +1942,34 @@ a.index_link:hover {
 	background-color: rgba(42, 46, 48, 0.89);
 }
 
+
+#gs_player1 {
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
+#gs_player1 #gs_player1_shape {
+	position: absolute;
+	top: 6px;
+	left: 20px;
+}
+
+#gs_player1 #info_player1_name {
+	position: absolute;
+	top: 16px;
+	left: 40px;
+	font-size: 13px;
+}
+
+#gs_vert_sep_line {
+	width: 1px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	background-color: rgba(242, 246, 250, 0.1);
+}
 
 
 

@@ -319,8 +319,8 @@
 			 document.getElementById('game_info_panel').style.display = "block";
 			 document.getElementById('info_player1_name').innerHTML = pla1;
 			 document.getElementById('info_player2_name').innerHTML = pla2;
-			 document.getElementById('info_player1_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color1'] + "'></span>";
-			 document.getElementById('info_player2_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color2'] + "'></span>";
+			 document.getElementById('info_player1_shape').innerHTML = "<span class='ico_" + shapes['shape1'] + "' style='background-color: " + colors['color1'] + "'></span>";
+			 document.getElementById('info_player2_shape').innerHTML = "<span class='ico_" + shapes['shape2'] + "' style='background-color: " + colors['color2'] + "'></span>";
 			 
 			 if (pla1 == cookie_user || pla2 == getCookie('user_id')){
 				 user_role = 'player';
