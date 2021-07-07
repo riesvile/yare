@@ -224,7 +224,8 @@ parentPort.on("message", message => {
 	  //check who's code it is here
 	  if (message.pl_num == "player1"){
 		  if (message.session_id == player1_session || message.pl_id == 'anonymous'){
-		  	player1_code = message.pl_code;
+			  player1_code = message.pl_code;
+			  sand1.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
 				console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 				end_game(0, 1);
@@ -236,14 +237,15 @@ parentPort.on("message", message => {
 		  			console.log('db result');
 					//parentPort.postMessage({data: 'db initiated', meta: 'test'});
 		  			if (result[0]['session_id'] == message.session_id){
-		  				//all good, update session id and prolong expiration date
-		  				player1_session = message.session_id;
+						  //all good, update session id and prolong expiration date
 						player1_code = message.pl_code;
+		  				player1_session = message.session_id;
+						sand1.setPlayerCode(message.pl_code);
 						if (message.resigning == 1){
 							console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 							end_game(0, 1);
 						}
-		  			} else {
+		  			} else { 
 		  				parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
 		  			}
 		  		})
@@ -254,7 +256,8 @@ parentPort.on("message", message => {
 		  
 	  } else if (message.pl_num == "player2"){
 		  if (message.session_id == player2_session){
-		  	player2_code = message.pl_code;
+			  player2_code = message.pl_code;
+			  sand2.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
 				console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 				end_game(1, 0);
@@ -269,6 +272,7 @@ parentPort.on("message", message => {
 		  				//all good, update session id and prolong expiration date
 		  				player2_session = message.session_id;
 						player2_code = message.pl_code;
+						sand2.setPlayerCode(message.pl_code);
 						if (message.resigning == 1){
 							console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 							end_game(1, 0);
@@ -294,6 +298,8 @@ parentPort.on("message", message => {
 	  console.log(players);
 	  console.log(colors);
 	  console.log(shapes);
+	  sand1.init(message.player1);
+	  sand2.init(message.player2);
 	  game_start();
 	  
 	  Game.find({game_id: workerData[0]})
@@ -301,11 +307,11 @@ parentPort.on("message", message => {
 			console.log('p1_color');
 			console.log(result[0].p1_color);
 			if (result[0].player2 == 'medium-bot'){
-				player2_code = botCodes['medium-bot'];
+				sand2.setPlayerCode(botCodes['medium-bot']);
 			} else if (result[0].player2 == 'will-bot'){
-				player2_code = botCodes['will-bot'];
+				sand2.setPlayerCode(botCodes['will-bot']);
 			} else if (result[0].player2 == 'dumb-bot'){
-				player2_code = botCodes['dumb-bot'];
+				sand2.setPlayerCode(botCodes['dumb-bot']);
 			}
 			
 			console.log('starting rating update');
@@ -354,39 +360,10 @@ function handle_error(error, player, fileregex, line_offset){
 	let message = "" + error;
 
 	let stack = error.stack.split("\n");
-	let file_num = new RegExp(/(^|.*at )/.source + fileregex.source + /:(\d+)/.source);
-	let match = error.stack.match(file_num);
 
-	if(match != null){
-		// TODO add link for editor scrolling
-		let raw_line_num = match[2];
-
-		// error on line in user code
-		if(raw_line_num > line_offset){
-			let linenum = raw_line_num - line_offset;
-			message = "line " + linenum + ": " + message;
-		}
-		// raw_line_num == 1 means e.g. multiple definitions of the same var, or similar
-		// between 1 and line_offset => we have bug in player init code (see server.js)
-		if(raw_line_num > 1 && raw_line_num <= line_offset){
-			console.log('WTF: linenum not positive, either bug in our player_code prefix, or in bot around start');
-			console.log("error: "+error);
-			console.log(stack);
-		}
-	}else{
-		// exception outside user code, but inside VM
-		// => TIMEOUT
-	}
-
-	let starts_w_file = new RegExp(/^/.source + fileregex.source);
-	// the vm hijacks the stack and adds useful info
-	if(stack.length >= 4 && stack[0].match(starts_w_file)){
-		for(let i = 1 ; i < 4; i++){
-			if(stack[i].length > 0)
-				message += "\n > "+ stack[i];
-		}
-	}
-
+	stack = stack.filter(l => /~sandbox/.test(l));
+	
+	message += "\n" + stack.join("\n");
 	///*
 	console.log("error: "+error);
 	console.log(stack);
@@ -396,7 +373,7 @@ function handle_error(error, player, fileregex, line_offset){
 	fill_error(player, to_html(message));
 }
 
-function user_code(){
+async function user_code(){
 	if (workerData[1] == 'tutorial'){
 		//console.log(player1_code);
 		var helper_count = (player1_code.match(/my_spirits/g) || []).length;
@@ -409,47 +386,40 @@ function user_code(){
 		}
 	}
 	
-	queue_order = [];
-	energize_queues = [];
-	move_queues = [];
-
+	all_commands = {};
+	
 	//
 	// first player
 	//
-	energize_queue = {};
-	move_queue = {};
-	
+
+	let p1_async = sand1.run();
+	let p2_async = sand2.run();
 	try {
-		let p1_t0 = process.hrtime();
-		vm.run(player1_code);
-		console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
+		let out = await p1_async;
+		all_commands[players['p1']] = out.commands;
+		log1 = out.logs;
+		user_error1 = out.errors;
+		gqueue1 = out.gqueue;
+		//console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
+//		console.dir(error);
+		//user_error1.push(to_html(error + "\n" + error.stack));
 		handle_error(error, players['p1'], /vm\.js/, 14);
 	}
-
-	queue_order.push(players['p1']);
-	energize_queues.push(energize_queue);
-	move_queues.push(move_queue);
 
 	//
 	// second player
 	//
 	
-	energize_queue = {};
-	move_queue = {};
-	
 	try {
-		let p2_t0 = process.hrtime();
-		vm2.run(player2_code, 'vm2.js');
-		console.log('TIME: p2 = ' + elapsed_ms_from(p2_t0));
+		let out = await p2_async;
+		all_commands[players['p2']] = out.commands;
+		log2 = out.logs;
+		user_error2 = out.errors;
+		gqueue2 = out.gqueue;
 	} catch (error){
 		handle_error(error, players['p2'], /vm2\.js/, 14);
 	}
-
-	queue_order.push(players['p2']);
-	energize_queues.push(energize_queue);
-	move_queues.push(move_queue);
-	//explode_queues.push(explode_queue);
 }
 
 //global
@@ -468,18 +438,9 @@ var structure_lookup = {};
 var spirits = [];
 var spirits2 = [];
 
-var move_queue = {};
-var energize_queue = {};
-var explode_queue = [];
-var move_queues = [];
-var energize_queues = [];
-//var explode_queues = [];
-var queue_order = [];
 
-var merge_queue = [];
-var divide_queue = [];
-var jump_queue = [];
-var shout_queue = [];
+var all_commands = {};
+
 var birth_queue = [];
 var death_queue = [];
 var star_zxq;
@@ -577,7 +538,7 @@ if (workerData[1] == 'tutorial'){
 	var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 	var tutorial_flag1 = 0;
 	spirit_p2_cost = 30;
-	player2_code = botCodes['tutorial0'];
+	sand1.setPlayerCode(botCodes['tutorial0']);
 }
 
 var colors = {};
@@ -591,8 +552,7 @@ color_palettes['color3'] = 'rgba(58,197,240,1)';
 color_palettes['color4'] = 'rgba(201,161,101,1)';
 color_palettes['color5'] = 'rgba(120,12,196,1)';
 
-var pl1_units = {};
-var pl2_units = {};
+var rawSpirits = {};
 var my_spirits1 = [];
 var my_spirits2 = [];
 
@@ -617,43 +577,8 @@ var test_s2 = {};
 var log1 = [];
 var log2 = [];
 
-var console1 = {};
-var console2 = {};
-
-console1['log'] = function(stringo) {
-	log1.push(util.format(stringo));
-    return console.log.apply( console, arguments );
-};
-console2['log'] = function(stringo) {
-	log2.push(util.format(stringo));
-	return console.log.apply( console, arguments );
-};
-
-class Graphics {
-	constructor(){
-		this.queue = [];
-	}
-
-	set style(s) {
-		this.queue.push(['st', s]);
-	}
-	set linewidth(w) {
-		this.queue.push(['lw', w]);
-	}
-
-	circle(pos, r) {
-		this.queue.push(['c', pos[0], pos[1], r]);
-	}
-	line(start, end) {
-		this.queue.push(['l', start[0], start[1], end[0], end[1]]);
-	}
-	square(tl, br) {
-		this.queue.push(['s', tl[0], tl[1], br[0], br[1]]);
-	}
-}
-
-var graphics1 = new Graphics();
-var graphics2 = new Graphics();
+var gqueue1 = [];
+var gqueue2 = [];
 
 var render_data2 = {
 	'move': [],
@@ -691,31 +616,8 @@ var memory1 = {a: 150};
 var memory2 = {a: 155};
 
 const {VM} = require('vm2');
-
-
-var sandbox = {
-	get_y(data) {
-	    return data;
-	},
-	console: console
-	//player1_code: player1_code,
-	//base: base_lookup['base_' + players['p1']],
-	//enemy_base: base_lookup['base_' + players['p2']],
-	//test_s1: test_s1,
-	//star_zxq: star_zxq
-};
-
-var sandboxx = {
-	get_y(data) {
-	    return data;
-	},
-	console: console
-	//player1_code: player1_code,
-	//base: base_lookup['base_' + players['p1']],
-	//enemy_base: base_lookup['base_' + players['p2']],
-	//test_s1: test_s1,
-	//star_zxq: star_zxq
-};
+const ivm = require('isolated-vm');
+const fs = require('fs');
 
 function cutoff_log(log, cutoff){
 	if(log.length > cutoff){
@@ -754,32 +656,61 @@ function shuffle_array(array) {
     }
 }
 
+var sandboxCode = fs.readFileSync("sandbox.js", { encoding: 'utf8' });
 
+console.log(sandboxCode);
 
-//
-const vm = new VM({ timeout: 350, sandbox: {console: console1, memory: memory1, graphics: graphics1} });
-const vm2 = new VM({ timeout: 350, sandbox: {console: console2, memory: memory2, graphics: graphics2} });
+class Sandbox {
+	constructor() {
+		this.isolate = new ivm.Isolate({memoryLimit: 128});
+		this.context = this.isolate.createContextSync();
+		this.jail = this.context.global;
+		this.script = this.isolate.compileScriptSync(``);
+		this.jail.setSync("global", this.jail.derefInto());
+		this.jail.setSync("memory", {}, {copy: true});
 
+		this.yd = this.context.evalClosureSync(sandboxCode, [], {result: {reference: true}});
 
-//vm.freeze(spirits, 'spirits');
-vm.freeze(players, 'players');
-vm.freeze(pl1_units, 'spirits');
-vm.freeze(my_spirits1, 'my_spirits');
-vm.freeze(structure_lookup, 'structures');
-vm.freeze(star_lookup, 'stars');
-vm.freeze(base_lookup, 'bases');
-vm.freeze(outpost_lookup, 'outposts');
-vm.freeze(ticks, 'ticks');
-//vm2.freeze(spirits2, 'spirits');
-vm2.freeze(players, 'players');
-vm2.freeze(pl2_units, 'spirits');
-vm2.freeze(my_spirits2, 'my_spirits');
-vm2.freeze(structure_lookup, 'structures');
-vm2.freeze(star_lookup, 'stars');
-vm2.freeze(base_lookup, 'bases');
-vm2.freeze(outpost_lookup, 'outposts');
-vm2.freeze(ticks, 'ticks');
+		console.log(this.yd);
+		this.funcs = {};
+		this.funcs.loadData = this.yd.getSync('loadData', {reference: true});
+		this.funcs.getOutput = this.yd.getSync('getOutput', {reference: true});
+		this.err = false;
+		console.log(this.funcs.loadSpirits);
+	}
 
+	setPlayerCode(code) {
+		try {
+			this.script = this.isolate.compileScriptSync(code, {filename: "~sandbox/user.js"});
+		}catch(err) {
+			console.log(err);
+		}
+	}
+
+	init(player_id) {
+		this.yd.getSync('init', {reference: true}).applySync(this.yd.derefInto(), [player_id], {arguments: {copy: true}});
+	}
+
+	async loadData() {
+		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], spirits: rawSpirits, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
+	}
+
+	async run() {
+		await this.loadData();
+		let pre = this.isolate.cpuTime;
+		await this.script.run(this.context, {timeout: 350});
+		let post = this.isolate.cpuTime;
+		console.log("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
+		return await this.output();
+	}
+
+	async output() {
+		return this.funcs.getOutput.apply(this.yd.derefInto(), [], {result: {copy: true}});
+	}
+}
+
+var sand1 = new Sandbox();
+var sand2 = new Sandbox();
 
 if (!isMainThread){
 	class Spirit {
@@ -801,7 +732,6 @@ if (!isMainThread){
 			this.merged = [];
 			this.qcollisions = [];
 		
-		
 			//const properties
 			this.hp = 1;
 			this.move_speed = 1;
@@ -810,240 +740,11 @@ if (!isMainThread){
 		
 			living_spirits.push(this);
 			birth_queue.push(this);
-			move_queue[this.id] = [this.position[0], this.position[1]];
 		}
 
 		birth() {
 		
 		}
-		
-		move(target) {
-			if (!Array.isArray(target) || target.length != 2){
-				let err_msg = '.move() argument must be an array of 2 numbers.\n > E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position).\n > Received: ' + target;
-				
-				throw new Error(err_msg);
-			}
-
-			const tarX = Number(target[0]);
-			const tarY = Number(target[1]);
-			
-			if(isNaN(tarX) || isNaN(tarY)){
-				throw new Error('.move() arguments must be numbers, got ['+ tarX + ", " + tarY + ']');
-			}
-
-			move_queue[String(this.id)] = [tarX, tarY];
-		}
-	
-	
-		energize(target) {
-			let target_id = null;
-			if(typeof target == 'object'){
-				target_id = target.id;
-			}else if(typeof target == 'string'){
-				target_id = target;
-			}
-
-			let bad = Array.isArray(target) || target_id == null || target == null;
-			if(bad){
-				let example_id = this.player_id + "_2";
-				let err_msg = ".energize() argument must be a game object (e.g. spirit) with id, or its id (string).\n > E.g. my_spirits[0].energize(my_spirits[0])\n > or my_spirits[0].energize(spirits['" + example_id + "'])\n > or my_spirits[0].energize('" + example_id + "')\n > Received: " + target;
-				
-				throw new Error(err_msg);
-			}
-			
-			energize_queue[String(this.id)] = String(target_id);
-		}
-		
-		merge(target){
-			if (target.id == this.id){
-				var err_msg = "You can't merge spirit into itself";
-				fill_error(this.player_id, err_msg);
-				return;
-			} else if (this.shape != 'circles'){
-				var err_msg = "Only circles can use merge(). See Documentation for available methods.";
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			
-			var entry_index3 = merge_queue.findIndex(entry3 => entry3[0]['id'] === this.id);
-			
-			try {
-				if (Array.isArray(target) == true){
-					var err_msg = ".merge() argument must be a friendly spirit object, not an array. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target;
-					fill_error(this.player_id, err_msg);
-					return;
-				} else if (typeof target !== 'object' || target === null){
-					var err_msg = ".merge() argument must be a friendly spirit object. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target;
-					fill_error(this.player_id, err_msg);
-					return;
-				}
-			
-				if (Math.abs(target.position[0] - this.position[0]) < 12 && Math.abs(target.position[1] - this.position[1]) < 12 && this.player_id == target.player_id){
-				
-				} else {
-					return;
-				}
-			} catch (error){
-				fill_error(this.player_id, error.message);
-				
-			}
-			
-						
-			if (target.hp != 0 && this.hp != 0){
-				if (entry_index3 == -1){
-					merge_queue.push([this, target]);
-				} else {
-					merge_queue[entry_index3] = [this, target];
-				}
-			}
-			
-		}
-		
-		divide(){
-			
-			if (this.shape != 'circles'){
-				var err_msg = "Only circles can use divide(). See Documentation for available methods.";
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			
-			var entry_index4 = divide_queue.findIndex(entry4 => entry4['id'] === this.id);
-			
-			if (this.hp != 0 && this.merged.length > 0){
-				if (entry_index4 == -1){
-					divide_queue.push(this);
-				} else {
-					divide_queue[entry_index4] = this;
-				}
-			}
-			
-		}
-		
-		jump(target){
-			if (this.shape != 'squares'){
-				var err_msg = "Only squaress can use jump(). See Documentation for available methods.";
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			
-			if (Array.isArray(target) == false){
-				var err_msg = '.jump() argument must be an array. E.g. my_spirits[0].jump([100, 100]). Received: ' + target;
-				
-				fill_error(this.player_id, err_msg);
-				return;
-			} else if (target.length != 2){
-				var err_msg = '.jump() argument must be an array of length 2. E.g. my_spirits[0].jump([100, 100]). Received: ' + target;
-			
-				fill_error(this.player_id, err_msg);
-				return;
-				
-			} else if (this.energy < this.energy_capacity / 2){
-				var err_msg = 'Not enough energy to jump. Cost: ' + this.energy_capacity / 2 + ' energy';
-			
-				fill_error(this.player_id, err_msg);
-				return;
-				
-			} else {
-				try {
-					if (Math.abs(target[0] - this.position[0]) > 300 || Math.abs(target[1] - this.position[1]) > 300){
-						var err_msg = 'Target is too far away. Max. distance is 300 units in both x and y direction.';
-			
-						fill_error(this.player_id, err_msg);
-						return;
-					} else if (Math.abs(target[0] - this.position[0]) < 50 && Math.abs(target[1] - this.position[1]) < 50){
-						var err_msg = 'Target is too close. Min. distance is 50 units in both x and y direction.';
-			
-						fill_error(this.player_id, err_msg);
-						return;
-					} else if (jump_danger_zone(target)){
-						var err_msg = 'Target is too close to a star or a base.';
-			
-						fill_error(this.player_id, err_msg);
-						return;
-					}
-				} catch (e) {
-					console.log(e);
-				}
-			}
-			
-			var entry_index5 = jump_queue.findIndex(entry5 => entry5[0]['id'] === this.id);
-			
-			if (this.hp != 0){
-				if (entry_index5 == -1){
-					jump_queue.push([this, target]);
-				} else {
-					jump_queue[entry_index5] = [this, target];
-				}
-			}
-			
-			
-		}
-		
-		explode(){
-			if (this.shape != 'triangles'){
-				var err_msg = "Only triangles can use explode(). See Documentation for available methods.";
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			
-			explode_queue.indexOf(String(this.id)) === -1 ? explode_queue.push(String(this.id)) : console.log('already in quueue');
-			
-		}
-		
-		//kill() { }???????
-		/*
-		kill(suid){
-			delete spirit_lookup[suid];
-			var index = living_spirits.findIndex(x => x.id == suid);
-			living_spirits.splice(index);
-		}
-		*/
-		
-		set_mark(mrk){
-			if (typeof mrk !== 'string'){
-				var err_msg = "mark must be a string. Received: " + mrk;
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			if (mrk.length > "60"){
-				var err_msg = "Max length of mark is 60 characters";
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			
-			this.mark = mrk;
-		}
-		
-		
-		shout(msg){
-			if (typeof msg !== 'string'){
-				var err_msg = "Shout argument must be a string. Received: " + msg;
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			if (msg.length > "20"){
-				var err_msg = "Max length of shout message is 20 characters";
-				fill_error(this.player_id, err_msg);
-				return;
-			}
-			
-			var entry_index6 = shout_queue.findIndex(entry6 => entry6[0]['id'] === this.id);
-			
-			if (this.hp != 0){
-				if (entry_index6 == -1){
-					shout_queue.push([this.id, this.player_id, msg]);
-				} else {
-					shout_queue[entry_index6] = [this.id, this.player_id, msg];
-				}
-			}
-			
-			//console.log(msg);
-			
-			
-			
-			
-		}
-	
 	}
 
 	class Star {
@@ -1129,7 +830,7 @@ if (!isMainThread){
 	}
 
 	function fast_dist_leq(item1, item2, range){
-		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) < range**2;
+		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) <= range**2;
 	}
 
 	function norm_sq(coor){
@@ -1155,63 +856,63 @@ if (!isMainThread){
 	function round_to(number, places){
 		return +number.toFixed(places);
 	}
+
 	
 	function intersection(x0, y0, r0, x1, y1, r1) {
-	        let a, dx, dy, d, h, rx, ry;
-	        let x2, y2;
+        let a, dx, dy, d, h, rx, ry;
+        let x2, y2;
 
-	        /* dx and dy are the vertical and horizontal distances between
-	         * the circle centers.
-	         */
-	        dx = x1 - x0;
-	        dy = y1 - y0;
+        /* dx and dy are the vertical and horizontal distances between
+         * the circle centers.
+         */
+        dx = x1 - x0;
+        dy = y1 - y0;
 
-	        /* Determine the straight-line distance between the centers. */
-	        d = Math.sqrt((dy*dy) + (dx*dx));
+        /* Determine the straight-line distance between the centers. */
+        d = Math.sqrt((dy*dy) + (dx*dx));
 
-	        /* Check for solvability. */
-	        if (d > (r0 + r1)) {
-	            /* no solution. circles do not intersect. */
-	            return false;
-	        }
-	        if (d < Math.abs(r0 - r1)) {
-	            /* no solution. one circle is contained in the other */
-	            return false;
-	        }
+        /* Check for solvability. */
+        if (d > (r0 + r1)) {
+            /* no solution. circles do not intersect. */
+            return false;
+        }
+        if (d < Math.abs(r0 - r1)) {
+            /* no solution. one circle is contained in the other */
+            return false;
+        }
 
-	        /* 'point 2' is the point where the line through the circle
-	         * intersection points crosses the line between the circle
-	         * centers.  
-	         */
+        /* 'point 2' is the point where the line through the circle
+         * intersection points crosses the line between the circle
+         * centers.  
+         */
 
-	        /* Determine the distance from point 0 to point 2. */
-	        a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d) ;
+        /* Determine the distance from point 0 to point 2. */
+        a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d) ;
 
-	        /* Determine the coordinates of point 2. */
-	        x2 = x0 + (dx * a/d);
-	        y2 = y0 + (dy * a/d);
+        /* Determine the coordinates of point 2. */
+        x2 = x0 + (dx * a/d);
+        y2 = y0 + (dy * a/d);
 
-	        /* Determine the distance from point 2 to either of the
-	         * intersection points.
-	         */
-	        h = Math.sqrt((r0*r0) - (a*a));
+        /* Determine the distance from point 2 to either of the
+         * intersection points.
+         */
+        h = Math.sqrt((r0*r0) - (a*a));
 
-	        /* Now determine the offsets of the intersection points from
-	         * point 2.
-	         */
-	        rx = -dy * (h/d);
-	        ry = dx * (h/d);
+        /* Now determine the offsets of the intersection points from
+         * point 2.
+         */
+        rx = -dy * (h/d);
+        ry = dx * (h/d);
 
-	        /* Determine the absolute intersection points. */
-	        let xi = x2 + rx;
-	        let xi_prime = x2 - rx;
-	        let yi = y2 + ry;
-	        let yi_prime = y2 - ry;
+        /* Determine the absolute intersection points. */
+        let xi = x2 + rx;
+        let xi_prime = x2 - rx;
+        let yi = y2 + ry;
+        let yi_prime = y2 - ry;
 
-	        return [[xi, yi], [xi_prime, yi_prime]];
-	    }
-
-
+        return [[xi, yi], [xi_prime, yi_prime]];
+    }
+	
 	function isCollision(item1, item2){
 		return false;
 	  minDistance = (item1.size + item2.size);
@@ -1241,7 +942,6 @@ if (!isMainThread){
 	function is_in_sight(item1, item2, range = 400){
 		return fast_dist_lt(item1.position, item2.position, range);
 	}
-
 
 
 	function get_sight_fast(){
@@ -1604,30 +1304,22 @@ if (!isMainThread){
 
 	function move_objects(){
 		const prev_position = {};
-
-		for (let i = 0; i < move_queues.length; i++){
-			let queue = move_queues[i];
-			let queue_player = queue_order[i];
+		for (let player in all_commands){
+			let queue = all_commands[player];
 
 			Object.keys(queue).forEach((id) => {
-				if(!id || !player_owns_spirit(id, queue_player)){
-					console.log("WTF: null or possible hack: player " + queue_player + 
+				if(!id || !player_owns_spirit(id, player)){
+					console.log("WTF: null or possible hack: player " + player + 
 						" calls "  + id + ".move()");
-					return;
-				}
-				// now, this check is not needed cause the queues are hash-maps
-				// so only last command is issued
-				if (prev_position[id] != undefined){
-					console.log("WTF ERROR: prev_position["+id+"] = "+prev_position[id]
-						+ " for player " + queue_player);
 					return;
 				}
 
 				const spirit = spirit_lookup[id];
 				if (spirit.hp == 0)
 					return;
-
-				const tpos = queue[id];
+				
+				const tpos = queue[id].move;
+				if(!tpos) return;
 				const pos = spirit.position;
 				prev_position[id] = pos;
 
@@ -1696,39 +1388,26 @@ if (!isMainThread){
 		
 		
 		//explosions
-		for (let i = 0; i < explode_queue.length; i++){
-			console.log(explode_queue[i] + ' is about to explode');
-			
-			explodee = spirit_lookup[explode_queue[i]];
-			
-			if (explodee.hp == 0)
-				continue;
-			
-			let boom_targets = [];
-			
-			for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
-				let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
-				//console.log('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
-				if (fast_dist_lt(explodee.position, potential_target.position, 100)){
-					boom_targets.push(potential_target);
+		for(let player in all_commands) {
+			let commands = all_commands[player];
+			for(let spirit in commands) {
+				if(!player_owns_spirit(spirit, player)) continue;
+				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
+				if(spirit_lookup[spirit].shape != "triangles") continue;
+				if(!commands[spirit].explode) continue;
+				console.log(spirit + ' is about to explode');
+				let explodee = spirit_lookup[spirit];
+				for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
+					let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
+					//console.log('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
+					if (fast_dist_lt(explodee.position, potential_target.position, 100)){
+						energize_apply.push([potential_target, -10]);
+					}
 				}
+				energize_apply.push([explodee, -100]);
+				render_data3.s.push(['ex', spirit]);
 			}
-			
-			//console.log('about to be hit with explode:');
-			//console.log(boom_targets);
-			
-			for (let k = 0; k < boom_targets.length; k++){
-				energize_apply.push([boom_targets[k], -10]);
-			}
-			
-			energize_apply.push([explodee, -100]);
-			render_data3.s.push(['ex', explode_queue[i]]);
 		}
-		
-		explode_queue = [];
-		
-		
-		
 		
 		for (let i = 0; i < outposts.length; i++){
 			let outpost = outposts[i];
@@ -1745,14 +1424,14 @@ if (!isMainThread){
 		}
 
 		let last_beam = {};
-		for (let i = 0; i < energize_queues.length; i++){
-			let queue = energize_queues[i];
-			let queue_player = queue_order[i];
+		for (let player in all_commands){
+			let queue = all_commands[player];
 
 			Object.keys(queue).forEach((from_id) => {
-				const to_id = queue[from_id];
-				if(!from_id || !player_owns_spirit(from_id, queue_player) || !to_id){
-					console.log("WTF: null or possible hack player " + queue_player + 
+				const to_id = queue[from_id].energize;
+				if(!to_id) return;
+				if(!from_id || !player_owns_spirit(from_id, player) || !to_id){
+					console.log("WTF: null or possible hack player " + player + 
 						" calls "  + from_id + ".energize(" + to_id+")");
 					return;
 				}
@@ -1838,7 +1517,7 @@ if (!isMainThread){
 						// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
 						if (to_base && from_id == 'anonymous2' && tutorial_flag1 == 1){
 							progress_tut(6, true);
-							player2_code = botCodes['tutorial6'];
+							sand1.setPlayerCode(botCodes['tutorial6']);
 						}
 					}
 				}
@@ -2011,17 +1690,18 @@ if (!isMainThread){
 	
 	
 		//
-		// shouting
+		// shout and mark
 		//
 		
-		shouts = shout_queue.length;
-		
-		for (i = (shouts - 1); i >= 0; i--){
-			render_data3.s.push(['sh', shout_queue[i][0], shout_queue[i][2]]);
-			
-			shout_queue.splice(i, 1);
+		for(let player in all_commands) {
+			let commands = all_commands[player];
+			for(let spirit in commands) {
+				if(!player_owns_spirit(spirit, player)) continue;
+				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
+				if(commands[spirit].shout) render_data3.s.push(['sh', spirit, commands[spirit].shout]);
+				if(commands[spirit].mark) spirit_lookup[spirit].mark = commands[spirit].mark;
+			}
 		}
-	
 		//
 		// objects energize
 		//
@@ -2096,38 +1776,27 @@ if (!isMainThread){
 		// objects merge
 		//
 		
-		for (i = (merge_queue.length - 1); i >= 0; i--){
-			
-			//var m_origin = merge_queue[i][0];
-			//var m_dest = merge_queue[i][1];
-			try {
-				if (merge_queue[i][0].hp != 0 && merge_queue[i][1].hp != 0){
-					merge_queue[i][1].merged.push(merge_queue[i][0].id);
-			
-					for (m = 0; m < merge_queue[i][0].merged.length; m++){
-						merge_queue[i][1].merged.push(merge_queue[i][0].merged[m])
-					}
-			
-					merge_queue[i][1].size += merge_queue[i][0].size;
-					merge_queue[i][1].energy += merge_queue[i][0].energy;
-					merge_queue[i][1].energy_capacity = merge_queue[i][1].size * 10;
-			
-					merge_queue[i][0].hp = 0;
-					merge_queue[i][0].size = 0;
-					merge_queue[i][0].energy = 0;
-					merge_queue[i][0].position = merge_queue[i][1].position;
-					//merge_queue[i][0].position = JSON.parse(JSON.stringify(merge_queue[i][1].position));
-			
-			
-					//render_data2.special.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
-					render_data3.s.push(['m', merge_queue[i][0].id, merge_queue[i][1].id])
-					//render_data2.death.push(merge_queue[i][0].id);
-				}
-			
-			
-				merge_queue.splice(i, 1);
-			} catch (e) {
-				console.log(e)
+		for(let player in all_commands) {
+			let commands = all_commands[player];
+			for(let spirit in commands) {
+				if(!player_owns_spirit(spirit, player)) continue;
+				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
+				if(!commands[spirit].merge) continue;
+				
+				var t = spirit_lookup[commands[spirit].merge];
+				var s = spirit_lookup[spirit];
+				if(dist_sq(t.position, s.position) > 10**2) continue;
+				if(s.hp == 0 || t.hp == 0) continue;
+				t.merged.push(s.id);
+				t.size += s.size;
+				t.energy += s.energy;
+				t.energy_capacity += s.energy_capacity;
+				s.hp = 0;
+				s.size = 0;
+				s.energy = 0;
+				s.position = t.position;
+
+				render_data3.s.push(['m', s.id, t.id]);
 			}
 		}
 		
@@ -2136,78 +1805,91 @@ if (!isMainThread){
 		// objects divide
 		//
 		
-		for (i = (divide_queue.length - 1); i >= 0; i--){
-			
-			try {
-				var original = divide_queue[i]
-				var original_size = original.size
-			
-				for (d = 0; d < divide_queue[i].merged.length; d++){
+		for(let player in all_commands) {
+			let commands = all_commands[player];
+			for(let spirit in commands) {
+				if(!player_owns_spirit(spirit, player)) continue;
+				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
+				if(!commands[spirit].divide) continue;
 				
-					var divided = spirit_lookup[divide_queue[i].merged[d]]
-					//console.log('dividing ' + divided.id);
-					var temp_posX = JSON.parse(JSON.stringify(original.position[0])); 
-					var temp_posY = JSON.parse(JSON.stringify(original.position[1])); 
-				 
-					//divided.position[0] = temp_posX;
-					//divided.position[1] = temp_posY; 
-					divided.position = JSON.parse(JSON.stringify(prev_position[original.id]));
-					divided.hp = 1;
-					divided.size = 1;
-					divided.energy = Math.floor(original.energy / original_size);
-				
-					//var adj1 = 5;
-					//var adj2 = 5;
-				
-					var adj1 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
-					var adj2 = (Math.ceil(Math.random() * 10) * (Math.round(Math.random()) ? 1 : -1));
-				
-				
-					divided.position[0] += adj1;
-					divided.position[1] += adj2;
-				
-				
+				var orig = spirit_lookup[spirit];
+				var orig_size = orig.size;
+				for(var did of orig.merged) {
+					var d = spirit_lookup[did];
+					d.hp = 1;
+					d.size = 1;
+					d.energy = Math.floor(orig.energy / orig_size);
+					d.energy_capacity = orig.energy_capacity / orig_size;
+					d.position = [orig.position[0], orig.position[1]];
+					let ang = Math.random() * Math.PI * 2;
+					let dist = Math.random() * 10;
+					d.position[0] += Math.sin(ang) * dist;
+					d.position[1] += Math.cos(ang) * dist;
 				}
-			
-				original.merged = [];
-				original.size = 1;
-				original.energy = Math.floor(original.energy / original_size);
-				original.energy_capacity = original.energy_capacity / original_size;
-			
-			
-				//render_data2.special.push(['d', divide_queue[i].id]);
-				render_data3.s.push(['d', divide_queue[i].id]);
-			
-				divide_queue.splice(i, 1);
-			} catch (e) {
-				console.log(e);
+				
+				orig.merged = [];
+				orig.size = 1;
+				orig.energy = Math.floor(orig.energy / orig_size);
+				orig.energy_capacity = orig.energy_capacity / orig_size;
+
+				render_data3.s.push(['d', orig.id]);
 			}
-			
-			
 		}
-		
-		
 		
 		//
 		// objects jump
 		//
-		
-		for (i = (jump_queue.length - 1); i >= 0; i--){
-			
-			jump_queue[i][0].position = jump_queue[i][1];
-			jump_queue[i][0].energy -= jump_queue[i][0].energy_capacity / 2;
-		
-			
-			render_data3.s.push(['j', jump_queue[i][0].id]);
-			
-			jump_queue.splice(i, 1);
+		for(let player in all_commands) {
+			let commands = all_commands[player];
+			for(let spirit in commands) {
+				if(!player_owns_spirit(spirit, player)) continue;
+				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
+				if(spirit_lookup[spirit].shape != "squares") continue;
+				if(!commands[spirit].jump) continue;
+
+				let s = spirit_lookup[spirit];
+
+				if(s.energy < s.energy_capacity/2) continue;
+
+				let tpos = commands[spirit].jump;
+				let dist = Math.sqrt(dist_sq(tpos, s.position));
+				if(dist > 300) {
+					tpos = linc(s.position, tpos, 300/dist);
+				}
+
+				let potential_structure_collisions = s.sight.structures;
+				for (let k = 0; k < potential_structure_collisions.length; k++){
+					//console.log(' ------------------------------- structure potential collisions');
+					//console.log(potential_structure_collisions[k]);
+					
+					let object_name = potential_structure_collisions[k];
+					// name prefix - safe (is structure)
+					let min_distance = object_name.startsWith('star') ? 100 : 50;
+					let object_position = structure_lookup[object_name].position;
+
+					if (fast_dist_lt(tpos, object_position, min_distance)){
+						let inter_coor = intersection(s.position[0], s.position[1], dist,
+														object_position[0], object_position[1], min_distance);
+						if (inter_coor == false) continue;
+						
+						let quick_dist1 = dist_sq(inter_coor[0], tpos);
+						let quick_dist2 = dist_sq(inter_coor[1], tpos);
+						
+						let pick_first = quick_dist1 < quick_dist2 || Math.abs(quick_dist1 - quick_dist2) <= 5;
+						tpos = inter_coor[pick_first ? 0 : 1];
+					}
+				}
+				s.position = tpos;
+
+				s.energy -= s.energy_capacity/2;
+
+				render_data3.s.push(['j', spirit]);
+			}
 		}
 	}
 
 	function update_vm_sandbox(){
 		if (temp_flag == 0){
-			var p1_top = 0;
-			var p2_top = 0;
 			var p1_living = 0;
 			var p2_living = 0;
 			for (i = 0; i < living_spirits.length; i++){
@@ -2217,85 +1899,28 @@ if (!isMainThread){
 					
 					//render3 part
 					render_data3.p2.push([spt.id, spt.position, spt.size, spt.energy, spt.hp]);
-					
-					//
-					
-					pl2_units[spt.id] = spt;
-					
-					//if (spt.hp != 0) {
-						if (spt.hp == 1){
-							p2_living++;
-							if (spt.shape == 'circles' && spt.size > 1) p2_living += spt.size - 1;
-						}
-						my_spirits2[p2_top] = spt;
-						p2_top++;
-					//}
-					
-					//pl1_units[spt.id] = {};
-				
-					//Object.assign(pl1_units[spt.id], spt)
-				
-					var tempJSON = JSON.stringify(spt);
-					pl1_units[spt.id] = JSON.parse(tempJSON);
-				
-					/*pl1_units[spt.id] = {
-						id: spt.id,
-						position: spt.position,
-						size: spt.size,
-						energy: spt.energy,
-						color: spt.color,
-						sight: spt.sight,
-						qcollisions: spt.qcollisions,
-						hp: spt.hp,
-						move_speed: spt.move_speed,
-						energy_capacity: spt.energy_capacity,
-						player_id: spt.player_id,
-						cost: spt.cost
-					}*/
-				
-				
+
+					if (spt.hp == 1){
+						p2_living++;
+						if (spt.shape == 'circles' && spt.size > 1) p2_living += spt.size - 1;
+					}
+
 				} else if (spt.player_id == players['p1']) {
 					
 					//render3 part
 					render_data3.p1.push([spt.id, spt.position, spt.size, spt.energy, spt.hp]);
+
+					if (spt.hp == 1){
+						p1_living++;
+						if (spt.shape == 'circles' && spt.size > 1) p1_living += spt.size - 1;
+					}
 					
-					
-					pl1_units[spt.id] = spt;
-					
-					//if (spt.hp != 0) {
-						if (spt.hp == 1){
-							p1_living++;
-							if (spt.shape == 'circles' && spt.size > 1) p1_living += spt.size - 1;
-						}
-						my_spirits1[p1_top] = spt;
-						p1_top++;
-					//}
-					
-					//pl2_units[spt.id] = {};
-				
-					//Object.assign(pl2_units[spt.id], spt)
-				
-					var tempJSON = JSON.stringify(spt);
-					pl2_units[spt.id] = JSON.parse(tempJSON);
-					
-					
-					/*pl2_units[spt.id] = {
-						id: spt.id,
-						position: spt.position,
-						size: spt.size,
-						energy: spt.energy,
-						color: spt.color,
-						sight: spt.sight,
-						qcollisions: spt.qcollisions,
-						hp: spt.hp,
-						move_speed: spt.move_speed,
-						energy_capacity: spt.energy_capacity,
-						player_id: spt.player_id,
-						cost: spt.cost
-					}*/
 				}
+				var tempJSON = JSON.stringify(spt);
+				rawSpirits[spt.id] = JSON.parse(tempJSON);
+
 				//what is this doing here? (maybe important)
-				spt.move(spt.position);
+				//spt.move(spt.position);
 			}
 			//console.log('objects processing');
 			temp_flag = 0;
@@ -2307,7 +1932,7 @@ if (!isMainThread){
 	}
 			
 
-	function update_state(){
+	async function update_state(){
 		let update_t0 = process.hrtime();
 		game_duration++;
 		ticks['now'] = game_duration;
@@ -2414,8 +2039,8 @@ if (!isMainThread){
 			render_data3.er2 = user_error2;
 
 			const gqueue_cutoff = 100;
-			render_data3.g1 = graphics1.queue;
-			render_data3.g2 = graphics2.queue;
+			render_data3.g1 = gqueue1;
+			render_data3.g2 = gqueue2;
 			if(render_data3.g1.length > gqueue_cutoff){
 				let l1 = render_data3.g1.length;
 				render_data3.g1.length = gqueue_cutoff;
@@ -2469,11 +2094,9 @@ if (!isMainThread){
 
 			log1 = [];
 			log2 = [];
-			graphics1.queue = [];
-			graphics2.queue = [];
 
 			let update_no_players = elapsed_ms_from(update_t0);
-			user_code();
+			await user_code();
 			let update_total = elapsed_ms_from(update_t0);
 
 			console.log('TIME: update_state = ' + update_no_players + " (" + update_total + " total)");
@@ -2576,20 +2199,15 @@ if (!isMainThread){
 		structure_lookup['star_p89'] = star_p89;
 		structure_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		structure_lookup['base_' + players['p2']] = global['base_' + players['p2']];
-		
-		
-		user_code();
 	
-		setInterval(function () {
-			update_state();
-			//ws.send('sending render_data');	
-			//ws.send(JSON.stringify(render_data2));
-			//ws.send(JSON.stringify(render_data));
-			//ws.send(render_data);
-			//console.log(render_data2);
-			//var render_data = [[],[],[],[],[]];
-		
-		}, game_tick);
+		mainLoop();
+	}
+
+	async function mainLoop() {
+		const t1 = (+new Date());
+		await update_state();
+		setTimeout(mainLoop, Math.max(0, game_tick - (+new Date()) + t1));
 	}
 }
+
 
