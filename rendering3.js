@@ -520,7 +520,7 @@ var prev_scale = 1;
 var z_level = 1;
 var multiplier = 1;
 
-var game_tick = 1000; // 1s
+var game_tick = 600; // 1s
 var fps = 60;
 
 var living_spirits = [];
@@ -865,8 +865,8 @@ class Spirit {
 		}
 		
 		this.position = origin;
-		this.position[0] = origin[0] + (incr[0] * (total_time / 1000));
-		this.position[1] = origin[1] + (incr[1] * (total_time / 1000));
+		this.position[0] = origin[0] + (incr[0] * (total_time / 600));
+		this.position[1] = origin[1] + (incr[1] * (total_time / 600));
 		
 		if (this.shape == 'triangles') this.tria = calcAngleDegrees(incr[0], incr[1]);
 		
@@ -878,11 +878,11 @@ class Spirit {
 			setTimeout(function(){
 				this.hp = 0;
 				this.exploding = 0;
-			}, 1000);
+			}, 600);
 		}
 		if (this.hp != 0){
 			this.energy = prev_energy;
-			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
+			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 600));
 		
 			if (hp == 0){
 				//console.log('death calling');
@@ -959,8 +959,8 @@ class Spirit {
 		if (prev_size != new_size){
 			//console.log('changing size from ' + prev_size + ' to ' + new_size);
 			this.size = prev_size;
-			this.size = prev_size + ((new_size - prev_size) * (total_time / 1000));
-			this.energy_capacity = (prev_size * 10) + ((new_size - prev_size) * 10) * (total_time / 1000);
+			this.size = prev_size + ((new_size - prev_size) * (total_time / 600));
+			this.energy_capacity = (prev_size * 10) + ((new_size - prev_size) * 10) * (total_time / 600);
 		} else if (new_size != this.size){
 			this.size = new_size;
 		}
@@ -1018,9 +1018,12 @@ class Spirit {
 		//	
 		//}, 16);
 		//console.log('calling explode')
+		var draw_alpha = color_parts[3] * (1 - explosions[this.id] / 100);
+		if (explosions[this.id] >= 100) draw_alpha = 0;
+		
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], explosions[this.id], 0, Math.PI * 2, false);
-		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (1 - explosions[this.id] / 100) + ')';
+		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + draw_alpha + ')';
 		c.fill();
 	}
 	
@@ -1372,19 +1375,19 @@ class Base {
 	
 	charge(prev_energy, new_energy){
 		if (prev_energy > new_energy && (prev_energy - new_energy) > (this.current_spirit_cost/1.5)){
-			this.energy = new_energy * (total_time / 1000);
+			this.energy = new_energy * (total_time / 600);
 		} else if (prev_energy >= new_energy){
 			this.energy = new_energy;
 		} else if (prev_energy < new_energy){
 			this.energy = prev_energy;
-			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 1000));
+			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 600));
 		} 
 	}
 	
 	defend(new_status){
 		//def_status is number between 0 and 1 (0 and 1 values obvious, everything inbetween for animation purposes)
 		if (new_status != this.def_status){
-			this.def_status = Math.abs((new_status * (total_time / 1000)) + ((new_status - 1) * ((total_time / 1000) - 1)));
+			this.def_status = Math.abs((new_status * (total_time / 600)) + ((new_status - 1) * ((total_time / 600) - 1)));
 			if (Math.abs(this.def_status - new_status) < 0.05) this.def_status = new_status;
 			//console.log('this.def_status = ' + this.def_status);
 		}

@@ -424,7 +424,7 @@ async function user_code(){
 
 //global
 var started = 0;
-var game_tick = 1000; // 1s
+var game_tick = 600; // 1s
 var base_speed = 20;
 var stars = [];
 var bases = [];
