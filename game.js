@@ -449,6 +449,7 @@ function user_code(){
 	queue_order.push(players['p2']);
 	energize_queues.push(energize_queue);
 	move_queues.push(move_queue);
+	//explode_queues.push(explode_queue);
 }
 
 //global
@@ -469,8 +470,10 @@ var spirits2 = [];
 
 var move_queue = {};
 var energize_queue = {};
+var explode_queue = [];
 var move_queues = [];
 var energize_queues = [];
+//var explode_queues = [];
 var queue_order = [];
 
 var merge_queue = [];
@@ -973,6 +976,17 @@ if (!isMainThread){
 				}
 			}
 			
+			
+		}
+		
+		explode(){
+			if (this.shape != 'triangles'){
+				var err_msg = "Only triangles can use explode(). See Documentation for available methods.";
+				fill_error(this.player_id, err_msg);
+				return;
+			}
+			
+			explode_queue.indexOf(String(this.id)) === -1 ? explode_queue.push(String(this.id)) : console.log('already in quueue');
 			
 		}
 		
@@ -1679,6 +1693,41 @@ if (!isMainThread){
 		let energize_apply = [];
 		let energize_apply_star = [];
 		let energize_apply_outpost = [];
+		
+		
+		//explosions
+		for (let i = 0; i < explode_queue.length; i++){
+			console.log(explode_queue[i] + ' is about to explode');
+			
+			explodee = spirit_lookup[explode_queue[i]];
+			
+			if (explodee.hp == 0)
+				continue;
+			
+			let boom_targets = [];
+			
+			for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
+				let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
+				//console.log('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
+				if (fast_dist_lt(explodee.position, potential_target.position, 100)){
+					boom_targets.push(potential_target);
+				}
+			}
+			
+			//console.log('about to be hit with explode:');
+			//console.log(boom_targets);
+			
+			for (let k = 0; k < boom_targets.length; k++){
+				energize_apply.push([boom_targets[k], -10]);
+			}
+			
+			energize_apply.push([explodee, -100])
+		}
+		
+		explode_queue = [];
+		
+		
+		
 		
 		for (let i = 0; i < outposts.length; i++){
 			let outpost = outposts[i];

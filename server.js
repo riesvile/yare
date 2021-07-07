@@ -1148,7 +1148,7 @@ function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server
 	active_games[game_id][7] = pla2_color;
 
 	if(game_type == "real" && pla2 != "dumb-bot" && pla2 != "medium-bot" && pla2 != "will-bot") {
-		discord_postmessage(config.hooks.new_match, "New game started: https://yare.io/" + server_id + "/" + game_id);
+		//discord_postmessage(config.hooks.new_match, "" + pla1 + " vs. " + pla2 + " : https://yare.io/" + server_id + "/" + game_id);
 	}
 
 	start_world(game_id);
