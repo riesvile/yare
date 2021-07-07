@@ -265,6 +265,7 @@ yd.loadData = function(data) {
         if(!(id in global.outposts)) {
             global.outposts[id] = new Outpost(id);
             global[id] = global.outposts[id];
+            global.outpost = global.outposts[id];
         }
         Object.assign(global.outposts[id], od[id]);
     }
@@ -280,6 +281,8 @@ yd.loadData = function(data) {
         }
         Object.assign(global.bases[id], bd[id]);
     }
+    global.players = data.players;
+    global.tick = data.tick;
 };
 
 yd.getOutput = function() {
@@ -296,5 +299,43 @@ yd.getOutput = function() {
     return output;
 };
 
+  
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+/** Convert a base64 encoded input string into a Uint8Array
+ * 
+ * @param {string} input - base64 encoded input
+ */
+function atob(input) {
+    var output = [];
+    var chr1, chr2, chr3 = '';
+    var enc1, enc2, enc3, enc4 = '';
+    var i = 0;
+
+    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+    while (i < input.length) {
+        enc1 = chars.indexOf(input.charAt(i++));
+        enc2 = chars.indexOf(input.charAt(i++));
+        enc3 = chars.indexOf(input.charAt(i++));
+        enc4 = chars.indexOf(input.charAt(i++));
+
+        chr1 = (enc1 << 2) | (enc2 >> 4);
+        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+        chr3 = ((enc3 & 3) << 6) | enc4;
+
+        output.push(chr1);
+
+        if (enc3 != 64) {
+            output.push(chr2);
+        }
+        if (enc4 != 64) {
+            output.push(chr3);
+        }
+    }
+
+    return new Uint8Array(output);
+}
+
+global.atob = atob;
 
 return yd;

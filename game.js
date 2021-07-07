@@ -692,7 +692,7 @@ class Sandbox {
 	}
 
 	async loadData() {
-		this.funcs.loadData.apply(this.yd.derefInto(), [{spirits: rawSpirits, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup))}], {arguments: {copy: true}, result: {reference: true}});
+		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], spirits: rawSpirits, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
 	}
 
 	async run() {
@@ -1407,19 +1407,6 @@ if (!isMainThread){
 				energize_apply.push([explodee, -100]);
 				render_data3.s.push(['ex', spirit]);
 			}
-<<<<<<< HEAD
-			
-			//console.log('about to be hit with explode:');
-			//console.log(boom_targets);
-			
-			for (let k = 0; k < boom_targets.length; k++){
-				energize_apply.push([boom_targets[k], -10]);
-			}
-			
-			energize_apply.push([explodee, -100]);
-			render_data3.s.push(['ex', explode_queue[i]]);
-=======
->>>>>>> e6a91aa... Switch to isolated-vm for code sandboxing
 		}
 		
 		for (let i = 0; i < outposts.length; i++){
