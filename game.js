@@ -1388,6 +1388,9 @@ if (!isMainThread){
 		let energize_apply_star = [];
 		let energize_apply_outpost = [];
 		
+		for(let spirit of Object.values(spirit_lookup)){
+			spirit.last_energized = '';
+		}
 		
 		//explosions
 		for(let player in all_commands) {
