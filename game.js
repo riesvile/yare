@@ -509,7 +509,7 @@ var p2_process_time_res = 0;
 function spirit_cost(p_num, alives){
 	if (p_num == 1){
 		if (shapes["player1"] == 'circles'){
-			if (alives <= 100) base_lookup['base_' + players['p1']].current_spirit_cost = 50;
+			if (alives <= 100) base_lookup['base_' + players['p1']].current_spirit_cost = 40;
 			if (alives > 100) base_lookup['base_' + players['p1']].current_spirit_cost = 100;
 			if (alives > 200) base_lookup['base_' + players['p1']].current_spirit_cost = 200;
 			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
@@ -517,11 +517,16 @@ function spirit_cost(p_num, alives){
 		} else if (shapes["player1"] == 'squares'){
 			if (alives <= 10) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
 			if (alives > 10) base_lookup['base_' + players['p1']].current_spirit_cost = 800;
-			if (alives > 400) base_lookup['base_' + players['p1']].current_spirit_cost = 1000;
+			if (alives > 400) base_lookup['base_' + players['p1']].current_spirit_cost = 1100;
+		} else if (shapes["player1"] == 'triangles'){
+			if (alives <= 30) base_lookup['base_' + players['p1']].current_spirit_cost = 30;
+			if (alives > 30) base_lookup['base_' + players['p1']].current_spirit_cost = 90;
+			if (alives > 90) base_lookup['base_' + players['p1']].current_spirit_cost = 300;
+			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 1000;
 		}
 	} else if (p_num == 2){
 		if (shapes["player2"] == 'circles'){
-			if (alives <= 100) base_lookup['base_' + players['p2']].current_spirit_cost = 50;
+			if (alives <= 100) base_lookup['base_' + players['p2']].current_spirit_cost = 40;
 			if (alives > 100) base_lookup['base_' + players['p2']].current_spirit_cost = 100;
 			if (alives > 200) base_lookup['base_' + players['p2']].current_spirit_cost = 200;
 			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
@@ -529,7 +534,12 @@ function spirit_cost(p_num, alives){
 		} else if (shapes["player2"] == 'squares'){
 			if (alives <= 10) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
 			if (alives > 10) base_lookup['base_' + players['p2']].current_spirit_cost = 800;
-			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
+			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1100;
+		} else if (shapes["player1"] == 'triangles'){
+			if (alives <= 30) base_lookup['base_' + players['p2']].current_spirit_cost = 30;
+			if (alives > 30) base_lookup['base_' + players['p2']].current_spirit_cost = 90;
+			if (alives > 90) base_lookup['base_' + players['p2']].current_spirit_cost = 300;
+			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
 		}
 	}
 	
@@ -543,6 +553,7 @@ function spirit_cost(p_num, alives){
 function get_def_size(pshape){
 	if (pshape == 'circles') return 1;
 	if (pshape == 'squares') return 10;
+	if (pshape == 'triangles') return 3;
 }
 
 
@@ -1076,6 +1087,8 @@ if (!isMainThread){
 				this.energy_capacity = 400;
 			} else if (this.shape == 'squares'){
 				this.energy_capacity = 1000;
+			} else if (this.shape == 'triangles'){
+				this.energy_capacity = 600;
 			}
 			
 			this.player_id = player;
@@ -2455,6 +2468,8 @@ if (!isMainThread){
 		var start_num_adjust2 = 0;
 		if (shapes['player1'] == 'squares') start_num_adjust1 = 9;
 		if (shapes['player2'] == 'squares') start_num_adjust2 = 9;
+		if (shapes['player1'] == 'triangles') start_num_adjust1 = 5;
+		if (shapes['player2'] == 'triangles') start_num_adjust2 = 5;
 		
 		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
 			if (s > 6){

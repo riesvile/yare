@@ -554,6 +554,69 @@ var dumb_cycler = 0;
 
 var world_initiated = 0;
 
+function get_triangle(centerx, centery, radius){
+	  //the first vertex is on the circumscribed circle at 0 radians where R is the radius of the circle ( R)
+	  //you may decide to change this.
+	  let sx1 = centerx + radius;
+	  let sy1 = centery;
+	  //the second vertex is on the circumscribed circle at 2*Math.PI/3 radians 
+	  //you may decide to change this.
+	  let sx2 = centerx + radius * Math.cos(2*Math.PI/3);
+	  let sy2 = centery + radius * Math.sin(2*Math.PI/3);
+	  //calculate the 3-rd vertex
+	  let sx3 = centerx + radius * Math.cos(4*Math.PI/3);
+	  let sy3 = centery + radius * Math.sin(4*Math.PI/3);
+	
+	
+	  return [sx1, sy1, sx2, sy2, sx3, sy3];
+}
+
+function draw_triangle(x, y, width, height, px1, py1, px2, py2, px3, py3, angle = 0){
+	
+  let triangle = get_triangle(x, y, 20);
+	
+	
+  
+  c.save();
+  c.translate(x+width/2, y+height/2 );
+  c.rotate(angle*Math.PI/180);
+  c.beginPath();
+  c.moveTo(triangle[0], triangle[1]);
+  c.lineTo(triangle[2], triangle[3]);
+  c.lineTo(triangle[4], triangle[5]);
+  c.lineTo(triangle[0], triangle[1]);
+  c.rect(-width/2, -height/2, width, height);
+  c.closePath();
+  c.lineWidth = 4;
+  c.stroke();
+  c.restore();
+  
+}
+
+
+function draw_polygon(centerX,centerY,sideCount,size,strokeWidth,strokeColor,fillColor,rotationDegrees){
+    var radians=rotationDegrees*Math.PI/180;
+    c.translate(centerX,centerY);
+    c.rotate(radians);
+    c.beginPath();
+    c.moveTo (size * Math.cos(0), size * Math.sin(0));          
+    for (var i = 1; i <= sideCount;i += 1) {
+        c.lineTo (size * Math.cos(i * 2 * Math.PI / sideCount), size * Math.sin(i * 2 * Math.PI / sideCount));
+    }
+    c.closePath();
+    c.fillStyle=fillColor;
+    c.strokeStyle = strokeColor;
+    c.lineWidth = strokeWidth;
+    if (strokeColor != 0) c.stroke();
+    if (fillColor != 0)c.fill();
+    c.rotate(-radians);
+    c.translate(-centerX,-centerY);    
+}
+
+function calcAngleDegrees(x, y) {
+  return Math.atan2(y, x) * 180 / Math.PI;
+}
+
 
 function game_over(winner){
 	//alert('game over, ' + winner + ' won');
@@ -693,6 +756,7 @@ function create_spirit_p1(spir_id){
 	var spir_position = [game_blocks['t' + tick_counter].p1[spir_id][0][0], game_blocks['t' + tick_counter].p1[spir_id][0][1]];
 	if (shapes['shape1'] == 'circles') var spir_size = 1;
 	if (shapes['shape1'] == 'squares') var spir_size = 10;
+	if (shapes['shape1'] == 'triangles') var spir_size = 3;
 	var spir_energy = game_blocks['t' + tick_counter].p1[spir_id][2];
 	var spir_hp = game_blocks['t' + tick_counter].p1[spir_id][3];
 	var spir_player = pla1;
@@ -730,6 +794,7 @@ function create_spirit_p2(spir_id){
 	var spir_position = [game_blocks['t' + tick_counter].p2[spir_id][0][0], game_blocks['t' + tick_counter].p2[spir_id][0][1]];
 	if (shapes['shape2'] == 'circles') var spir_size = 1;
 	if (shapes['shape2'] == 'squares') var spir_size = 10;
+	if (shapes['shape2'] == 'triangles') var spir_size = 3;
 	var spir_energy = game_blocks['t' + tick_counter].p2[spir_id][2];
 	var spir_hp = game_blocks['t' + tick_counter].p2[spir_id][3];
 	var spir_player = pla2;
@@ -782,6 +847,7 @@ class Spirit {
 		this.temp_size = size;
 		
 		this.shout = '';
+		this.tria = 0;
 	}
 
 	move(origin, incr) {
@@ -798,6 +864,8 @@ class Spirit {
 		this.position = origin;
 		this.position[0] = origin[0] + (incr[0] * (total_time / 1000));
 		this.position[1] = origin[1] + (incr[1] * (total_time / 1000));
+		
+		if (this.shape == 'triangles') this.tria = calcAngleDegrees(incr[0], incr[1]);
 		
 		
 	}
@@ -1013,6 +1081,25 @@ class Spirit {
 				
 				c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
 				c.fillRect((this.position[0] - (this.size * (spirit_percent_energy)) / 2), (this.position[1] - (this.size * (spirit_percent_energy)) / 2), this.size * (spirit_percent_energy), this.size * (spirit_percent_energy));
+			} else if (this.shape == 'triangles'){
+				let current_color = this.color;
+				var color_parts = this.color.match(/[.?\d]+/g);
+				let lineW = spirit_percent_energy;
+				if (lineW < 0.6) lineW = 0.6;
+				//if (spirit_percent_energy < 10){
+				//	c.lineWidth = 0.75;
+				//} else if (this.size < 8){
+				//	c.lineWidth = 0.5 + ((this.size - 1) / 4);
+				//} else {
+				//	c.lineWidth = 2;
+				//}
+				
+				//outer triangle
+				draw_polygon(this.position[0],this.position[1],3,this.size + 2,lineW,'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.6) + ')',0,this.tria)
+				
+				//energy
+				draw_polygon(this.position[0],this.position[1],3,(this.size + 1) * spirit_percent_energy,1,0,current_color,this.tria)
+				
 			}
 			
 			if (this.shout != ''){
@@ -1106,23 +1193,17 @@ function mapValues(the_number, in_min, in_max, out_min, out_max) {
 }
 
 function drawRotated(x, y, width, height, degrees, color){
-
         // first save the untranslated/unrotated context
         c.save();
-
         c.beginPath();
         c.translate(x+width/2, y+height/2 );
         c.rotate(degrees*Math.PI/180);
-
         c.rect(-width/2, -height/2, width, height);
-
 		c.lineWidth = 2;
         c.strokeStyle = color;
         c.stroke();
-
         c.restore();
-
-    }
+}
 
 class Base {
 	constructor(id, position, energy, player, color, shape, def_status = 0){
@@ -1136,6 +1217,7 @@ class Base {
 		this.hp = 1;
 		if (this.shape == 'circles') this.energy_capacity = 400;
 		if (this.shape == 'squares') this.energy_capacity = 1000;
+		if (this.shape == 'triangles') this.energy_capacity = 600;
 		this.player_id = player;
 		this.color = color;
 		this.current_spirit_cost = 100;
@@ -1145,6 +1227,7 @@ class Base {
 		this.def_status = def_status;
 		
 		bases.push(this);
+		if (this.shape == 'triangles') this.base_points = get_triangle(this.position[0], this.position[1], 30);
 	}
 	
 	draw() {
@@ -1214,7 +1297,42 @@ class Base {
 			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(production_percent, 0.75, 1, 0, 1) + ')';
 			c.fillRect((this.position[0] - outer_width / 2 - 2), (this.position[1] - outer_width / 2 - 2), 4, outer_width);
 		} else if (this.shape == 'triangles'){
-			
+			let current_color = this.color;
+			let L = 60;
+		  let side_a = L,
+		      side_b = L,
+		      side_c = L;
+
+		  let R = (L *.5) / Math.cos(Math.PI/6);
+		  
+		  c.beginPath();
+		  c.arc(this.position[0], this.position[1], this.size, Math.PI * 0, Math.PI * 3, false);
+		  c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.86 + ')';
+		  //c.stroke();
+		  
+		  
+		  //let triangle = get_triangle(this.position[0], this.position[1], 20);
+		  //console.log(triangle);
+		  
+		  //outer triangle
+		  //draw_triangle(this.position[0], this.position[1], 30, 30, this.base_points[0], this.base_points[1], this.base_points[2], this.base_points[3], this.base_points[4], this.base_points[5], 90)
+		  
+		  draw_polygon(this.position[0],this.position[1],3,30,4,current_color,0,incoming.t)
+		  
+		  //c.beginPath();
+		  //c.moveTo(this.base_points[0], this.base_points[1]);
+		  //c.lineTo(this.base_points[2], this.base_points[3]);
+		  //c.lineTo(this.base_points[4], this.base_points[5]);
+		  //c.lineTo(this.base_points[0], this.base_points[1]);
+		  //c.closePath();
+		  //c.lineWidth = 4;
+		  //c.stroke();
+		  
+		  //drawRotated(this.position[0], this.position[1], 30, 30, incoming.t, current_color);
+		  
+		  //console.log(incoming.t);
+		  
+		  
 		}
 		
 		
@@ -1680,7 +1798,7 @@ function lerp(a, b, t) {
 Spirit.prototype.move = function() {
 	window._move.apply(this, arguments);
 	
-	const NOISESPEED = 5000; // minimum time
+	const NOISESPEED = 10000; // minimum time
 	const NOISESPEED2 = NOISESPEED * (2 - 1); //variance in time
 
 	// const time = tick_local * 1000 + total_time; // time in ms
@@ -1695,7 +1813,7 @@ Spirit.prototype.move = function() {
 	let t = time - this.noiseNext;
 	if (t >= 0) {
 		// make random point in unit circle
-		const NOISERADIUS = 20 * 1.02; // 20 because thats the distance traveled in 1 tick, 1.3 because circle
+		const NOISERADIUS = 10 * 1.3; // 20 because thats the distance traveled in 1 tick, 1.3 because circle
 		let x, y;
 		do {
 			x = Math.random()-.5;
