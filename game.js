@@ -473,7 +473,8 @@ var p2_process_time_res = 0;
 function spirit_cost(p_num, alives){
 	if (p_num == 1){
 		if (shapes["player1"] == 'circles'){
-			if (alives <= 100) base_lookup['base_' + players['p1']].current_spirit_cost = 40;
+			if (alives <= 50) base_lookup['base_' + players['p1']].current_spirit_cost = 25;
+			if (alives > 50) base_lookup['base_' + players['p1']].current_spirit_cost = 50;
 			if (alives > 100) base_lookup['base_' + players['p1']].current_spirit_cost = 100;
 			if (alives > 200) base_lookup['base_' + players['p1']].current_spirit_cost = 200;
 			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
@@ -483,14 +484,15 @@ function spirit_cost(p_num, alives){
 			if (alives > 10) base_lookup['base_' + players['p1']].current_spirit_cost = 800;
 			if (alives > 400) base_lookup['base_' + players['p1']].current_spirit_cost = 1100;
 		} else if (shapes["player1"] == 'triangles'){
-			if (alives <= 30) base_lookup['base_' + players['p1']].current_spirit_cost = 30;
-			if (alives > 30) base_lookup['base_' + players['p1']].current_spirit_cost = 90;
-			if (alives > 90) base_lookup['base_' + players['p1']].current_spirit_cost = 300;
+			if (alives <= 30) base_lookup['base_' + players['p1']].current_spirit_cost = 60;
+			if (alives > 30) base_lookup['base_' + players['p1']].current_spirit_cost = 120;
+			if (alives > 120) base_lookup['base_' + players['p1']].current_spirit_cost = 300;
 			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 1000;
 		}
 	} else if (p_num == 2){
 		if (shapes["player2"] == 'circles'){
-			if (alives <= 100) base_lookup['base_' + players['p2']].current_spirit_cost = 40;
+			if (alives <= 50) base_lookup['base_' + players['p2']].current_spirit_cost = 25;
+			if (alives > 50) base_lookup['base_' + players['p2']].current_spirit_cost = 50;
 			if (alives > 100) base_lookup['base_' + players['p2']].current_spirit_cost = 100;
 			if (alives > 200) base_lookup['base_' + players['p2']].current_spirit_cost = 200;
 			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
@@ -500,10 +502,10 @@ function spirit_cost(p_num, alives){
 			if (alives > 10) base_lookup['base_' + players['p2']].current_spirit_cost = 800;
 			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1100;
 		} else if (shapes["player1"] == 'triangles'){
-			if (alives <= 30) base_lookup['base_' + players['p2']].current_spirit_cost = 30;
-			if (alives > 30) base_lookup['base_' + players['p2']].current_spirit_cost = 90;
-			if (alives > 90) base_lookup['base_' + players['p2']].current_spirit_cost = 300;
-			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
+			if (alives <= 30) base_lookup['base_' + players['p2']].current_spirit_cost = 60;
+			if (alives > 30) base_lookup['base_' + players['p2']].current_spirit_cost = 120;
+			if (alives > 120) base_lookup['base_' + players['p2']].current_spirit_cost = 300;
+			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
 		}
 	}
 	
@@ -698,7 +700,7 @@ class Sandbox {
 	async run() {
 		await this.loadData();
 		let pre = this.isolate.cpuTime;
-		await this.script.run(this.context, {timeout: 350});
+		await this.script.run(this.context, {timeout: 250});
 		let post = this.isolate.cpuTime;
 		console.log("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 		return await this.output();
@@ -1983,22 +1985,22 @@ if (!isMainThread){
 				
 				//console.log(tutorial_phase);
 				
-				if (game_duration == 400){
+				if (game_duration == 600){
 					if (tutorial_phase[0] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 500){
+				} else if (game_duration == 800){
 					if (tutorial_phase[1] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 800){
+				} else if (game_duration == 1200){
 					if (tutorial_phase[2] == 0){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 2000){
+				} else if (game_duration == 3000){
 					end_game(0, 0);
 					tutorial_phase[0] = 'end';
 				}
@@ -2019,7 +2021,7 @@ if (!isMainThread){
 					'c2': [],
 					'end': end_winner
 				};
-				if (game_duration == 600){
+				if (game_duration == 1200){
 					if (top_s == 11){
 						end_game(0, 0);
 					}
@@ -2139,8 +2141,8 @@ if (!isMainThread){
 		var start_num_spirits = 11;
 		var start_num_adjust1 = 0;
 		var start_num_adjust2 = 0;
-		if (shapes['player1'] == 'squares') start_num_adjust1 = 9;
-		if (shapes['player2'] == 'squares') start_num_adjust2 = 9;
+		if (shapes['player1'] == 'squares') start_num_adjust1 = 8;
+		if (shapes['player2'] == 'squares') start_num_adjust2 = 8;
 		if (shapes['player1'] == 'triangles') start_num_adjust1 = 5;
 		if (shapes['player2'] == 'triangles') start_num_adjust2 = 5;
 		

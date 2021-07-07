@@ -1851,7 +1851,7 @@ Spirit.prototype.move = function() {
 	let t = time - this.noiseNext;
 	if (t >= 0) {
 		// make random point in unit circle
-		const NOISERADIUS = 10 * 1.3; // 20 because thats the distance traveled in 1 tick, 1.3 because circle
+		const NOISERADIUS = 8 * 1.3; // 20 because thats the distance traveled in 1 tick, 1.3 because circle
 		let x, y;
 		do {
 			x = Math.random()-.5;
