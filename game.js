@@ -750,7 +750,7 @@ if (!isMainThread){
 	}
 
 	class Star {
-		constructor(id, position, energy, size){
+		constructor(id, position, energy, size, active_at){
 			this.id = id
 			this.position = position;
 			this.size = size;
@@ -758,6 +758,8 @@ if (!isMainThread){
 			this.energy = energy;
 			this.energy_capacity = 1000;
 			this.last_energized = '';
+			this.active_in = 0;
+			this.active_at = active_at;
 			//this.energy = energy;
 		
 			stars.push(this);
@@ -1747,12 +1749,14 @@ if (!isMainThread){
 			stars[i].energy += Math.round(3 + (stars[i].energy * 0.01));
 			if (stars[i].energy >= 1000) stars[i].energy = 1000;
 			//console.log('star ' + i + ' energy = ' + stars[i].energy);
-			if (game_duration < 100){
-				if (stars[i].id == 'star_p89') stars[i].energy = 0;
+			if (game_duration < stars[i].active_at){
+				stars[i].energy = 0;
+				stars[i].active_in = stars[i].active_at - game_duration;
+			} else {
+				stars[i].active_in = 0;
 			}
 			render_data3.st[i] = stars[i].energy;
 		}
-	
 	
 		//objects death & vm sandbox objects update
 		for (let i = death_queue.length - 1; i >= 0; i--){
@@ -2186,13 +2190,13 @@ if (!isMainThread){
 		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 	
-		star_zxq = new Star('star_zxq', [1000, 1000], 100, 220);
+		star_zxq = new Star('star_zxq', [1000, 1000], 100, 220, 0);
 		star_lookup['star_zxq'] = star_zxq;
 	
-		star_a1c = new Star('star_a1c', [3200, 1400], 100, 220);
+		star_a1c = new Star('star_a1c', [3200, 1400], 100, 220, 0);
 		star_lookup['star_a1c'] = star_a1c;
 		
-		star_p89 = new Star('star_p89', [2000, 1300], 1, 80);
+		star_p89 = new Star('star_p89', [2000, 1300], 0, 80, 100);
 		star_lookup['star_p89'] = star_p89;
 		
 		outpost_mdo = new Outpost('outpost_mdo', [2200, 1100])
