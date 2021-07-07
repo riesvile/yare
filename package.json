@@ -4,6 +4,7 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.17.1",
+    "isolated-vm": "^4.3.2",
     "mongoose": "^5.11.4",
     "node-fetch": "^2.6.1",
     "vm2": "^3.9.2",
