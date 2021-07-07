@@ -1386,6 +1386,9 @@ if (!isMainThread){
 		let energize_apply_star = [];
 		let energize_apply_outpost = [];
 		
+		for(let spirit of spirit_lookup){
+			spirit.last_energized = undefined;
+		}
 		
 		//explosions
 		for(let player in all_commands) {
