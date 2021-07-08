@@ -356,17 +356,25 @@ function to_html(txt){
 	return txt.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
 }
 
-function handle_error(error, player, fileregex, line_offset){
+function clean_error(error){
+	if(!(error instanceof Error)) {
+		return String(error);
+	}
 	let message = "" + error;
-
+	
 	let stack = error.stack.split("\n");
 
 	stack = stack.filter(l => /~sandbox/.test(l));
 	
 	message += "\n" + stack.join("\n");
+
+	return message;
+}
+
+function handle_error(error, player){
+	message = clean_error(error);
 	///*
 	console.log("error: "+error);
-	console.log(stack);
 	console.log('message:' +message);
 	// */
 	//
@@ -395,16 +403,30 @@ async function user_code(){
 	let p1_async = sand1.run();
 	let p2_async = sand2.run();
 	try {
-		let out = await p1_async;
+		let run_err = null;
+		try {
+			await p1_async;
+		} catch (error) {
+			run_err = error;
+		}
+		let out = await sand1.output();
 		all_commands[players['p1']] = out.commands;
 		log1 = out.logs;
-		user_error1 = out.errors;
+		user_error1 = out.errors.map(clean_error);
 		gqueue1 = out.gqueue;
+		if(run_err) {
+			console.log(run_err);
+			handle_error(run_err, players['p1']);
+		}
+		if(sand1.code_err){
+			user_error1.push(to_html(sand1.code_err));
+		}
+		
 		//console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
-//		console.dir(error);
+		console.dir(error);
 		//user_error1.push(to_html(error + "\n" + error.stack));
-		handle_error(error, players['p1'], /vm\.js/, 14);
+		handle_error(error, players['p1']);
 	}
 
 	//
@@ -412,13 +434,30 @@ async function user_code(){
 	//
 	
 	try {
-		let out = await p2_async;
+		let run_err = null;
+		try {
+			await p2_async;
+		} catch (error) {
+			run_err = error;
+		}
+		let out = await sand2.output();
 		all_commands[players['p2']] = out.commands;
-		log2 = out.logs;
-		user_error2 = out.errors;
+		log1 = out.logs;
+		user_error2 = out.errors.map(clean_error);
 		gqueue2 = out.gqueue;
+		if(run_err) {
+			console.log(run_err);
+			handle_error(run_err, players['p2']);
+		}
+		if(sand2.code_err){
+			user_error2.push(to_html(sand2.code_err));
+		}
+		
+		//console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
-		handle_error(error, players['p2'], /vm2\.js/, 14);
+		console.dir(error);
+		//user_error1.push(to_html(error + "\n" + error.stack));
+		handle_error(error, players['p2']);
 	}
 }
 
@@ -678,13 +717,16 @@ class Sandbox {
 		this.funcs.loadData = this.yd.getSync('loadData', {reference: true});
 		this.funcs.getOutput = this.yd.getSync('getOutput', {reference: true});
 		this.err = false;
+		this.code_err = null;
 		console.log(this.funcs.loadSpirits);
 	}
 
 	setPlayerCode(code) {
+		this.code_err = null;
 		try {
 			this.script = this.isolate.compileScriptSync(code, {filename: "~sandbox/user.js"});
 		}catch(err) {
+			this.code_err = "Last code compile error: " + err.message;
 			console.log(err);
 		}
 	}
@@ -703,7 +745,6 @@ class Sandbox {
 		await this.script.run(this.context, {timeout: 250});
 		let post = this.isolate.cpuTime;
 		console.log("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
-		return await this.output();
 	}
 
 	async output() {
