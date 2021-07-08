@@ -29,6 +29,15 @@ function send_error(msg) {
     //yd.errors.push(msg);
 };
 
+function soft_error(msg) {
+    try {
+        throw Error(msg);
+    } catch(e) {
+        yd.errors.push(e);
+    };
+    //yd.errors.push(msg);
+};
+
 class Graphics {
 	set style(s) {
 		yd.gqueue.push(['st', s]);
@@ -61,16 +70,16 @@ class Spirit {
      */
     move(target) {
         if (!Array.isArray(target) || target.length != 2){
-            let err_msg = '.move() argument must be an array of 2 numbers.\n > E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position).\n > Received: ' + target;
-            
-            throw new Error(err_msg);
+            soft_error('.move() argument must be an array of 2 numbers.\n > E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position).\n > Received: ' + target);
+            return;
         }
 
         const tarX = Number(target[0]);
         const tarY = Number(target[1]);
         
         if(isNaN(tarX) || isNaN(tarY)){
-            throw new Error('.move() arguments must be numbers, got ['+ tarX + ", " + tarY + ']');
+            soft_error('.move() arguments must be numbers, got ['+ tarX + ", " + tarY + ']');
+            return;
         }
 
         command(this.id).move = [tarX, tarY];
@@ -93,9 +102,8 @@ class Spirit {
         let bad = Array.isArray(target) || target_id == null || target == null;
         if(bad){
             let example_id = this.player_id + "_2";
-            let err_msg = ".energize() argument must be a game object (e.g. spirit) with id, or its id (string).\n > E.g. my_spirits[0].energize(my_spirits[0])\n > or my_spirits[0].energize(spirits['" + example_id + "'])\n > or my_spirits[0].energize('" + example_id + "')\n > Received: " + target;
-            
-            throw new Error(err_msg);
+            soft_error(".energize() argument must be a game object (e.g. spirit) with id, or its id (string).\n > E.g. my_spirits[0].energize(my_spirits[0])\n > or my_spirits[0].energize(spirits['" + example_id + "'])\n > or my_spirits[0].energize('" + example_id + "')\n > Received: " + target);
+            return;
         }
         
         command(this.id).energize = target_id;
@@ -103,19 +111,19 @@ class Spirit {
     
     merge(target){
         if (target.id == this.id){
-            send_error("You can't merge spirit into itself");
+            soft_error("You can't merge spirit into itself");
             return;
         } else if (this.shape != 'circles'){
-            send_error("Only circles can use merge(). See Documentation for available methods.");
+            soft_error("Only circles can use merge(). See Documentation for available methods.");
             return;
         }
         
         try {
             if (Array.isArray(target) == true){
-                send_error(".merge() argument must be a friendly spirit object, not an array. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target);
+                soft_error(".merge() argument must be a friendly spirit object, not an array. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target);
                 return;
             } else if (typeof target !== 'object' || target === null){
-                send_error(".merge() argument must be a friendly spirit object. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target);
+                soft_error(".merge() argument must be a friendly spirit object. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target);
                 return;
             }
         
@@ -125,7 +133,8 @@ class Spirit {
                 return;
             }
         } catch (error){
-            send_error(error.message);
+            yd.errors.push(error);
+            return;
         }
         
         if (target.hp != 0 && this.hp != 0){
@@ -137,7 +146,7 @@ class Spirit {
     divide(){
         
         if (this.shape != 'circles'){
-            send_error("Only circles can use divide(). See Documentation for available methods.");
+            soft_error("Only circles can use divide(). See Documentation for available methods.");
             return;
         }
         
@@ -149,15 +158,15 @@ class Spirit {
     
     jump(target){
         if (this.shape != 'squares'){
-            send_error("Only squaress can use jump(). See Documentation for available methods.");
+            soft_error("Only squaress can use jump(). See Documentation for available methods.");
             return;
         }
         
         if (Array.isArray(target) == false){
-            send_error('.jump() argument must be an array. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
+            soft_error('.jump() argument must be an array. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
             return;
         } else if (target.length != 2){
-            send_error('.jump() argument must be an array of length 2. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
+            soft_error('.jump() argument must be an array of length 2. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
             return;
             
         }
@@ -169,7 +178,7 @@ class Spirit {
 
     explode(){
         if (this.shape != 'triangles'){
-            send_error("Only triangles can use explode(). See Documentation for available methods.");
+            soft_error("Only triangles can use explode(). See Documentation for available methods.");
             return;
         }
         
@@ -189,11 +198,11 @@ class Spirit {
     
     set_mark(mrk){
         if (typeof mrk !== 'string'){
-            send_error("mark must be a string. Received: " + mrk);
+            soft_error("mark must be a string. Received: " + mrk);
             return;
         }
         if (mrk.length > "60"){
-            send_error("Max length of mark is 60 characters");
+            soft_error("Max length of mark is 60 characters");
             return;
         }
         
@@ -204,11 +213,11 @@ class Spirit {
     
     shout(msg){
         if (typeof msg !== 'string'){
-            send_error("Shout argument must be a string. Received: " + msg);
+            soft_error("Shout argument must be a string. Received: " + msg);
             return;
         }
         if (msg.length > "20"){
-            send_error("Max length of shout message is 20 characters");
+            soft_error("Max length of shout message is 20 characters");
             return;
         }
                 
