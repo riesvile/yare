@@ -1909,40 +1909,12 @@ wss.on('connection', function connection(ws, req) {
 			}
 			if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
-				player1_code = `// line 1
-					var this_player_id = players['p1'];				
-					for (let y = 0; y < my_spirits.length; y++){
-						let spirit_name = my_spirits[0].id == 'anonymous1' ? 's' + (y+1) : my_spirits[y].id;
-						global[spirit_name] = my_spirits[y];
-					}
-					global['base'] = Object.values(bases)[0];
-					global['enemy_base'] = Object.values(bases)[1];
-					global['outpost_mdo'] = outposts['outpost_mdo'];
-					global['outpost'] = outposts['outpost_mdo'];
-					global['star_zxq'] = stars['star_zxq'];
-					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c'];
-					global['tick'] = ticks['now']; 		// line 14 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
-				` + message['u_code'];
+				player1_code = message['u_code'];
 
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
 			} else if (message['u_id'] == active_game[2]){
 				//code_temps['player2'] = message['u_code'];
-				player2_code = `// line 1
-					var this_player_id = players['p2'];
-
-					for (let y = 0; y < my_spirits.length; y++)
-						global[my_spirits[y].id] = my_spirits[y];
-					
-					global['base'] = Object.values(bases)[1];
-					global['enemy_base'] = Object.values(bases)[0];
-					global['outpost_mdo'] = outposts['outpost_mdo'];
-					global['outpost'] = outposts['outpost_mdo'];
-					global['star_zxq'] = stars['star_zxq'];
-					global['star_p89'] = stars['star_p89'];
-					global['star_a1c'] = stars['star_a1c'];
-					global['tick'] = ticks['now'];			// line 14 - WATCHOUT - adding lines here must add to handle_error in game.js line_offset as well 
-				` + message['u_code'];
+				player2_code = message['u_code'];
 
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
 			}

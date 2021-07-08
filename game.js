@@ -422,10 +422,8 @@ async function user_code(){
 			user_error1.push(to_html(sand1.code_err));
 		}
 		
-		//console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
 		console.dir(error);
-		//user_error1.push(to_html(error + "\n" + error.stack));
 		handle_error(error, players['p1']);
 	}
 
@@ -442,7 +440,7 @@ async function user_code(){
 		}
 		let out = await sand2.output();
 		all_commands[players['p2']] = out.commands;
-		log1 = out.logs;
+		log2 = out.logs;
 		user_error2 = out.errors.map(clean_error);
 		gqueue2 = out.gqueue;
 		if(run_err) {
@@ -453,10 +451,8 @@ async function user_code(){
 			user_error2.push(to_html(sand2.code_err));
 		}
 		
-		//console.log('TIME: p1 = ' + elapsed_ms_from(p1_t0));
 	} catch (error){
 		console.dir(error);
-		//user_error1.push(to_html(error + "\n" + error.stack));
 		handle_error(error, players['p2']);
 	}
 }
