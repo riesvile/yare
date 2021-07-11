@@ -10,6 +10,7 @@ yd.commands = {};
 yd.errors = [];
 yd.logs = [];
 yd.gqueue = [];
+yd.deprecates = {};
 
 global.console = {
     log: function(...args) {
@@ -27,7 +28,7 @@ function command(id) {
 function send_error(msg) {
     throw Error(msg);
     //yd.errors.push(msg);
-};
+}
 
 function soft_error(msg) {
     try {
@@ -36,7 +37,16 @@ function soft_error(msg) {
         yd.errors.push(e);
     };
     //yd.errors.push(msg);
-};
+}
+
+function deprecate(id, msg) {
+    // if not already warned, soft warn once
+    if (!(id in yd.deprecates)) {
+        yd.deprecates[id] = true;
+        soft_error(msg);
+    }
+}
+
 
 class Graphics {
 	set style(s) {
@@ -52,8 +62,15 @@ class Graphics {
 	line(start, end) {
 		yd.gqueue.push(['l', start[0], start[1], end[0], end[1]]);
 	}
+    /**
+     * @deprecated Use .rect() instead
+     */
 	square(tl, br) {
+        deprecate('graphics.square', 'Use .rect() instead');
 		yd.gqueue.push(['s', tl[0], tl[1], br[0], br[1]]);
+	}
+    rect(tl, size) {
+		yd.gqueue.push(['s', tl[0], tl[1], size[0], size[1]]);
 	}
 }
 
@@ -305,6 +322,7 @@ yd.getOutput = function() {
     yd.logs = [];
     yd.errors = [];
     yd.gqueue = [];
+    yd.deprecates = {};
     return output;
 };
 
