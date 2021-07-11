@@ -1923,6 +1923,7 @@ a.index_link:hover {
 
 .widget_standard {
 	position: absolute;
+	border-radius: 16px;
 }
 
 
@@ -1939,7 +1940,6 @@ a.index_link:hover {
 	left: 40px;
 	width: 400px;
 	height: 88px;
-	background-color: rgba(42, 46, 48, 0.89);
 }
 
 
@@ -1947,19 +1947,39 @@ a.index_link:hover {
 	position: relative;
 	top: 0;
 	left: 0;
+	font-weight: 500;
 }
 
-#gs_player1 #gs_player1_shape {
+#gs_player2 {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	font-weight: 500;
+}
+
+#gs_player1 #gs_player1_shape, #gs_player2 #gs_player2_shape {
 	position: absolute;
 	top: 6px;
 	left: 20px;
 }
 
-#gs_player1 #info_player1_name {
+#gs_player1 #info_player1_name, #gs_player2 #info_player2_name {
 	position: absolute;
 	top: 16px;
-	left: 40px;
+	left: 42px;
 	font-size: 13px;
+}
+
+#gs_player1_unit_count, #gs_player2_unit_count {
+	position: absolute;
+	top: 48px;
+	left: 20px;
+}
+
+#gs_player1_energy_count, #gs_player2_energy_count {
+	position: absolute;
+	top: 70px;
+	left: 20px;
 }
 
 #gs_vert_sep_line {
@@ -1969,6 +1989,82 @@ a.index_link:hover {
 	top: 0;
 	left: 50%;
 	background-color: rgba(242, 246, 250, 0.1);
+}
+
+.gs_player_name {
+	color: rgba(242, 246, 250, 1) !important;
+}
+
+.gs_unit_count, .gs_energy_count {
+	font-size: 13px;
+}
+
+.gs_unit_count_desc {
+	font-size: 13px;
+	position: absolute;
+	top: 48px;
+	left: 60px;
+	width: 120px;
+	color: rgba(242, 246, 250, 0.55);
+	font-weight: 500;
+}
+
+.gs_energy_count_desc {
+	font-size: 13px;
+	position: absolute;
+	top: 70px;
+	left: 60px;
+	width: 120px;
+	color: rgba(242, 246, 250, 0.55);
+	font-weight: 500;
+}
+
+
+
+#replay_timeline {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 36px;
+	border-radius: 36px;
+	background-color: rgba(44, 48, 52, 0.86);
+}
+
+#replay_current_tick {
+	width: 50%;
+	height: 36px;
+	border-radius: 36px 8px 8px 36px;
+	background-color: rgba(88, 90, 100, 0.86);
+	position: relative;
+}
+
+#replay_current_tick_lbl {
+	position: absolute;
+	right: 12px;
+	font-size: 12px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	line-height: 36px;
+}
+
+#replay_total_ticks {
+	position: absolute;
+	top: 0;
+	right: 12px;
+	font-size: 12px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	line-height: 36px;
+}
+
+
+#replay_play_btn {
+	position: absolute;
+	bottom: 40px;
+	width: 48px;
+	height: 48px;
+	background-color: rgba(44, 48, 52, 0.86);
+	border-radius: 12px;
 }
 
 

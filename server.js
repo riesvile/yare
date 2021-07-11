@@ -1045,6 +1045,7 @@ app.post('/add-user', (req, res) => {
 			rating: 1500,
 			rating_stability: 5,
 			games_count: 0,
+			games_history: '',
 			session_id: session_id,
 			session_expire: session_expire
 		});
