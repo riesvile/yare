@@ -566,7 +566,7 @@ var p2_defend = 0;
 var temp_flag = 0;
 var end_winner = 0;
 
-var game_duration = 0;
+var game_duration = -50;
 var game_activity = 1;
 var qqmonitoring = [0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -703,6 +703,7 @@ class Sandbox {
 		this.context = this.isolate.createContextSync();
 		this.jail = this.context.global;
 		this.script = this.isolate.compileScriptSync(``);
+		this.ready = false;
 		this.jail.setSync("global", this.jail.derefInto());
 		this.jail.setSync("memory", {}, {copy: true});
 
@@ -721,6 +722,7 @@ class Sandbox {
 		this.code_err = null;
 		try {
 			this.script = this.isolate.compileScriptSync(code, {filename: "~sandbox/user.js"});
+			this.ready = true;
 		}catch(err) {
 			this.code_err = "Last code compile error: " + err.message;
 			console.log(err);
@@ -1981,6 +1983,11 @@ if (!isMainThread){
 	async function update_state(){
 		let update_t0 = process.hrtime();
 		game_duration++;
+
+		if(game_duration < -3 && sand1.ready && sand2.ready) {
+			game_duration = -3;
+		}
+
 		ticks['now'] = game_duration;
 		//console.log('game_duration = ' + game_duration);
 		//after everything is calculated
@@ -2074,32 +2081,32 @@ if (!isMainThread){
 				}
 			}
 			
+			if(game_duration > 0) {
 		
-		
-			process_stuff();
-		
-			log1 = cutoff_log(log1, 30);
-			log2 = cutoff_log(log2, 30);
-		
-			render_data3.er1 = user_error1;
-			render_data3.er2 = user_error2;
-
-			const gqueue_cutoff = 100;
-			render_data3.g1 = gqueue1;
-			render_data3.g2 = gqueue2;
-			if(render_data3.g1.length > gqueue_cutoff){
-				let l1 = render_data3.g1.length;
-				render_data3.g1.length = gqueue_cutoff;
-				log1.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l1 - gqueue_cutoff) + ' commands');
-			}
-			if(render_data3.g2.length > gqueue_cutoff){
-				let l2 = render_data3.g2.length;
-				render_data3.g2.length = gqueue_cutoff;
-				log2.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l2 - gqueue_cutoff) + ' commands');
-			}
-			render_data3.c1 = log1;
-			render_data3.c2 = log2;
+				process_stuff();
 			
+				log1 = cutoff_log(log1, 30);
+				log2 = cutoff_log(log2, 30);
+			
+				render_data3.er1 = user_error1;
+				render_data3.er2 = user_error2;
+
+				const gqueue_cutoff = 100;
+				render_data3.g1 = gqueue1;
+				render_data3.g2 = gqueue2;
+				if(render_data3.g1.length > gqueue_cutoff){
+					let l1 = render_data3.g1.length;
+					render_data3.g1.length = gqueue_cutoff;
+					log1.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l1 - gqueue_cutoff) + ' commands');
+				}
+				if(render_data3.g2.length > gqueue_cutoff){
+					let l2 = render_data3.g2.length;
+					render_data3.g2.length = gqueue_cutoff;
+					log2.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l2 - gqueue_cutoff) + ' commands');
+				}
+				render_data3.c1 = log1;
+				render_data3.c2 = log2;
+			}
 			
 			user_error1 = [];
 			user_error2 = [];
@@ -2123,11 +2130,13 @@ if (!isMainThread){
 			
 			
 			update_vm_sandbox();
-	
-			
 			
 			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: workerData[0], meta: ''});
 			
+			if (game_duration < 0) {
+				return;
+			}
+
 			delete render_data3["er1"];
 			delete render_data3["er2"];
 			delete render_data3["c1"];

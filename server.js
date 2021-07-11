@@ -248,6 +248,7 @@ const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
 const config = require('./config');
 const zlib = require('zlib');
+require('isolated-vm'); // require to avoid glitch locally
 
 var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
