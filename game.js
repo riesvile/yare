@@ -1898,9 +1898,12 @@ if (!isMainThread){
 				if(s.energy < s.energy_capacity/2) continue;
 
 				let tpos = commands[spirit].jump;
-				let dist = Math.sqrt(dist_sq(tpos, s.position));
+				let incr = sub(tpos, s.position);
+
+				let dist = Math.sqrt(norm_sq(incr));
 				if(dist > 300) {
-					tpos = linc(s.position, tpos, 300/dist);
+					incr = mult(300 / dist, incr);
+					tpos = add(s.position, incr);
 				}
 
 				let potential_structure_collisions = s.sight.structures;
