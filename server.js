@@ -1320,7 +1320,7 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 			.then((result) => {
 				//res.send(result);
 				console.log('dbdb result');
-				console.log(result);
+				//console.log(result);
 				if (result.length == 0){
 					res.sendFile(__dirname + '/nope.html');
 				} else if (result.length == 1){
@@ -1351,8 +1351,8 @@ app.post('/gameinfo', (req, res) => {
 		.then((result) => {
 			//res.send(result);
 			console.log('getting game info');
-			console.log(result);
-			console.log(result[0]['active']);
+			//console.log(result);
+			//console.log(result[0]['active']);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no game found"
@@ -1414,7 +1414,7 @@ app.post('/get_replay', (req, res) => {
 			} else if (result[0]['game_file'] != ''){
 				var decompressed_file = zlib.inflateSync(Buffer.from(result[0].game_file, 'base64')).toString();
 				console.log('replay file sent');
-				console.log(decompressed_file);
+				//console.log(decompressed_file);
 				
 				res.status(200).send({
 		        	meta: "gotit",

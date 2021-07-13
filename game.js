@@ -43,7 +43,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	console.log('GAME OVER');
 	//console.log(game_file);
 	var compressed_file = zlib.deflateSync(JSON.stringify(game_file)).toString('base64');
-	console.log(JSON.stringify(game_file));
+	//console.log(JSON.stringify(game_file));
 	
 	//game history
 	var game_history = 'test';
