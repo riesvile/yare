@@ -106,8 +106,8 @@
   </div>
   
   <div id="loading_replay">
-	  <span class="replay_load_gif"></span>
-	  <p class="loading_msg">Downloading replay...</p>
+	  <span id="replay_load_gif"></span>
+	  <p id="loading_msg">Downloading replay...</p>
   </div>
   
   <div id="wg_game_stats" class="widget_standard">
@@ -205,7 +205,7 @@
 	  }
 	  
 	  function play_pause(){
-		  if (replay_playing == 0){
+		  if (replay_playing == 0 && current_tick < replay_length){
 			  replay_playing = 1;
 			  document.getElementById('replay_play_btn').classList.remove('state_play');
 			  document.getElementById('replay_play_btn').classList.add('state_pause');
@@ -227,8 +227,8 @@
 	  }
 	  
 	  function process_replay_file(rep_file){
-		  console.log('replay length: ' + rep_file.length);
-		  replay_length = rep_file.length;
+		  //console.log('replay length: ' + rep_file.length);
+		  replay_length = (rep_file.length - 1);
 		  
 		  pla1 = rep_file[0].p1[0][0];
 		  pla1 = pla1.substring(0, pla1.length-2);
@@ -409,7 +409,7 @@
 			 
 		  }
 		  
-		  console.log(game_blocks);
+		  //console.log(game_blocks);
 		  
 		  
 		  replay_playing = 1;
@@ -511,6 +511,8 @@
 			  }
 			  document.getElementById('replay_current_tick').style.width = percent_current + '%';
 			  
+			  if (current_tick > replay_length) current_tick = replay_length;
+			  if (current_tick < 1) current_tick = 1;
 			  
 			  //stats widget
 			  update_stats_widget();
@@ -546,8 +548,8 @@
 		  let local_replay = local_maybe();
 		  
 		  if (local_replay != null){
-			  console.log('local');
-			  console.log(local_replay);
+			  //console.log('local');
+			  //console.log(local_replay);
 			  process_replay_file(JSON.parse(local_replay));
 			  replay_loaded();
 			  //replay_playing = 1;
@@ -568,6 +570,8 @@
 	    	  		  //console.log(response);
 	    	  		  if (response.meta == "no game found"){
 	    	  			  //console.log('no game found');
+						  document.getElementById('loading_msg').innerHTML = "<span style='color: red; font-size: 18px;'>Replay not available. Try reloading this page.</span>";
+						  document.getElementById('replay_load_gif').style.display = 'none';
 	    	  		  } else if (response.meta == "gotit"){
 	  				  game_file = response.data;
 	  				  console.log('got the file, start replay')
@@ -577,7 +581,9 @@
 					  replay_loaded();
 	    	  			  //console.log('anonymous updated')
 	    	  		  } else if (response.meta == "something went wrong"){
-	  				  console.log('replay not available');
+	  				  	  console.log('replay not available');
+					  	  document.getElementById('loading_msg').innerHTML = "<span style='color: red; font-size: 18px;'>Replay not available.</span>";
+						  document.getElementById('replay_load_gif').style.display = 'none';
 	    	  			  //console.log('something went wrong');
 	    	  		  } else {
 	    				  //console.log('strange case');
@@ -595,8 +601,13 @@
 	  function playing(){
 		 if (replay_playing == 1 && current_tick <= replay_length){
 			 current_tick++;
+			 if (current_tick >= replay_length){
+				 //current_tick--;
+				 current_tick = replay_length;
+				 play_pause();
+			 }
 			 active_block = 't' + current_tick;
-			 console.log('active_block = ' + active_block);
+			 //console.log('active_block = ' + active_block);
 			 percent_current = (current_tick / replay_length) * 100;
 			 total_time = 0;
 			 

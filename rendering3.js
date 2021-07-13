@@ -1758,7 +1758,16 @@ function render_state(timestamp){
 				//console.log('resync2');
 				//tick_local = incoming.t - 1;
 				//}, 30);
-				location.reload();
+				if (typeof replay_playing !== 'undefined') {
+					current_tick--;
+					if (replay_playing == 1){
+						play_pause();
+					}
+				    // the variable is defined
+				} else {
+					location.reload();
+				}
+				
 		}
 	}
 	var energy_blocks = game_blocks[active_block].e;
@@ -1837,18 +1846,23 @@ function render_state(timestamp){
 	
 	
 	//objects energize
-	
-	if (game_blocks[active_block].g1.length > 0){
-		if (pla1 == getCookie('user_id')){
-			drawgqueue(game_blocks[active_block].g1);
+	try {
+		if (game_blocks[active_block].g1.length > 0){
+			if (pla1 == getCookie('user_id')){
+				drawgqueue(game_blocks[active_block].g1);
+			}
 		}
-	}
 
-	if (game_blocks[active_block].g2.length > 0){
-		if (pla2 == getCookie('user_id')){
-			drawgqueue(game_blocks[active_block].g2);
+		if (game_blocks[active_block].g2.length > 0){
+			if (pla2 == getCookie('user_id')){
+				drawgqueue(game_blocks[active_block].g2);
+			}
 		}
+	} catch (e) {
+		
 	}
+	
+	
 	
 	//console.log(spirit_lookup);
 	setTimeout(() => {

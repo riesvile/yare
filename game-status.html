@@ -67,20 +67,22 @@
 		  <div class="gt_row">
 			  <div class="gt_row_in">
 				 <div class="player_shape" id="player1_shape"></div>
-				 <div class="player_name" id="player1_name">levmiseri</div>
-				 <div class="player_rating" id="player1_rating">1957</div>
+				 <div class="player_name" id="player1_name">--</div>
+				 <div class="player_rating" id="player1_rating">--</div>
 		  	  </div>
 		  </div>
 		  <div class="gt_row">
 			   <div class="gt_row_in">
 				  <div class="player_shape" id="player2_shape"></div>
-				  <div class="player_name" id="player2_name">jane</div>
-				  <div class="player_rating" id="player2_rating">1117</div>
+				  <div class="player_name" id="player2_name">--</div>
+				  <div class="player_rating" id="player2_rating">--</div>
 			   </div>
 		  </div>
 	  </div>
 	  
-	  <a class="game_over_link" id="back_to_hub" href="/hub">Back to player hub</a>
+	  <a class="game_over_link" id="watch_replay" href="#">Watch replay</a>
+	  <a class="game_over_link" id="back_to_hub" href="../hub">Back to player hub</a>
+	  <a class="game_over_link" id="back_to_new" href="../new_game">New game</a>
 	  
   </div>
  
@@ -168,6 +170,12 @@
         .catch(err => {
   		  console.log(err);
   	  });
+	  
+	  
+	  
+	  document.getElementById('watch_replay').href = "../replay/" + this_game_id;
+	  
+	  
 	  
   </script>
   <script src="../basics.js"></script>

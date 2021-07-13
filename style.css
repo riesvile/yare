@@ -680,6 +680,32 @@ input[type=submit] {
 	}
 	
 	
+	#countdown {
+		position: fixed;
+		bottom: 72px;
+		right: 20px;
+		height: 52px;
+		padding: 0 20px;
+		line-height: 52px;
+		background-color: rgba(56, 60, 94, 1);
+		z-index: 99999;
+		border-radius: 12px;
+		color: rgba(242, 246, 250, 0.69);
+	}
+	
+	.starting_when {
+		font-size: 14px;
+		font-weight: 500;
+	}
+	
+	#countdown_num {
+		color: rgba(242, 246, 250, 1);
+	}
+	
+	#waiting_for_what {
+		color: rgba(242, 246, 250, 0.55);
+	}
+	
 
 
 	/* ----- */
@@ -708,6 +734,7 @@ input[type=submit] {
 	padding: 10px 0 10px 0;
 	border-top: 1px solid rgba(242, 246, 250, 0.1);
 	border-bottom: 1px solid rgba(242, 246, 250, 0.1);
+	margin-bottom: 24px;
 }
 
 .gt_row {
@@ -811,11 +838,16 @@ a.game_over_link {
 	font-size: 20px;
 	font-weight: 500;
 	color: rgba(133, 186, 234, 1);
-	display: inline-block;
+	display: block;
+	margin-bottom: 12px;
 }
 
 a#back_to_hub {
 	margin-top: 28px;
+}
+
+#back_to_new {
+	color: rgba(253, 211, 180, 1);
 }
 
 
@@ -1919,6 +1951,8 @@ a.index_link:hover {
 
 
 
+
+
 /* ----- REPLAY ----- */
 
 .widget_standard {
@@ -1995,6 +2029,7 @@ a.index_link:hover {
 
 .gs_player_name {
 	color: rgba(242, 246, 250, 1) !important;
+	width: 160px;
 }
 
 .gs_unit_count, .gs_energy_count {
@@ -2161,13 +2196,13 @@ a.index_link:hover {
 	left: 72px;
 }
 
-.loading_msg {
+#loading_msg {
 	font-size: 14px;
 	font-weight: 500;
 	color: rgba(242, 246, 250, 1);
 }
 
-.replay_load_gif {
+#replay_load_gif {
 	width: 40px;
 	height: 40px;
 	background: url(./asset/tr-loader.gif);

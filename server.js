@@ -1558,6 +1558,23 @@ app.post('/populate-leaderboard', (req, res) => {
 });
 
 
+//app.get('/reset-ratings', (req, res) => {
+//	User.updateMany({}, {"$set":{"rating": 1500}})
+//		.then((result) => {
+//			//res.send(result);
+//			console.log('ratings maybe updated?');
+//			
+//			res.status(200).send({
+//	        	data: "done?"
+//	        });
+//			
+//		})
+//		.catch((error) => {
+//			console.log(error);
+//		})
+//});
+
+
 app.post('/deactivate', (req, res) => {
 	console.log('deactivating');
 	console.log(req.body.game_id);

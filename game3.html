@@ -118,6 +118,10 @@
   	  </div>
   </div>
   
+  <div id="countdown">
+	  <p class="starting_when">Game starts in <span id="countdown_num">25</span><span id="waiting_for_what"> · Waiting for both players to upload code</span></p>
+  </div>
+  
   <div id="panel" class="panel_start">
     <div id="panel_dragger"><div id="drag_line1"></div><div id="drag_line2"></div></div>
 	  
@@ -150,6 +154,9 @@
   </div>
   
   
+  
+  
+  
   <div id="game_over_block">
 	  <p id="game_result">You won</p>
 	  <p id="tutorial_over">Well done, you passed the tutorial. You should try your skills against other people!</p>
@@ -175,7 +182,11 @@
 		  </div>
 	  </div>
 	  
+	  <a class="game_over_link" id="watch_replay" href="#">Watch replay</a>
 	  <a class="game_over_link" id="back_to_hub" href="../hub">Back to player hub</a>
+	  <a class="game_over_link" id="back_to_new" href="../new_game">New game</a>
+	  
+	  
 	  
   </div>
  
@@ -193,18 +204,18 @@
 		  //console.log(err_msg);
 	  }
 	  
-	  if (window.Worker) {
-	    // Create a new Web Worker
-	   //Pass the URI of the script which has to run as a web worker to the Worker Constructor
-	    const webker = new Worker('../webker.js'); 
-		webker.postMessage('test');
-		webker.addEventListener('message', webker_msg_received);
-		webker.addEventListener('error', webker_error);
-		
-		
-	  } else {
-		  //console.log('no worker support');
-	  }
+	  //if (window.Worker) {
+	  //  // Create a new Web Worker
+	  // //Pass the URI of the script which has to run as a web worker to the Worker Constructor
+	  //  const webker = new Worker('../webker.js'); 
+	  //	webker.postMessage('test');
+	  //	webker.addEventListener('message', webker_msg_received);
+	  //	webker.addEventListener('error', webker_error);
+	  //	
+	  //	
+	  //} else {
+	  //	  //console.log('no worker support');
+	  //}
 	  
 	  
 	  var editor = ace.edit("editor");
@@ -422,8 +433,19 @@
 		  
 			  try {
 				 incoming = JSON.parse(event.data);
-				 //console.log(incoming);
+				 console.log(incoming);
 				 tick_counter = incoming.t;
+				 
+				 if (incoming.t < -5){
+					 //document.getElementById('console').style.display = 'none';
+					 document.getElementById('countdown_num').innerHTML = (incoming.t * -1);
+				 } else if (incoming.t < 0){
+				 	 document.getElementById('waiting_for_what').style.display = 'none';
+					 document.getElementById('countdown_num').innerHTML = (incoming.t * -1);
+				 } else if (incoming.t > 0){
+				 	 //document.getElementById('console').style.display = 'block';
+					 document.getElementById('countdown').style.display = 'none';
+				 }
 				 
 				 if (tick_counter > 1){
 					 //game_blocks['t' + tick_counter] = incoming;
@@ -1070,6 +1092,8 @@
 	  
 	  
 	  document.getElementById('switch_view').addEventListener('click', game_switch_view, false);
+	  
+	  document.getElementById('watch_replay').href = "../replay/" + this_game_id;
 	  
 	  
 	  document.addEventListener("visibilitychange", function() {
