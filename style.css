@@ -178,7 +178,7 @@ input:focus {
 }
 
 #game_hover {
-	position: absolute;
+	position: fixed;
 	bottom: 800px;
 	left: 800px;
 	font-size: 11px;
@@ -1933,6 +1933,7 @@ a.index_link:hover {
 	width: 400px;
 	height: 106px;
 	background-color: rgba(42, 46, 48, 0.89);
+	opacity: 0;
 }
 
 #wg_replay {
@@ -1940,6 +1941,7 @@ a.index_link:hover {
 	left: 40px;
 	width: 400px;
 	height: 88px;
+	opacity: 0;
 }
 
 
@@ -2028,14 +2030,16 @@ a.index_link:hover {
 	height: 36px;
 	border-radius: 36px;
 	background-color: rgba(44, 48, 52, 0.86);
+	overflow: hidden;
 }
 
 #replay_current_tick {
-	width: 50%;
+	width: 0%;
 	height: 36px;
 	border-radius: 36px 8px 8px 36px;
 	background-color: rgba(88, 90, 100, 0.86);
 	position: relative;
+	pointer-events: none;
 }
 
 #replay_current_tick_lbl {
@@ -2045,6 +2049,7 @@ a.index_link:hover {
 	font-weight: 500;
 	color: rgba(242, 246, 250, 1);
 	line-height: 36px;
+	pointer-events: none;
 }
 
 #replay_total_ticks {
@@ -2055,6 +2060,7 @@ a.index_link:hover {
 	font-weight: 500;
 	color: rgba(242, 246, 250, 0.69);
 	line-height: 36px;
+	pointer-events: none;
 }
 
 
@@ -2065,6 +2071,110 @@ a.index_link:hover {
 	height: 48px;
 	background-color: rgba(44, 48, 52, 0.86);
 	border-radius: 12px;
+	cursor: pointer;
+}
+
+#replay_play_btn:hover {
+	background-color: rgba(88, 90, 100, 0.86);
+}
+
+.state_play {
+	background: url(asset/ico_play.png) no-repeat scroll;
+	background-size: cover;
+}
+
+.state_pause {
+	background: url(asset/ico_pause.png) no-repeat scroll;
+	background-size: cover;
+}
+
+#tick_sec_desc {
+	position: absolute;
+	bottom: 0;
+	left: 0px;
+	height: 36px;
+	line-height: 36px;
+	background-color: rgba(44, 48, 52, 0.86);
+	border-radius: 12px;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	padding: 0 16px;
+	opacity: 1;
+	z-index: 999;
+}
+
+#tick_sec_block {
+	position: absolute;
+	left: 52px;
+	bottom: 40px;
+	height: 36px;
+	width: 80%;
+}
+
+.tick_rate_select {
+	position: absolute;
+	bottom: 0px;
+	width: 52px;
+	height: 36px;
+	background-color: rgba(44, 48, 52, 0.86);
+	border-radius: 12px;
+	line-height: 36px;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	opacity: 0;
+}
+
+.tick_rate_select:hover {
+	background-color: rgba(88, 90, 100, 0.86);
+}
+
+.tick_rate_active {
+	background-color: rgba(88, 90, 100, 0.86);
+}
+
+#tick_05 {
+	left: 0px;
+}
+
+#tick_1 {
+	left: 56px;
+}
+
+#tick_2 {
+	left: 112px;
+}
+
+#tick_3 {
+	left: 168px;
+}
+
+#tick_6 {
+	left: 224px;
+}
+
+#loading_replay {
+	position: fixed;
+	bottom: 40px;
+	left: 72px;
+}
+
+.loading_msg {
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+}
+
+.replay_load_gif {
+	width: 40px;
+	height: 40px;
+	background: url(./asset/tr-loader.gif);
+	background-size: cover;
+	position: fixed;
+	bottom: 28px;
+	left: 30px;
 }
 
 

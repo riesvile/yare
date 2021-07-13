@@ -132,7 +132,6 @@ function pinchMove(e){
 function onPointerDown(e){ 
 	e = e || window.event;
 	
-	
 	try {
 		if (e.touches.length === 2) {
 		    scaling = true;
@@ -147,13 +146,18 @@ function onPointerDown(e){
 		var el_id = (e.target || e.srcElement).id;
 		//console.log('down id= ' + el_id);
 	
-		//console.log(el_id);
+		//console.log('el_id = ' + el_id);
 		if (el_id == 'panel_dragger'){
 			disableSelection = 1;
 			panel_dragging = 1;
 			//console.log('panel_el.style = ');
 			//console.log(panel_el.getBoundingClientRect());
 			panel_el_widtho = panel_el.getBoundingClientRect().width;
+		} else if (el_id == 'replay_timeline'){
+			dragging_timeline = 1;
+  	  	    percent_current = ((e.clientX - timeline_el_bound.left) / timeline_el_bound.width) * 100;
+			update_tick(e.clientX);
+  	        //console.log('You clicked to ', (e.clientX - bcr.left) / bcr.width);
 		} else if (el_id != 'base_canvas'){
 			return;
 		} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
@@ -191,6 +195,8 @@ function onPointerMove(e){
 	e = e || window.event;
 	//console.log(panel_dragging);
 	
+	
+	
 	if (scaling) {
 	    pinchMove(e);
 	} else {
@@ -204,9 +210,16 @@ function onPointerMove(e){
 		    y = e.clientY;
 		}
 	
-		if (disableSelection == 1){
+		if (disableSelection == 1 || dragging_timeline == 1){
 			e.preventDefault();
+		} 
+		
+		try {
+			update_tick(x);
+		} catch (e){
+			
 		}
+		
 	
 	
 		if (mousey == 1){
@@ -232,6 +245,8 @@ function onPointerMove(e){
 				panel_el.style.width = new_panel_width + 'px';
 				editor_container_el.style.width = new_panel_width + 'px';
 				editor.resize();
+			} else if (dragging_timeline == 1){
+				
 			} else {
 				pointer_offsetX = (x - pointer_originX) * multiplier;
 				pointer_offsetY = (y - pointer_originY) * multiplier;
@@ -269,6 +284,7 @@ function onPointerUp(e){
 	panning = 0;
 	panel_dragging = 0;
 	disableSelection = 0;
+	dragging_timeline = 0;
 	offsetUpdate();
 }
 
@@ -277,77 +293,84 @@ function getMousePos(e) {
 }
 
 function fill_hover_thing(xx, yy, board_xx, board_yy){
-	var hoveroid = document.getElementById('game_hover');
-	hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
-	hoveroid.style.left = xx + 'px';
-	var hover_content = [];
 	
-	for (i = 0; i < living_spirits.length; i++){
-		if(living_spirits[i].hp == 0) continue;
-		if (Math.abs(living_spirits[i].position[0] - board_xx) <= 10 && Math.abs(living_spirits[i].position[1] - board_yy) <= 10){
-			hover_content.push(['spirit', living_spirits[i].id, Math.floor(living_spirits[i].energy)]);
-		}
-	}
+	try {
+		var hoveroid = document.getElementById('game_hover');
+		hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+		hoveroid.style.left = xx + 'px';
+		var hover_content = [];
 	
-	for (b = 0; b < bases.length; b++){
-		if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
-			hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status, bases[b].current_spirit_cost]);
-		}
-	}
-	
-	for (s = 0; s < stars.length; s++){
-		if (Math.abs(stars[s].position[0] - board_xx) <= 50 && Math.abs(stars[s].position[1] - board_yy) <= 50){
-			hover_content.push(['star', stars[s].id, stars[s].energy]);
-		}
-	}
-	
-	for (o = 0; o < outposts.length; o++){
-		if (Math.abs(outposts[o].position[0] - board_xx) <= 50 && Math.abs(outposts[o].position[1] - board_yy) <= 50){
-			hover_content.push(['outpost', outposts[o].control, outposts[o].energy]);
-		}
-	}
-	
-	
-	if (hover_content.length == 0){
-		hide_hover();
-	} else if (hover_content.length == 1){
-		show_hover();
-		if (hover_content[0][0] == 'spirit'){
-			hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
-		} else if (hover_content[0][0] == 'base'){
-			hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
-			hoveroid.innerHTML += "<span class='new_when'>new spirit at <span class='highlight'>" + hover_content[0][5] + "</span></span>"
-			if (hover_content[0][4] == 1){
-				hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
+		for (i = 0; i < living_spirits.length; i++){
+			if(living_spirits[i].hp == 0) continue;
+			if (Math.abs(living_spirits[i].position[0] - board_xx) <= 10 && Math.abs(living_spirits[i].position[1] - board_yy) <= 10){
+				hover_content.push(['spirit', living_spirits[i].id, Math.floor(living_spirits[i].energy)]);
 			}
-			hoveroid.style.bottom = window.innerHeight - yy - 20 + 'px';
-			hoveroid.style.left = xx + 50 + 'px';
-		} else if (hover_content[0][0] == 'star'){
-			hoveroid.innerHTML = "<span class='star_id'>" + hover_content[0][1] + "</span>";
-			hoveroid.innerHTML += "<span class='star_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
-			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
-			hoveroid.style.left = xx - 20 + 'px';
-		} else if (hover_content[0][0] == 'outpost'){
-			hoveroid.innerHTML = "<span class='outpost_control'>outpost_mdo <span class='lowlight'> · " + hover_content[0][1] + "</span></span>";
-			hoveroid.innerHTML += "<span class='outpost_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
-			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
-			hoveroid.style.left = xx - 20 + 'px';
 		}
-	} else if (hover_content.length > 4){
-		show_hover();
-		var total_eng = 0;
-		for (j = 0; j < hover_content.length; j++){
-			total_eng += hover_content[j][2];
+	
+		for (b = 0; b < bases.length; b++){
+			if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
+				hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status, bases[b].current_spirit_cost]);
+			}
 		}
-		hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + " + " + (hover_content.length - 1) + " spirits</span><span class='spirit_energy'>" + total_eng + " <span class='lowlight'>total energy</span></span>";
-	} else {
-		show_hover();
-		var temp_fill = '';
-		for (j = 0; j < hover_content.length; j++){
-			temp_fill += "<span class='spirit_id'>" + hover_content[j][1] + "<span class='lowlight'> · " + hover_content[j][2] + "</span></span>"
+	
+		for (s = 0; s < stars.length; s++){
+			if (Math.abs(stars[s].position[0] - board_xx) <= 50 && Math.abs(stars[s].position[1] - board_yy) <= 50){
+				hover_content.push(['star', stars[s].id, stars[s].energy]);
+			}
 		}
-		hoveroid.innerHTML = temp_fill;
+	
+		for (o = 0; o < outposts.length; o++){
+			if (Math.abs(outposts[o].position[0] - board_xx) <= 50 && Math.abs(outposts[o].position[1] - board_yy) <= 50){
+				hover_content.push(['outpost', outposts[o].control, outposts[o].energy]);
+			}
+		}
+	
+	
+		if (hover_content.length == 0){
+			hide_hover();
+		} else if (hover_content.length == 1){
+			show_hover();
+			if (hover_content[0][0] == 'spirit'){
+				hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+			} else if (hover_content[0][0] == 'base'){
+				hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+				hoveroid.innerHTML += "<span class='new_when'>new spirit at <span class='highlight'>" + hover_content[0][5] + "</span></span>"
+				if (hover_content[0][4] == 1){
+					hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
+				}
+				hoveroid.style.bottom = window.innerHeight - yy - 20 + 'px';
+				hoveroid.style.left = xx + 50 + 'px';
+			} else if (hover_content[0][0] == 'star'){
+				hoveroid.innerHTML = "<span class='star_id'>" + hover_content[0][1] + "</span>";
+				hoveroid.innerHTML += "<span class='star_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
+				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+				hoveroid.style.left = xx - 20 + 'px';
+			} else if (hover_content[0][0] == 'outpost'){
+				hoveroid.innerHTML = "<span class='outpost_control'>outpost_mdo <span class='lowlight'> · " + hover_content[0][1] + "</span></span>";
+				hoveroid.innerHTML += "<span class='outpost_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
+				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+				hoveroid.style.left = xx - 20 + 'px';
+			}
+		} else if (hover_content.length > 4){
+			show_hover();
+			var total_eng = 0;
+			for (j = 0; j < hover_content.length; j++){
+				total_eng += hover_content[j][2];
+			}
+			hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + " + " + (hover_content.length - 1) + " spirits</span><span class='spirit_energy'>" + total_eng + " <span class='lowlight'>total energy</span></span>";
+		} else {
+			show_hover();
+			var temp_fill = '';
+			for (j = 0; j < hover_content.length; j++){
+				temp_fill += "<span class='spirit_id'>" + hover_content[j][1] + "<span class='lowlight'> · " + hover_content[j][2] + "</span></span>"
+			}
+			hoveroid.innerHTML = temp_fill;
+		}
+	} catch (e) {
+		console.log(e);
 	}
+	
+	
 }
 
 
@@ -441,33 +464,39 @@ var panel_el_widtho = 0;
 //var canvasTouch = document.getElementById("base_canvas");
 //canvasTouch.addEventListener("ontouchstart")
 
-document.getElementById("panel").addEventListener("mouseenter", function(e) {
-	if (mousey != 1){
-		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
-		document.getElementById("panel").style.backdropFilter = "blur(12px)";
-	}
+try {
+	document.getElementById("panel").addEventListener("mouseenter", function(e) {
+		if (mousey != 1){
+			document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
+			document.getElementById("panel").style.backdropFilter = "blur(12px)";
+		}
 
-}, false);
+	}, false);
 
-document.getElementById("panel").addEventListener("mousedown", function(e) {
-	if (mousey != 1){
-		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
-		document.getElementById("panel").style.backdropFilter = "blur(12px)";
-	}
-    if (tutorial_started == 0){
-	//    tutorial_started = 1;
-	//    tut_start();
-    }
+	document.getElementById("panel").addEventListener("mousedown", function(e) {
+		if (mousey != 1){
+			document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
+			document.getElementById("panel").style.backdropFilter = "blur(12px)";
+		}
+	    if (tutorial_started == 0){
+		//    tutorial_started = 1;
+		//    tut_start();
+	    }
 
-}, false);
+	}, false);
 
-document.getElementById("panel").addEventListener("mouseleave", function(e) {
-	if (mousey != 1){
-		document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
-		document.getElementById("panel").style.backdropFilter = "blur(12px)";
-	}
+	document.getElementById("panel").addEventListener("mouseleave", function(e) {
+		if (mousey != 1){
+			document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
+			document.getElementById("panel").style.backdropFilter = "blur(12px)";
+		}
 
-}, false);
+	}, false);
+} catch (e) {
+	
+}
+
+
 
 
 
@@ -793,6 +822,8 @@ function create_spirit_p1(spir_id){
 
 function create_spirit_p2(spir_id){
 	
+	//console.log('creating spirit p2');
+	
 	var spir_position = [game_blocks['t' + tick_counter].p2[spir_id][0][0], game_blocks['t' + tick_counter].p2[spir_id][0][1]];
 	if (shapes['shape2'] == 'circles') var spir_size = 1;
 	if (shapes['shape2'] == 'squares') var spir_size = 10;
@@ -865,8 +896,12 @@ class Spirit {
 		}
 		
 		this.position = origin;
-		this.position[0] = origin[0] + (incr[0] * (total_time / 600));
-		this.position[1] = origin[1] + (incr[1] * (total_time / 600));
+		this.position[0] = origin[0] + (incr[0] * (total_time / game_tick));
+		this.position[1] = origin[1] + (incr[1] * (total_time / game_tick));
+		
+		//console.log('total_time = ' + total_time);
+		//console.log('game_tick = ' + game_tick);
+		//console.log(total_time / game_tick);
 		
 		if (this.shape == 'triangles') this.tria = calcAngleDegrees(incr[0], incr[1]);
 		
@@ -878,11 +913,11 @@ class Spirit {
 			setTimeout(function(){
 				this.hp = 0;
 				this.exploding = 0;
-			}, 600);
+			}, game_tick);
 		}
 		if (this.hp != 0){
 			this.energy = prev_energy;
-			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 600));
+			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / game_tick));
 		
 			if (hp == 0){
 				//console.log('death calling');
@@ -959,8 +994,8 @@ class Spirit {
 		if (prev_size != new_size){
 			//console.log('changing size from ' + prev_size + ' to ' + new_size);
 			this.size = prev_size;
-			this.size = prev_size + ((new_size - prev_size) * (total_time / 600));
-			this.energy_capacity = (prev_size * 10) + ((new_size - prev_size) * 10) * (total_time / 600);
+			this.size = prev_size + ((new_size - prev_size) * (total_time / game_tick));
+			this.energy_capacity = (prev_size * 10) + ((new_size - prev_size) * 10) * (total_time / game_tick);
 		} else if (new_size != this.size){
 			this.size = new_size;
 		}
@@ -1379,19 +1414,19 @@ class Base {
 	
 	charge(prev_energy, new_energy){
 		if (prev_energy > new_energy && (prev_energy - new_energy) > (this.current_spirit_cost/1.5)){
-			this.energy = new_energy * (total_time / 600);
+			this.energy = new_energy * (total_time / game_tick);
 		} else if (prev_energy >= new_energy){
 			this.energy = new_energy;
 		} else if (prev_energy < new_energy){
 			this.energy = prev_energy;
-			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / 600));
+			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / game_tick));
 		} 
 	}
 	
 	defend(new_status){
 		//def_status is number between 0 and 1 (0 and 1 values obvious, everything inbetween for animation purposes)
 		if (new_status != this.def_status){
-			this.def_status = Math.abs((new_status * (total_time / 600)) + ((new_status - 1) * ((total_time / 600) - 1)));
+			this.def_status = Math.abs((new_status * (total_time / game_tick)) + ((new_status - 1) * ((total_time / game_tick) - 1)));
 			if (Math.abs(this.def_status - new_status) < 0.05) this.def_status = new_status;
 			//console.log('this.def_status = ' + this.def_status);
 		}
@@ -1632,12 +1667,22 @@ function render_state(timestamp){
 	
 	//console.log(incoming.t);
 	
-	elapsed = timestamp - prev;
-	prev = timestamp;
-	dumb_cycler++;
-	//console.log(total_time);
+	if (isNaN(timestamp)){
+		
+	} else {
+		elapsed = timestamp - prev;
+		if (elapsed > 100) elapsed = 16.6;
+		prev = timestamp;
+		dumb_cycler++;
+		//console.log(total_time);
 	
-	total_time += elapsed;
+		total_time += elapsed;
+	}
+	
+	//console.log('total_time = ' + total_time);
+	//console.log('timestamp = ' + timestamp);
+	//console.log('elapsed = ' + elapsed);
+	//console.log('prev = ' + prev);
 	
 	if (dumb_cycler >= 60){
 		dumb_cycler = 0;		
@@ -1674,7 +1719,7 @@ function render_state(timestamp){
 				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2], game_blocks[active_block].p1[all_spirits[i]][3]);
 				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p1[all_spirits[i]][4], game_blocks[active_block].p1[all_spirits[i]][1]);
 			} catch (e) {
-				//console.log(e)
+				console.log(e)
 			}
 			
 		} else if (spirit_lookup[all_spirits[i]].player_id == pla2){
@@ -1683,7 +1728,7 @@ function render_state(timestamp){
 				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2], game_blocks[active_block].p2[all_spirits[i]][3]);
 				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p2[all_spirits[i]][4], game_blocks[active_block].p2[all_spirits[i]][1]);
 			} catch (e) {
-				//console.log(e)
+				console.log(e)
 			}
 			
 		}

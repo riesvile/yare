@@ -1165,6 +1165,69 @@ function expand_documentation(elid, rotator){
 }
 
 
+// replays
+
+function tick_options_expand(){
+	anime({
+  		targets: '.tick_rate_select',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 100
+	});
+	anime({
+  		targets: '#tick_sec_desc',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 100
+	});
+	document.getElementById('tick_sec_desc').style.pointerEvents = 'none';
+	document.getElementById('tick_sec_block').style.pointerEvents = 'auto';
+}
+
+function tick_options_collapse(){
+	anime({
+  		targets: '.tick_rate_select',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 100
+	});
+	anime({
+  		targets: '#tick_sec_desc',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 100
+	});
+	document.getElementById('tick_sec_desc').style.pointerEvents = 'auto';
+	document.getElementById('tick_sec_block').style.pointerEvents = 'none';
+}
+
+function replay_loaded(){
+	anime({
+  		targets: '#loading_replay',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 100
+	});
+	
+	anime({
+  		targets: '#wg_game_stats',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 100
+	});
+	
+	anime({
+  		targets: '#wg_replay',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 100
+	});
+}
+
+
+// -----
+
+
 
 // mobile game view
 

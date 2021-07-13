@@ -71,10 +71,6 @@
   
   
   
-  <div id="tutorial_infobox">
-		  <p class="info_h">Reference to your spirit (an object).</p>
-		  <p class="info_p">In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>
-  </div>
   
  
   
@@ -109,6 +105,11 @@
   	  </div>
   </div>
   
+  <div id="loading_replay">
+	  <span class="replay_load_gif"></span>
+	  <p class="loading_msg">Downloading replay...</p>
+  </div>
+  
   <div id="wg_game_stats" class="widget_standard">
 	  <div id="gs_player1">
 		  <div id="gs_player1_shape"><span class="ico_circles"></span></div>
@@ -129,10 +130,16 @@
   </div>
   
   <div id="wg_replay" class="widget_standard">
+	<div id="replay_play_btn" class="state_pause"></div>
+	<div id="tick_sec_block">
+		<div id="tick_sec_desc">1 tick = 600ms</div>
+		<div id="tick_05" class="tick_rate_select">0.5x</div>
+		<div id="tick_1" class="tick_rate_select tick_rate_active">1x</div>
+		<div id="tick_2" class="tick_rate_select">2x</div>
+		<div id="tick_3" class="tick_rate_select">3x</div>
+		<div id="tick_6" class="tick_rate_select">6x</div>
+	</div>
   	<div id="replay_timeline">
-		<div id="replay_play_btn"></div>
-		<div id="tick_sec_block">
-		</div>
 		<div id="replay_current_tick"><span id="replay_current_tick_lbl">158</span></div>
 		<span id="replay_total_ticks">528</span>
   	</div>
@@ -175,75 +182,446 @@
   
   </body>
   <script src="../animations.js"></script>
+  <script src="../rendering3.js"></script>
   <script>
 	  
-	  function get_replay_file() {
-  	  	fetch('/get_replay', {
-  	  	        method: "POST",
-  	  	        headers: {
-  	  	          Accept: "application/json",
-  	  	          "Content-Type": "application/json"
-  	  	        },
-  	  	        body: JSON.stringify({
-  	  		        game_id: this_game_id
-  	  		    })
-
-  	      }).then(response => response.json())
-  	        .then(response => {
-  	  		  //console.log(response);
-  	  		  if (response.meta == "no game found"){
-  	  			  //console.log('no game found');
-  	  		  } else if (response.meta == "gotit"){
-				  game_file = response.data;
-				  console.log('got the file, start replay')
-  	  			  console.log(JSON.parse(response.data));
-  	  			  //console.log('anonymous updated')
-  	  		  } else if (response.meta == "something went wrong"){
-				  console.log('replay not available');
-  	  			  //console.log('something went wrong');
-  	  		  } else {
-  				  //console.log('strange case');
-  	  		  }
-  	  	  })
-  	        .catch(err => {
-  	  		  //console.log(err);
-  	  	  });
+	  var replay_playing = 0;
+	  
+	  var replay_length = 800;
+	  var current_tick = 1;
+	  var dragging_timeline = 0;
+	  var percent_current = 0;
+	  var game_tick = 600;
+	  var timeline_el_bound = document.getElementById('replay_timeline').getBoundingClientRect();
+	  
+	  
+	  function prepare_replay_UI() {
+		  document.getElementById('replay_total_ticks').innerHTML = replay_length;
 	  }
 	  
+	  function play_pause(){
+		  if (replay_playing == 0){
+			  replay_playing = 1;
+			  document.getElementById('replay_play_btn').classList.remove('state_play');
+			  document.getElementById('replay_play_btn').classList.add('state_pause');
+		  } else {
+			  replay_playing = 0;
+			  document.getElementById('replay_play_btn').classList.add('state_play');
+			  document.getElementById('replay_play_btn').classList.remove('state_pause');
+		  }
+	  }
+	  
+	  function get_shape(spirit_cost){
+		  if (spirit_cost == 25){
+			  return 'circles';
+		  } else if (spirit_cost == 60){
+			  return 'triangles';
+		  } else {
+			  return 'squares';
+		  }
+	  }
+	  
+	  function process_replay_file(rep_file){
+		  console.log('replay length: ' + rep_file.length);
+		  replay_length = rep_file.length;
+		  prepare_replay_UI();
+		  
+		  pla1 = rep_file[0].p1[0][0];
+		  pla1 = pla1.substring(0, pla1.length-2);
+		  pla2 = rep_file[0].p2[0][0];
+		  pla2 = pla2.substring(0, pla2.length-2);
+		  
+		  shapes['shape1'] = get_shape(rep_file[1].b1[1]);
+		  shapes['shape2'] = get_shape(rep_file[1].b2[1]);
+		  colors['color1'] = 'rgba(128,140,255,1)';
+		  colors['color2'] = 'rgba(232,97,97,1)';
+		  
+		  var base1 = {
+			  'id': 'base_' + pla1,
+			  'position': [1600, 700],
+			  'energy': 0,
+			  'player_id': pla1,
+			  'color': colors['color1'],
+			  'shape': shapes['shape1']
+		  };
+		  
+		  var base2 = {
+			  'id': 'base_' + pla2,
+			  'position': [2600, 1700],
+			  'energy': 0,
+			  'player_id': pla2,
+			  'color': colors['color2'],
+			  'shape': shapes['shape2']
+		  };
+		  
+		  bases_queue.push(base1);
+		  bases_queue.push(base2);
+		  
+		  
+		  for (t = 0; t < rep_file.length; t++){
+			 
+			 tick_counter = t+1;
+			 //console.log(tick_counter);
+			  
+	 		 game_blocks['t' + tick_counter] = {
+	 			 'p1': {},
+	 			 'p2': {},
+	 			 'b1': [],
+	 			 'b2': [],
+	 			 'e': [],
+	 			 's': [],
+	 			 'units': [],
+				 'total_u_1': 0,
+				 'total_u_2': 0,
+				 'total_e_1': 0,
+				 'total_e_2': 0
+	 		 }
+			 
+			 for (i = 0; i < rep_file[t].p1.length; i++){
+				 var spir_id = rep_file[t].p1[i][0];
+				 game_blocks['t' + tick_counter].p1[spir_id] = [rep_file[t].p1[i][1], rep_file[t].p1[i][2], rep_file[t].p1[i][3], rep_file[t].p1[i][4]];
+				 game_blocks['t' + tick_counter].units.push(rep_file[t].p1[i][0]);
+				 
+				 game_blocks['t' + tick_counter].total_e_1 += rep_file[t].p1[i][3];
+				 
+				 //console.log('previous tick');
+				 if (game_blocks['t' + (tick_counter - 1)] != undefined){
+					 //console.log('location');
+					 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
+					 var oldLoc = [0, 0];
+					 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
+					 var oldEnergy = 0;
+					 var oldSize = 0;
+					 
+					 if (spirit_lookup[spir_id] == undefined && pla1 != undefined){
+					 	 create_spirit_p1(spir_id);
+					 }
+					 
+					 if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
+					 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
+						oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
+						oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
+						
+						game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
+						game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
+						game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
+						game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
+					 
+						game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+						game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+					 } else {
+						// new spirit instance
+						//console.log('spirit born (probably)');
+						 
+						game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
+						game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
+						game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
+						game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
+					 
+						game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+						game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+					 }
+					 
+				}
+			 }
+			 
+			 for (j = 0; j < rep_file[t].p2.length; j++){
+				 var spir_id = rep_file[t].p2[j][0];
+				 game_blocks['t' + tick_counter].p2[spir_id] = [rep_file[t].p2[j][1], rep_file[t].p2[j][2], rep_file[t].p2[j][3], rep_file[t].p2[j][4]];
+				 game_blocks['t' + tick_counter].units.push(rep_file[t].p2[j][0]);
+				 
+				 game_blocks['t' + tick_counter].total_e_2 += rep_file[t].p2[j][3];
+				 
+				 if (game_blocks['t' + (tick_counter - 1)] != undefined){
+					 //console.log('location');
+					 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
+					 var oldLoc = [0, 0];
+					 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
+					 var oldEnergy = 0;
+					 var oldSize = 0;
+					 
+					 if (spirit_lookup[spir_id] == undefined && pla2 != undefined){
+					 	 create_spirit_p2(spir_id);
+					 	 //console.log('spirit created ' + spir_id);
+					 }
+					 
+					 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
+					 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
+						oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
+						oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
+						
+						game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
+						game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
+						game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
+						game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
+					 
+						game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+						game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+					 } else {
+						// new spirit instance
+						 //console.log('spirit born (probably)');
+						 
+						 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
+						 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
+						 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
+						 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
+					 
+						 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+						 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+					 }
+				 }
+			 }
+			 
+			 game_blocks['t' + tick_counter].total_u_2 = rep_file[t].p2.length;
+			 game_blocks['t' + tick_counter].total_u_1 = rep_file[t].p1.length;
+			 
+			 game_blocks['t' + tick_counter]['e'] = rep_file[t].e;
+			 game_blocks['t' + tick_counter]['s'] = rep_file[t].s;
+			 game_blocks['t' + tick_counter]['b1'] = rep_file[t].b1;
+			 game_blocks['t' + tick_counter]['b2'] = rep_file[t].b2;
+			 
+			 if (tick_counter == 1){
+				 game_blocks['t' + tick_counter]['b1'][3] = 0;
+				 game_blocks['t' + tick_counter]['b2'][3] = 0;
+			 } else {
+				 game_blocks['t' + tick_counter]['b1'][3] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
+				 game_blocks['t' + tick_counter]['b2'][3] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
+			 }
+			 
+			 
+			 
+			 game_blocks['t' + tick_counter]['st'] = rep_file[t].st;
+			 
+			 game_blocks['t' + tick_counter]['ou'] = rep_file[t].ou;
+
+			 game_blocks['t' + tick_counter]['g1'] = rep_file[t].g1;
+			 game_blocks['t' + tick_counter]['g2'] = rep_file[t].g2;
+			 
+			 //console.log('processed block ' + t);
+			 
+			 
+			 
+		  }
+		  
+		  console.log(game_blocks);
+		  
+		  
+		  replay_playing = 1;
+		  run_it();
+		  
+		  
+	  }
+	  
+	  function tick_rate_select(e){
+	  	e = e || window.event;
+		var el_id = (e.target || e.srcElement).id;
+		//console.log(el_id);
+		
+		switch (el_id){
+			case 'tick_05':
+				//console.log('clicked rate 1');
+				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 1200ms';
+				document.getElementById('tick_05').classList.add('tick_rate_active');
+				document.getElementById('tick_1').classList.remove('tick_rate_active');
+				document.getElementById('tick_2').classList.remove('tick_rate_active');
+				document.getElementById('tick_3').classList.remove('tick_rate_active');
+				document.getElementById('tick_6').classList.remove('tick_rate_active');
+				game_tick = '1200';
+				break;
+			case 'tick_1':
+				//console.log('clicked rate 1');
+				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 600ms';
+				document.getElementById('tick_05').classList.remove('tick_rate_active');
+				document.getElementById('tick_1').classList.add('tick_rate_active');
+				document.getElementById('tick_2').classList.remove('tick_rate_active');
+				document.getElementById('tick_3').classList.remove('tick_rate_active');
+				document.getElementById('tick_6').classList.remove('tick_rate_active');
+				game_tick = '600';
+				break;
+			case 'tick_2':
+				//console.log('clicked rate 2');
+				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 300ms';
+				document.getElementById('tick_05').classList.remove('tick_rate_active');
+				document.getElementById('tick_1').classList.remove('tick_rate_active');
+				document.getElementById('tick_2').classList.add('tick_rate_active');
+				document.getElementById('tick_3').classList.remove('tick_rate_active');
+				document.getElementById('tick_6').classList.remove('tick_rate_active');
+				game_tick = '300';
+				break;
+			case 'tick_3':
+				//console.log('clicked rate 2');
+				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 200ms';
+				document.getElementById('tick_05').classList.remove('tick_rate_active');
+				document.getElementById('tick_1').classList.remove('tick_rate_active');
+				document.getElementById('tick_2').classList.remove('tick_rate_active');
+				document.getElementById('tick_3').classList.add('tick_rate_active');
+				document.getElementById('tick_6').classList.remove('tick_rate_active');
+				game_tick = '200';
+				break;
+			case 'tick_6':
+				//console.log('clicked rate 2');
+				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 100ms';
+				document.getElementById('tick_05').classList.remove('tick_rate_active');
+				document.getElementById('tick_1').classList.remove('tick_rate_active');
+				document.getElementById('tick_2').classList.remove('tick_rate_active');
+				document.getElementById('tick_3').classList.remove('tick_rate_active');
+				document.getElementById('tick_6').classList.add('tick_rate_active');
+				game_tick = '100';
+				break;
+			default:
+				console.log('defaulted');
+				break;
+		}
+		
+	  }
+	  
+	  function update_tick(clX){
+		 
+		  if (dragging_timeline == 1){
+			  current_tick = Math.round(replay_length * percent_current / 100);
+			  document.getElementById('replay_current_tick_lbl').innerHTML = current_tick;
+			  //console.log('dragging time');
+			  percent_current = ((clX - timeline_el_bound.left) / timeline_el_bound.width) * 100;
+			  if (percent_current > 100) percent_current = 100;
+			  if (percent_current < 0) percent_current = 0;
+			  if (percent_current > 90) {
+			  	document.getElementById('replay_total_ticks').style.opacity = 0;
+				document.getElementById('replay_current_tick_lbl').innerHTML = current_tick + ' <span class="lowlight">/ ' + replay_length + '</span>';
+			  } else {
+			  	document.getElementById('replay_total_ticks').style.opacity = 1;
+			  }
+			  if (percent_current < 10) {
+				  document.getElementById('replay_current_tick_lbl').style.left = '12px';
+			  } else {
+				  document.getElementById('replay_current_tick_lbl').style.right = '12px';
+				  document.getElementById('replay_current_tick_lbl').style.left = 'auto';
+			  }
+			  document.getElementById('replay_current_tick').style.width = percent_current + '%';
+			  
+			  
+			  //console.log('current_tick = ' + current_tick);
+		  }
+	  }
+	  
+	  //document.getElementById('replay_timeline').addEventListener('click', function(e) {
+	  //    
+	  //});
+	  
+	  document.getElementById('tick_sec_desc').addEventListener('mouseenter', tick_options_expand, false);
+	  document.getElementById('tick_sec_block').addEventListener('mouseleave', tick_options_collapse, false);
+	  
+	  document.getElementById('tick_sec_block').addEventListener('click', tick_rate_select, false);
+	  
+	  document.getElementById('replay_play_btn').addEventListener('click', play_pause, false);
+	  
+	  function local_maybe(){
+  		if (sessionStorage.getItem("replay_" + this_game_id) != null){
+  		    let local_file = sessionStorage.getItem("replay_" + this_game_id);
+  	  	    //console.log('local_replay');
+			//console.log(local_replay);
+			return local_file;
+  		} else {
+  			return null
+  		}
+	  }
+	  
+	  function get_replay_file() {
+		  
+		  let local_replay = local_maybe();
+		  
+		  if (local_replay != null){
+			  console.log('local');
+			  console.log(local_replay);
+			  process_replay_file(JSON.parse(local_replay));
+			  replay_loaded();
+			  //replay_playing = 1;
+			  //run_it();
+		  } else {
+	    	  	fetch('/get_replay', {
+	    	  	        method: "POST",
+	    	  	        headers: {
+	    	  	          Accept: "application/json",
+	    	  	          "Content-Type": "application/json"
+	    	  	        },
+	    	  	        body: JSON.stringify({
+	    	  		        game_id: this_game_id
+	    	  		    })
+
+	    	      }).then(response => response.json())
+	    	        .then(response => {
+	    	  		  //console.log(response);
+	    	  		  if (response.meta == "no game found"){
+	    	  			  //console.log('no game found');
+	    	  		  } else if (response.meta == "gotit"){
+	  				  game_file = response.data;
+	  				  console.log('got the file, start replay')
+	    	  			  console.log(JSON.parse(response.data));
+	  				  process_replay_file(JSON.parse(response.data));
+					  sessionStorage.setItem("replay_" + this_game_id, game_file);
+					  replay_loaded();
+	    	  			  //console.log('anonymous updated')
+	    	  		  } else if (response.meta == "something went wrong"){
+	  				  console.log('replay not available');
+	    	  			  //console.log('something went wrong');
+	    	  		  } else {
+	    				  //console.log('strange case');
+	    	  		  }
+	    	  	  })
+	    	        .catch(err => {
+	    	  		  //console.log(err);
+	    	  	  });
+		  }
+		  
+  	  	
+	  }
+	  
+	  
+	  function playing(){
+		 if (replay_playing == 1 && current_tick <= replay_length){
+			 current_tick++;
+			 active_block = 't' + current_tick;
+			 console.log('active_block = ' + active_block);
+			 percent_current = (current_tick / replay_length) * 100;
+			 total_time = 0;
+			 
+			 document.getElementById('replay_current_tick').style.width = percent_current + '%';
+			 document.getElementById('replay_current_tick_lbl').innerHTML = current_tick;
+			 
+			  if (percent_current > 90) {
+			  	document.getElementById('replay_total_ticks').style.opacity = 0;
+				document.getElementById('replay_current_tick_lbl').innerHTML = current_tick + ' <span class="lowlight">/ ' + replay_length + '</span>';
+			  } else {
+			  	document.getElementById('replay_total_ticks').style.opacity = 1;
+			  }
+			  if (percent_current < 10) {
+				  document.getElementById('replay_current_tick_lbl').style.left = '12px';
+			  } else {
+				  document.getElementById('replay_current_tick_lbl').style.right = '12px';
+				  document.getElementById('replay_current_tick_lbl').style.left = 'auto';
+			  }
+			  if (game_tick == 999999) game_tick = temp_tick;
+			  setTimeout(playing, game_tick)
+		 } else {
+			 active_block = 't' + (current_tick + 1);
+			 total_time = 0;
+			 if (game_tick != 999999) temp_tick = game_tick;
+			 game_tick = 999999;
+			 setTimeout(playing, 200)
+		 }
+		 
+		 
+		 
+		 
+	  }
 	  
 	  
 	  function run_it(){
 		  
 		  if (game_running == 0){
-		  	 if (localStorage.getItem("code_code") != null) update_code();
-		  }
-		  
-		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
+			  
 			  game_running = 1;
-			  tick_local = tick_counter;
-			  //console.log('GAME IS RUNNING');
-			  
-			  active_block = 't' + (tick_local);
-			  //console.log('active block = ' + active_block);
-			  setInterval(function(){ 
-				  // change to tick_counter (not - 1)
-				  //console.log('local tick = ' + tick_local);
-				  //console.log('incoming.t = ' + incoming.t);
-				  
-				  
-				  active_block = 't' + (tick_local);
-				  //console.log('active block = ' + active_block);
-				  total_time = 0;
-				  tick_local++;
-				  if (tick_local > incoming.t) tick_local--;
-				  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
-				  
-				  
-				  
-			  }, 1000);
-			  
+			  playing();
 			  render_state();
-			  
 		  }
 	  }
 	  
@@ -380,18 +758,6 @@
 	  //load_start();
 	  get_replay_file();
 	  
-	  function consume_file(gfile){
-		  
-		  // build game blocks from the replay file
-		  
-		  
-		  for (i = 0; i < gfile.length; i++){
-		  	
-		  }
-		
-		
-		
-	  }
 	  
 	  //const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
@@ -870,7 +1236,6 @@
 	  
   </script>
   <script src="../tutorial_texts.js"></script>
-  <script src="../rendering3.js"></script>
   <script src="../basics.js"></script>
   <!--<script src="../sound.js"></script>-->
   
