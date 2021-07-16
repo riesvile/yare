@@ -539,7 +539,7 @@ function spirit_cost(p_num, alives){
 			if (alives <= 10) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
 			if (alives > 10) base_lookup['base_' + players['p2']].current_spirit_cost = 800;
 			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1100;
-		} else if (shapes["player1"] == 'triangles'){
+		} else if (shapes["player2"] == 'triangles'){
 			if (alives <= 30) base_lookup['base_' + players['p2']].current_spirit_cost = 60;
 			if (alives > 30) base_lookup['base_' + players['p2']].current_spirit_cost = 120;
 			if (alives > 120) base_lookup['base_' + players['p2']].current_spirit_cost = 300;
@@ -843,7 +843,7 @@ if (!isMainThread){
 				structures: []
 			}
 			
-			this.hp = 1;
+			this.hp = 3;
 			if (this.shape == 'circles'){
 				this.energy_capacity = 400;
 			} else if (this.shape == 'squares'){
@@ -1639,6 +1639,13 @@ if (!isMainThread){
 			target.energy = Math.min(target.energy, target.energy_capacity);
 
 			if (target.energy < 0){
+				
+				if (target.structure_type == 'base' && target.hp > 0){
+					target.hp--;
+					target.energy = 0;
+					continue;
+				}
+				
 				death_queue.push(target);
 
 				if (target.structure_type == 'base' && game_finished != 1){
@@ -2123,8 +2130,8 @@ if (!isMainThread){
 			}
 		
 			render_data3.t = game_duration;
-			render_data3.b1 = [bases[0].energy, base_lookup['base_' + players['p1']].current_spirit_cost, p1_defend];
-			render_data3.b2 = [bases[1].energy, base_lookup['base_' + players['p2']].current_spirit_cost, p2_defend];
+			render_data3.b1 = [bases[0].energy, base_lookup['base_' + players['p1']].current_spirit_cost, p1_defend, bases[0].hp];
+			render_data3.b2 = [bases[1].energy, base_lookup['base_' + players['p2']].current_spirit_cost, p2_defend, bases[1].hp];
 			
 			render_data3.ou = [outposts[0].energy, outposts[0].control];
 		
@@ -2197,13 +2204,13 @@ if (!isMainThread){
 		
 		///*
 				
-		var start_num_spirits = 11;
+		var start_num_spirits = 12;
 		var start_num_adjust1 = 0;
 		var start_num_adjust2 = 0;
-		if (shapes['player1'] == 'squares') start_num_adjust1 = 8;
-		if (shapes['player2'] == 'squares') start_num_adjust2 = 8;
-		if (shapes['player1'] == 'triangles') start_num_adjust1 = 5;
-		if (shapes['player2'] == 'triangles') start_num_adjust2 = 5;
+		if (shapes['player1'] == 'squares') start_num_adjust1 = 9;
+		if (shapes['player2'] == 'squares') start_num_adjust2 = 9;
+		if (shapes['player1'] == 'triangles') start_num_adjust1 = 6;
+		if (shapes['player2'] == 'triangles') start_num_adjust2 = 6;
 		
 		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
 			if (s > 6){
@@ -2220,11 +2227,11 @@ if (!isMainThread){
 
 		for (q = 1; q < 1+start_num_spirits-start_num_adjust2; q++){
 			if (q > 6){
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2630+q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2970-q*20,1780], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2740+q*20,1820], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2860-q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}

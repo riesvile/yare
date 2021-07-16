@@ -309,7 +309,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 	
 		for (b = 0; b < bases.length; b++){
 			if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
-				hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status, bases[b].current_spirit_cost]);
+				hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status, bases[b].current_spirit_cost, bases[b].hp]);
 			}
 		}
 	
@@ -333,7 +333,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			if (hover_content[0][0] == 'spirit'){
 				hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
 			} else if (hover_content[0][0] == 'base'){
-				hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+				hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy · </span>" + hover_content[0][6] + "<span class='lowlight'> hp</span></span>";
 				hoveroid.innerHTML += "<span class='new_when'>new spirit at <span class='highlight'>" + hover_content[0][5] + "</span></span>"
 				if (hover_content[0][4] == 1){
 					hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
@@ -493,7 +493,7 @@ try {
 
 	}, false);
 } catch (e) {
-	
+	console.log(e)
 }
 
 
@@ -677,8 +677,8 @@ function game_over(winner){
   		  //console.log(response);
 	  	  //document.getElementById('player1_rating').innerHTML = p111_rating + "<span class='player_delta' id='player1_delta'>+10</span>";
 	  	  //document.getElementById('player2_rating').innerHTML = p222_rating + "<span class='player_delta' id='player1_delta'>-9</span>";
-	  	  document.getElementById('player1_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color1'] + "'></span>";
-	  	  document.getElementById('player2_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color2'] + "'></span>";
+	  	  document.getElementById('player1_shape').innerHTML = "<span class='ico_" + shapes['shape1'] + "' style='background-color: " + colors['color1'] + "'></span>";
+	  	  document.getElementById('player2_shape').innerHTML = "<span class='ico_" + shapes['shape2'] + "' style='background-color: " + colors['color2'] + "'></span>";
 		  
 		  setTimeout(function(){
 		  	
@@ -1115,7 +1115,7 @@ class Spirit {
 				gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
 			} catch (e) {
 				//console.log(this.position[0])
-				//console.log(e);
+				console.log(e);
 			}
 			
 			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
@@ -1284,7 +1284,7 @@ class Base {
 		this.structure_type = 'base';
 		this.energy = energy;
 		
-		this.hp = 1;
+		this.hp = 3;
 		if (this.shape == 'circles') this.energy_capacity = 400;
 		if (this.shape == 'squares') this.energy_capacity = 1000;
 		if (this.shape == 'triangles') this.energy_capacity = 600;
@@ -1303,6 +1303,7 @@ class Base {
 	draw() {
 		var color_parts = this.color.match(/[.?\d]+/g);
 		var production_percent = this.energy / this.current_spirit_cost;
+		if (this.energy <= 0) this.energy = 0.1;
 		
 		if (this.shape == 'circles'){
 			//inner circle
@@ -1316,7 +1317,7 @@ class Base {
 			if (this.shape == 'squares'){
 				c.lineWidth = mapValues(this.def_status, 2, 5, 9, 5);
 			} else {
-				c.lineWidth = mapValues(this.def_status, 0, 1, 4, 1);
+				c.lineWidth = mapValues(this.def_status, 0, 1, 4, (this.hp * 2));
 			}
 			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
 			c.stroke();
@@ -1387,7 +1388,13 @@ class Base {
 		  //outer triangle
 		  //draw_triangle(this.position[0], this.position[1], 30, 30, this.base_points[0], this.base_points[1], this.base_points[2], this.base_points[3], this.base_points[4], this.base_points[5], 90)
 		  
-		  draw_polygon(this.position[0],this.position[1],3,30,4,current_color,0,incoming.t)
+		  let inc_angle = 0;
+		  
+		  //if (typeof incoming !== undefined){
+		  //	  inc_angle = incoming.t;
+		  //}
+		  
+		  draw_polygon(this.position[0],this.position[1],3,30,4,current_color,0,inc_angle)
 		  
 		  //c.beginPath();
 		  //c.moveTo(this.base_points[0], this.base_points[1]);
@@ -1404,7 +1411,7 @@ class Base {
 		  
 		  let progress_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * production_percent + ')';
 		  
-		  draw_polygon(this.position[0],this.position[1],3,15,2,progress_color,0,incoming.t + 60)
+		  draw_polygon(this.position[0],this.position[1],3,15,2,progress_color,0,inc_angle + 60)
 		  
 		  
 		}
@@ -1430,6 +1437,11 @@ class Base {
 			if (Math.abs(this.def_status - new_status) < 0.05) this.def_status = new_status;
 			//console.log('this.def_status = ' + this.def_status);
 		}
+	}
+	
+	shield(current_hp){
+		//def_status is number between 0 and 1 (0 and 1 values obvious, everything inbetween for animation purposes)
+		this.hp = current_hp;
 	}
 	
 	/*
@@ -1568,7 +1580,7 @@ function draw_energize(origin, target, energy_strength, color){
 		grad.addColorStop(0.06, 'rgba(' + (Number(color_parts[0]) + 80) + ', ' + (Number(color_parts[1]) + 50) + ', ' + (Number(color_parts[2]) + 50) + ', ' + color_parts[3] + ')');
 		grad.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
 	} catch (e) {
-		//console.log(e);
+		console.log(e);
 		//console.log(origin, target);
 	}
 	
@@ -1752,6 +1764,7 @@ function render_state(timestamp){
 			console.log('resynchronizing game state');
 			tick_local -= 1;
 		} catch (e2) {
+			console.log(e2);
 			//location.reload();
 			//setTimeout(function(){
 				//var energy_blocks = game_blocks[incoming.t].e;
@@ -1813,10 +1826,13 @@ function render_state(timestamp){
 	shouting_count_p2 = 0;
 	
 	
-	bases[0].charge(game_blocks[active_block].b1[3], game_blocks[active_block].b1[0]);
-	bases[1].charge(game_blocks[active_block].b2[3], game_blocks[active_block].b2[0]);
+	bases[0].charge(game_blocks[active_block].b1[4], game_blocks[active_block].b1[0]);
+	bases[1].charge(game_blocks[active_block].b2[4], game_blocks[active_block].b2[0]);
 	bases[0].defend(game_blocks[active_block].b1[2]);
 	bases[1].defend(game_blocks[active_block].b2[2]);
+	bases[0].shield(game_blocks[active_block].b1[3]);
+	bases[1].shield(game_blocks[active_block].b2[3]);
+	//console.log(game_blocks[active_block].b2[3]);
 	bases[0].current_spirit_cost = game_blocks[active_block].b1[1];
 	bases[1].current_spirit_cost = game_blocks[active_block].b2[1];
 	bases[0].draw();
@@ -1859,7 +1875,7 @@ function render_state(timestamp){
 			}
 		}
 	} catch (e) {
-		
+		//console.log(e);
 	}
 	
 	

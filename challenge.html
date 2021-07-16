@@ -306,6 +306,15 @@
 	  
 	  
 	  function start_game(type){
+		  
+  		if (getCookie('user_id') == undefined || getCookie('user_id') == "anonymous"){
+  			alert('please login first!');
+  			return;
+  		} else if (chosen_shape == ''){
+  			alert('choose a shape, please');
+  			return;
+  		}
+		
 		console.log('start game');
 		wait_opponent_view();
 		  

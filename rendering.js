@@ -260,7 +260,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 	
 	for (b = 0; b < bases.length; b++){
 		if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
-			hover_content.push(['base', bases[b].id, bases[b].energy, bases[b].position, bases[b].def_status]);
+			hover_content.push(['base', bases[b].id, bases[b].energy, bases[b].position, bases[b].def_status], bases[b].hp]);
 		}
 	}
 	
@@ -278,7 +278,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 		if (hover_content[0][0] == 'spirit'){
 			hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
 		} else if (hover_content[0][0] == 'base'){
-			hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+			hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy · </span>" + hover_content[0][5] + "<span class='lowlight'> hp</span></span>";
 			hoveroid.style.bottom = window.innerHeight - yy - 20 + 'px';
 			hoveroid.style.left = xx + 50 + 'px';
 		} else if (hover_content[0][0] == 'star'){
