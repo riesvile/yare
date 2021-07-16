@@ -333,7 +333,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			if (hover_content[0][0] == 'spirit'){
 				hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
 			} else if (hover_content[0][0] == 'base'){
-				hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + "</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy · </span>" + hover_content[0][6] + "<span class='lowlight'> hp</span></span>";
+				hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + " · </span>" + hover_content[0][6] + "<span class='lowlight'> hp</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
 				hoveroid.innerHTML += "<span class='new_when'>new spirit at <span class='highlight'>" + hover_content[0][5] + "</span></span>"
 				if (hover_content[0][4] == 1){
 					hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
