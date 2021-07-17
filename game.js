@@ -1640,7 +1640,7 @@ if (!isMainThread){
 
 			if (target.energy < 0){
 				
-				if (target.structure_type == 'base' && target.hp > 0){
+				if (target.structure_type == 'base' && target.hp > 1){
 					target.hp--;
 					target.energy = 0;
 					continue;
