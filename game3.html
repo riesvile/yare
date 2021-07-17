@@ -12,12 +12,12 @@
 	<link rel="manifest" href="/site.webmanifest">
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../d1a/colors.css">
-	<link rel="stylesheet" href="../d1a/style.css">
-	<link rel="stylesheet" href="../d1a/style-mobile.css">
-	<script src="../d1a/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../d1a/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../d1a/anime.min.js"></script>
+	<link rel="stylesheet" href="../colors.css">
+	<link rel="stylesheet" href="../style.css">
+	<link rel="stylesheet" href="../style-mobile.css">
+	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../anime.min.js"></script>
   </head>
   <body>
 
@@ -193,7 +193,7 @@
   
   
   </body>
-  <script src="../d1a/animations.js"></script>
+  <script src="../animations.js"></script>
   <script>
 	  
 	  function webker_msg_received(msg){
@@ -407,11 +407,11 @@
 	  var offsetY_adjust = 0;
 	  
 	  
-	  var this_server = 'd1';
+	  var this_server = 't1';
 	  
 	  load_start();
 	  
-	  const socket = new WebSocket('wss://yare.io/' + this_server + '/' + this_game_id); // wss://yare.io:443
+	  const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
 	  //function connectSocket(){
 		  
@@ -1108,9 +1108,9 @@
 	  
 	  
   </script>
-  <script src="../d1a/tutorial_texts.js"></script>
-  <script src="../d1a/rendering3.js"></script>
-  <script src="../d1a/basics.js"></script>
+  <script src="../tutorial_texts.js"></script>
+  <script src="../rendering3.js"></script>
+  <script src="../basics.js"></script>
   <!--<script src="../sound.js"></script>-->
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
