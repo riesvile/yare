@@ -71,7 +71,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	//to handle client
 	end_winner = gameWinner
 	
-    Game.find({game_id: workerData[0]})
+    Game.find({game_id: gameData[0]})
 	  	.then((result) => {
 			if (p2won == 1){
 				gameWinner = players['p2'];
@@ -101,7 +101,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 		
 			console.log('result');
 			if (result[0]['ranked'] == 0) {
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_file: compressed_file, game_history: game_history}, {upsert: true})
+				Game.updateOne({game_id: gameData[0]}, {active: 0, winner: gameWinner, game_file: compressed_file, game_history: game_history}, {upsert: true})
 					.then((qq) => {
 						console.log('winner updated to ' + gameWinner);
 						setTimeout(function(){
@@ -110,7 +110,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 					});	
 			} else if (result[0]['ranked'] == 1){
 			
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_file: compressed_file, game_history: game_history}, {upsert: true})
+				Game.updateOne({game_id: gameData[0]}, {active: 0, winner: gameWinner, game_file: compressed_file, game_history: game_history}, {upsert: true})
 					.then((qq) => {
 						console.log('winner updated to ' + gameWinner);
 						User.updateOne({user_id: gameWinner}, {rating: newWinnerRating}, {upsert: true})
@@ -141,7 +141,9 @@ function end_game(was_p1 = 0, was_p2 = 0){
 
 
 
-const { parentPort, workerData, isMainThread } = require("worker_threads");
+const { parentPort, isMainThread } = require("worker_threads");
+
+var gameData = {};
 
 
 const zlib = require('zlib');
@@ -166,11 +168,20 @@ const h_square = min_beam / Math.sqrt(2);
 
 //initiate_world
 parentPort.on("message", message => {
-  if (message.data == "initiate world") {
+	if(message.data == "assign server") {
+		gameData = message.gameData;
+		//tutorial
+		if (gameData[1] == 'tutorial'){
+			var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
+			var tutorial_flag1 = 0;
+			spirit_p2_cost = 30;
+			sand1.setPlayerCode(botCodes['tutorial0']);
+		}
+	} else if (message.data == "initiate world") {
 	  console.log('hmm');
-	  console.log(workerData);
+	  console.log(gameData);
 	  
-	    if (workerData[1] == 'tutorial'){
+	    if (gameData[1] == 'tutorial'){
 			init_data = {
 				'units': [],
 				'stars': [],
@@ -222,7 +233,7 @@ parentPort.on("message", message => {
 			init_data.players[0] = players_update['p1'];
 		}
 		
-		parentPort.postMessage({data: JSON.stringify(init_data), game_id: workerData[0], meta: 'initiate', client: message.client});
+		parentPort.postMessage({data: JSON.stringify(init_data), game_id: gameData[0], meta: 'initiate', client: message.client});
   } else if (message.data == "player code"){
 	  //check who's code it is here
 	  if (message.pl_num == "player1"){
@@ -305,7 +316,7 @@ parentPort.on("message", message => {
 	  sand2.init(message.player2);
 	  game_start();
 	  
-	  Game.find({game_id: workerData[0]})
+	  Game.find({game_id: gameData[0]})
 	  	.then((result) => {
 			console.log('p1_color');
 			console.log(result[0].p1_color);
@@ -332,7 +343,7 @@ parentPort.on("message", message => {
 							} else {
 								p222_rating = result_p2[0]['rating'];
 							}
-							Game.updateOne({game_id: workerData[0]}, {p1_rating: result_p1[0]['rating'], p2_rating: p222_rating}, {upsert: true})
+							Game.updateOne({game_id: gameData[0]}, {p1_rating: result_p1[0]['rating'], p2_rating: p222_rating}, {upsert: true})
 								.then((qq) => {
 									console.log('p1 and p2 ratings updated');
 								});	
@@ -385,7 +396,7 @@ function handle_error(error, player){
 }
 
 async function user_code(){
-	if (workerData[1] == 'tutorial'){
+	if (gameData[1] == 'tutorial'){
 		//console.log(player1_code);
 		var helper_count = (player1_code.match(/my_spirits/g) || []).length;
 		//console.log('my_spirits count');
@@ -547,7 +558,7 @@ function spirit_cost(p_num, alives){
 		}
 	}
 	
-	if (workerData[1] == 'tutorial'){
+	if (gameData[1] == 'tutorial'){
 		base_lookup['base_' + players['p1']].current_spirit_cost = 100;
 		base_lookup['base_' + players['p2']].current_spirit_cost = 50;
 	}
@@ -572,14 +583,6 @@ var end_winner = 0;
 var game_duration = -50;
 var game_activity = 1;
 var qqmonitoring = [0, 0, 0, 0, 0, 0, 0, 0];
-
-//tutorial
-if (workerData[1] == 'tutorial'){
-	var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
-	var tutorial_flag1 = 0;
-	spirit_p2_cost = 30;
-	sand1.setPlayerCode(botCodes['tutorial0']);
-}
 
 var colors = {};
 var shapes = {};
@@ -1331,7 +1334,7 @@ if (!isMainThread){
 			tutorial_phase[i] = 1;
 			if (qqmonitoring[i] == 0){
 				qqmonitoring[i] = 1;
-				parentPort.postMessage({data: i+1, game_id: workerData[0], meta: 'monitoring'});
+				parentPort.postMessage({data: i+1, game_id: gameData[0], meta: 'monitoring'});
 			}
 		} catch (error){
 					console.log('ERROR progress tutorial error, phase_done = ' + phase_done);
@@ -1370,7 +1373,7 @@ if (!isMainThread){
 				prev_position[id] = pos;
 
 				//tutorial
-				if (workerData[1] == 'tutorial' && i == 0){
+				if (gameData[1] == 'tutorial' && i == 0){
 					if (t_x == 1000 && t_y == 1000){
 						progress_tut(1);
 					} else if (t_x == 1600 && t_y == 700){
@@ -1513,7 +1516,7 @@ if (!isMainThread){
 
 						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
 						// 						to nejde delat tutorial jako logged in user?
-						if (workerData[1] == 'tutorial' && from_obj.id == 'anonymous1')
+						if (gameData[1] == 'tutorial' && from_obj.id == 'anonymous1')
 							progress_tut(2);
 
 						// only harvest one star at once
@@ -1553,7 +1556,7 @@ if (!isMainThread){
 					render_data3.e.push([from_id, to_id, beam_strength]);
 
 					// JM TODO refactor tutorial player code elsewhere
-					if (workerData[1] == 'tutorial'){
+					if (gameData[1] == 'tutorial'){
 						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
 						// 						to nejde delat tutorial jako logged in user?
 						// name prefix - safe (is structure)
@@ -1711,7 +1714,7 @@ if (!isMainThread){
 		//
 		
 		if (base_lookup['base_' + players['p1']].energy >= base_lookup['base_' + players['p1']].current_spirit_cost){
-			if (workerData[1] == 'tutorial' && top_s > 20){
+			if (gameData[1] == 'tutorial' && top_s > 20){
 				console.log('can not have more than 20 spirits in tutorial');
 			} else {
 				if (p1_defend != 1){
@@ -1720,7 +1723,7 @@ if (!isMainThread){
 					base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
 					//global[players['p1'] + top_s].move([1600, 660]);
 					//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-					if (workerData[1] == 'tutorial')
+					if (gameData[1] == 'tutorial')
 						progress_tut(5, true);
 				}
 			}
@@ -1810,7 +1813,7 @@ if (!isMainThread){
 		//objects death & vm sandbox objects update
 		for (let i = death_queue.length - 1; i >= 0; i--){
 			//console.log(death_queue[i].id + ' died');
-			if (workerData[1] == 'tutorial'){
+			if (gameData[1] == 'tutorial'){
 				if (death_queue[i].id == 'easy-bot2')
 					progress_tut(8, true);
 			}
@@ -2027,7 +2030,7 @@ if (!isMainThread){
 			};
 			
 			
-			if (workerData[1] == 'tutorial'){
+			if (gameData[1] == 'tutorial'){
 				
 				render_data3 = {
 					't': 0,
@@ -2125,7 +2128,7 @@ if (!isMainThread){
 			user_error2 = [];
 		
 			//tutorial data update
-			if (workerData[1] == 'tutorial'){
+			if (gameData[1] == 'tutorial'){
 				render_data3.tutorial.push(tutorial_phase);
 			}
 		
@@ -2138,13 +2141,13 @@ if (!isMainThread){
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
 			//console.log(render_data2);
-			//parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData[0], meta: ''});
+			//parentPort.postMessage({data: JSON.stringify(render_data2), game_id: gameData[0], meta: ''});
 			//wss.broadcast();
 			
 			
 			update_vm_sandbox();
 			
-			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: workerData[0], meta: ''});
+			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: gameData[0], meta: ''});
 			
 			if (game_duration < 0) {
 				return;
@@ -2155,7 +2158,7 @@ if (!isMainThread){
 			delete render_data3["c1"];
 			delete render_data3["c2"];
 			
-			if (workerData[1] != 'tutorial'){
+			if (gameData[1] != 'tutorial'){
 				game_file.push(render_data3);
 			}
 			

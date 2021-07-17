@@ -296,9 +296,22 @@ function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd4', pla1_shape 
 	return g_id;
 }
 
+var workerPool = [];
+
+
+
+setInterval(function () {
+	if(workerPool.length < config.worker_pool.size) {
+		var worker = new Worker('./game.js');
+		workerPool.push(worker);
+	}
+}, 1000);
 
 function create_worker (game_id, game_type) {
-  const worker = new Worker('./game.js', { workerData: [game_id, game_type] })
+  const worker = workerPool.pop();
+  if(!worker) {
+  	worker = new Worker('./game.js');
+  }
   worker.on('error', (err) => { throw err })
   worker.on('message', (render_data) => {
 	  if (render_data.meta == 'initiate'){
@@ -326,7 +339,8 @@ function create_worker (game_id, game_type) {
 	  trigger_deactivation(game_id);
 	  delete active_games[game_id];
   });
-  
+
+  worker.postMessage({data: "assign server", gameData: [game_id, game_type]});
   
   workers[game_id] = worker;
 }
@@ -1866,6 +1880,11 @@ function send_code(ws, pl_num, pl_id, pl_code, game_id, session_id, resign_state
 	workers[game_id].postMessage({client: ws, data: "player code", pl_num: pl_num, pl_id: pl_id, pl_code: pl_code, session_id: session_id, resigning: resign_state});
 }
 
+function send_ui(ws, pl_num, pl_id, pl_ui, game_id, session_id){
+	console.log('sending ui');
+	console.log('session_id = ' + session_id);
+	workers[game_id].postMessage({client: ws, data: "player ui", pl_num: pl_num, pl_id: pl_id, pl_ui: pl_ui, session_id: session_id});
+}
 
 wss.broadcast = function broadcast(data, game_id) {
     wss.clients.forEach(function each(client) {
@@ -1931,16 +1950,20 @@ wss.on('connection', function connection(ws, req) {
 				//console.log(message['u_id']);
 				//console.log(active_game[1])
 			}
-			if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
-				//code_temps['player1'] = message['u_code'];
-				player1_code = message['u_code'];
+			if (message.ui_updates) {
+				send_ui(ws.client_id, 'player1', message['u_id'], message.ui_updates, g_id, message['session_id']);
+			} else {
+				if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
+					//code_temps['player1'] = message['u_code'];
+					player1_code = message['u_code'];
 
-				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
-			} else if (message['u_id'] == active_game[2]){
-				//code_temps['player2'] = message['u_code'];
-				player2_code = message['u_code'];
+					send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
+				} else if (message['u_id'] == active_game[2]){
+					//code_temps['player2'] = message['u_code'];
+					player2_code = message['u_code'];
 
-				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
+					send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
+				}
 			}
 		} catch (error) {
 		  //console.error(error);
