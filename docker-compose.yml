@@ -1,13 +1,27 @@
 version: "3.3"
 services:
-  server:
+  main:
     build:
       context: .
-    ports:
-      - "5000:5000"
+    environment:
+      - NODE_ENV=dev
+      - SERVER_TYPE=main
+    depends_on:
+      - mongodb
+  game:
+    build:
+      context: .
     environment:
       - NODE_ENV=dev
     depends_on:
       - mongodb
   mongodb:
     image: "mongo"
+  frontend:
+    build:
+      context: dev/haproxy
+    ports:
+      - "5000:5000"
+    depends_on:
+      - main
+      - game

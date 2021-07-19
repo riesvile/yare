@@ -698,8 +698,6 @@ function shuffle_array(array) {
 
 var sandboxCode = fs.readFileSync("sandbox.js", { encoding: 'utf8' });
 
-console.log(sandboxCode);
-
 class Sandbox {
 	constructor() {
 		this.isolate = new ivm.Isolate({memoryLimit: 128});
