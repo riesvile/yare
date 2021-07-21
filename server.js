@@ -267,12 +267,11 @@ var server_occupancy = {
 	d4: 20
 };
 var connections = {};
-var this_server = 't1';
-var this_server_type = 'tutorial'; //'real'
 
+var this_server = process.env.SERVER || 'd1';
+var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
 
 var user_sessions = {};
-
 
 //connect to mongodb
 const mongoose = require('mongoose');
@@ -1133,7 +1132,7 @@ app.get('/all', (req, res) => {
 
 app.get('/game/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
-	res.sendFile(__dirname + '/game3.html');
+	res.sendFile(__dirname + '/public/game.html');
 });
 
 
@@ -1232,7 +1231,7 @@ app.get('/' + this_server + 'n/:game_id', (req, res) => {
 	//if (active_games[g_id][0] == 1){
 	//	res.redirect('/' + this_server + '/' + g_id);
 	//} else {
-	res.sendFile(__dirname + '/wait.html');
+	res.sendFile(__dirname + '/public/wait.html');
 	//}
 	
 });
@@ -1327,19 +1326,19 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 				console.log('dbdb result');
 				//console.log(result);
 				if (result.length == 0){
-					res.sendFile(__dirname + '/nope.html');
+					res.sendFile(__dirname + '/public/nope.html');
 				} else if (result.length == 1){
-					res.sendFile(__dirname + '/game-status.html');
+					res.sendFile(__dirname + '/public/game-status.html');
 				} else {
 					console.log('something went wrong');
-					res.sendFile(__dirname + '/nope.html');
+					res.sendFile(__dirname + '/public/nope.html');
 				}
 			})
 			.catch((error) => {
 				console.log(error);
 			})
 	} else if (active_game[0] == 1){
-		res.sendFile(__dirname + '/game3.html');
+		res.sendFile(__dirname + '/public/game.html');
 	} else {
 		if (this_server_type == "tutorial" && active_game[0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
@@ -1612,10 +1611,10 @@ app.get('/challenge/:game_id', (req, res) => {
 	}
 
 	if (active_game[0] == 1){
-		res.sendFile(__dirname + '/game3.html');
+		res.sendFile(__dirname + '/public/game.html');
 	} else if (active_game[0] == 0.5){
 		//pending – waiting for p2 to connect
-		res.sendFile(__dirname + '/challenge.html');
+		res.sendFile(__dirname + '/public/challenge.html');
 		//active_games[g_id] = 1;
 	} else {
 		res.send(404);
@@ -1974,7 +1973,7 @@ app.get('/d1n/:game_id', (req, res) => {
 	//if (active_games[g_id][0] == 1){
 	//	res.redirect('/' + d1 + '/' + g_id);
 	//} else {
-	res.sendFile(__dirname + '/wait.html');
+	res.sendFile(__dirname + '/public/wait.html');
 	//}
 	
 });
@@ -1984,7 +1983,7 @@ app.get('/replay/:game_id', (req, res) => {
 	//if (active_games[g_id][0] == 1){
 	//	res.redirect('/' + d1 + '/' + g_id);
 	//} else {
-	res.sendFile(__dirname + '/replay3.html');
+	res.sendFile(__dirname + '/public/replay.html');
 	//}
 	
 });
@@ -2079,12 +2078,12 @@ app.get('/d1/:game_id', (req, res) => {
 				console.log('dbdb result');
 				console.log(result);
 				if (result.length == 0){
-					res.sendFile(__dirname + '/nope.html');
+					res.sendFile(__dirname + '/public/nope.html');
 				} else if (result.length == 1){
-					res.sendFile(__dirname + '/game-status.html');
+					res.sendFile(__dirname + '/public/game-status.html');
 				} else {
 					console.log('something went wrong');
-					res.sendFile(__dirname + '/nope.html');
+					res.sendFile(__dirname + '/public/nope.html');
 				}
 			})
 			.catch((error) => {
@@ -2094,7 +2093,7 @@ app.get('/d1/:game_id', (req, res) => {
 	}
 
 	if (active_game[0] == 1){
-		res.sendFile(__dirname + '/game3.html');
+		res.sendFile(__dirname + '/public/game.html');
 	} else {
 		if (this_server_type == "tutorial" && active_game[0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
@@ -2107,83 +2106,7 @@ app.get('/d1/:game_id', (req, res) => {
 });
 
 
-
-
-app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
-app.get('/favicon.ico', (req, res) => res.sendFile(__dirname + '/favicon.ico'));
-app.get('/hub', (req, res) => res.sendFile(__dirname + '/hub.html'));
-app.get('/game', (req, res) => res.sendFile(__dirname + '/game3.html'));
-app.get('/replay', (req, res) => res.sendFile(__dirname + '/replay3.html'));
-app.get('/newgame', (req, res) => res.sendFile(__dirname + '/newgame.html'));
-app.get('/documentation', (req, res) => res.sendFile(__dirname + '/documentation.html'));
-app.get('/leaderboard', (req, res) => res.sendFile(__dirname + '/leaderboard.html'));
-app.get('/animations.js', (req, res) => res.sendFile(__dirname + '/animations.js'));
-app.get('/rendering.js', (req, res) => res.sendFile(__dirname + '/rendering.js'));
-app.get('/rendering3.js', (req, res) => res.sendFile(__dirname + '/rendering3.js'));
-app.get('/basics.js', (req, res) => res.sendFile(__dirname + '/basics.js'));
-app.get('/challenge.js', (req, res) => res.sendFile(__dirname + '/challenge.js'));
-app.get('/loggedin.js', (req, res) => res.sendFile(__dirname + '/loggedin.js'));
-app.get('/tutorial_texts.js', (req, res) => res.sendFile(__dirname + '/tutorial_texts.js'));
-app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
-app.get('/style-mobile.css', (req, res) => res.sendFile(__dirname + '/style-mobile.css'));
-app.get('/colors.css', (req, res) => res.sendFile(__dirname + '/colors.css'));
-app.get('/documentation.css', (req, res) => res.sendFile(__dirname + '/documentation.css'));
-app.get('/src-min-noconflict/ace.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ace.js'));
-app.get('/src-min-noconflict/theme-clouds_midnight.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/theme-clouds_midnight.js'));
-app.get('/src-min-noconflict/mode-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/mode-javascript.js'));
-app.get('/src-min-noconflict/ext-language_tools.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/ext-language_tools.js'));
-app.get('/src-min-noconflict/snippets/javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/snippets/javascript.js'));
-app.get('/src-min-noconflict/worker-javascript.js', (req, res) => res.sendFile(__dirname + '/src-min-noconflict/worker-javascript.js'));
-app.get('/copenhagen.0-1-4.css', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.css'));
-app.get('/copenhagen.0-1-4.min.js', (req, res) => res.sendFile(__dirname + '/copenhagen.0-1-4.min.js'));
-app.get('/anime.min.js', (req, res) => res.sendFile(__dirname + '/anime.min.js'));
-app.get('/sound.js', (req, res) => res.sendFile(__dirname + '/sound.js'));
-app.get('/webker.js', (req, res) => res.sendFile(__dirname + '/webker.js'));
-
-
-app.get('/asset/loader.gif', (req, res) => res.sendFile(__dirname + '/assets/loader.gif'));
-app.get('/asset/dropdown.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown.png'));
-app.get('/asset/dropdown2.png', (req, res) => res.sendFile(__dirname + '/assets/dropdown2.png'));
-app.get('/asset/board.png', (req, res) => res.sendFile(__dirname + '/assets/board.png'));
-app.get('/asset/method-move.gif', (req, res) => res.sendFile(__dirname + '/assets/method-move.gif'));
-app.get('/asset/method-energize1.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize1.gif'));
-app.get('/asset/method-energize2.gif', (req, res) => res.sendFile(__dirname + '/assets/method-energize2.gif'));
-app.get('/asset/method-merge.gif', (req, res) => res.sendFile(__dirname + '/assets/method-merge.gif'));
-app.get('/asset/method-divide.gif', (req, res) => res.sendFile(__dirname + '/assets/method-divide.gif'));
-app.get('/asset/tr-loader.gif', (req, res) => res.sendFile(__dirname + '/assets/tr-loader.gif'));
-app.get('/asset/ico_long_arr_blue.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_blue.png'));
-app.get('/asset/ico_long_arr_purp.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_purp.png'));
-app.get('/asset/ico_long_arr_gold.png', (req, res) => res.sendFile(__dirname + '/assets/ico_long_arr_gold.png'));
-app.get('/asset/ico_play.png', (req, res) => res.sendFile(__dirname + '/assets/ico_play.png'));
-app.get('/asset/ico_pause.png', (req, res) => res.sendFile(__dirname + '/assets/ico_pause.png'));
-app.get('/asset/gal1.png', (req, res) => res.sendFile(__dirname + '/assets/gal1.png'));
-app.get('/asset/gal2.png', (req, res) => res.sendFile(__dirname + '/assets/gal2.png'));
-app.get('/asset/gal3.png', (req, res) => res.sendFile(__dirname + '/assets/gal3.png'));
-app.get('/asset/gal4.png', (req, res) => res.sendFile(__dirname + '/assets/gal4.png'));
-
-app.get('/sound/outfoxing.mp3', (req, res) => res.sendFile(__dirname + '/sound/outfoxing.mp3'));
-app.get('/sound/enemy_incoming.mp3', (req, res) => res.sendFile(__dirname + '/sound/enemy_incoming.mp3'));
-
-app.get('/est', (req, res) => res.sendFile(__dirname + '/est.html'));
-app.get('/game-status', (req, res) => res.sendFile(__dirname + '/game-status.html'));
-app.get('/nope', (req, res) => res.sendFile(__dirname + '/nope.html'));
-app.get('/site.webmanifest', (req, res) => res.sendFile(__dirname + '/site.webmanifest'));
-app.get('/apple-touch-icon.png', (req, res) => res.sendFile(__dirname + '/apple-touch-icon.png'));
-app.get('/favicon-32x32.png', (req, res) => res.sendFile(__dirname + '/favicon-32x32.png'));
-app.get('/favicon-16x16.png', (req, res) => res.sendFile(__dirname + '/favicon-16x16.png'));
-
-
-
-
-
-app.get('/qqmonitoring', (req, res) => res.sendFile(__dirname + '/qqmonitoring.html'));
-
-
-
-
-
-
+app.use(express.static('public', {extensions: ["html"]}));
 
 server.listen(5000, () => console.log('Listening on port :5000'))
 automatch();
-
