@@ -1905,23 +1905,22 @@ if (!isMainThread){
 
 				let s = spirit_lookup[spirit];
 
-				if(s.energy < s.energy_capacity/2) continue;
-
 				let tpos = commands[spirit].jump;
 				let incr = sub(tpos, s.position);
 
 				let dist = Math.sqrt(norm_sq(incr));
-				if(dist > 300) {
-					incr = mult(300 / dist, incr);
+				let cost = dist / 5;
+				if(cost > s.energy) {
+					incr = mult((s.energy * 5) / dist, incr);
 					tpos = add(s.position, incr);
+					dist = s.energy * 5;
+					cost = s.energy;
 				}
 
-				let potential_structure_collisions = s.sight.structures;
-				for (let k = 0; k < potential_structure_collisions.length; k++){
+				for (var object_name in structure_lookup){
 					//console.log(' ------------------------------- structure potential collisions');
 					//console.log(potential_structure_collisions[k]);
 					
-					let object_name = potential_structure_collisions[k];
 					// name prefix - safe (is structure)
 					let min_distance = object_name.startsWith('star') ? 100 : 50;
 					let object_position = structure_lookup[object_name].position;
@@ -1940,7 +1939,7 @@ if (!isMainThread){
 				}
 				s.position = tpos;
 
-				s.energy -= s.energy_capacity/2;
+				s.energy -= Math.ceil(cost);
 
 				render_data3.s.push(['j', spirit]);
 			}
