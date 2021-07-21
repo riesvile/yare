@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const game_schema = new Schema({
 	game_id: {
 		type: String,
+		index: true,
 		required: true
 	},
 	player1: {
