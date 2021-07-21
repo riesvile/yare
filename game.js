@@ -1939,7 +1939,7 @@ if (!isMainThread){
 				}
 				s.position = tpos;
 
-				s.energy -= cost;
+				s.energy -= Math.ceil(cost);
 
 				render_data3.s.push(['j', spirit]);
 			}
