@@ -871,9 +871,7 @@ app.post('/check-status/:game_id', (req, res) => {
 
 
 app.post('/validate', (req, res) => {
-	console.log(req.body);
     console.log(req.body.user_name);
-    console.log(req.body.password);
 	
 	User.find({user_id: req.body.user_name})
 		.then((result) => {
