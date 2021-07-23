@@ -1,5 +1,4 @@
 #!/bin/sh
-set -euxo pipefail
 
 docker pull $2
 docker rm -f $1
