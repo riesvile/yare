@@ -147,12 +147,12 @@ const { parentPort, workerData, isMainThread } = require("worker_threads");
 const zlib = require('zlib');
 
 //const LZString = require('LZstring');
-const botCodes = require('./bot-codes');
+const botCodes = require('../bot-codes');
 const util = require('util');
 const mongoose = require('mongoose');
-const User = require('./models/users.js');
-const Game = require('./models/newgame.js');
-const config = require('./config');
+const User = require('../models/users.js');
+const Game = require('../models/newgame.js');
+const config = require('../config');
 
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -696,7 +696,7 @@ function shuffle_array(array) {
     }
 }
 
-var sandboxCode = fs.readFileSync("sandbox.js", { encoding: 'utf8' });
+var sandboxCode = fs.readFileSync(__dirname + "/sandbox.js", { encoding: 'utf8' });
 
 class Sandbox {
 	constructor() {

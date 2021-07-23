@@ -295,7 +295,7 @@ input[type=submit] {
 	width: 24px;
 	height: 24px;
 	display: block;
-	background: url('../assets/loader.gif');
+	background: url('./assets/loader.gif');
 	background-size: cover;
 	position: absolute;
 	bottom: 11px;

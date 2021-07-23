@@ -508,7 +508,7 @@ input[type=submit] {
 	width: 24px;
 	height: 24px;
 	display: block;
-	background: url('../asset/loader.gif');
+	background: url('./asset/loader.gif');
 	background-size: cover;
 	position: absolute;
 	bottom: 11px;
@@ -649,7 +649,7 @@ input[type=submit] {
 		width: 40px;
 		height: 40px;
 		background-color: #500;
-		background: url(../asset/dropdown.png) no-repeat scroll;
+		background: url(./asset/dropdown.png) no-repeat scroll;
 		background-size: cover;
 		display: block;
 		position: absolute;
@@ -1506,7 +1506,7 @@ span.game_or, span.cancel_or {
 	height: 56px;
 	background-color: #ff0;
 	margin-bottom: 52px;
-	background: url('asset/tr-loader.gif');
+	background: url('./asset/tr-loader.gif');
 	background-size: cover;
 }
 
@@ -2114,12 +2114,12 @@ a.index_link:hover {
 }
 
 .state_play {
-	background: url(asset/ico_play.png) no-repeat scroll;
+	background: url(./asset/ico_play.png) no-repeat scroll;
 	background-size: cover;
 }
 
 .state_pause {
-	background: url(asset/ico_pause.png) no-repeat scroll;
+	background: url(./asset/ico_pause.png) no-repeat scroll;
 	background-size: cover;
 }
 
