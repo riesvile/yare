@@ -44,6 +44,35 @@ var connections = {};
 
 var base = path.dirname(__dirname);
 
+function discord_postmessage(hook, msg){
+	try {
+		fetch(hook, {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        content: msg
+		    })
+		}).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
+	} catch (e) {
+		console.log(e);
+	}
+	
+}
+
+
+function discord_automatch_bot(usr){
+	discord_postmessage(config.hooks.queue, usr + ' is waiting in the queue');
+}
+
 function create_worker (game_id, game_type) {
     const worker = new Worker(base + '/game/game.js', { workerData: [game_id, game_type] })
     worker.on('error', (err) => { throw err })
