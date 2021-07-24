@@ -1,6 +1,6 @@
 #!/bin/sh
 
-tag=$(git describe --tags)
+tag=$(git describe --tags || git rev-parse HEAD)
 
 docker build -t registry.digitalocean.com/yare/yare-main:$tag .
 docker build -t registry.digitalocean.com/yare/yare-game:$tag -f game/Dockerfile .

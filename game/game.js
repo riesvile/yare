@@ -1490,8 +1490,8 @@ if (!isMainThread){
 				const from_obj = spirit_lookup[from_id] || structure_lookup[from_id];
 				const to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
 
-				if(from_obj.hp == 0 || to_obj.hp == 0) continue;
-				
+				if(from_obj.hp == 0 || to_obj.hp == 0) return;
+
 				// harvest star
 				if (from_id == to_id){
 					for (let j = 0; j < from_obj.sight.structures.length; j++){
