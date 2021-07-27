@@ -801,6 +801,7 @@ if (!isMainThread){
 			this.active_in = 0;
 			this.active_at = active_at;
 			//this.energy = energy;
+			this.collision_radius = 100;
 		
 			stars.push(this);
 		}
@@ -818,6 +819,7 @@ if (!isMainThread){
 			this.energy_capacity = 1000;
 			this.last_energized = '';
 			//this.energy = energy;
+			this.collision_radius = 50;
 			
 			this.sight = {
 				enemies: []
@@ -840,6 +842,7 @@ if (!isMainThread){
 				enemies: [],
 				structures: []
 			}
+			this.collision_radius = 50;
 			
 			this.hp = 3;
 			if (this.shape == 'circles'){
@@ -879,6 +882,11 @@ if (!isMainThread){
 
 	function norm_sq(coor){
 		return coor[0]**2 + coor[1]**2;
+	}
+
+	function normalize(coor){
+		let norm = Math.sqrt(norm_sq(coor));
+		return [coor[0]/norm, coor[1]/norm];
 	}
 
 	function mult(a, coor){
@@ -984,7 +992,7 @@ if (!isMainThread){
 	}
 
 	function is_in_sight(item1, item2, range = 400){
-		return fast_dist_lt(item1.position, item2.position, range);
+		return fast_dist_leq(item1.position, item2.position, range);
 	}
 
 
@@ -1402,7 +1410,7 @@ if (!isMainThread){
 						
 						let object_name = potential_structure_collisions[k];
 						// name prefix - safe (is structure)
-						let min_distance = object_name.startsWith('star') ? 100 : 50;
+						let min_distance = structure_lookup[object_name].collision_radius;
 						let object_position = structure_lookup[object_name].position;
 						let spirit_before = pos;
 
@@ -1447,7 +1455,7 @@ if (!isMainThread){
 				for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
 					let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
 					//console.log('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
-					if (fast_dist_lt(explodee.position, potential_target.position, 100)){
+					if (fast_dist_leq(explodee.position, potential_target.position, 100)){
 						energize_apply.push([potential_target, -10]);
 					}
 				}
@@ -1503,7 +1511,7 @@ if (!isMainThread){
 							continue;
 
 						let star = structure_lookup[struc_name];
-						let star_close = fast_dist_lt(from_obj.position, star.position, min_beam);
+						let star_close = fast_dist_leq(from_obj.position, star.position, min_beam);
 						if (!star_close)
 							continue;
 
@@ -1522,7 +1530,7 @@ if (!isMainThread){
 					return;
 				}
 
-				let target_close = fast_dist_lt(from_obj.position, to_obj.position, min_beam);
+				let target_close = fast_dist_leq(from_obj.position, to_obj.position, min_beam);
 				if(! target_close)
 					return;
 
@@ -1832,13 +1840,14 @@ if (!isMainThread){
 		//
 		// objects merge
 		//
-		
+		let merged = {};
 		for(let player in all_commands) {
 			let commands = all_commands[player];
 			for(let spirit in commands) {
 				if(!player_owns_spirit(spirit, player)) continue;
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(!commands[spirit].merge) continue;
+				if(merged[spirit]) continue;
 				
 				var t = spirit_lookup[commands[spirit].merge];
 				var s = spirit_lookup[spirit];
@@ -1852,6 +1861,7 @@ if (!isMainThread){
 				s.size = 0;
 				s.energy = 0;
 				s.position = t.position;
+				merged[t] = true;
 
 				render_data3.s.push(['m', s.id, t.id]);
 			}
@@ -1869,10 +1879,10 @@ if (!isMainThread){
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(!commands[spirit].divide) continue;
 				
-				var orig = spirit_lookup[spirit];
-				var orig_size = orig.size;
-				for(var did of orig.merged) {
-					var d = spirit_lookup[did];
+				let orig = spirit_lookup[spirit];
+				let orig_size = orig.size;
+				for(let did of orig.merged) {
+					let d = spirit_lookup[did];
 					d.hp = 1;
 					d.size = 1;
 					d.energy = Math.floor(orig.energy / orig_size);
@@ -1882,6 +1892,14 @@ if (!isMainThread){
 					let dist = Math.random() * 10;
 					d.position[0] += Math.sin(ang) * dist;
 					d.position[1] += Math.cos(ang) * dist;
+					for (let object_name in structure_lookup){
+						let s = structure_lookup[object_name];
+						if(fast_dist_lt(s.position, d.position, s.collision_radius)) {
+							let v = sub(s.position, d.position);
+							v = mult(s.collision_radius, normalize(v));
+							d.position = add(s.position, v);
+						}
+					}
 				}
 				
 				orig.merged = [];
@@ -1923,7 +1941,7 @@ if (!isMainThread){
 					//console.log(potential_structure_collisions[k]);
 					
 					// name prefix - safe (is structure)
-					let min_distance = object_name.startsWith('star') ? 100 : 50;
+					let min_distance = structure_lookup[object_name].collision_radius;
 					let object_position = structure_lookup[object_name].position;
 
 					if (fast_dist_lt(tpos, object_position, min_distance)){
