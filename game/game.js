@@ -875,7 +875,7 @@ if (!isMainThread){
 	}
 
 	function fast_dist_lt(item1, item2, range){
-		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) < range**2;
+		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) <= range**2;
 	}
 
 	function fast_dist_leq(item1, item2, range){
