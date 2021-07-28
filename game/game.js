@@ -303,6 +303,13 @@ parentPort.on("message", message => {
 	  console.log(shapes);
 	  sand1.init(message.player1);
 	  sand2.init(message.player2);
+	  //tutorial
+	if (workerData[1] == 'tutorial'){
+		var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
+		var tutorial_flag1 = 0;
+		spirit_p2_cost = 30;
+		sand1.setPlayerCode(botCodes['tutorial0']);
+	}
 	  game_start();
 	  
 	  Game.find({game_id: workerData[0]})
@@ -569,17 +576,12 @@ var p2_defend = 0;
 var temp_flag = 0;
 var end_winner = 0;
 
+var tutorial_phase;
+var tutorial_flag1;
+
 var game_duration = -50;
 var game_activity = 1;
 var qqmonitoring = [0, 0, 0, 0, 0, 0, 0, 0];
-
-//tutorial
-if (workerData[1] == 'tutorial'){
-	var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
-	var tutorial_flag1 = 0;
-	spirit_p2_cost = 30;
-	sand1.setPlayerCode(botCodes['tutorial0']);
-}
 
 var colors = {};
 var shapes = {};
@@ -1149,12 +1151,12 @@ if (!isMainThread){
 
 			// iterate neighboring bins
 			// a rectangle 7x4, the bin is at position [3, 0] (top row, center)
-			for(d = 3; d < 7*4-1 ; d++){
+			for(s = 3; s < 7*4-1 ; s++){
 				// lower left corner, too far away
-				if(d==21) continue;
+				if(s==21) continue;
 
-				let dy = Math.floor(d / 7);
-				let dx = (d % 7) - 3;
+				let dy = Math.floor(s / 7);
+				let dx = (s % 7) - 3;
 				if(dx==0 && dy==0) continue;
 
 				// neighbor bin
@@ -1357,9 +1359,10 @@ if (!isMainThread){
 	function move_objects(){
 		const prev_position = {};
 		for (let player in all_commands){
-			let queue = all_commands[player];
+			let queue = all_commands[player].spirit;
 
 			Object.keys(queue).forEach((id) => {
+				if(id == 'merge') return;
 				if(!id || !player_owns_spirit(id, player)){
 					console.log("WTF: null or possible hack: player " + player + 
 						" calls "  + id + ".move()");
@@ -1444,8 +1447,9 @@ if (!isMainThread){
 		
 		//explosions
 		for(let player in all_commands) {
-			let commands = all_commands[player];
+			let commands = all_commands[player].spirit;
 			for(let spirit in commands) {
+				if(spirit == 'merge') continue;
 				if(!player_owns_spirit(spirit, player)) continue;
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(spirit_lookup[spirit].shape != "triangles") continue;
@@ -1480,9 +1484,10 @@ if (!isMainThread){
 
 		let last_beam = {};
 		for (let player in all_commands){
-			let queue = all_commands[player];
+			let queue = all_commands[player].spirit;
 
 			Object.keys(queue).forEach((from_id) => {
+				if(from_id == 'merge') return;
 				const to_id = queue[from_id].energize;
 				if(!to_id) return;
 				if(!from_id || !player_owns_spirit(from_id, player) || !to_id){
@@ -1757,8 +1762,9 @@ if (!isMainThread){
 		//
 		
 		for(let player in all_commands) {
-			let commands = all_commands[player];
+			let commands = all_commands[player].spirit;
 			for(let spirit in commands) {
+				if(spirit == 'merge') continue;
 				if(!player_owns_spirit(spirit, player)) continue;
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(commands[spirit].shout) render_data3.s.push(['sh', spirit, commands[spirit].shout]);
@@ -1790,8 +1796,7 @@ if (!isMainThread){
 		*/
 
 
-		let sight_t0 = process.hrtime();
-		get_sight_fast();
+
 		//console.log('TIME: get_sight_fast = ' + elapsed_ms_from(sight_t0));
 
 		//console.log('spirit_lookup[s1].sight');
@@ -1843,14 +1848,20 @@ if (!isMainThread){
 		let merged = {};
 		for(let player in all_commands) {
 			let commands = all_commands[player];
-			for(let spirit in commands) {
-				if(!player_owns_spirit(spirit, player)) continue;
-				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(!commands[spirit].merge) continue;
-				if(merged[spirit]) continue;
-				
-				var t = spirit_lookup[commands[spirit].merge];
-				var s = spirit_lookup[spirit];
+			for(let [sid, tid] of commands.merge) {
+				if(!player_owns_spirit(sid, player)) continue;
+				if(!player_owns_spirit(tid, player)) continue;
+				if(!(sid in spirit_lookup)) continue;
+				if(!(tid in spirit_lookup)) continue;
+
+				if(merged[sid]) continue;
+
+				let s = spirit_lookup[sid];
+				let t = spirit_lookup[tid];
+
+				if(s.hp == 0 || t.hp == 0) continue;
+				if(s.shape != 'circles' || t.shape != 'circles') continue;
+
 				if(dist_sq(t.position, s.position) > 10**2) continue;
 				if(s.hp == 0 || t.hp == 0) continue;
 				t.merged.push(s.id);
@@ -1873,8 +1884,9 @@ if (!isMainThread){
 		//
 		
 		for(let player in all_commands) {
-			let commands = all_commands[player];
+			let commands = all_commands[player].spirit;
 			for(let spirit in commands) {
+				if(spirit == 'merge') continue;
 				if(!player_owns_spirit(spirit, player)) continue;
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(!commands[spirit].divide) continue;
@@ -1882,7 +1894,7 @@ if (!isMainThread){
 				let orig = spirit_lookup[spirit];
 				let orig_size = orig.size;
 				for(let did of orig.merged) {
-					let d = spirit_lookup[did];
+					var d = spirit_lookup[did];
 					d.hp = 1;
 					d.size = 1;
 					d.energy = Math.floor(orig.energy / orig_size);
@@ -1892,14 +1904,20 @@ if (!isMainThread){
 					let dist = Math.random() * 10;
 					d.position[0] += Math.sin(ang) * dist;
 					d.position[1] += Math.cos(ang) * dist;
+					console.log("Collision checks for ", did, d.position);
 					for (let object_name in structure_lookup){
 						let s = structure_lookup[object_name];
-						if(fast_dist_lt(s.position, d.position, s.collision_radius)) {
-							let v = sub(s.position, d.position);
-							v = mult(s.collision_radius, normalize(v));
+						let v = sub(d.position, s.position);
+						let len_sq = norm_sq(v);
+						console.log(object_name, did, len_sq, s.collision_radius**2, v);
+						if(len_sq < s.collision_radius**2) {
+							v = mult(s.collision_radius / Math.sqrt(len_sq), v);
+							console.log(v);
 							d.position = add(s.position, v);
 						}
+						console.log(sub(d.position, s.position));
 					}
+					console.log("Final position for ", did, d.position);
 				}
 				
 				orig.merged = [];
@@ -1915,8 +1933,9 @@ if (!isMainThread){
 		// objects jump
 		//
 		for(let player in all_commands) {
-			let commands = all_commands[player];
+			let commands = all_commands[player].spirit;
 			for(let spirit in commands) {
+				if(spirit == 'merge') continue;
 				if(!player_owns_spirit(spirit, player)) continue;
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(spirit_lookup[spirit].shape != "squares") continue;
@@ -1963,6 +1982,10 @@ if (!isMainThread){
 				render_data3.s.push(['j', spirit]);
 			}
 		}
+
+		let sight_t0 = process.hrtime();
+		get_sight_fast();
+
 	}
 
 	function update_vm_sandbox(){

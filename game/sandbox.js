@@ -5,7 +5,10 @@ global.stars = {};
 global.bases = {};
 global.outposts = {};
 
-yd.commands = {};
+yd.commands = {
+    merge: new Map(),
+    spirit: {},
+};
 
 yd.errors = [];
 yd.logs = [];
@@ -19,10 +22,10 @@ global.console = {
 };
 
 function command(id) {
-    if (!(id in yd.commands)) {
-        yd.commands[id] = {};
+    if (!(id in yd.commands.spirit)) {
+        yd.commands.spirit[id] = {};
     }
-    return yd.commands[id];
+    return yd.commands.spirit[id];
 }
 
 function send_error(msg) {
@@ -155,7 +158,7 @@ class Spirit {
         }
         
         if (target.hp != 0 && this.hp != 0){
-            command(this.id).merge = target.id
+            yd.commands.merge.set(this.id, target.id);
         }
         
     }
@@ -318,7 +321,10 @@ yd.getOutput = function() {
         errors: yd.errors,
         gqueue: yd.gqueue
     };
-    yd.commands = {};
+    yd.commands = {
+        merge: new Map(),
+        spirit: {},
+    };
     yd.logs = [];
     yd.errors = [];
     yd.gqueue = [];

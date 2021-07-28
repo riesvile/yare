@@ -344,8 +344,8 @@
 	  var stars_queue = [];
 	  var bases_queue = [];
 	  var logs = [];
-	  var tempURLThing = document.URL.replace('#', '');
-	  var this_game_id = /[^/]*$/.exec(tempURLThing)[0];
+	  var tempURLThing = new URL(document.URL).pathname;
+	  var [_, this_server, this_game_id] = /([^/]*)\/([^/]*)$/.exec(tempURLThing);
 	  //console.log(this_game_id);
 	  
 	  var pla1 = '';
@@ -384,8 +384,6 @@
 	  var offsetX_adjust = 0;
 	  var offsetY_adjust = 0;
 	  
-	  
-	  var this_server = 'd1';
 	  
 	  load_start();
 	  
