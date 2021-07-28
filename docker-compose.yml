@@ -15,6 +15,16 @@ services:
       - NODE_ENV=dev
     depends_on:
       - mongodb
+  tutorial:
+    build:
+      context: .
+      dockerfile: game/Dockerfile
+    environment:
+      - NODE_ENV=dev
+      - SERVER=t2
+      - SERVER_TYPE=tutorial
+    depends_on:
+      - mongodb
   mongodb:
     image: "mongo"
   frontend:
@@ -25,3 +35,4 @@ services:
     depends_on:
       - main
       - game
+      - tutorial
