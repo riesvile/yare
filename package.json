@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "isolated-vm": "^4.3.2",
     "mongoose": "^5.11.4",
