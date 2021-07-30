@@ -248,7 +248,8 @@ const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
 const config = require('./config');
 const zlib = require('zlib');
-
+const bcrypt = require('bcrypt');
+var hashRounds = 10;
 
 var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
@@ -881,25 +882,40 @@ app.post('/validate', (req, res) => {
 				res.status(404).send({
 		        	data: "no such user"
 		        });
-			} else if (result[0]['passwrd'] == sha256(req.body.password)){
-				//all good, update session id and prolong expiration date
-				session_id = generateUniqueString(3);
-		        var session_expire = new Date();
-		        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
-				console.log('date');
-				console.log(session_expire);
-				User.updateOne({user_id: req.body.user_name}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
-					.then((qq) => {
-						res.status(200).send({
-							user_id: result[0]['user_id'],
-				        	data: session_id
-				        });
-					});
-				
 			} else {
-				res.status(404).send({
-		        	data: "wrong password"
-		        });
+				var good = false;
+				var newHash = null;
+				if(bcrypt.compareSync(req.body.password, result[0]['passwrd'])){
+					good = true;
+				} else if (result[0]['passwrd'] == sha256(req.body.password)) {
+					//all good, update session id and prolong expiration date
+					good = true;
+					newHash = bcrypt.hashSync(req.body.password, hashRounds);
+					console.log("Upgrading sha256 to bcrypt");
+				}
+
+				if(good) {
+					session_id = generateUniqueString(3);
+					var session_expire = new Date();
+					session_expire = (session_expire.getTime() + (7*24*60*60*1000));
+					console.log('date');
+					console.log(session_expire);
+					update = {session_id: session_id, session_expire: session_expire};
+					if(newHash) {
+						update['passwrd'] = newHash;
+					}
+					User.updateOne({user_id: req.body.user_name}, update, {upsert: true})
+						.then((qq) => {
+							res.status(200).send({
+								user_id: result[0]['user_id'],
+								data: session_id
+							});
+						});
+				} else {
+					res.status(404).send({
+						data: "wrong password"
+					});
+				}
 			}
 		})
 		.catch((error) => {
@@ -1044,7 +1060,7 @@ app.post('/add-user', (req, res) => {
 	
 		const user = new User({
 			user_id: req.body.user_name,
-			passwrd: sha256(req.body.password),
+			passwrd: bcrypt.hashSync(req.body.password, hashRounds),
 			rating: 1500,
 			rating_stability: 5,
 			games_count: 0,
