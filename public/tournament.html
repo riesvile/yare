@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare.io</title>
+	<style>
+	</style>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./colors.css">
+	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./documentation.css">
+	<link rel="stylesheet" href="./tournament.css">
+	<link rel="stylesheet" href="./style-mobile.css">
+	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./anime.min.js"></script>
+  </head>
+  <body>
+	  
+	  <div id="new_account_wrap">
+		  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+		  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+			  <span id="user_err_message">Something's wrong</span>
+		  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+			  <span id="password_err_message">Something's wrong</span>
+			  <br>
+			   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
+		  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+		  </form>
+	  </div>
+  
+	  <div id="login_wrap">
+		  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+		  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
+		  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
+			  <span id="login_err_message">Something's wrong</span>
+			  <br>
+		  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+		  </form>
+	  </div>
+  
+	  <div id="profile_links">  
+		  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
+		  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
+		  	<a href="#" class="profile_link" id="log_out">Log out</a>
+	  </div>
+  
+  
+	  <div id="hector">
+		  <h1 id="logo"><a href="https://yare.io">yare<span class="logo_lowlight">.io</span></a></h1>
+		  <div class="menu">
+			  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
+			  <a href="https://yare.io/newgame" class="menu_link new_g" id="new_g">New game</a>
+			  <div class="menu_line desktop_only"></div>
+			  <div class="menu_link new_acc" id="new_account">New account</div>
+			  <div class="menu_link" id="login">Log in</div>
+			  <div class="menu_link" id="signed_in">username</div>
+		  </div>
+	  </div>
+	  
+	  
+	  
+	  
+	  <div id="overlay"></div>
+	  <div id="grad_top2"></div>
+	  
+	  
+	  <div id="tournament_content">
+		  
+		  <span class="yare_ico_ilu"></span>
+		  <h1 class="tournament_head">Yare.io Tournament<br>For <span class="eth_ico"></span>1 Ethereum</h1>
+		  
+		  <div class="tour_prices">
+		  	<div class="t_price">
+				<span class="t_price_pos">1st place</span>
+				<span class="t_price_val">0.6 ETH</span>
+			</div>
+		  	<div class="t_price">
+				<span class="t_price_pos">2nd place</span>
+				<span class="t_price_val">0.3 ETH</span>
+			</div>
+		  	<div class="t_price">
+				<span class="t_price_pos">3rd place</span>
+				<span class="t_price_val">0.1 ETH</span>
+			</div>
+		  </div>
+		  
+		  
+		  
+		  
+	  </div>
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+		
+		
+		
+	  
+	  
+	  
+  </body>
+  
+  <script>
+	  var prevActive;
+	  var currentActive;
+	  
+	  function getCookie(name){
+	      var nameEQ = name + "=";
+	      var ca = document.cookie.split(';');
+	      for(var i=0;i < ca.length;i++) {
+	          var c = ca[i];
+	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	      }
+	      return null;
+	  }
+	  
+	  function eraseCookie(name){   
+	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	  }
+	  
+	  
+	  
+	  
+	  
+	  
+  
+  </script>
+  
+  <script src="./animations.js"></script>
+  <script src="./basics.js"></script>
+  </html>

@@ -525,11 +525,11 @@ function spirit_cost(p_num, alives){
 			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
 			if (alives > 500) base_lookup['base_' + players['p1']].current_spirit_cost = 1000;
 		} else if (shapes["player1"] == 'squares'){
-			if (alives <= 10) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
-			if (alives > 10) base_lookup['base_' + players['p1']].current_spirit_cost = 800;
+			if (alives <= 10) base_lookup['base_' + players['p1']].current_spirit_cost = 360;
+			if (alives > 10) base_lookup['base_' + players['p1']].current_spirit_cost = 700;
 			if (alives > 400) base_lookup['base_' + players['p1']].current_spirit_cost = 1100;
 		} else if (shapes["player1"] == 'triangles'){
-			if (alives <= 30) base_lookup['base_' + players['p1']].current_spirit_cost = 60;
+			if (alives <= 30) base_lookup['base_' + players['p1']].current_spirit_cost = 90;
 			if (alives > 30) base_lookup['base_' + players['p1']].current_spirit_cost = 120;
 			if (alives > 120) base_lookup['base_' + players['p1']].current_spirit_cost = 300;
 			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 1000;
@@ -543,11 +543,11 @@ function spirit_cost(p_num, alives){
 			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
 			if (alives > 500) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
 		} else if (shapes["player2"] == 'squares'){
-			if (alives <= 10) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
-			if (alives > 10) base_lookup['base_' + players['p2']].current_spirit_cost = 800;
+			if (alives <= 10) base_lookup['base_' + players['p2']].current_spirit_cost = 360;
+			if (alives > 10) base_lookup['base_' + players['p2']].current_spirit_cost = 700;
 			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1100;
 		} else if (shapes["player2"] == 'triangles'){
-			if (alives <= 30) base_lookup['base_' + players['p2']].current_spirit_cost = 60;
+			if (alives <= 30) base_lookup['base_' + players['p2']].current_spirit_cost = 90;
 			if (alives > 30) base_lookup['base_' + players['p2']].current_spirit_cost = 120;
 			if (alives > 120) base_lookup['base_' + players['p2']].current_spirit_cost = 300;
 			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
@@ -1459,7 +1459,7 @@ if (!isMainThread){
 				for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
 					let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
 					//console.log('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
-					if (fast_dist_leq(explodee.position, potential_target.position, 100)){
+					if (fast_dist_leq(explodee.position, potential_target.position, 160)){
 						energize_apply.push([potential_target, -10]);
 					}
 				}
