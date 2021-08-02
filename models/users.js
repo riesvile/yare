@@ -14,11 +14,27 @@ const user_schema = new Schema({
 	rating: Number,
 	rating_stability: Number,
 	games_count: Number,
-	games_history: Array,
-	session_id: String,
+	games_history: Array
+}, {timestamps: true});
+
+const session_schema = new Schema({
+	user_id: {
+		type: String,
+		index: true,
+		required: true
+	},
+	session_id: {
+		type: String,
+		index: true,
+		required: true
+	},
 	session_expire: Number
 }, {timestamps: true});
 
 
 const User = mongoose.model('User', user_schema);
-module.exports = User;
+const Session = mongoose.model('Session', session_schema);
+module.exports = {
+	User: User,
+	Session: Session
+};
