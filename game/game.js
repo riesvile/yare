@@ -150,7 +150,7 @@ const zlib = require('zlib');
 const botCodes = require('../bot-codes');
 const util = require('util');
 const mongoose = require('mongoose');
-const User = require('../models/users.js');
+const {User, Session} = require('../models/users.js');
 const Game = require('../models/newgame.js');
 const config = require('../config');
 
@@ -234,12 +234,9 @@ parentPort.on("message", message => {
 				end_game(0, 1);
 			}
 		  } else {
-		  	User.find({user_id: message.pl_id})
-		  		.then((result) => {
-		  			//res.send(result);
-		  			console.log('db result');
-					//parentPort.postMessage({data: 'db initiated', meta: 'test'});
-		  			if (result[0]['session_id'] == message.session_id){
+			  Session.findOne({"session_id": message.session_id}).then((session) => {
+				  if (session){
+					  if (session.user_id == message.pl_id){
 						  //all good, update session id and prolong expiration date
 						player1_code = message.pl_code;
 		  				player1_session = message.session_id;
@@ -251,10 +248,11 @@ parentPort.on("message", message => {
 		  			} else { 
 		  				parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
 		  			}
-		  		})
-		  		.catch((error) => {
-		  			console.log(error);
-		  		}) 
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			}) 
 		  }
 		  
 	  } else if (message.pl_num == "player2"){
@@ -266,27 +264,25 @@ parentPort.on("message", message => {
 				end_game(1, 0);
 			}
 		  } else {
-		  	User.find({user_id: message.pl_id})
-		  		.then((result) => {
-		  			//res.send(result);
-		  			console.log('db result');
-					//parentPort.postMessage({data: 'db initiated', meta: 'test'});
-		  			if (result[0]['session_id'] == message.session_id){
-		  				//all good, update session id and prolong expiration date
-		  				player2_session = message.session_id;
-						player2_code = message.pl_code;
-						sand2.setPlayerCode(message.pl_code);
-						if (message.resigning == 1){
-							console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
-							end_game(1, 0);
-						}
-		  			} else {
-		  				parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
-		  			}
-		  		})
-		  		.catch((error) => {
-		  			console.log(error);
-		  		}) 
+			Session.findOne({"session_id": message.session_id}).then((session) => {
+				if (session){
+					if (session.user_id == message.pl_id){
+						//all good, update session id and prolong expiration date
+					  player2_code = message.pl_code;
+						player2_session = message.session_id;
+					  sand2.setPlayerCode(message.pl_code);
+					  if (message.resigning == 1){
+						  console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
+						  end_game(0, 1);
+					  }
+					} else { 
+						parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
+					}
+			  	}
+			})
+			.catch((error) => {
+				console.log(error);
+			}) 
 		  }
 	  }
   } else if (message.data == "start world"){

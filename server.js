@@ -276,7 +276,7 @@ var user_sessions = {};
 
 //connect to mongodb
 const mongoose = require('mongoose');
-const User = require('./models/users.js');
+const {User, Session} = require('./models/users.js');
 const Game = require('./models/newgame.js');
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -895,19 +895,23 @@ app.post('/validate', (req, res) => {
 				}
 
 				if(good) {
-					session_id = generateUniqueString(3);
+					var user_id = result[0]['user_id'];
+					var session_id = generateUniqueString(3);
 					var session_expire = new Date();
 					session_expire = (session_expire.getTime() + (7*24*60*60*1000));
 					console.log('date');
 					console.log(session_expire);
-					update = {session_id: session_id, session_expire: session_expire};
+					var updatePromise = Promise.resolve(true);
 					if(newHash) {
-						update['passwrd'] = newHash;
+						updatePromise = User.updateOne({user_id: req.body.user_name}, {passwrd: newHash}, {upsert: true});
 					}
-					User.updateOne({user_id: req.body.user_name}, update, {upsert: true})
-						.then((qq) => {
+					
+					var sessionCreatePromise = Session.create({user_id: user_id, session_id: session_id, session_expire: session_expire});
+
+					Promise.all([updatePromise, sessionCreatePromise])
+						.then(() => {
 							res.status(200).send({
-								user_id: result[0]['user_id'],
+								user_id: user_id,
 								data: session_id
 							});
 						});
@@ -930,94 +934,37 @@ app.post('/session', (req, res) => {
 	
 	console.log('session was called !!!!!!!');
 	
-	User.find({user_id: req.body.user_id})
+	Session.find({session_id: req.body.session_id})
 		.then((result) => {
-			//res.send(result);
 			console.log('db result');
 			if (result.length == 0){
 				res.status(404).send({
-		        	data: "something went wrongg"
-		        });
-			} else if (result[0]['session_id'] == req.body.session_id){
-				//all good, update session id and prolong expiration date
-				session_id = generateUniqueString(3);
-		        var session_expire = new Date();
-		        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
-				console.log('date');
-				console.log(session_expire);
-				User.updateOne({user_id: req.body.user_id}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
-					.then((qq) => {
-						if (user_sessions[req.body.user_id] == null){
-							user_sessions[req.body.user_id] = [];
-							user_sessions[req.body.user_id][0] = session_id;
-						} else {
-							user_sessions[req.body.user_id].unshift(session_id);
-							user_sessions[req.body.user_id].length = 3;
-						}
-						
-						res.status(200).send({
-							username: result[0]['user_id'],
-				        	data: session_id
-				        });
-					});
-				
+					data: "no such session"
+				});
 			} else {
-				
-				var session_match = 0;
-				try {
-					if (user_sessions[req.body.user_id] == null){
-						//console.log(user_sessions[req.body.user_id][0]);
-						user_sessions[req.body.user_id] = [];
-					}
-					
-					if (user_sessions[req.body.user_id][0] != null){
-						for (i = 0; i < user_sessions[req.body.user_id].length; i++){
-							if (req.body.session_id == user_sessions[req.body.user_id][i]){
-								session_id = generateUniqueString(3);
-						        var session_expire = new Date();
-						        session_expire = (session_expire.getTime() + (7*24*60*60*1000));
-								console.log('date');
-								console.log(session_expire);
-								User.updateOne({user_id: req.body.user_id}, {session_id: session_id, session_expire: session_expire}, {upsert: true})
-									.then((qq) => {
-										user_sessions[req.body.user_id].unshift(session_id);
-										user_sessions[req.body.user_id].length = 3;
-										session_match = 1;
-										res.status(200).send({
-											username: result[0]['user_id'],
-								        	data: session_id
-								        });
-									});
-							}
-						}
-						
-					} else {
-						//need to login here
-						
-						
-						console.log('invalid session, login again!');
-						//console.log('session ids:::');
-						//console.log(result[0]['session_id']);
-						//console.log(req.body.session_id);
-						res.status(404).send({
-				        	data: "expired session"
-				        });
-					}
-					
-				} catch (e) {
-					console.log(e);
-					res.status(404).send({
-			        	data: "expired session or something, idk"
-			        });
+				var session = result[0];
+				var session_id = session['session_id'];
+				var user_id = session['user_id'];
+				var session_expire = session['session_expire'];
+				// if session expire in less then 6 days
+				if ((new Date()).getTime() + (6*24*60*60*1000) > session_expire){
+					// update session_expire
+					session_id = generateUniqueString(3);
+					session_expire = ((new Date()).getTime() + (7*24*60*60*1000));
+					console.log('creating new session');
+					Session.create({user_id: user_id, session_id: session_id, session_expire: session_expire})
+						.then((qq) => {
+							res.status(200).send({
+								username: user_id,
+								data: session_id
+							});
+						});
+				} else {
+					res.status(200).send({
+						username: user_id,
+						data: session_id
+					});
 				}
-				
-					
-				if (session_match == 0){
-					res.status(404).send({
-			        	data: "expired session or something, idk"
-			        });
-				}
-				
 			}
 		})
 		.catch((error) => {
@@ -1064,38 +1011,26 @@ app.post('/add-user', (req, res) => {
 			rating: 1500,
 			rating_stability: 5,
 			games_count: 0,
-			games_history: '',
-			session_id: session_id,
-			session_expire: session_expire
+			games_history: ''
 		});
-	
-		User.find({user_id: req.body.user_name})
-			.then((result) => {
-				//res.send(result);
-				console.log('db result');
-				if (result.length == 0){
+
+		user.save()
+			.then((user) => {
+				Session.create({user_id: user.user_id, session_id: session_id, session_expire: session_expire})
+				.then((qq) => {
 					res.status(200).send({
-			        	data: "user created",
-						user_id: req.body.user_name,
+						user_id: user.user_id,
+						data: "user created",
 						session_id: session_id
-			        });
-					user.save()
-						.then((result) => {
-							console.log('user created');
-						})
-						.catch((error) => {
-							console.log(error);
-						})
-				
-				} else {
-					res.status(200).send({
-			        	data: "exists"
-			        });
-				}
+					});
+				});
 			})
 			.catch((error) => {
 				console.log(error);
-			})
+				res.status(200).send({
+					data: "exists"
+				});
+			});
 	}
 	
 });
