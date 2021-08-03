@@ -1800,6 +1800,9 @@ if (!isMainThread){
 			} else {
 				stars[i].active_in = 0;
 			}
+			if(workerData[1] == 'tutorial'){
+				stars[i].energy = 1000;
+			}
 			render_data3.st[i] = stars[i].energy;
 		}
 	
