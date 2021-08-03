@@ -305,7 +305,7 @@ parentPort.on("message", message => {
 		tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 		tutorial_flag1 = 0;
 		spirit_p2_cost = 30;
-		sand1.setPlayerCode(botCodes['tutorial0']);
+		sand2.setPlayerCode(botCodes['tutorial0']);
 	}
 	  game_start();
 	  
@@ -1379,10 +1379,10 @@ if (!isMainThread){
 				prev_position[id] = pos;
 
 				//tutorial
-				if (workerData[1] == 'tutorial' && i == 0){
-					if (t_x == 1000 && t_y == 1000){
+				if (workerData[1] == 'tutorial' && id == "anonymous_1"){
+					if (tpos[0] == 1000 && tpos[1] == 1000){
 						progress_tut(1);
-					} else if (t_x == 1600 && t_y == 700){
+					} else if (tpos[0] == 1600 && tpos[1] == 700){
 						progress_tut(3, true);
 					}
 				}
@@ -1578,7 +1578,7 @@ if (!isMainThread){
 						// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
 						if (to_base && from_id == 'anonymous_2' && tutorial_flag1 == 1){
 							progress_tut(6, true);
-							sand1.setPlayerCode(botCodes['tutorial6']);
+							sand2.setPlayerCode(botCodes['tutorial6']);
 						}
 					}
 				}
