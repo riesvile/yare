@@ -355,6 +355,9 @@ function get_color(color_name){
 		case 'wirple':
 			return 'color5';
 			break;
+		case 'pistagre':
+			return 'color6';
+			break;
 		default:
 			return 'color1';
 	}

@@ -1304,7 +1304,7 @@ span.shape_name {
 	border-width: 2px;
 }
 
-#color_gblue, #color_purply, #color_redish, #color_yerange {
+#color_gblue, #color_purply, #color_redish, #color_yerange, #color_pistagre {
 	width: 16px;
 	height: 16px;
 	position: absolute;
@@ -1328,6 +1328,10 @@ span.shape_name {
 
 #color_yerange {
 	background-color: rgba(218, 183, 96, 1);
+}
+
+#color_pistagre {
+	background-color: rgba(148, 176, 108, 1);
 }
 
 
@@ -1566,9 +1570,9 @@ h1#pnf {
 }
 
 #trailer_block {
-	width: calc(100% - 80px);
-	height: 600px;
-	margin-left: 40px;
+	width: calc(100% - 240px);
+	height: 800px;
+	margin-left: 120px;
 	background-color: rgba(30, 28, 36, 1);
 }
 
@@ -1677,6 +1681,15 @@ h1#pnf {
 .index_head {
 	margin-bottom: 24px;
 	margin-left: 40px;
+	font-size: 13px;
+	color: rgba(242, 246, 250, 0.55);
+	letter-spacing: 1px;
+	font-weight: 400;
+}
+
+.index_head_trailer {
+	margin-bottom: 24px;
+	margin-left: 120px;
 	font-size: 13px;
 	color: rgba(242, 246, 250, 0.55);
 	letter-spacing: 1px;
@@ -1843,6 +1856,10 @@ a.index_link:hover {
 	transform: rotate(135deg) skewY(-45deg) scale(.707,1.414) translate(50%);
 }
 
+
+.chosen_red {
+	background-color: red;
+}
 
 
 
@@ -2217,7 +2234,12 @@ a.index_link:hover {
 /* ----- */
 
 
-
+#trailer_box {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
 
 
 

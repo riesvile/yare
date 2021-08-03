@@ -3,6 +3,25 @@
 	margin: 0;
 }
 
+ul.no_bullet {
+	list-style-type: none;
+}
+
+ul.no_bullet li {
+	position: relative;
+	display: block;
+	font-size: 24px;
+	line-height: 44px;
+	font-weight: 500;
+	max-width: 1000px;
+	margin-bottom: 12px;
+}
+
+.bullet {
+	position: absolute;
+	left: -28px;
+	opacity: 0.69;
+}
 
 #tournament_content {
 	width: 68%;
@@ -12,10 +31,11 @@
 }
 
 h1.tournament_head {
-	font-weight: 500;
+	font-weight: 600;
 	font-size: 40px;
 	line-height: 56px;
 	padding-bottom: 60px;
+	position: relative;
 }
 
 .t_price {
@@ -38,3 +58,79 @@ h1.tournament_head {
 	font-weight: 500;
 	color: rgba(250,140,140,1);
 }
+
+p.tour_intro1, p.tour_intro2 {
+	font-size: 40px;
+	line-height: 68px;
+	font-weight: 500;
+	max-width: 1020px;
+	margin-bottom: 40px;
+}
+
+.quallight {
+	color: rgba(220, 188, 140);
+}
+
+
+
+
+
+.tour_info_sec {
+	
+}
+
+.tour_h_sec {
+	font-size: 13px;
+	font-weight: 400;
+	color: rgba(242, 246, 250, 0.69);
+	letter-spacing: 1px;
+}
+
+p.tour_p {
+	font-size: 24px;
+	font-weight: 500;
+}
+
+
+
+
+.yare_ico_ilu {
+	background: url(./asset/ico_yare_ilu.png) no-repeat scroll;
+	background-size: cover;
+	width: 86px;
+	height: 28px;
+	display: block;
+	margin-bottom: 20px;
+	margin-left: -6px;
+}
+
+.ico_eth_wrapper {
+	display: inline-block;
+	position: relative;
+	width: 24px;
+	height: 40px;
+	margin-right: 8px;
+	margin-left: 4px;
+}
+
+.eth_ico {
+	background: url(./asset/ico_eth.png) no-repeat scroll;
+	background-size: cover;
+	width: 24px;
+	height: 40px;
+	display: inline-block;
+	position: absolute;
+	top: 4px;
+}
+
+
+
+
+
+
+
+
+
+
+
+

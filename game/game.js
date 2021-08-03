@@ -589,6 +589,9 @@ color_palettes['color2'] = 'rgba(232,97,97,1)';
 color_palettes['color3'] = 'rgba(58,197,240,1)';
 color_palettes['color4'] = 'rgba(201,161,101,1)';
 color_palettes['color5'] = 'rgba(120,12,196,1)';
+color_palettes['color6'] = 'rgba(148, 176, 108, 1)';
+
+
 
 var rawSpirits = {};
 var my_spirits1 = [];
@@ -842,7 +845,7 @@ if (!isMainThread){
 			}
 			this.collision_radius = 50;
 			
-			this.hp = 3;
+			this.hp = 5;
 			if (this.shape == 'circles'){
 				this.energy_capacity = 400;
 			} else if (this.shape == 'squares'){

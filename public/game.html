@@ -215,7 +215,21 @@
 	      name: "update_code",
 	      exec: function() {update_code();},
 	      bindKey: {mac: "shift-enter", win: "shift-enter"}
-	  })
+	  });
+	  editor.completers.push({
+	      getCompletions: function(editor, session, pos, prefix, callback) {
+	          var completions = [];
+	          // we can use session and pos here to decide what we are going to show
+	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "enemy_base", "base", "star_zxq", "star_p89", "star_a1c", "outpost", "my_spirits", "spirits", "tick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable", ].forEach(function(w) {
+	              completions.push({
+	                  value: w,
+	                  meta: "keyword",
+
+	              });
+	          });
+	          callback(null, completions);
+	      }
+	  });
 	  
 	  if (localStorage.getItem("code_code") != null){
 		  var code_code = localStorage.getItem("code_code");

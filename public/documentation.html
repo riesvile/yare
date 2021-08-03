@@ -628,7 +628,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">hp</span>
 					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">1</span>
+					<span class="table_doc_value">5</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -640,6 +640,9 @@
 				</div>
 			</div>
 		  </div>
+		  
+		  <div class="sep_medium"></div>
+		  <p class="p_somewhat_important">The base's hp decreases by 1 every tick it doesn't have enough energy to defend itself while being attacked. The game ends when the base's hp reaches 0</p>
 		  
 		</section>
 		
@@ -806,6 +809,13 @@
 					<span class="table_doc_property">position</span>
 					<span class="table_doc_type">array</span>
 					<span class="table_doc_value">[x, y] coordinates (see <a href="#gm_board">game board</a>)</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">active_in</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">Ticks until star starts generating energy (relevant only for the middle star)</span>
 				</div>
 			</div>
 		  </div>
