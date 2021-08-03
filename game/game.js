@@ -171,6 +171,7 @@ parentPort.on("message", message => {
 	  console.log(workerData);
 	  
 	    if (workerData[1] == 'tutorial'){
+			game_duration = 0;
 			init_data = {
 				'units': [],
 				'stars': [],
