@@ -1800,9 +1800,6 @@ if (!isMainThread){
 			} else {
 				stars[i].active_in = 0;
 			}
-			if(workerData[1] == 'tutorial'){
-				stars[i].energy = 1000;
-			}
 			render_data3.st[i] = stars[i].energy;
 		}
 	
@@ -2237,7 +2234,12 @@ if (!isMainThread){
 		if (shapes['player2'] == 'squares') start_num_adjust2 = 9;
 		if (shapes['player1'] == 'triangles') start_num_adjust1 = 6;
 		if (shapes['player2'] == 'triangles') start_num_adjust2 = 6;
-		
+
+		if(workerData[1] == 'tutorial'){
+			start_num_adjust1 = 11;
+			start_num_adjust2 = 10;
+		}
+
 		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
 			if (s > 6){
 				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1230+s*20,620], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
