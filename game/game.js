@@ -305,7 +305,7 @@ parentPort.on("message", message => {
 		tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 		tutorial_flag1 = 0;
 		spirit_p2_cost = 30;
-		sand1.setPlayerCode(botCodes['tutorial0']);
+		sand2.setPlayerCode(botCodes['tutorial0']);
 	}
 	  game_start();
 	  
@@ -513,52 +513,36 @@ var p2_process_time_check = 0;
 var p2_process_time_res = 0;
 
 function spirit_cost(p_num, alives){
-	if (p_num == 1){
-		if (shapes["player1"] == 'circles'){
-			if (alives <= 50) base_lookup['base_' + players['p1']].current_spirit_cost = 25;
-			if (alives > 50) base_lookup['base_' + players['p1']].current_spirit_cost = 50;
-			if (alives > 100) base_lookup['base_' + players['p1']].current_spirit_cost = 100;
-			if (alives > 200) base_lookup['base_' + players['p1']].current_spirit_cost = 200;
-			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 400;
-			if (alives > 500) base_lookup['base_' + players['p1']].current_spirit_cost = 1000;
-		} else if (shapes["player1"] == 'squares'){
-			if (alives <= 10) base_lookup['base_' + players['p1']].current_spirit_cost = 360;
-			if (alives > 10) base_lookup['base_' + players['p1']].current_spirit_cost = 700;
-			if (alives > 400) base_lookup['base_' + players['p1']].current_spirit_cost = 1100;
-		} else if (shapes["player1"] == 'triangles'){
-			if (alives <= 30) base_lookup['base_' + players['p1']].current_spirit_cost = 90;
-			if (alives > 30) base_lookup['base_' + players['p1']].current_spirit_cost = 120;
-			if (alives > 120) base_lookup['base_' + players['p1']].current_spirit_cost = 300;
-			if (alives > 300) base_lookup['base_' + players['p1']].current_spirit_cost = 1000;
-		}
-	} else if (p_num == 2){
-		if (shapes["player2"] == 'circles'){
-			if (alives <= 50) base_lookup['base_' + players['p2']].current_spirit_cost = 25;
-			if (alives > 50) base_lookup['base_' + players['p2']].current_spirit_cost = 50;
-			if (alives > 100) base_lookup['base_' + players['p2']].current_spirit_cost = 100;
-			if (alives > 200) base_lookup['base_' + players['p2']].current_spirit_cost = 200;
-			if (alives > 300) base_lookup['base_' + players['p2']].current_spirit_cost = 400;
-			if (alives > 500) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
-		} else if (shapes["player2"] == 'squares'){
-			if (alives <= 10) base_lookup['base_' + players['p2']].current_spirit_cost = 360;
-			if (alives > 10) base_lookup['base_' + players['p2']].current_spirit_cost = 700;
-			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1100;
-		} else if (shapes["player2"] == 'triangles'){
-			if (alives <= 30) base_lookup['base_' + players['p2']].current_spirit_cost = 90;
-			if (alives > 30) base_lookup['base_' + players['p2']].current_spirit_cost = 120;
-			if (alives > 120) base_lookup['base_' + players['p2']].current_spirit_cost = 300;
-			if (alives > 400) base_lookup['base_' + players['p2']].current_spirit_cost = 1000;
-		}
+	var shape = shapes["player" + p_num];
+	if (shape == 'circles'){
+		if (alives <= 50) bases[p_num-1].current_spirit_cost = 25;
+		if (alives > 50) bases[p_num-1].current_spirit_cost = 50;
+		if (alives > 100) bases[p_num-1].current_spirit_cost = 100;
+		if (alives > 200) bases[p_num-1].current_spirit_cost = 200;
+		if (alives > 300) bases[p_num-1].current_spirit_cost = 400;
+		if (alives > 500) bases[p_num-1].current_spirit_cost = 1000;
+	} else if (shape == 'squares'){
+		if (alives <= 10) bases[p_num-1].current_spirit_cost = 360;
+		if (alives > 10) bases[p_num-1].current_spirit_cost = 700;
+		if (alives > 400) bases[p_num-1].current_spirit_cost = 1100;
+	} else if (shape == 'triangles'){
+		if (alives <= 30) bases[p_num-1].current_spirit_cost = 90;
+		if (alives > 30) bases[p_num-1].current_spirit_cost = 120;
+		if (alives > 120) bases[p_num-1].current_spirit_cost = 300;
+		if (alives > 300) bases[p_num-1].current_spirit_cost = 1000;
 	}
 	
 	if (workerData[1] == 'tutorial'){
-		base_lookup['base_' + players['p1']].current_spirit_cost = 100;
-		base_lookup['base_' + players['p2']].current_spirit_cost = 50;
+		bases[0].current_spirit_cost = 100;
+		bases[1].current_spirit_cost = 50;
 	}
 		
 }
 
 function get_def_size(pshape){
+	if(workerData[1] == 'tutorial'){
+		return 5;
+	}
 	if (pshape == 'circles') return 1;
 	if (pshape == 'squares') return 10;
 	if (pshape == 'triangles') return 3;
@@ -1379,10 +1363,10 @@ if (!isMainThread){
 				prev_position[id] = pos;
 
 				//tutorial
-				if (workerData[1] == 'tutorial' && i == 0){
-					if (t_x == 1000 && t_y == 1000){
+				if (workerData[1] == 'tutorial' && id == "anonymous_1"){
+					if (tpos[0] == 1000 && tpos[1] == 1000){
 						progress_tut(1);
-					} else if (t_x == 1600 && t_y == 700){
+					} else if (tpos[0] == 1600 && tpos[1] == 700){
 						progress_tut(3, true);
 					}
 				}
@@ -1578,7 +1562,7 @@ if (!isMainThread){
 						// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
 						if (to_base && from_id == 'anonymous_2' && tutorial_flag1 == 1){
 							progress_tut(6, true);
-							sand1.setPlayerCode(botCodes['tutorial6']);
+							sand2.setPlayerCode(botCodes['tutorial6']);
 						}
 					}
 				}
@@ -1823,7 +1807,7 @@ if (!isMainThread){
 		for (let i = death_queue.length - 1; i >= 0; i--){
 			//console.log(death_queue[i].id + ' died');
 			if (workerData[1] == 'tutorial'){
-				if (death_queue[i].id == 'easy-bot2')
+				if (death_queue[i].id == 'easy-bot_2')
 					progress_tut(8, true);
 			}
 			
@@ -2169,8 +2153,8 @@ if (!isMainThread){
 			}
 		
 			render_data3.t = game_duration;
-			render_data3.b1 = [bases[0].energy, base_lookup['base_' + players['p1']].current_spirit_cost, p1_defend, bases[0].hp];
-			render_data3.b2 = [bases[1].energy, base_lookup['base_' + players['p2']].current_spirit_cost, p2_defend, bases[1].hp];
+			render_data3.b1 = [bases[0].energy, bases[0].current_spirit_cost, p1_defend, bases[0].hp];
+			render_data3.b2 = [bases[1].energy, bases[1].current_spirit_cost, p2_defend, bases[1].hp];
 			
 			render_data3.ou = [outposts[0].energy, outposts[0].control];
 		

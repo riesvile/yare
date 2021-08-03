@@ -214,6 +214,30 @@ function trigger_deactivation(game_id){
 	
 }
 
+function trigger_monitoring(gid, val){
+	try {
+		fetch('https://yare.io/monitor', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        game_id: gid,
+				phase: val
+		    })
+		}).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 wss.broadcast = function broadcast(data, game_id) {
     wss.clients.forEach(function each(client) {
 		console.log(client.game_id);
