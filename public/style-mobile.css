@@ -47,6 +47,10 @@
 		width: 140px;
 	}
 	
+	.tournament_banner_date {
+		display: none;
+	}
+	
 }
 
 
@@ -833,9 +837,9 @@ p.p_somewhat_important {
 }
 
 #trailer_block {
-	width: calc(100% - 80px);
-	height: 400px;
-	margin-left: 40px;
+	width: calc(100% - 48px);
+	height: 300px;
+	margin-left: 24px;
 	background-color: rgba(30, 28, 36, 1);
 }
 
@@ -935,7 +939,7 @@ p.p_somewhat_important {
 	clear: both;
 }
 
-.index_head {
+.index_head, .index_head_trailer {
 	margin-bottom: 24px;
 	margin-left: 24px;
 	font-size: 13px;
@@ -1130,6 +1134,65 @@ p.tour_intro1, p.tour_intro2 {
 	position: absolute;
 	top: 4px;
 }
+
+
+
+#tournament_block {
+	width: calc(100% - 48px);
+	margin-left: 24px;
+	height: 216px;
+}
+
+.tournament_banner_h {
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 32px;
+	position: absolute;
+	left: 26px;
+	top: 72px;
+	color: rgba(242, 246, 250, 1);
+	width: 60%;
+}
+
+.tournament_banner_date {
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 32px;
+	position: absolute;
+	bottom: 26px;
+	left: 26px;
+	opacity: 0.55;
+	color: rgba(242, 246, 250, 1);
+	display: block;
+}
+
+.yare_ico_ilu_index {
+	background: url(./asset/ico_yare_ilu.png) no-repeat scroll;
+	background-size: cover;
+	width: 43px;
+	height: 13px;
+	display: block;
+	margin-bottom: 0;
+	margin-left: 0;
+	position: absolute;
+	top: 28px;
+	left: 26px;
+	transform: none;
+}
+
+.yare_ico_ilu_blur_index {
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background: url(./asset/ico_yare_ilu_blur.png) no-repeat scroll;
+	background-size: cover;
+	width: 200px;
+	height: 200px;
+	transform: translate(-50%, -50%);
+	opacity: 0.5;
+}
+
 
 
 

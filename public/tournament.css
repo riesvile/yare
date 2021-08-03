@@ -102,6 +102,20 @@ p.tour_p {
 	display: block;
 	margin-bottom: 20px;
 	margin-left: -6px;
+	position: relative;
+}
+
+.yare_ico_ilu_blur {
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background: url(./asset/ico_yare_ilu_blur.png) no-repeat scroll;
+	background-size: cover;
+	width: 400px;
+	height: 400px;
+	transform: translate(-50%, -50%);
+	opacity: 0.5;
 }
 
 .ico_eth_wrapper {

@@ -882,7 +882,7 @@ p.tutorial_text {
 	position: relative;
 }
 
-#overlay, #overlay_start, #overlay_pre_start, #game_over_overlay {
+#overlay, #overlay_start, #overlay_pre_start, #game_over_overlay, #overlay_trailer {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -1560,7 +1560,7 @@ h1#pnf {
 /* index stuff */
 
 #index_intro {
-	margin-top: calc(100px + 10vh);
+	padding-top: calc(100px + 10vh);
 	margin-left: 16%;
 	width: 560px;
 	font-size: 32px;
@@ -1571,9 +1571,17 @@ h1#pnf {
 
 #trailer_block {
 	width: calc(100% - 240px);
-	height: 800px;
+	max-width: 2300px;
+	height: 600px;
 	margin-left: 120px;
-	background-color: rgba(30, 28, 36, 1);
+	background: url(./asset/trailer_bg.jpg) no-repeat scroll;
+	background-size: cover;
+	background-position: center;
+	cursor: pointer;
+}
+
+#trailer_block:hover {
+	opacity: 0.8;
 }
 
 #gallery_block {
@@ -2235,16 +2243,83 @@ a.index_link:hover {
 
 
 #trailer_box {
-	position: absolute;
+	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	z-index: 9999;
+	display: none;
 }
 
 
+#overlay_trailer {
+	opacity: 0;
+	z-index: 9998;
+	background-color: rgba(0, 0, 0, 1);
+	backdrop-filter: blur(0px);
+	-webkit-backdrop-filter: blur(0px);
+}
 
+#tournament_block {
+	width: 68%;
+	height: 120px;
+	margin-left: 16%;
+	background-color: rgba(20, 20, 34, 1);
+	position: relative;
+	display: block;
+	overflow: hidden;
+	border-radius: 16px;
+}
 
+#tournament_block:hover {
+	background-color: rgba(28, 26, 44, 1);
+}
 
+.tournament_banner_h {
+	font-size: 26px;
+	font-weight: 500;
+	line-height: 120px;
+	position: absolute;
+	left: 160px;
+	color: rgba(242, 246, 250, 1);
+}
+
+.tournament_banner_date {
+	font-size: 26px;
+	font-weight: 500;
+	line-height: 120px;
+	position: absolute;
+	right: 48px;
+	opacity: 0.55;
+	color: rgba(242, 246, 250, 1);
+}
+
+.yare_ico_ilu_index {
+	background: url(./asset/ico_yare_ilu.png) no-repeat scroll;
+	background-size: cover;
+	width: 86px;
+	height: 28px;
+	display: block;
+	margin-bottom: 20px;
+	margin-left: -6px;
+	position: absolute;
+	top: 50%;
+	left: 60px;
+	transform: translateY(-50%);
+}
+
+.yare_ico_ilu_blur_index {
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background: url(./asset/ico_yare_ilu_blur.png) no-repeat scroll;
+	background-size: cover;
+	width: 400px;
+	height: 400px;
+	transform: translate(-50%, -50%);
+	opacity: 0.5;
+}
 
 
 

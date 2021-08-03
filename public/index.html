@@ -73,6 +73,7 @@
   
   <div id="trailer_box"><iframe width="1120" height="630" src="https://www.youtube.com/embed/Dz2sLVqclsQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
   <div id="overlay"></div>
+  <div id="overlay_trailer"></div>
   <div id="grad_top2"></div>
 	  
 	 
@@ -103,6 +104,14 @@ JavaScript code.</h1>
 			<p class="action_desc">Create an account and play for free against real people</p>
 			<div class="ico_arrow arrow_start_playing"></div>
 		</div>
+		
+		<div class="index_spacer_medium"></div>
+		
+		<a href="https://yare.io/tournament" id="tournament_block">
+			<span class="yare_ico_ilu_index"><span class="yare_ico_ilu_blur_index"></span></span>
+			<h3 class="tournament_banner_h">Tournament for 1 Ethereum</h3>
+			<p class="tournament_banner_date">September 14–26</p>
+		</a>
 		
 		<div class="index_spacer_medium"></div>
 		<div class="sep_line_full"></div>
@@ -154,7 +163,7 @@ JavaScript code.</h1>
   
   
   </body>
-  
+  <script src="../animations.js"></script>
   <script>
 	  var from_nongame = 1;
 	  let el = document.querySelector("#gallery_block");
@@ -180,9 +189,18 @@ JavaScript code.</h1>
 	      document.addEventListener('mousemove', draggingFunction);
 	  });
 	  
+	  //trailer
+	  
+	  var trailer_in = document.getElementById('trailer_block');
+	  var trailer_ov = document.getElementById('overlay_trailer');
+	  var trailer_vid = document.getElementById('trailer_box');
+	  
+	  trailer_in.addEventListener('click', trailer_open, false);
+	  trailer_ov.addEventListener('click', trailer_close, false);
+	  
   </script>
  
-  <script src="../animations.js"></script>
+  
   <script src="../basics.js"></script>
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

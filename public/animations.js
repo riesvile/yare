@@ -1225,6 +1225,44 @@ function replay_loaded(){
 }
 
 
+function trailer_open(){
+	
+	anime({
+  		targets: '#overlay_trailer',
+  		opacity: 0.8,
+  		easing: 'easeOutQuad',
+  		duration: 200
+	});
+	
+	try {
+		trailer_ov.style.pointerEvents = 'auto';
+		trailer_vid.style.display = 'block';
+	} catch (e){
+		
+	}
+	
+}
+
+function trailer_close(){
+	
+	anime({
+  		targets: '#overlay_trailer',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 200
+	});
+	
+	try {
+		trailer_ov.style.pointerEvents = 'none';
+		trailer_vid.style.display = 'none';
+	} catch (e) {
+		
+	}
+	
+}
+
+
+
 // -----
 
 
