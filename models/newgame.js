@@ -9,10 +9,12 @@ const game_schema = new Schema({
 	},
 	player1: {
 		type: String,
+		index: true,
 		required: true
 	},
 	player2: {
-		type: String
+		type: String,
+		index: true
 	},
 	server: String,
 	p1_session_id: String,
