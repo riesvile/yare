@@ -1701,6 +1701,7 @@ function render_state(timestamp){
 		fill_hover_thing(pointing_at_x, pointing_at_y, board_x, board_y);
 	}
 	
+	//c.clearRect(0, 0, main_canvas.width, main_canvas.height);
 	c.fillStyle = 'rgba(6,8,10,1)';
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
 	

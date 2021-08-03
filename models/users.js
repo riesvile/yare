@@ -11,6 +11,7 @@ const user_schema = new Schema({
 		type: String,
 		required: true,
 	},
+	colors: Array,
 	rating: Number,
 	rating_stability: Number,
 	games_count: Number,

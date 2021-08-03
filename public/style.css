@@ -1981,7 +1981,7 @@ a.index_link:hover {
 /* ----- REPLAY ----- */
 
 .widget_standard {
-	position: absolute;
+	position: fixed;
 	border-radius: 16px;
 }
 

@@ -1014,7 +1014,8 @@ app.post('/add-user', (req, res) => {
 			rating: 1500,
 			rating_stability: 5,
 			games_count: 0,
-			games_history: ''
+			games_history: '',
+			colors: [1, 2, 3, 4]
 		});
 
 		user.save()

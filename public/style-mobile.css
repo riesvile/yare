@@ -1199,6 +1199,20 @@ p.tour_intro1, p.tour_intro2 {
 /* ----- */
 
 
+#wg_replay {
+    bottom: calc(116px + 4vw);
+    left: 4vw;
+    width: 92vw;
+}
+
+#wg_game_stats {
+    bottom: 4vw;
+    left: 4vw;
+    width: 92vw;
+    height: 106px;
+}
+
+
 
 
 
