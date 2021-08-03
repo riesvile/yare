@@ -277,7 +277,11 @@ yd.loadData = function(data) {
             global.spirits[id] = new Spirit(id);
             if(sd[id].player_id == global.this_player_id) {
                 global.my_spirits.push(global.spirits[id]);
+                if(sd[id].player_id == "anonymous") {
+                    global["s" + (global.my_spirits.length)] = global.spirits[id];
+                }
             }
+            global[id] = global.spirits[id];
         }
         Object.assign(global.spirits[id], sd[id]);
     }

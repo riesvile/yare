@@ -302,8 +302,8 @@ parentPort.on("message", message => {
 	  sand2.init(message.player2);
 	  //tutorial
 	if (workerData[1] == 'tutorial'){
-		var tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
-		var tutorial_flag1 = 0;
+		tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
+		tutorial_flag1 = 0;
 		spirit_p2_cost = 30;
 		sand1.setPlayerCode(botCodes['tutorial0']);
 	}
@@ -1525,7 +1525,7 @@ if (!isMainThread){
 
 						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
 						// 						to nejde delat tutorial jako logged in user?
-						if (workerData[1] == 'tutorial' && from_obj.id == 'anonymous1')
+						if (workerData[1] == 'tutorial' && from_obj.id == 'anonymous_1')
 							progress_tut(2);
 
 						// only harvest one star at once
@@ -1571,12 +1571,12 @@ if (!isMainThread){
 						// name prefix - safe (is structure)
 						let to_base = to_id.startsWith('base') && structure_lookup[to_id];
 
-						if (to_base && from_obj.energy < 10 && from_id == 'anonymous1'){
+						if (to_base && from_obj.energy < 10 && from_id == 'anonymous_1'){
 							progress_tut(4, true);
 						}
 
 						// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
-						if (to_base && from_id == 'anonymous2' && tutorial_flag1 == 1){
+						if (to_base && from_id == 'anonymous_2' && tutorial_flag1 == 1){
 							progress_tut(6, true);
 							sand1.setPlayerCode(botCodes['tutorial6']);
 						}
