@@ -1,11 +1,3 @@
-var this_player_id = players['p2'];		
-
-global['base'] = Object.values(bases)[1];
-global['enemy_base'] = Object.values(bases)[0];
-global['star_zxq'] = stars['star_zxq'];
-global['star_a1c'] = stars['star_a1c'];
-global['star_p89'] = stars['star_p89'];
-global['outpost'] = outposts['outpost_mdo'];
 
 my_spirits[0].move(star_a1c.position);
 my_spirits[0].energize(my_spirits[0]);

@@ -1119,30 +1119,6 @@ function trigger_deactivation(game_id){
 	
 }
 
-function trigger_monitoring(gid, val){
-	try {
-		fetch('https://yare.io/monitor', {
-	        method: "POST",
-	        headers: {
-	          Accept: "application/json",
-	          "Content-Type": "application/json"
-	        },
-	        body: JSON.stringify({
-		        game_id: gid,
-				phase: val
-		    })
-		}).then(response => response.json())
-	      .then(response => {
-			  console.log(response);
-		  })
-	      .catch(err => {
-			  console.log(err);
-		  });
-	} catch (error) {
-		console.log(error);
-	}
-}
-
 function deactivate_game(game_id){
 	console.log('here is deactivating happening');
 	try {
