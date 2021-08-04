@@ -874,6 +874,32 @@ app.post('/check-status/:game_id', (req, res) => {
 });
 
 
+app.post('/active-games/:user_id', (req, res) => {
+	
+	let user_id = req.params.user_id;	
+	let active_g = [];
+	
+	for (let key in active_games) {
+	    if (!active_games.hasOwnProperty(key)) continue;
+	    let game_l = validation_messages[key];
+		if (game_l[1] == user_id) active_g.push(key);
+		if (game_l[2] == user_id) active_g.push(key);
+	}
+	
+	if (active_g.length > 0){
+		res.status(200).send({
+			data: active_g
+        });
+	} else {
+		res.status(200).send({
+			data: 'no active games'
+        });
+	}
+	
+	
+});
+
+
 app.post('/validate', (req, res) => {
     console.log(req.body.user_name);
 	

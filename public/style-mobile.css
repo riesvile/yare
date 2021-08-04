@@ -827,7 +827,7 @@ p.p_somewhat_important {
 /* index stuff */
 
 #index_intro {
-	margin-top: calc(60px + 8vh);
+	padding-top: calc(60px + 8vh);
 	width: calc(100% - 48px);
 	margin-left: 26px;
 	font-size: 26px;
