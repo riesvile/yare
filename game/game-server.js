@@ -22,13 +22,13 @@ const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
 const config = require('../config');
 const path = require('path');
+const fetch = require('node-fetch');
 require('isolated-vm'); // require to avoid glitch locally
 
 var this_server = process.env.SERVER || 'd1';
 var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
 
 const mongoose = require('mongoose');
-const User = require('../models/users.js');
 const Game = require('../models/newgame.js');
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})

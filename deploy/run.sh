@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function pull_and_run() {
+pull_and_run() {
     docker pull $2
     docker rm -f $1
     docker run -d $3 -p 5000:5000 --restart always --name $1 $2
