@@ -395,7 +395,7 @@ async function user_code(){
 		//console.log('my_spirits count');
 		//console.log(helper_count);
 		
-		if (helper_count > 2){
+		if (helper_count > 0){
 			console.log('tutorial phase 6 half-done');
 			tutorial_flag1 = 1;
 		}
