@@ -2108,11 +2108,11 @@ if (!isMainThread){
 					'c2': [],
 					'end': end_winner
 				};
-				if (game_duration == 1200){
+				if (game_duration == 2000){
 					if (top_s == 11){
 						end_game(0, 0);
 					}
-				} else if (game_duration == 2400){
+				} else if (game_duration == 3000){
 					end_game(0, 0);
 				}
 			}
