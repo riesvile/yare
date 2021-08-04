@@ -258,7 +258,7 @@ var active_games = {};
 var tutorial_finishings = {};
 var server_occupancy_tutorial = {
 	t1: 0,
-	t2: 900,
+	t2: 9000,
 	t3: 50
 }
 var server_occupancy = {
@@ -1119,6 +1119,30 @@ function trigger_deactivation(game_id){
 	
 }
 
+function trigger_monitoring(gid, val){
+	try {
+		fetch('https://yare.io/monitor', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        game_id: gid,
+				phase: val
+		    })
+		}).then(response => response.json())
+	      .then(response => {
+			  console.log(response);
+		  })
+	      .catch(err => {
+			  console.log(err);
+		  });
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 function deactivate_game(game_id){
 	console.log('here is deactivating happening');
 	try {
@@ -1366,6 +1390,22 @@ app.post('/populate-leaderboard', (req, res) => {
 //			console.log(error);
 //		})
 //});
+
+app.get('/set-color', (req, res) => {
+	User.updateMany({}, {"$set":{"colors": [1, 2, 3, 4, 5]}}, {upsert: true})
+		.then((result) => {
+			//res.send(result);
+			console.log('colors maybe updated?');
+			
+			res.status(200).send({
+	        	data: "done colors?"
+	        });
+			
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
 
 
 app.post('/deactivate', (req, res) => {
