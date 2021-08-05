@@ -19,13 +19,9 @@ case $1 in
         SERVER_NAME="$1"
         SERVER_TYPE="tutorial"
         ;;
-    (d1)
+    (d*)
         CONTAINER_NAME="game"
         SERVER_NAME="$1"
-    (d2)
-        CONTAINER_NAME="game"
-        SERVER_NAME="$1"
-        PORT="5001"
         ;;
     (*)
         echo "Unknown server $1"
