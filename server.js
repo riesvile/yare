@@ -1738,6 +1738,20 @@ app.get('/d1/:game_id', (req, res) => {
 	}
 });
 
+app.get('/server-weight/:server_id/:weight', (req, res) => {
+	if(req.query.password != "swordfish") {
+		res.send(404);
+		return;
+	}
+	Server.updateOne({server: req.params.server_id}, {weight: req.params.weight}).then((result) => {
+		updateServers();	
+		res.send(200)
+	})
+	.catch((error) => {
+		console.log(error)
+	});
+});
+
 
 app.use(express.static('public', {extensions: ["html"]}));
 
