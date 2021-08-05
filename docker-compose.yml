@@ -7,11 +7,20 @@ services:
       - NODE_ENV=dev
     depends_on:
       - mongodb
-  game:
+  d1:
     build:
       context: .
       dockerfile: game/Dockerfile
     environment:
+      - NODE_ENV=dev
+    depends_on:
+      - mongodb
+  d2:
+    build:
+      context: .
+      dockerfile: game/Dockerfile
+    environment:
+      - SERVER=d2
       - NODE_ENV=dev
     depends_on:
       - mongodb
@@ -26,6 +35,8 @@ services:
     depends_on:
       - mongodb
   mongodb:
+    ports:
+      - "6000:6000"
     image: "mongo"
   frontend:
     build:
@@ -34,5 +45,6 @@ services:
       - "5000:5000"
     depends_on:
       - main
-      - game
+      - d1
+      - d2
       - tutorial
