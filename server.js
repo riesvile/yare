@@ -89,40 +89,17 @@ function games_paired(){
 	
 	for (j = 0; j < game_pairs.length; j++){
 		
-		var am_servers = Object.keys(server_occupancy);
-		var am_load_threshold = 10;
-		var am_chosen_server = 'd4';
+		var chosen_server = pick_server('tutorial');
 		var p1p1 = game_pairs[j][0];
 		var p2p2 = game_pairs[j][1];
 	
-		for (i = 0; i < am_servers.length; i++){
-			if (server_occupancy[am_servers[i]] > am_load_threshold){
-				am_chosen_server = am_servers[i];
-				server_occupancy[am_chosen_server]--;
-				console.log(server_occupancy);
-				console.log('chosen server = ' + am_chosen_server);
-				break;
-			}
-			if (i == (am_servers.length - 1)){
-				console.log('all serverrrrrs busy, increasing load');
-				if (am_load_threshold <= 0){
-					console.log('maximum server capacity reached');
-				} else {
-					am_load_threshold -= 5; 
-					i = -1;
-				}
-			
-			}
-		
-		}
-	
-		g_id = new_game(p1p1[0], p2p2[0], init_status = 0.5, am_chosen_server);
+		g_id = new_game(p1p1[0], p2p2[0], init_status = 0.5, chosen_server);
 		
 		//add server
-		paired_and_waiting[p1p1[0]] = [g_id, am_chosen_server];
-		paired_and_waiting[p2p2[0]] = [g_id, am_chosen_server];
+		paired_and_waiting[p1p1[0]] = [g_id, chosen_server];
+		paired_and_waiting[p2p2[0]] = [g_id, chosen_server];
 		
-		update_game_db(g_id, am_chosen_server, p1p1[0], p2p2[0], p1p1[2], p2p2[2], p1p1[3], p2p2[3], p1p1[1], p2p2[1]);
+		update_game_db(g_id, chosen_server, p1p1[0], p2p2[0], p1p1[2], p2p2[2], p1p1[3], p2p2[3], p1p1[1], p2p2[1]);
 				
 	}
 	
@@ -256,18 +233,32 @@ var workers = {};
 //active games[game_id] = [status, player1_id, player2_id, server];
 var active_games = {};
 var tutorial_finishings = {};
-var server_occupancy_tutorial = {
-	t1: 0,
-	t2: 9000,
-	t3: 50
-}
-var server_occupancy = {
-	d1: 2000,
-	d2: 20,
-	d3: 0,
-	d4: 20
-};
 
+var servers = {};
+var server_count = {};
+
+//pick random server from servers based on type, weighted by value and current count from server_count
+function pick_server(type) {
+	let type_servers = servers[type];
+	let total_weight = Object.values(type_servers).reduce((a, s) => a + s, 0);
+	let total_count = Object.keys(type_servers).reduce((a, s) => a + (server_count[s] || 0), 0) + 1;
+
+	let bestdiff = Infinity;
+	let best = null;
+	for(let server in type_servers) {
+		let server_goal = (type_servers[server] / total_weight) * total_count;
+		let diff = (server_count[server]||0) - server_goal;
+		if(diff < bestdiff) {
+			bestdiff = diff;
+			best = server;
+		}
+	}
+	if(!(best in server_count)) {
+		server_count[best] = 0;
+	}
+	server_count[best]++;
+	return best;
+}
 
 var this_server = process.env.SERVER || 'd1';
 var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
@@ -278,10 +269,39 @@ var user_sessions = {};
 const mongoose = require('mongoose');
 const {User, Session} = require('./models/users.js');
 const Game = require('./models/newgame.js');
+const Server = require('./models/servers.js');
 const dbURI = config.mongo;
+mongoose.set('useCreateIndex', true);
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to dbb'))
 	.catch((error) => console.log(error));
+
+function updateServers() {
+	Server.find({}).then((db_servers) => {
+		if(db_servers.length == 0) {
+			servers = {
+				real: {
+					d1: 1
+				},
+				tutorial: {
+					t2: 1
+				}
+			};
+		} else {
+			servers = {};
+			console.log(db_servers);
+			for(let db_server of db_servers) {
+				servers[db_server.type] = servers[db_server.type] || {};
+				servers[db_server.type][db_server.server] = db_server.weight;
+			}
+		}
+		console.log(servers);
+	})
+	.catch((error) => console.error(error));
+}
+
+updateServers();
+setInterval(updateServers, 30000);
 
 function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd4', pla1_shape = 0, pla2_shape = 0) {
 	var g_id = generateUniqueString(3);
@@ -365,30 +385,7 @@ function get_color(color_name){
 
 function bot_game(req, res, pl_id){
 	
-	var tut_servers = Object.keys(server_occupancy_tutorial);
-	var load_threshold = 40;
-	var chosen_server = 't3';
-	//var color_code = get_color(req.body.user_color);
-	
-	for (i = 0; i < tut_servers.length; i++){
-		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
-			chosen_server = tut_servers[i];
-			server_occupancy_tutorial[chosen_server]--;
-			console.log(server_occupancy_tutorial);
-			console.log('chosen server = ' + chosen_server);
-			break;
-		}
-		if (i == (tut_servers.length - 1)){
-			console.log('all servers busy, increasing load');
-			if (load_threshold <= 0){
-				console.log('maximum server capacity reached');
-			} else {
-				load_threshold -= 10; 
-				i = -1;
-			}
-		}
-		
-	}
+	var chosen_server = pick_server('tutorial');
 	
 	
 	g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
@@ -437,31 +434,8 @@ function will_bot_game(req, res, pl_id){
 	// REMOVE FROM AUTO-MATCH QUEUE
 	actively_waiting[req.body.user_id] = 0;
 	
-	var tut_servers = Object.keys(server_occupancy_tutorial);
-	var load_threshold = 40;
-	var chosen_server = 'd1';
+	var chosen_server = pick_server('real');
 	var color_code = get_color(req.body.user_color);
-	
-	/*
-	for (i = 0; i < tut_servers.length; i++){
-		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
-			chosen_server = tut_servers[i];
-			server_occupancy_tutorial[chosen_server]--;
-			console.log(server_occupancy_tutorial);
-			console.log('chosen server = ' + chosen_server);
-			break;
-		}
-		if (i == (tut_servers.length - 1)){
-			console.log('all servers busy, increasing load');
-			if (load_threshold <= 0){
-				console.log('maximum server capacity reached');
-			} else {
-				load_threshold -= 10; 
-				i = -1;
-			}
-		}
-		
-	}*/
 	
 	g_id = new_game(pl_id, 'will-bot', 1, chosen_server);
 	
@@ -510,31 +484,8 @@ function medium_bot_game(req, res, pl_id){
 	// REMOVE FROM AUTO-MATCH QUEUE
 	actively_waiting[req.body.user_id] = 0;
 	
-	var tut_servers = Object.keys(server_occupancy_tutorial);
-	var load_threshold = 40;
-	var chosen_server = 'd1';
+	var chosen_server = pick_server('real');
 	var color_code = get_color(req.body.user_color);
-	
-	/*
-	for (i = 0; i < tut_servers.length; i++){
-		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
-			chosen_server = tut_servers[i];
-			server_occupancy_tutorial[chosen_server]--;
-			console.log(server_occupancy_tutorial);
-			console.log('chosen server = ' + chosen_server);
-			break;
-		}
-		if (i == (tut_servers.length - 1)){
-			console.log('all servers busy, increasing load');
-			if (load_threshold <= 0){
-				console.log('maximum server capacity reached');
-			} else {
-				load_threshold -= 10; 
-				i = -1;
-			}
-		}
-		
-	}*/
 	
 	g_id = new_game(pl_id, 'medium-bot', 1, chosen_server);
 	
@@ -582,31 +533,8 @@ function dumb_bot_game(req, res, pl_id){
 	// REMOVE FROM AUTO-MATCH QUEUE
 	actively_waiting[req.body.user_id] = 0;
 	
-	var tut_servers = Object.keys(server_occupancy_tutorial);
-	var load_threshold = 40;
-	var chosen_server = 'd1';
+	var chosen_server = pick_server('real');
 	var color_code = get_color(req.body.user_color);
-	
-	/*
-	for (i = 0; i < tut_servers.length; i++){
-		if (server_occupancy_tutorial[tut_servers[i]] > load_threshold){
-			chosen_server = tut_servers[i];
-			server_occupancy_tutorial[chosen_server]--;
-			console.log(server_occupancy_tutorial);
-			console.log('chosen server = ' + chosen_server);
-			break;
-		}
-		if (i == (tut_servers.length - 1)){
-			console.log('all servers busy, increasing load');
-			if (load_threshold <= 0){
-				console.log('maximum server capacity reached');
-			} else {
-				load_threshold -= 10; 
-				i = -1;
-			}
-		}
-		
-	}*/
 	
 	g_id = new_game(pl_id, 'dumb-bot', 1, chosen_server);
 	
@@ -650,33 +578,10 @@ function dumb_bot_game(req, res, pl_id){
 
 function friend_challenge(req, res){
 	
-	var friend_servers = Object.keys(server_occupancy);
-	var f_load_threshold = 10;
-	var f_chosen_server = 'd4';
+	var chosen_server = pick_server('real');
 	var color_code = get_color(req.body.user_color);
-	
-	for (i = 0; i < friend_servers.length; i++){
-		if (server_occupancy[friend_servers[i]] > f_load_threshold){
-			f_chosen_server = friend_servers[i];
-			server_occupancy[f_chosen_server]--;
-			console.log(server_occupancy);
-			console.log('chosen server = ' + f_chosen_server);
-			break;
-		}
-		if (i == (friend_servers.length - 1)){
-			console.log('all serverrrrrs busy, increasing load');
-			if (f_load_threshold <= 0){
-				console.log('maximum server capacity reached');
-			} else {
-				f_load_threshold -= 10; 
-				i = -1;
-			}
-			
-		}
 		
-	}
-	
-	g_id = new_game(req.body.user_id, 0, init_status = 0.5, f_chosen_server);
+	g_id = new_game(req.body.user_id, 0, init_status = 0.5, chosen_server);
 	res.status(200).send({
 		g_id: g_id,
 		meta: 'waiting for p2'
@@ -684,7 +589,7 @@ function friend_challenge(req, res){
 		
 	const game = new Game({
 		game_id: g_id,
-		server: f_chosen_server,
+		server: chosen_server,
 		player1: req.body.user_id,
 		player2: '',
 		p1_session_id: req.body.session_id,
@@ -1173,11 +1078,7 @@ function deactivate_game(game_id){
 	console.log('here is deactivating happening');
 	try {
 		var serv_id = active_games[game_id][3];
-		if (serv_id.startsWith('t')){
-			server_occupancy_tutorial[serv_id]++;
-		} else {
-			server_occupancy[serv_id]++;
-		}	
+		server_count[serv_id]--;
 		delete active_games[game_id];
 	} catch (error) {
 	  console.error(error);
