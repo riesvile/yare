@@ -1093,7 +1093,7 @@ function deactivate_game(game_id){
 	}
 }
 
-setInterval(function(){
+/*setInterval(function(){
 	var updates = [];
 	Game.find({active: 1}).then((games) => {
 		console.log("active games: " + games.map(g => g.game_id).join(','));
@@ -1114,7 +1114,7 @@ setInterval(function(){
 		console.log(error);
 	});
 
-}, 10000);
+}, 60000);*/
 
 app.post('/gameinfo', (req, res) => {
 
