@@ -203,6 +203,29 @@
   <script src="a/animations.js"></script>
   <script>
 	  
+	  function getOS() {
+	    var userAgent = window.navigator.userAgent,
+	        platform = window.navigator.platform,
+	        macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+	        windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+	        iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+	        os = null;
+
+	    if (macosPlatforms.indexOf(platform) !== -1) {
+	      os = 'Mac';
+	    } else if (iosPlatforms.indexOf(platform) !== -1) {
+	      os = 'iOS';
+	    } else if (windowsPlatforms.indexOf(platform) !== -1) {
+	      os = 'Windows';
+	    } else if (/Android/.test(userAgent)) {
+	      os = 'Android';
+	    } else if (!os && /Linux/.test(platform)) {
+	      os = 'Linux';
+	    }
+
+	    return os;
+	  }
+	  
 	  var editor = ace.edit("editor");
 	  editor.setTheme("ace/theme/clouds_midnight");
 	  editor.session.setMode("ace/mode/javascript");
@@ -222,6 +245,11 @@
 	      name: "update_code",
 	      exec: function() {update_code();},
 	      bindKey: {mac: "shift-enter", win: "shift-enter"}
+	  });
+	  editor.commands.addCommand({
+	      name: "update_code",
+	      exec: function() {update_code();},
+	      bindKey: {mac: "cmd-s", win: "ctrl-s"}
 	  });
 	  editor.completers.push({
 	      getCompletions: function(editor, session, pos, prefix, callback) {
@@ -246,7 +274,7 @@
 	  function run_it(){
 		  
 		  if (game_running == 0){
-		  	 if (localStorage.getItem("code_code") != null) update_code();
+		  	 //if (localStorage.getItem("code_code") != null) update_code();
 		  }
 		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
@@ -405,6 +433,13 @@
 	  var offsetX_adjust = 0;
 	  var offsetY_adjust = 0;
 	  
+	  var osys = getOS();
+	  
+	  if (osys == "Mac"){
+		  document.getElementById('shortcut_info').innerHTML = "CMD + S";
+	  } else {
+		  document.getElementById('shortcut_info').innerHTML = "CTRL + S";
+	  }
 	  
 	  load_start();
 	  
@@ -1117,6 +1152,9 @@
 	      canvas2.height = window.innerHeight;
 	      canvas2.style.height = window.innerHeight;
 	  }
+	  
+	  
+	  
 	  
 	  
   </script>
