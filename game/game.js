@@ -27,20 +27,6 @@ function elapsed_ms_from(t0) {
 
 function end_game(was_p1 = 0, was_p2 = 0){
 	game_finished = 1;
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
-	console.log('GAME OVER');
 	//console.log(game_file);
 	var compressed_file = zlib.deflateSync(JSON.stringify(game_file)).toString('base64');
 	//console.log(JSON.stringify(game_file));
@@ -167,9 +153,6 @@ const h_square = min_beam / Math.sqrt(2);
 //initiate_world
 parentPort.on("message", message => {
   if (message.data == "initiate world") {
-	  console.log('hmm');
-	  console.log(workerData);
-	  
 	    if (workerData[1] == 'tutorial'){
 			game_duration = 0;
 			init_data = {
@@ -294,10 +277,6 @@ parentPort.on("message", message => {
 	  shapes['player2'] = message.p2_shape;
 	  colors['player1'] = color_palettes[message.p1_color];
 	  colors['player2'] = color_palettes[message.p2_color];
-	  console.log('game started');
-	  console.log(players);
-	  console.log(colors);
-	  console.log(shapes);
 	  sand1.init(message.player1);
 	  sand2.init(message.player2);
 	  //tutorial
@@ -380,11 +359,7 @@ function clean_error(error){
 
 function handle_error(error, player){
 	message = clean_error(error);
-	///*
-	console.log("error: "+error);
-	console.log('message:' +message);
-	// */
-	//
+
 	fill_error(player, to_html(message));
 }
 
@@ -396,7 +371,6 @@ async function user_code(){
 		//console.log(helper_count);
 		
 		if (helper_count > 0){
-			console.log('tutorial phase 6 half-done');
 			tutorial_flag1 = 1;
 		}
 	}
@@ -422,7 +396,6 @@ async function user_code(){
 		user_error1 = out.errors.map(clean_error);
 		gqueue1 = out.gqueue;
 		if(run_err) {
-			console.log(run_err);
 			handle_error(run_err, players['p1']);
 		}
 		if(sand1.code_err){
@@ -430,7 +403,7 @@ async function user_code(){
 		}
 		
 	} catch (error){
-		console.dir(error);
+		console.log("error getting output" + error);
 		handle_error(error, players['p1']);
 	}
 
@@ -451,7 +424,6 @@ async function user_code(){
 		user_error2 = out.errors.map(clean_error);
 		gqueue2 = out.gqueue;
 		if(run_err) {
-			console.log(run_err);
 			handle_error(run_err, players['p2']);
 		}
 		if(sand2.code_err){
@@ -459,7 +431,7 @@ async function user_code(){
 		}
 		
 	} catch (error){
-		console.dir(error);
+		console.log("error getting output" + error);
 		handle_error(error, players['p2']);
 	}
 }
@@ -696,13 +668,11 @@ class Sandbox {
 
 		this.yd = this.context.evalClosureSync(sandboxCode, [], {result: {reference: true}});
 
-		console.log(this.yd);
 		this.funcs = {};
 		this.funcs.loadData = this.yd.getSync('loadData', {reference: true});
 		this.funcs.getOutput = this.yd.getSync('getOutput', {reference: true});
 		this.err = false;
 		this.code_err = null;
-		console.log(this.funcs.loadSpirits);
 	}
 
 	setPlayerCode(code) {
@@ -712,7 +682,6 @@ class Sandbox {
 			this.ready = true;
 		}catch(err) {
 			this.code_err = "Last code compile error: " + err.message;
-			console.log(err);
 		}
 	}
 
@@ -1438,7 +1407,7 @@ if (!isMainThread){
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(spirit_lookup[spirit].shape != "triangles") continue;
 				if(!commands[spirit].explode) continue;
-				console.log(spirit + ' is about to explode');
+				//console.log(spirit + ' is about to explode');
 				let explodee = spirit_lookup[spirit];
 				for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
 					let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
@@ -1708,7 +1677,7 @@ if (!isMainThread){
 		
 		if (base_lookup['base_' + players['p1']].energy >= base_lookup['base_' + players['p1']].current_spirit_cost){
 			if (workerData[1] == 'tutorial' && top_s > 20){
-				console.log('can not have more than 20 spirits in tutorial');
+				//console.log('can not have more than 20 spirits in tutorial');
 			} else {
 				if (p1_defend != 1){
 					top_s++;
@@ -1888,20 +1857,15 @@ if (!isMainThread){
 					let dist = Math.random() * 10;
 					d.position[0] += Math.sin(ang) * dist;
 					d.position[1] += Math.cos(ang) * dist;
-					console.log("Collision checks for ", did, d.position);
 					for (let object_name in structure_lookup){
 						let s = structure_lookup[object_name];
 						let v = sub(d.position, s.position);
 						let len_sq = norm_sq(v);
-						console.log(object_name, did, len_sq, s.collision_radius**2, v);
 						if(len_sq < s.collision_radius**2) {
 							v = mult(s.collision_radius / Math.sqrt(len_sq), v);
-							console.log(v);
 							d.position = add(s.position, v);
 						}
-						console.log(sub(d.position, s.position));
 					}
-					console.log("Final position for ", did, d.position);
 				}
 				
 				orig.merged = [];
@@ -2302,6 +2266,7 @@ if (!isMainThread){
 	async function mainLoop() {
 		const t1 = (+new Date());
 		await update_state();
+		Game.updateOne({game_id: workerData[0]}, {last_update: (+new Date())});
 		setTimeout(mainLoop, Math.max(0, game_tick - (+new Date()) + t1));
 	}
 }

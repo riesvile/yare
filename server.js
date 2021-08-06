@@ -1083,11 +1083,27 @@ function deactivate_game(game_id){
 	} catch (error) {
 	  console.error(error);
 	}
-	
-	
 }
 
+setInterval(function(){
+	var updates = [];
+	Game.find({active: 1}).then((games) => {
+		for(let game of games) {
+			if(game.last_update < (+new Date()) - (1000 * 60)) {
+				deactivate_game(game.game_id);
+				updates.push(game.game_id);
+			}
+		}
+		if(updates.length > 0) {
+			Game.updateMany({game_id: {$in: updates}}, {active: 0}).catch(err => {
+				console.log(err)
+			});
+		}
+	}).catch((error) => {
+		console.log(error);
+	});
 
+}, 60000);
 
 app.post('/gameinfo', (req, res) => {
 

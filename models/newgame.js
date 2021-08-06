@@ -31,6 +31,7 @@ const game_schema = new Schema({
 	game_duration: Number,
 	observers: Number,
 	game_file: String,
+	last_update: Number,
 }, {timestamps: true});
 
 

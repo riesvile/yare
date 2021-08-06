@@ -57,7 +57,6 @@ function discord_postmessage(hook, msg){
 		    })
 		}).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
 		  })
 	      .catch(err => {
 			  console.log(err);
@@ -185,8 +184,6 @@ function initiate_world(ws, game_id){
 }
 
 function send_code(ws, pl_num, pl_id, pl_code, game_id, session_id, resign_state){
-	console.log('sending code');
-	console.log('session_id = ' + session_id);
 	workers[game_id].postMessage({client: ws, data: "player code", pl_num: pl_num, pl_id: pl_id, pl_code: pl_code, session_id: session_id, resigning: resign_state});
 }
 
@@ -267,13 +264,10 @@ wss.on('connection', function connection(ws, req) {
 	
 	ws.on('message', function incoming(message) {
 		d1 = process.hrtime();
-		console.log('message');
-		console.log('received: ' + message);
 		let active_game = active_games[g_id];
 		if(active_game == undefined){
 			// TODO VILEM CHECK - is this proper handling?
 			// or do we return something else?
-			console.log('ignoring message from '+ message['u_id'] + ' game ' + g_id + ' is no longer active');
 			return;
 		}
 
@@ -287,8 +281,6 @@ wss.on('connection', function connection(ws, req) {
 				if (message['u_id'] == active_game[1]) resigning1 = 1;
 				if (message['u_id'] == active_game[2]) resigning2 = 1;
 			} else {
-				console.log('message');
-		    	console.log('received: %s', message);
 				resigning1 = 0;
 				resigning2 = 0;
 			}
@@ -298,7 +290,7 @@ wss.on('connection', function connection(ws, req) {
 		//player1_code = message;
 		try {
 			if (message['u_id'].length > 1){
-				console.log('code sent by');
+				//console.log('code sent by');
 				//console.log(message['u_id']);
 				//console.log(active_game[1])
 			}
