@@ -1093,9 +1093,14 @@ function deactivate_game(game_id){
 	}
 }
 
-/*setInterval(function(){
+setInterval(function(){
 	var updates = [];
-	Game.find({active: 1}).then((games) => {
+
+	var game_ids = Object.keys(active_games);
+	if(game_ids.length == 0) {
+		return;
+	}
+	Game.find({game_id: {$in: game_ids}}).then((games) => {
 		console.log("active games: " + games.map(g => g.game_id).join(','));
 		for(let game of games) {
 			console.log(game.last_update);
@@ -1114,7 +1119,7 @@ function deactivate_game(game_id){
 		console.log(error);
 	});
 
-}, 60000);*/
+}, 60000);
 
 app.post('/gameinfo', (req, res) => {
 
