@@ -89,7 +89,7 @@ function games_paired(){
 	
 	for (j = 0; j < game_pairs.length; j++){
 		
-		var chosen_server = pick_server('tutorial');
+		var chosen_server = pick_server('real');
 		var p1p1 = game_pairs[j][0];
 		var p2p2 = game_pairs[j][1];
 	
