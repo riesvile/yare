@@ -282,6 +282,8 @@
 		  yerange_el.style.borderColor = color_table['default'][0];
 		  pistagre_el.style.borderWidth = '1px';
 		  pistagre_el.style.borderColor = color_table['default'][0];
+
+		  localStorage.setItem('chosen_color', ch_color);
 		  
 		  chosen_color = ch_color;
 		  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
@@ -487,7 +489,7 @@
 	  }
 	  
 	  
-	  var chosen_color = 'purply';
+	  
 	  var chosen_shape = '';
 	  
 	  var gblue_el = document.getElementById('color_gblue_border');
@@ -520,8 +522,12 @@
 	  squares_el.addEventListener('click', shape_selection.bind(null, 'squares'), false);
 	  triangles_el.addEventListener('click', shape_selection.bind(null, 'triangles'), false);
 	  
-	  
-	  draw_borders();
+	  var chosen_color = 'purply';
+	  if(localStorage.getItem('chosen_color') != null){
+		  chosen_color = localStorage.getItem('chosen_color');
+	  }
+	  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
+		draw_borders(current_color_el);
 	  
 	  //document.getElementById('color_gblue_border').addEventListener('click', chosencolor, false)
 	  
