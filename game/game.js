@@ -2081,7 +2081,7 @@ if (!isMainThread){
 				}
 			}
 			
-			if(game_duration > 0) {
+			if(game_duration >= 0) {
 		
 				process_stuff();
 			
@@ -2265,8 +2265,14 @@ if (!isMainThread){
 
 	async function mainLoop() {
 		const t1 = (+new Date());
+		console.log("tick " + workerData[0]);
 		await update_state();
-		Game.updateOne({game_id: workerData[0]}, {last_update: (+new Date())});
+		if(game_duration % 30 == 0){
+			console.log("updating game " + workerData[0]);
+			Game.updateOne({game_id: workerData[0]}, {last_update: (+new Date())}).catch(err => {
+				console.log(err)
+			});
+		}
 		setTimeout(mainLoop, Math.max(0, game_tick - (+new Date()) + t1));
 	}
 }

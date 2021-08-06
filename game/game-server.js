@@ -270,12 +270,17 @@ wss.on('connection', function connection(ws, req) {
 			// or do we return something else?
 			return;
 		}
-
+		
 		if (message == 'reinitiate'){
 			console.log('reinitiating the world for g_id = ' + g_id);
 			initiate_world(ws.client_id, g_id);
 		} else {
-			message = JSON.parse(message);
+			try {
+				message = JSON.parse(message);
+			} catch (error) {
+				console.log(error);
+				return;
+			}
 			if (message.meta == "resign"){
 				console.log(message.u_id + ' is resigning');
 				if (message['u_id'] == active_game[1]) resigning1 = 1;

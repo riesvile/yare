@@ -46,7 +46,8 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: ''
+		game_file: '',
+		last_update: (+new Date())
 	});
 
 	game.save()
@@ -415,7 +416,8 @@ function bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: ''
+		game_file: '',
+		last_update: (+new Date())
 	});
 	
 	game.save()
@@ -464,7 +466,8 @@ function will_bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: ''
+		game_file: '',
+		last_update: (+new Date())
 	});
 	
 	game.save()
@@ -514,7 +517,8 @@ function medium_bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: ''
+		game_file: '',
+		last_update: (+new Date())
 	});
 	
 	game.save()
@@ -563,7 +567,8 @@ function dumb_bot_game(req, res, pl_id){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: ''
+		game_file: '',
+		last_update: (+new Date())
 	});
 	
 	game.save()
@@ -606,7 +611,8 @@ function friend_challenge(req, res){
 		active: 0.5,
 		game_duration: 0,
 		observers: 0,
-		game_file: ''
+		game_file: '',
+		last_update: (+new Date())
 	});
 
 	game.save()
@@ -1077,9 +1083,11 @@ function trigger_monitoring(gid, val){
 function deactivate_game(game_id){
 	console.log('here is deactivating happening');
 	try {
-		var serv_id = active_games[game_id][3];
-		server_count[serv_id]--;
-		delete active_games[game_id];
+		if(game_id in active_games){
+			var serv_id = active_games[game_id][3];
+			server_count[serv_id]--;
+			delete active_games[game_id];
+		}
 	} catch (error) {
 	  console.error(error);
 	}
@@ -1088,8 +1096,11 @@ function deactivate_game(game_id){
 setInterval(function(){
 	var updates = [];
 	Game.find({active: 1}).then((games) => {
+		console.log("active games: " + games.map(g => g.game_id).join(','));
 		for(let game of games) {
-			if(game.last_update < (+new Date()) - (1000 * 60)) {
+			console.log(game.last_update);
+			if(!game.last_update || game.last_update < (+new Date()) - (1000 * 60)) {
+				console.log("Deactivating game " + game.game_id);
 				deactivate_game(game.game_id);
 				updates.push(game.game_id);
 			}
@@ -1103,7 +1114,7 @@ setInterval(function(){
 		console.log(error);
 	});
 
-}, 60000);
+}, 10000);
 
 app.post('/gameinfo', (req, res) => {
 
