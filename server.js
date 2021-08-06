@@ -1097,7 +1097,9 @@ setInterval(function(){
 	var updates = [];
 
 	var game_ids = Object.keys(active_games);
-
+	if(game_ids.length == 0) {
+		return;
+	}
 	Game.find({game_id: {$in: game_ids}}).then((games) => {
 		console.log("active games: " + games.map(g => g.game_id).join(','));
 		for(let game of games) {
