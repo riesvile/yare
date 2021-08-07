@@ -358,7 +358,7 @@ function login_success(user_name){
 	}
 	
 	try {
-		if (temp_from_nongame) window.location = 'https://yare.io/hub';
+		if (temp_from_nongame) window.location = '/hub';
 	} catch (e){
 		console.log(e);
 	}
