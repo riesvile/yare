@@ -3602,7 +3602,8 @@ app.get("/admin-panel/dash", async (req,res,next) => {
 				free: os.freemem(),
 				used: os.totalmem() - os.freemem()
 			},
-			uptime: os.uptime(),
+			hostUptime: os.uptime(),
+			uptime: process.uptime(),
 		},
 		gameinfo: {
 			userAccounts: (await User.count({})),

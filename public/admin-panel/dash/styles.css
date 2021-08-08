@@ -17,7 +17,8 @@
 }
 
 html,
-body {
+body,
+.main {
   display: flex;
   margin: 0;
   padding: 0;
@@ -53,6 +54,24 @@ button:hover {
 }
 button:active {
   background-color: var(--fg2);
+}
+
+header {
+  width: 100%;
+  top: 0;
+  padding: 0.5rem 0;
+  background-color: var(--bg2);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+header h1 {
+  padding: 0;
+  margin: 0;
+}
+button#reload {
+  position: fixed;
+  right: 1rem;
 }
 
 a {
