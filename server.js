@@ -940,6 +940,11 @@ app.post('/add-user', (req, res) => {
 		res.status(200).send({
         	data: "pass_empty"
         });
+	} else if (User.find({user_id: req.body.user_name})){
+		console.log('user with name already exists');
+		res.status(200).send({
+        	data: "exists"
+        });
 	} else {
 		var session_id = generateUniqueString(3);
 	    var session_expire = new Date();
