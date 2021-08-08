@@ -260,7 +260,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 	
 	for (b = 0; b < bases.length; b++){
 		if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
-			hover_content.push(['base', bases[b].id, bases[b].energy, bases[b].position, bases[b].def_status], bases[b].hp]);
+			hover_content.push(['base', bases[b].id, bases[b].energy, bases[b].position, bases[b].def_status, bases[b].hp]);
 		}
 	}
 	
