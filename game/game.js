@@ -163,6 +163,16 @@ const min_beam = 200;
 // histogram square - maximal, s.t. any two points inside are closer <= beam 
 const h_square = min_beam / Math.sqrt(2);
 
+function setBotCode(name, sand) {
+	if (name == 'medium-bot'){
+		sand.setPlayerCode(botCodes['medium-bot']);
+	} else if (name == 'will-bot'){
+		sand.setPlayerCode(botCodes['will-bot']);
+	} else if (name == 'dumb-bot'){
+		sand.setPlayerCode(botCodes['dumb-bot']);
+	}
+}
+
 //initiate_world
 parentPort.on("message", message => {
   if (message.data == "initiate world") {
@@ -303,46 +313,28 @@ parentPort.on("message", message => {
 	  
 	  Game.find({game_id: workerData[0]})
 	  	.then((result) => {
-			console.log('p1_color');
-			console.log(result[0].p1_color);
-			if (result[0].player2 == 'medium-bot'){
-				sand2.setPlayerCode(botCodes['medium-bot']);
-			} else if (result[0].player2 == 'will-bot'){
-				sand2.setPlayerCode(botCodes['will-bot']);
-			} else if (result[0].player2 == 'dumb-bot'){
-				sand2.setPlayerCode(botCodes['dumb-bot']);
-			}
-			
+
+			setBotCode(result[0].player1, sand1);
+
+			setBotCode(result[0].player2, sand2);
+
 			console.log('starting rating update');
-			User.find({user_id: players['p1']})
-				.then((result_p1) => {
-					console.log('look here');
-					//console.log(result_p1[0]['colors']);
-					//if (!color_validity(message.p1_color, result_p1[0]['colors'])) colors['player1'] = color_palettes['color1'];
-					User.find({user_id: players['p2']})
-						.then((result_p2) => {
-							//console.log(result_p2);
-							//if (!color_validity(message.p2_color, result_p2[0]['colors'])) colors['player2'] = color_palettes['color1'];
-							var p222_rating = '';
-							if (players['p2'] == 'easy-bot'){
-								p222_rating = 100;
-							} else if (players['p2'] == 'dumb-bot'){
-								p222_rating = 500;
-							} else if (players['p2'] == 'medium-bot'){
-								p222_rating = 1000;
-							} else if (players['p2'] == 'will-bot'){
-								p222_rating = 1700;
-							} else {
-								p222_rating = result_p2[0]['rating'];
-							}
-							Game.updateOne({game_id: workerData[0]}, {p1_rating: result_p1[0]['rating'], p2_rating: p222_rating}, {upsert: true})
-								.then((qq) => {
-									console.log('p1 and p2 ratings updated');
-								});	
-						})
-						.catch((error) => {
-							console.log(error);
-						})
+			User.find({user_id: {$in: [players['p1'], players['p2']]}})
+				.then((results) => {
+					updates = {};
+					for(var rp of results) {
+						if(rp.user_id == players['p1']){
+							updates.p1_rating = rp.rating;
+						}
+						if(rp.user_id == players['p2']){
+							updates.p2_rating = rp.rating;
+						}
+					}
+					Game.updateOne({game_id: workerData[0]}, {p1_rating: result_p1[0]['rating'], p2_rating: p222_rating}, {upsert: true})
+						.then((qq) => {
+							console.log('p1 and p2 ratings updated');
+						});	
+					
 				})
 				.catch((error) => {
 					console.log(error);

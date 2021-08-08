@@ -1,37 +1,71 @@
-for (i=0; i<my_spirits.length; i++){
-    my_spirits[i].move(star_a1c.position);
-    my_spirits[i].energize(my_spirits[i]);
+function dist_sq(coor1, coor2){
+    let a = coor1[0] - coor2[0];
+    let b = coor1[1] - coor2[1];
+    return a*a + b*b;
+}
 
-    if (my_spirits[i].energy == my_spirits[i].energy_capacity){
-        memory[my_spirits[i].id] = 'charging';
-    } else if (my_spirits[i].energy == 0){
-        memory[my_spirits[i].id] = 'harvesting';
+var my_star = star_zxq;
+var e_star = star_a1c;
+
+if(dist_sq(star_a1c.position, base.position) < dist_sq(star_zxq.position, base.position)){
+    my_star = star_a1c;
+    e_star = star_zxq;
+}
+
+var mine = my_spirits.filter(s => s.hp > 0);
+
+var miners = 40;
+
+for (var s of mine){
+    if(memory[s.id] == 'harvesting' || memory[s.id] == 'charging') {
+        miners--;
     }
+    if (memory[s.id] == 'attacker') {
+        if(base.sight.enemies.length == 0) {
+            memory[s.id] = 'charging';
+        }
+    } else if (s.energy == s.energy_capacity){
+        if(miners > 0) {
+            memory[s.id] = 'charging';
+            miners--;
+        } else {
+            memory[s.id] = 'defending';
+        }
+    } else if (s.energy == 0){
+        memory[s.id] = 'harvesting';
+    } 
 
-    if (memory[my_spirits[i].id] == 'charging'){
-        my_spirits[i].move(base.position);
-        my_spirits[i].energize(base);
-    } else if (memory[my_spirits[i].id] == 'harvesting'){
-        my_spirits[i].move(star_a1c.position);
-        my_spirits[i].energize(my_spirits[i]);
+    if (memory[s.id] == 'charging'){
+        s.move(base.position);
+        s.energize(base);
+    } else if(memory[s.id] == 'harvesting'){
+        s.move(my_star.position);
+        s.energize(s);
+    } else if(memory[s.id] == 'defending'){
+        s.move(base.position);
     }
 }
 
 if (base.sight.enemies.length > 0){
     console.log('i see you');
-    var invader = spirits[base.sight.enemies[0]];
-    for (j=0; j<my_spirits.length; j++){
-        if (my_spirits[j].energy == my_spirits[j].energy_capacity){
-            memory[my_spirits[j].id] = "attacker";
+    var attackers = my_spirits.filter(s => memory[s.id] == 'attacker').length;
+    var i = 0;
+    for (var s of mine){
+        if (s.energy == s.energy_capacity && attackers < mine.length/2){
+            memory[s.id] = "attacker";
+            attackers++;
         }
-        if (memory[my_spirits[j].id] == "attacker" && j < my_spirits.length / 2){
-            console.log('this should be last');
-            my_spirits[j].move(invader.position);
-            my_spirits[j].energize(invader);
+        if(memory[s.id] == 'attacker'){
+            var invader = spirits[base.sight.enemies[i%base.sight.enemies.length]];
+            s.move(invader.position);
+            s.energize(invader);
+            i++;
         }
     }
 
-} else {
+}
+
+/*else {
     memory['atck'] = 0; 
 }
 
@@ -73,4 +107,4 @@ if (memory['phase'] == 2){
         my_spirits[0].move([1000, 800])
     }
     
-}
+}*/
