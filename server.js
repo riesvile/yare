@@ -1221,6 +1221,413 @@ app.post('/playerinfo', (req, res) => {
 
 });
 
+app.post('/populate-hub', (req, res) => {
+	Game.find({$or:[{player1: req.body.user_id},{player2: req.body.user_id}]})
+		.sort({updatedAt:'desc'})
+		.limit(10)
+		.exec()
+		.then((result) => {
+			//res.send(result);
+			console.log('dbdbdb result');
+			//console.log(result);
+			//console.log(result[0]);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no results"
+		        });
+			} else {
+				for (i = 0; i < result.length; i++){
+					result[i]['passwrd'] = '0';
+					result[i]['session_id'] = '0';
+					result[i]['game_file'] = '';
+				}
+				res.status(200).send({
+		        	data: "populate",
+					stream: result
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+app.post('/populate-leaderboard', (req, res) => {
+	User.find({})
+		.sort({rating:'desc'})
+		.limit(100)
+		.exec()
+		.then((result) => {
+			//res.send(result);
+			console.log('dbdbdb result');
+			console.log(result);
+			console.log(result[0]);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no results"
+		        });
+			} else {
+				for (i = 0; i < result.length; i++){
+					result[i]['passwrd'] = '0';
+					result[i]['session_id'] = '0';
+				}
+				res.status(200).send({
+		        	data: "populate",
+					stream: result
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+//app.get('/reset-ratings', (req, res) => {
+//	User.updateMany({}, {"$set":{"rating": 1500}})
+//		.then((result) => {
+//			//res.send(result);
+//			console.log('ratings maybe updated?');
+//			
+//			res.status(200).send({
+//	        	data: "done?"
+//	        });
+//			
+//		})
+//		.catch((error) => {
+//			console.log(error);
+//		})
+//});
+app.get('/set-color', (req, res) => {
+	User.updateMany({}, {"$set":{"colors": [1, 2, 3, 4, 5]}}, {upsert: true})
+		.then((result) => {
+			//res.send(result);
+			console.log('colors maybe updated?');
+			
+			res.status(200).send({
+	        	data: "done colors?"
+	        });
+			
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+app.post('/deactivate', (req, res) => {
+	console.log('deactivating');
+	console.log(req.body.game_id);
+	deactivate_game(req.body.game_id);
+	
+	res.status(200).send({
+		data: 'done'
+    });
+	
+});
+app.get('/t2f/est', (req, res) => {
+	console.log('triggerring');
+	trigger_deactivation();	
+});
+// ------
+// ------
+app.get('/challenge/:game_id', (req, res) => {
+	let active_game = active_games[req.params.game_id];
+	if(active_game == undefined){
+		// TODO VILEM CHECK - is this proper handling?
+		// or do we return something else?
+		res.send(404);
+		return;
+	}
+	if (active_game[0] == 1){
+		res.sendFile(__dirname + '/public/game.html');
+	} else if (active_game[0] == 0.5){
+		//pending – waiting for p2 to connect
+		res.sendFile(__dirname + '/public/challenge.html');
+		//active_games[g_id] = 1;
+	} else {
+		res.send(404);
+	}
+});
+app.post('/validate-challenge/:game_id', (req, res) => {
+	let g_id = req.params.game_id;
+	//find via mongoose, check if player1 != player2
+	console.log('finding game via mongoooooooooooooooooooose');
+	Game.find({game_id: g_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+		        	data: "no game found"
+		        });
+			} else if (result[0]['player1'] == req.body.user_id){
+				//challenge creator = acceptor :(
+				res.status(404).send({
+		        	data: "own challenge"
+		        });
+			
+			} else {
+				Game.updateOne({game_id: g_id}, {player2: req.body.user_id, p2_session_id: req.body.session_id}, {upsert: true})
+					.then((qq) => {
+						let active_game = active_games[g_id];
+						if(active_game != undefined){
+							active_game[2] = req.body.user_id;
+							console.log('p2_session_id updated');
+							//start_world(g_id);
+						} else{
+							console.log('WTF game ' + g_id + ' probably canceled in the meantime? race condition?');
+						}
+					});
+				
+				//create_worker(g_id, 'nonranked');
+				res.status(200).send({
+		        	data: "challenge connected"
+		        });
+				//active_games[g_id] = 1;
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(404).send({
+				data: "no game found"
+			});
+		})
+});
+app.post('/confirm-challenge/:game_id', (req, res) => {
+	let g_id = req.params.game_id;
+	let active_game = active_games[g_id];
+	if(active_game == undefined){
+		// TODO VILEM CHECK - is this proper handling?
+		// or do we return something else?
+		res.status(404).send({
+			data: "no game found"
+		});
+		return;
+	}
+	//find via mongoose, check if player1 != player2
+	if (active_game[0] == 0.5){
+		//access mongoose and update game document
+		active_game[2] = req.body.user_id;
+		active_game[0] = 1;
+		
+		Game.find({game_id: g_id})
+			.then((result) => {
+				//res.send(result);
+				console.log('updating p2 in db');
+				if (result.length == 0){
+					res.status(404).send({
+			        	data: "no game found"
+			        });
+				} else {
+					Game.updateOne({game_id: g_id}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_shape: req.body.user_shape, p2_color: get_color(req.body.user_color)}, {upsert: true})
+						.then((qq) => {
+							let active_game = active_games[g_id];
+							if(active_game != undefined){
+								active_game[2] = req.body.user_id;
+								console.log('p2_details updated');
+							} else
+								console.log('WTF 2 game ' + g_id + ' probably canceled in the meantime? race condition?');
+							//start_world(g_id);
+						});
+				
+					//create_worker(g_id, 'nonranked');
+					res.status(200).send({
+			        	data: "waiting for p1 to start",
+						server: active_game[3]
+			        });
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		
+	} else if (active_game[0] == 1){
+		//if player1 confirming, redirect to game and start it (allow code change)
+		Game.find({game_id: g_id})
+			.then((result) => {
+				//res.send(result);
+				console.log('db result');
+				if (result.length == 0){
+					res.status(404).send({
+			        	data: "no game found"
+			        });
+				} else if (result[0]['player1'] == req.body.user_id){
+					//start the game
+					res.status(200).send({
+			        	data: "start",
+						server: result[0]['server']
+			        });
+			
+				} else {
+					res.status(200).send({
+			        	data: "not owner"
+			        });
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	} else {
+		console.log('something went wrong here');
+	}
+	
+})
+app.post('/resume-game', (req, res) => {
+	console.log(req.body);
+    console.log(req.body.user_name);
+    console.log(req.body.password);
+	
+	Game.find({game_id: req.body.game_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+		        	data: "game not found"
+		        });
+			} else if (result[0].active == 1){
+				res.status(200).send({
+		        	data: "game found",
+					p1: result[0].player1,
+					p2: result[0].player2,
+					duration: result[0].game_duration,
+					server: result[0].server,
+					game_id: result[0].game_id
+		        });
+			} else if (result[0].active == 0){
+				res.status(200).send({
+		        	data: "game not active"
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "this should not happen"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+app.post('/monitor', (req, res) => {
+	console.log(req.body);
+	tutorial_finishings[req.body.game_id] = req.body.phase;
+	
+	res.status(200).send({
+    	data: 'monitoring data saved'
+    });
+});
+app.post('/qqmonitoring', (req, res) => {
+	console.log(req.body);
+	
+	res.status(200).send({
+		data: 'basic',
+    	active_games: active_games,
+		tutorials: tutorial_finishings
+    });
+});
+//global
+var player1_id = 'ab1';
+var player2_id = 'zx2';
+var player1_code;
+var player1_session = 'abc';
+var player2_code;
+var player2_session = 'xyz';
+var player1_code_temp;
+var player2_code_temp;
+//var code_temps = {};
+var tutorial = {};
+var processTime1 = 0;
+var processTime2 = 0;
+var processTimeRes = 0;
+//var render_data = [[],[],[],[],[]];
+app.get('/d1n/:game_id', (req, res) => {
+	let g_id = req.params.game_id;
+	//if (active_games[g_id][0] == 1){
+	//	res.redirect('/' + d1 + '/' + g_id);
+	//} else {
+	res.sendFile(__dirname + '/public/wait.html');
+	//}
+	
+});
+app.get('/replay/:game_id', (req, res) => {
+	let g_id = req.params.game_id;
+	//if (active_games[g_id][0] == 1){
+	//	res.redirect('/' + d1 + '/' + g_id);
+	//} else {
+	res.sendFile(__dirname + '/public/replay.html');
+	//}
+	
+});
+function findAgain(req, res, g_id){
+	Game.find({game_id: g_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			//console.log(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no game found"
+		        });
+			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
+				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
+					.then((qq) => {
+						console.log('game is ready');
+						res.status(200).send({
+				        	data: "game ready",
+							server: 'd1'
+				        });
+					});			
+			} else if (result[0]['active'] == 1 && result[0]['server'] == 'd1'){
+				console.log('game already active, redirect');
+				res.status(200).send({
+		        	data: "game already active",
+					server: 'd1'
+		        });				
+			} else {
+				res.status(404).send({
+		        	data: "something went wrongg"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+}
+app.post('/d1ns/:game_id', (req, res) => {
+	let g_id = req.params.game_id;
+		
+	console.log('finding game via mongoooooooooooooooooooose');
+	Game.find({game_id: g_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('db result');
+			//console.log(result);
+			if (result.length == 0){
+				findAgain(req, res);
+			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
+				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
+					.then((qq) => {
+						console.log('game is reeeady');
+						res.status(200).send({
+				        	data: "game ready",
+							server: 'd1'
+				        });
+					});			
+			} else if (result[0]['active'] == 1 && result[0]['server'] == 'd1'){
+				console.log('game already active, redirect');
+				res.status(200).send({
+		        	data: "game already active",
+					server: 'd1'
+		        });				
+			} else {
+				res.status(404).send({
+		        	data: "something went wrongg"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
 app.get('/d1/:game_id', (req, res) => {
 	let g_id = req.params.game_id;
 	let active_game = active_games[g_id];
