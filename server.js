@@ -916,7 +916,7 @@ function isValid(str) {
 	return /^\w+$/.test(str);
 }
 
-app.post('/add-user', (req, res) => {
+app.post('/add-user', async (req, res) => {
 	console.log(req.body);
     console.log(req.body.user_name);
     console.log(req.body.password);
@@ -940,7 +940,7 @@ app.post('/add-user', (req, res) => {
 		res.status(200).send({
         	data: "pass_empty"
         });
-	} else if (User.find({user_id: req.body.user_name})){
+	} else if ((await User.find({user_id: req.body.user_name})).length !== 0){
 		console.log('user with name already exists');
 		res.status(200).send({
         	data: "exists"
