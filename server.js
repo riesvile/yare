@@ -733,8 +733,13 @@ app.get('/active-games/:user_id', (req, res) => {
 	for (let key in active_games) {
 	    if (!active_games.hasOwnProperty(key)) continue;
 	    let game_l = active_games[key];
-		if (game_l[1] == user_id) active_g.push(key);
-		if (game_l[2] == user_id) active_g.push(key);
+		let ret = key;
+		if(req.query.v == '2') {
+			ret = {id: key, server: game_l[3], pl1: game_l[1], pl2: game_l[2]};
+		}
+
+		if (game_l[1] == user_id) active_g.push(ret);
+		if (game_l[2] == user_id) active_g.push(ret);
 	}
 	
 	if (active_g.length > 0){

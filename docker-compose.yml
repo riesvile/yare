@@ -7,6 +7,8 @@ services:
       - NODE_ENV=dev
     depends_on:
       - mongodb
+    volumes:
+      - ./public:/usr/src/app/public
   d1:
     build:
       context: .
