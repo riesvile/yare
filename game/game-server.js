@@ -106,6 +106,10 @@ function create_worker (game_id, game_type) {
     workers[game_id] = worker;
   }
 
+  function is_bot(id) {
+	return id == "dumb-bot" || id == "medium-bot" || id == "will-bot"
+  }
+
   function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_shape = 0, pla2_shape = 0, pla1_color = 'color1', pla2_color = 'color2', game_type = 'tutorial'){
 	create_worker(game_id, game_type);
 	active_games[game_id] = [0, 0, 0, 0];
@@ -119,7 +123,7 @@ function create_worker (game_id, game_type) {
 	active_games[game_id][6] = pla1_color;
 	active_games[game_id][7] = pla2_color;
 
-	if(game_type == "real" && pla2 != "dumb-bot" && pla2 != "medium-bot" && pla2 != "will-bot") {
+	if(game_type == "real" && !is_bot(pla1) && !is_bot(pla2)) {
 		discord_postmessage(config.hooks.new_match, "" + pla1 + " vs. " + pla2 + " : https://yare.io/" + server_id + "/" + game_id);
 	}
 
