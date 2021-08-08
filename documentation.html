@@ -89,7 +89,7 @@
 		  
 		<section id="doc_intro">
 		  <p class="p_intro">yare.io is a real-time 2-player (1v1) strategy game where you control your units (spirits) via JavaScript. You win by destroying the opponent’s base.</p>
-		  <p id="early_access">If you are new to yare.io, try out the <a href="#" onclick="new_game('easy-bot')">Interactive Tutorial</a></p>
+		  <p id="early_access">Yare.io is still in beta. Please share any bugs you find on our <a href="https://discord.gg/tWDV7daRnB" target="_blank">Discord server</a></p>
 		  <div class="sep_large"></div>
 		  <div class="sep_large"></div>
 		  <div id="trailer_placeholder"><span>placeholder for trailer video</span></div>
@@ -201,7 +201,7 @@
 			  <p class="access_h">my_spirits[<span class='lowlight'>index</span>]</p>
 			  <code class="access_type">array</code>
 			  <div class="sep_small"></div>
-			  <p class="access_p"><span class="highlight">my_spirits</span> array contains only your spirits (including dead spirits). E.g. my_spirits[0] is your oldest spirit.</p>
+			  <p class="access_p"><span class="highlight">my_spirits</span> array contains only your spirits. E.g. my_spirits[0] is your oldest spirit.</p>
 		  </div>
 		 
 		 <div class="sep_small"></div>
@@ -333,7 +333,7 @@
 						
 						<div class="method_gif_example">
 							<div id="gif_energize1" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].energize(my_spirits[1]);</code>
+							<code class="example_code">mySpirits[0].energize(my_spirits[1]);</code>
 						</div>
 						<div class="sep_small"></div>
 						<div class="method_gif_example">
@@ -442,7 +442,7 @@
 						
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Teleports a spirit into a new location. Energy cost of the jump is equal to distance/5. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star. If target is not a valid location, the jump will land in the nearest valid location from <code>target</code></span></p>
+						<p class="p_method_desc">Teleports a spirit into a new location up to 300 units away. Costs half of spirit's energy_capacity. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star. If target is not a valid location, the jump will land in the nearest valid location from <code>target</code></span></p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
@@ -470,7 +470,7 @@
 						
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Spirit explodes, killing itself and dealing 10 damage to all enemy spirits within 160 radius.</p>
+						<p class="p_method_desc">Spirit explodes, killing itself and dealing 10 damage to all enemy spirits within 100 radius.</p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
@@ -628,7 +628,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">hp</span>
 					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">5</span>
+					<span class="table_doc_value">1</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -640,9 +640,6 @@
 				</div>
 			</div>
 		  </div>
-		  
-		  <div class="sep_medium"></div>
-		  <p class="p_somewhat_important">The base's hp decreases by 1 every tick it doesn't have enough energy to defend itself while being attacked. The game ends when the base's hp reaches 0</p>
 		  
 		</section>
 		
