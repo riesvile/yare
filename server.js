@@ -226,6 +226,8 @@ const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
 const config = require('./config');
 const zlib = require('zlib');
+const ejs = require('ejs');
+const os = require('os');
 const bcrypt = require('bcrypt');
 var hashRounds = 10;
 
@@ -3566,8 +3568,11 @@ app.get('/d1/:game_id', (req, res) => {
 	}
 });
 
+// This is a pretty bad way of doing it, should be changed
+const adminpassword = "swordfish"
+
 app.get('/server-weight/:server_id/:weight', (req, res) => {
-	if(req.query.password != "swordfish") {
+	if(req.query.password != adminpassword) {
 		res.send(404);
 		return;
 	}
@@ -3580,6 +3585,37 @@ app.get('/server-weight/:server_id/:weight', (req, res) => {
 	});
 });
 
+app.get("/admin-panel/dash", async (req,res,next) => {
+	if (req.query.password != adminpassword) {
+		res.status(400).redirect("/admin-panel/login")
+	}
+
+	let dashPath = "./public/admin-panel/dash/index.ejs"
+
+	// Renturns rendered html
+	let rendered = await ejs.renderFile(dashPath, {
+		sysinfo: {
+			arch: os.arch(),
+			os: process.platform,
+			mem: {
+				total: os.totalmem(),
+				free: os.freemem(),
+				used: os.totalmem() - os.freemem()
+			},
+			uptime: os.uptime(),
+		},
+		gameinfo: {
+			userAccounts: (await User.count({})),
+			userSessions: (await Session.count({})),
+			gameServers: servers,
+			games: active_games,
+			usersInQueue: automatch_looking
+		}
+	})
+	res.status(200).send(rendered)
+})
+
+app.get("/admin-panel", (req,res,next)=>{res.redirect("/admin-panel/login")})
 
 app.use(express.static('public', {extensions: ["html"]}));
 
