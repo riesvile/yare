@@ -48,12 +48,10 @@ for (var s of mine){
 
 if (base.sight.enemies.length > 0){
     console.log('i see you');
-    var attackers = my_spirits.filter(s => memory[s.id] == 'attacker').length;
     var i = 0;
     for (var s of mine){
-        if (s.energy == s.energy_capacity && attackers < mine.length/2){
-            memory[s.id] = "attacker";
-            attackers++;
+        if (s.energy == s.energy_capacity){
+            memory[s.id] = 'attacker';
         }
         if(memory[s.id] == 'attacker'){
             var invader = spirits[base.sight.enemies[i%base.sight.enemies.length]];
