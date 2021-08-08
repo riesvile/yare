@@ -1321,14 +1321,25 @@ app.post('/populate-hub', (req, res) => {
 		        	data: "no results"
 		        });
 			} else {
-				for (i = 0; i < result.length; i++){
-					result[i]['passwrd'] = '0';
-					result[i]['session_id'] = '0';
-					result[i]['game_file'] = '';
-				}
+				var out = res.map((game) => {
+					return {
+						game_id: game.game_id,
+						player1: game.player1,
+						p1_shape: game.p1_shape,
+						p1_color: game.p1_color,
+						p1_rating: game.p1_rating,
+						player2: game.player2,
+						p2_shape: game.p2_shape,
+						p2_color: game.p2_color,
+						p2_rating: game.p2_rating,
+						winner: game.winner,
+						ranked: game.ranked,
+						updatedAt: game.updatedAt
+					}
+				});
 				res.status(200).send({
 		        	data: "populate",
-					stream: result
+					stream: out
 		        });
 			}
 		})
@@ -1351,13 +1362,17 @@ app.post('/populate-leaderboard', (req, res) => {
 		        	data: "no results"
 		        });
 			} else {
-				for (i = 0; i < result.length; i++){
-					result[i]['passwrd'] = '0';
-					result[i]['session_id'] = '0';
-				}
+				let out = result.map((user) => {
+					return {
+						user_id: user.user_id,
+						rating: user.rating,
+						rating_stability: user.rating_stability,
+						games_count: user.games_count,
+					};
+				});
 				res.status(200).send({
 		        	data: "populate",
-					stream: result
+					stream: out
 		        });
 			}
 		})
