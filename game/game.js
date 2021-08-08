@@ -25,6 +25,19 @@ function elapsed_ms_from(t0) {
 	return round_to((diff[0] * 1e9 + diff[1]) / 1e6, 3);
 }
 
+
+function color_validity(color, clr_array){
+	
+	let user_color = color.replace("color", "")
+	//if (user_color == 6) user_color = 5;
+	//if (user_color == 5) user_color = 6;
+	
+	if (clr_array.includes(user_color)) return false;
+	return false;
+	
+}
+
+
 function end_game(was_p1 = 0, was_p2 = 0){
 	game_finished = 1;
 	//console.log(game_file);
@@ -303,15 +316,22 @@ parentPort.on("message", message => {
 			console.log('starting rating update');
 			User.find({user_id: players['p1']})
 				.then((result_p1) => {
-					console.log(result_p1);
+					console.log('look here');
+					//console.log(result_p1[0]['colors']);
+					//if (!color_validity(message.p1_color, result_p1[0]['colors'])) colors['player1'] = color_palettes['color1'];
 					User.find({user_id: players['p2']})
 						.then((result_p2) => {
-							console.log(result_p2);
+							//console.log(result_p2);
+							//if (!color_validity(message.p2_color, result_p2[0]['colors'])) colors['player2'] = color_palettes['color1'];
 							var p222_rating = '';
 							if (players['p2'] == 'easy-bot'){
 								p222_rating = 100;
+							} else if (players['p2'] == 'dumb-bot'){
+								p222_rating = 500;
 							} else if (players['p2'] == 'medium-bot'){
 								p222_rating = 1000;
+							} else if (players['p2'] == 'will-bot'){
+								p222_rating = 1700;
 							} else {
 								p222_rating = result_p2[0]['rating'];
 							}
