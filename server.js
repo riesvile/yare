@@ -1321,7 +1321,7 @@ app.post('/populate-hub', (req, res) => {
 		        	data: "no results"
 		        });
 			} else {
-				var out = res.map((game) => {
+				var out = result.map((game) => {
 					return {
 						game_id: game.game_id,
 						player1: game.player1,
