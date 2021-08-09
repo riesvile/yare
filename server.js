@@ -384,6 +384,17 @@ function get_color(color_name){
 	}
 }
 
+function color_validity(color, clr_array){
+	
+	let user_color = color.replace("color", "")
+	//if (user_color == 6) user_color = 5;
+	//if (user_color == 5) user_color = 6;
+	
+	if (clr_array.includes(user_color)) return false;
+	return false;
+	
+}
+
 function tutorial_game(req, res, pl_id){
 	
 	var chosen_server = pick_server('tutorial');
@@ -434,6 +445,7 @@ function bot_game(req, res, pl_id, botinfo){
 
 	// REMOVE FROM AUTO-MATCH QUEUE
 	actively_waiting[req.body.user_id] = 0;
+	let basic_colors = ['color1', 'color2', 'color3', 'color4'];
 	
 	var chosen_server = pick_server('real');
 
@@ -479,15 +491,76 @@ function bot_game(req, res, pl_id, botinfo){
 		game_file: '',
 		last_update: (+new Date())
 	});
+		
+	if (pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
+		User.find({user_id: pl1.id})
+			.then((results) => {
+				if (color_validity(pl1.color, results[0].colors)) {
+					console.log('p1 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK')
+					game.save()
+						.then((result) => {
+							console.log('game saved to db');
+							console.log(result);
+						})
+						.catch((error) => {
+							console.log(error);
+						});
+				} else {
+					console.log('p1 can NOT user color dfgnidugb!!!!');
+					game.save()
+						.then((result) => {
+							console.log('game saved to db');
+							console.log(result);
+						})
+						.catch((error) => {
+							console.log(error);
+						});
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	} else if (pl2.id != 'will-bot' && pl2.id != 'medium-bot' && pl2.id != 'dumb-bot' && !(basic_colors.includes(pl2.color))){
+		User.find({user_id: pl2.id})
+			.then((results) => {
+				if (color_validity(pl2.color, results[0].colors)) {
+					console.log('p2 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK')
+					game.save()
+						.then((result) => {
+							console.log('game saved to db');
+							console.log(result);
+						})
+						.catch((error) => {
+							console.log(error);
+						});
+				} else {
+					console.log('p2 can NOT user color dfgnidugb!!!!');
+					game.save()
+						.then((result) => {
+							console.log('game saved to db');
+							console.log(result);
+						})
+						.catch((error) => {
+							console.log(error);
+						});
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	} else {
+		console.log('no color check');
+		game.save()
+			.then((result) => {
+				console.log('game saved to db');
+				console.log(result);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+		
 	
-	game.save()
-		.then((result) => {
-			console.log('game saved to db');
-			console.log(result);
-		})
-		.catch((error) => {
-			console.log(error);
-		})
 }
 
 function will_bot_game(req, res, pl_id){
