@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/admin-panel/dash/styles.css">
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="/admin-panel/dash/script.js" defer></script>
+  <title>Yare - Admin panel</title>
+</head>
+<body>
+  <header>
+    <h1>Yare admin-panel</h1>
+    <button id="reload">Reload</button>
+  </header>
+  <div class="main">
+    <div class="box">
+      <h1>System info</h1>
+<pre>
+Operating system: <%= sysinfo.os %>
+Arch: <%= sysinfo.arch %> 
+
+Total memory: <%= Math.round(sysinfo.mem.total / 1024 / 1024 / 1024 * 10) / 10 %> GiB
+Used memory:  <%= Math.round(sysinfo.mem.used / 1024 / 1024 / 1024 * 10) / 10 %> GiB
+Free memory:  <%= Math.round(sysinfo.mem.free / 1024 / 1024 / 1024 * 10) / 10 %> GiB
+
+Main server uptime: <%= Math.round(Number(sysinfo.uptime) / 60) %> minutes and <%= Math.round(Number(sysinfo.uptime) % 60) %> seconds
+Host server uptime: <%= Math.round(Number(sysinfo.hostUptime) / 60) %> minutes and <%= Math.round(Number(sysinfo.hostUptime) % 60) %> seconds
+</pre>
+    </div>
+
+    <div class="box">
+      <h1>Yare info</h1>
+<pre>
+Registered players: <%= gameinfo.userAccounts %>
+Game Servers: <%= JSON.stringify(gameinfo.gameServers) %>
+Live games: <%= Object.keys(gameinfo.games).length %>
+Users in queue: <%= gameinfo.usersInQueue.length %> 
+</pre>
+    </div>
+    <div class="box">
+      <h1>Server weights</h1>
+      <div class="weightBox">
+        <input id="wServer" type="text" placeholder="server">
+        <input id="wWeight" type="number" min="0" max="100" placeholder="weight">
+        <button id="weight">Send</button>
+      </div>
+    </div>
+    <div class="box splitter livegamesandqueue">
+      <div class="half">
+        <h1>Live games</h1>
+        <% 
+        const games = Object.entries(gameinfo.games)
+          .reverse()
+          .map((keyvalue) => {
+            let key = keyvalue[0];
+            let value = keyvalue[1];
+            return {
+              game_id: key,
+              started: value[0] === 1,
+              game_server: value[3],
+              player1: value[1],
+              player2: value[2],
+            };
+          })
+        %> 
+        <pre><% for (let game of games){ %><a href="/<%= game.game_server %>/<%= game.game_id %>" target="_blank"><%= game.player1 %> vs <%= game.player2 %></a><%= "\n" %><% } %></pre>
+      </div>
+      <div class="sep"></div>
+      <div class="half">
+        <h1>Queue</h1>
+        <pre><% for (let user of gameinfo.usersInQueue){ %><%= user + "\n" %><% } %></pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

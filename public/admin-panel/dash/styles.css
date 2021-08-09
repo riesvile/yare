@@ -1,0 +1,138 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Open+Sans&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --color1: rgba(128, 140, 255, 1);
+  --color2: rgba(232, 97, 97, 1);
+
+  --bg: rgb(32, 32, 32);
+  --bg2: rgb(24, 24, 24);
+  --bg3: rgb(16, 16, 16);
+  --fg: white;
+  --fg2: lightgray;
+  --fg3: rgb(168, 168, 168);
+}
+
+html,
+body,
+.main {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg3);
+  color: var(--fg);
+  font-family: "Open Sans", sans-serif;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+}
+
+input,
+button {
+  font-size: 1.4rem;
+  background-color: var(--fg);
+  color: var(--bg);
+  border: none;
+}
+button:hover {
+  background-color: var(--fg3);
+}
+button:active {
+  background-color: var(--fg2);
+}
+
+header {
+  width: 100%;
+  top: 0;
+  padding: 0.5rem 0;
+  background-color: var(--bg2);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+header h1 {
+  padding: 0;
+  margin: 0;
+}
+button#reload {
+  position: fixed;
+  right: 1rem;
+}
+
+a {
+  text-decoration: underline;
+  color: rgb(0, 120, 255);
+}
+
+.box {
+  margin: 1rem;
+  background-color: var(--bg);
+  padding: 0 2rem;
+  border-radius: 0.5rem;
+  width: 40rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+pre {
+  width: 100%;
+  margin: 0;
+  margin-bottom: 2rem;
+  background-color: var(--bg2);
+}
+
+.splitter {
+  flex-direction: row;
+  align-items: initial;
+  padding: 0;
+}
+
+.half {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.half h1 {
+  text-align: center;
+  /* background-color: var(--bg2); */
+  margin: 0;
+  padding: 1rem 0;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+.half pre {
+  margin: 0;
+  height: 100%;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.sep {
+  width: 1px;
+  height: 100%;
+  background-color: var(--fg3);
+}
+
+.weightBox {
+  margin-bottom: 2rem;
+}
+
+.livegamesandqueue {
+  min-height: 10rem;
+}
