@@ -1304,7 +1304,7 @@ span.shape_name {
 	border-width: 2px;
 }
 
-#color_gblue, #color_purply, #color_redish, #color_yerange, #color_pistagre {
+.color_option div {
 	width: 16px;
 	height: 16px;
 	position: absolute;
@@ -1312,6 +1312,17 @@ span.shape_name {
 	top: 50%;
 	transform: translate(-50%, -50%);
 	border-radius: 16px;
+}
+
+.color_price {
+	width: 100%;
+	text-align: center;
+	display: block;
+	position: absolute;
+	bottom: -24px;
+	font-size: 13px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.86);
 }
 
 #color_gblue {

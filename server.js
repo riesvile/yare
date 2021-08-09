@@ -505,7 +505,7 @@ function bot_game(req, res, pl_id, botinfo){
 		User.find({user_id: pl1.id})
 			.then((results) => {
 				if (color_validity(pl1.color, results[0].colors)) {
-					console.log('p1 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK')
+					//console.log('p1 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK');
 					game.save()
 						.then((result) => {
 							console.log('game saved to db');
@@ -515,7 +515,9 @@ function bot_game(req, res, pl_id, botinfo){
 							console.log(error);
 						});
 				} else {
-					console.log('p1 can NOT user color dfgnidugb!!!!');
+					//console.log('p1 can NOT user color dfgnidugb!!!!');
+					game.p1_color = 'color1';
+					console.log(game);
 					game.save()
 						.then((result) => {
 							console.log('game saved to db');
@@ -533,7 +535,7 @@ function bot_game(req, res, pl_id, botinfo){
 		User.find({user_id: pl2.id})
 			.then((results) => {
 				if (color_validity(pl2.color, results[0].colors)) {
-					console.log('p2 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK')
+					//console.log('p2 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK')
 					game.save()
 						.then((result) => {
 							console.log('game saved to db');
@@ -543,7 +545,9 @@ function bot_game(req, res, pl_id, botinfo){
 							console.log(error);
 						});
 				} else {
-					console.log('p2 can NOT user color dfgnidugb!!!!');
+					//console.log('p2 can NOT user color dfgnidugb!!!!');
+					game.p2_color = 'color1';
+					console.log(game);
 					game.save()
 						.then((result) => {
 							console.log('game saved to db');
@@ -1306,6 +1310,32 @@ app.post('/playerinfo', (req, res) => {
 
 });
 
+
+app.post('/get_colors', (req, res) => {
+	User.find({user_id: req.body.user_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('getting user colors');
+			console.log(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no user found"
+		        });
+			} else if (result[0]['colors'] != undefined && result[0]['colors'] != ''){
+				res.status(200).send({
+					data: result[0]['colors']
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "something went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
 app.post('/populate-hub', (req, res) => {
 	Game.find({$or:[{player1: req.body.user_id},{player2: req.body.user_id}]})
 		.sort({updatedAt:'desc'})
@@ -1380,21 +1410,26 @@ app.post('/populate-leaderboard', (req, res) => {
 //			console.log(error);
 //		})
 //});
-app.get('/set-color', (req, res) => {
-	User.updateMany({}, {"$set":{"colors": [1, 2, 3, 4, 5]}}, {upsert: true})
-		.then((result) => {
-			//res.send(result);
-			console.log('colors maybe updated?');
-			
-			res.status(200).send({
-	        	data: "done colors?"
-	        });
-			
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-});
+//app.get('/set-color', (req, res) => {
+//	User.updateMany({}, {"$set":{"colors": [1, 2, 3, 4, 5]}}, {upsert: true})
+//		.then((result) => {
+//			//res.send(result);
+//			console.log('colors maybe updated?');
+//			
+//			res.status(200).send({
+//	        	data: "done colors?"
+//	        });
+//			
+//		})
+//		.catch((error) => {
+//			console.log(error);
+//		})
+//});
+
+
+
+
+
 app.post('/deactivate', (req, res) => {
 	console.log('deactivating');
 	console.log(req.body.game_id);
