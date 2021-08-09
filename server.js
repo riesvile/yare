@@ -14,6 +14,7 @@ function generateUniqueString(prefix) {
     return (randomString(prefix) + out);
 }
 
+
 // ----- automatching -----
 
 
@@ -230,6 +231,12 @@ const ejs = require('ejs');
 const os = require('os');
 const bcrypt = require('bcrypt');
 var hashRounds = 10;
+
+
+
+function generateSecureString(length) {
+	return crypto.randomBytes(length/2).toString('hex');
+}
 
 var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
@@ -856,7 +863,7 @@ app.post('/validate', (req, res) => {
 
 				if(good) {
 					var user_id = result[0]['user_id'];
-					var session_id = generateUniqueString(3);
+					var session_id = generateSecureString(64);
 					var session_expire = new Date();
 					session_expire = (session_expire.getTime() + (7*24*60*60*1000));
 					console.log('date');
@@ -909,7 +916,7 @@ app.post('/session', (req, res) => {
 				// if session expire in less then 6 days
 				if ((new Date()).getTime() + (6*24*60*60*1000) > session_expire){
 					// update session_expire
-					session_id = generateUniqueString(3);
+					session_id = generateSecureString(64);
 					session_expire = ((new Date()).getTime() + (7*24*60*60*1000));
 					console.log('creating new session');
 					Session.create({user_id: user_id, session_id: session_id, session_expire: session_expire})
@@ -966,7 +973,7 @@ app.post('/add-user', async (req, res) => {
         	data: "exists"
         });
 	} else {
-		var session_id = generateUniqueString(3);
+		var session_id = generateSecureString(64);
 	    var session_expire = new Date();
 	    session_expire = (session_expire.getTime() + (7*24*60*60*1000));
 	
@@ -1033,6 +1040,9 @@ app.post('/' + this_server + '/tutorial-signup', (req, res) => {
 
 });
 
+/*
+uhhh... what?
+
 app.get('/all', (req, res) => {
 	User.find({session_expire: {"$gte": 2}})
 		.then((result) => {
@@ -1043,7 +1053,7 @@ app.get('/all', (req, res) => {
 		.catch((error) => {
 			console.log(error);
 		})
-})
+})*/
 
 app.get('/game/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
