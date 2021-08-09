@@ -458,6 +458,7 @@
 		  
 		  //socket.binaryType = "arraybuffer";
 		  socket.addEventListener('open', function(event){
+			  socket.send(JSON.stringify({'meta': 'connect', 'session_id': getCookie('session_id')}));
 			  //console.log('Connected to wsws server');
 		  })
 	  
@@ -471,10 +472,20 @@
 			  document.getElementById('console_in').innerHTML = '';
 		  
 			  try {
-				 incoming = JSON.parse(event.data);
+				 let message = JSON.parse(event.data);
+				if(message.meta == 'initiate'){
+					initiate(message.data);
+					return;
+				}
+
+				 incoming = message.render;
+				 chan = message.chan;
+
+				 var chanEvent = new CustomEvent('chan', {detail: chan});
+				 document.dispatchEvent(chanEvent);
 				 //console.log(incoming);
 				 tick_counter = incoming.t;
-				 
+		 
 				 if (incoming.t < -5){
 					 //document.getElementById('console').style.display = 'none';
 					 document.getElementById('countdown_num').innerHTML = (incoming.t * -1);
@@ -612,8 +623,8 @@
 					 
 					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
 
-					 game_blocks['t' + tick_counter]['g1'] = incoming.g1;
-					 game_blocks['t' + tick_counter]['g2'] = incoming.g2;
+					 game_blocks['t' + tick_counter].graphics = chan.graphics;
+					 
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
 					 //console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
@@ -648,76 +659,32 @@
 				 //	birth_queue.push(incoming.birth[i]);
 				 //}
 			 
-				
+				let cnsl_in = document.getElementById('console_in');
 			 
-				 if (incoming.er1.length > 0){
-					 if (pla1 == getCookie('user_id')){
-						 has_error = 1;
-						 error_console();
-						 var err_lbl = "ERRORS";
-						 if (incoming.er1.length == 1) err_lbl = "ERROR";
-						 document.getElementById('console_lbl').innerHTML = "CONSOLE (" + incoming.er1.length + " " + err_lbl + ")"; 
-						 cnsl_in = document.getElementById('console_in');
-					 	 for (cns = 0; cns < incoming.er1.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.er1[cns] + "</p>";
-							 //console.error(incoming.err1[cns]);
-					 	 }					 
-					 }
-				 } else if (incoming.er1.length == 0){
-					 if (pla1 == getCookie('user_id')){
-					 	 has_error = 0;
-						 clean_console();
-						 document.getElementById('console_lbl').innerHTML = "CONSOLE"; 
-					 }
-				 }
-				 
-				 
-				 if (incoming.er2.length > 0){
-					 if (pla2 == getCookie('user_id')){
-						 has_error = 1;
-						 error_console();
-						 document.getElementById('console_lbl').innerHTML = "(" + incoming.er2.length + ") CONSOLE"; 
-						 cnsl_in = document.getElementById('console_in');
-					 	 for (cns = 0; cns < incoming.er2.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + incoming.er2[cns] + "</p>";
-							 //console.error(incoming.err2[cns]);
-					 	 }
-						 
-						 //console.log('t')
-						 var console_content_height = document.getElementById("console_in").clientHeight;
-						 update_console_height(console_content_height);
-						 
-					 }
-				 } else if (incoming.er2.length == 0){
-					 if (pla2 == getCookie('user_id')){
-					 	 has_error = 0;
-						 clean_console();
-						 document.getElementById('console_lbl').innerHTML = "CONSOLE"; 
-					 }
-				 }
-				 
-			 
-				 if (incoming.c1.length > 0){
-					 if (pla1 == getCookie('user_id')){
-						 cnsl_in = document.getElementById('console_in');
-					 	 for (cns = 0; cns < incoming.c1.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.c1[cns] + "</p>";
-							 //console.log(incoming.console1[cns]);
-					 	 }
-					 }
+				if(chan.err){
+					has_error = 1;
+					error_console();
+					var err_lbl = "ERRORS";
+					if (chan.err.length == 1) err_lbl = "ERROR";
+					document.getElementById('console_lbl').innerHTML = "CONSOLE (" + chan.err.length + " " + err_lbl + ")"; 
 					
-				 }
-			 
-				 if (incoming.c2.length > 0){
-					 if (pla2 == getCookie('user_id')){
-						 cnsl_in = document.getElementById('console_in');
-						 cnsl_in.innerHTML = '';
-					 	 for (cns = 0; cns < incoming.c2.length; cns++){
-							 cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + incoming.c2[cns] + "</p>";
-							 //console.log(incoming.console2[cns]);
-					 	 }
-					 }
-				 }
+					for (let err of chan.err){
+						cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + err + "</p>";
+						//console.error(incoming.err1[cns]);
+					}
+				} else {
+					has_error = 0;
+					clean_console();
+					document.getElementById('console_lbl').innerHTML = "CONSOLE"; 
+				}
+
+				if(chan.log){
+					for (let log of chan.log){
+						cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + log + "</p>";
+						//console.log(incoming.console1[cns]);
+					}
+				}
+				
 				 
 				 if (cnsl_expanded == 1){
 					 var console_content_height = document.getElementById("console_in").clientHeight;
@@ -854,54 +821,7 @@
 				  //console.log(e);
 			  }
 		  
-			  //world_initiation
-			  try {
-				  
- 				 if (incoming.bases.length > 0){
- 					 bases_queue = incoming.bases;
- 		 			 //console.log('bases_queue');
- 		 			 //console.log(bases_queue);
- 				 }
-		 				 
-				 if (incoming.tut == 1){
-					 game_type = 'tutorial';
-					 document.getElementById('resign_game').style.display = 'none';
-					 if (tutorial_started == 0){
-					 	document.getElementById('update_code').innerHTML = "<span>SEND CODE</span>";
-					 }
-					 
-				 } else {
-					 game_type = 'real';
-					 document.getElementById('logo').style.display = 'none';
-					 document.getElementById('grad_top').style.opacity = '0.69';
-					 document.getElementById('overlay_pre_start').style.display = 'none';
-					 document.getElementById('overlay_start').style.display = 'none';
-					 document.getElementById('tutorial').style.display = 'none';
-					 document.getElementById('editor_container').style.position = 'fixed';
-					 document.getElementById('editor_container').style.top = '60px';
-					 document.getElementById('console').style.display = 'block';
-				 
-					 document.getElementById('panel').classList.remove("panel_start");
-				 }
-			 
-				 //console.log('incoming =======================================');
-				 //console.log(incoming);
-				 //console.log('here is initiation');
-				 pla1 = incoming.players[0];
-				 pla2 = incoming.players[1];
-				 colors['color1'] = incoming.colors[0];
-				 colors['color2'] = incoming.colors[1];
-				 shapes['shape1'] = incoming.shapes[0];
-				 shapes['shape2'] = incoming.shapes[1];
-				 
-				 //console.log(game_type);
-				 //console.log(tutorial_phase);
-				 
-				 taylor_UI();
-			 
-			  } catch (e) {
-				  //console.log(e);
-			  }
+			  
 		  
 		  
 			 
@@ -925,10 +845,61 @@
 	  
 	  //connectSocket();
 	  
-	  
-	  const sendMessage = () => {
-		  x = Date.now();
-		  socket.send('abdd7');
+	  //Concat an array of data onto a channel in the server.
+	  //Essentially does a `channel = channel.concat(Array.isArray(data) ? data : [data])`
+	  const sendData = (channel, data) => {
+		  socket.send(JSON.stringify({meta: "channel", channel: channel, data: data}));
+	  }
+
+	  function initiate(data) {
+		  //world_initiation
+		try {
+			
+			if (data.bases.length > 0){
+				bases_queue = data.bases;
+				//console.log('bases_queue');
+				//console.log(bases_queue);
+			}
+					
+			if (data.tut == 1){
+				game_type = 'tutorial';
+				document.getElementById('resign_game').style.display = 'none';
+				if (tutorial_started == 0){
+				document.getElementById('update_code').innerHTML = "<span>SEND CODE</span>";
+				}
+				
+			} else {
+				game_type = 'real';
+				document.getElementById('logo').style.display = 'none';
+				document.getElementById('grad_top').style.opacity = '0.69';
+				document.getElementById('overlay_pre_start').style.display = 'none';
+				document.getElementById('overlay_start').style.display = 'none';
+				document.getElementById('tutorial').style.display = 'none';
+				document.getElementById('editor_container').style.position = 'fixed';
+				document.getElementById('editor_container').style.top = '60px';
+				document.getElementById('console').style.display = 'block';
+			
+				document.getElementById('panel').classList.remove("panel_start");
+			}
+		
+			//console.log('incoming =======================================');
+			//console.log(incoming);
+			//console.log('here is initiation');
+			pla1 = data.players[0];
+			pla2 = data.players[1];
+			colors['color1'] = data.colors[0];
+			colors['color2'] = data.colors[1];
+			shapes['shape1'] = data.shapes[0];
+			shapes['shape2'] = data.shapes[1];
+			
+			//console.log(game_type);
+			//console.log(tutorial_phase);
+			
+			taylor_UI();
+		
+		} catch (e) {
+			//console.log(e);
+		}
 	  }
 	  
 	  function getCookie(name) {

@@ -8,18 +8,21 @@ global.outposts = {};
 yd.commands = {
     merge: new Map(),
     spirit: {},
+    channels: {},
 };
 
 yd.errors = [];
 yd.logs = [];
-yd.gqueue = [];
 yd.deprecates = {};
+yd.channels = {};
+yd.channels_in = {};
 
-global.console = {
-    log: function(...args) {
-        yd.logs.push(args);
+yd.channel_in = function(name, data) {
+    if(!(name in yd.channels_in)) {
+        yd.channels_in[name] = [];
     }
-};
+    yd.channels_in[name] = yd.channels_in[name].concat((Array.isArray(data) ? data : [data]));
+}
 
 function command(id) {
     if (!(id in yd.commands.spirit)) {
@@ -28,16 +31,52 @@ function command(id) {
     return yd.commands.spirit[id];
 }
 
+class Channel {
+    #id;
+
+    constructor(id) {
+        this.#id = id;
+    }
+
+    send(msg) {
+        if(!(this.#id in yd.channels)) {
+            yd.channels[this.#id] = [];
+        }
+        yd.channels[this.#id].push(msg);
+    }
+}
+
+global.channels = {
+    get(id) {
+        return new Channel(id);
+    },
+    recv(id) {
+        let data = yd.channels_in[id];
+        delete yd.channels_in[id];
+        return data;
+    }
+};
+
+logChan = global.channels.get("log");
+
+global.console = {
+    log: function(...args) {
+        logChan.send(args);
+    }
+};
+
 function send_error(msg) {
     throw Error(msg);
     //yd.errors.push(msg);
 }
 
+errChan = global.channels.get("err");
+
 function soft_error(msg) {
     try {
         throw Error(msg);
     } catch(e) {
-        yd.errors.push(e);
+        errChan.send(e.message + "\n" + e.stack);
     };
     //yd.errors.push(msg);
 }
@@ -48,33 +87,6 @@ function deprecate(id, msg) {
         yd.deprecates[id] = true;
         soft_error(msg);
     }
-}
-
-
-class Graphics {
-	set style(s) {
-		yd.gqueue.push(['st', s]);
-	}
-	set linewidth(w) {
-		yd.gqueue.push(['lw', w]);
-	}
-
-	circle(pos, r) {
-		yd.gqueue.push(['c', pos[0], pos[1], r]);
-	}
-	line(start, end) {
-		yd.gqueue.push(['l', start[0], start[1], end[0], end[1]]);
-	}
-    /**
-     * @deprecated Use .rect() instead
-     */
-	square(tl, br) {
-        deprecate('graphics.square', 'Use .rect() instead');
-		yd.gqueue.push(['s', tl[0], tl[1], br[0], br[1]]);
-	}
-    rect(tl, size) {
-		yd.gqueue.push(['s', tl[0], tl[1], size[0], size[1]]);
-	}
 }
 
 /** Spirits are your mobile units 
@@ -109,7 +121,7 @@ class Spirit {
      * Transfers (1 × spirit's size) energy unit from itself into target. Max distance of the energy transfer is 200 units.
      * If target is an enemy spirit or a base, the target takes damage (loses energy) equivalent to (2 × attacking spirit's size)
      * If target is the same spirit as origin, the spirit will attempt harvesting energy from a star.
-     * @param {(Spirit|Base|Outpose)} target - target to energize
+     * @param {(Spirit|Base|Outpost)} target - target to energize
      */
     energize(target) {
         let target_id = null;
@@ -240,7 +252,7 @@ class Spirit {
             soft_error("Max length of shout message is 20 characters");
             return;
         }
-                
+        
         if (this.hp != 0){
             command(this.id).shout = msg;
         }
@@ -267,7 +279,6 @@ class Base {
 
 yd.init = function(playerID) {
     global.this_player_id = playerID;
-    global.graphics = new Graphics();
 };
 
 yd.loadData = function(data) {
@@ -323,7 +334,7 @@ yd.getOutput = function() {
         commands: yd.commands,
         logs: yd.logs,
         errors: yd.errors,
-        gqueue: yd.gqueue
+        channels: yd.channels
     };
     yd.commands = {
         merge: new Map(),
@@ -331,8 +342,8 @@ yd.getOutput = function() {
     };
     yd.logs = [];
     yd.errors = [];
-    yd.gqueue = [];
     yd.deprecates = {};
+    yd.channels = {};
     return output;
 };
 

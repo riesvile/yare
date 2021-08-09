@@ -255,7 +255,7 @@ parentPort.on("message", message => {
 			init_data.players[0] = players_update['p1'];
 		}
 		
-		parentPort.postMessage({data: JSON.stringify(init_data), game_id: workerData[0], meta: 'initiate', client: message.client});
+		parentPort.postMessage({data: JSON.stringify({meta: "initiate", data: init_data}), game_id: workerData[0], meta: 'initiate', client: message.client});
   } else if (message.data == "player code"){
 	  //check who's code it is here
 	  if (message.pl_num == "player1"){
@@ -356,7 +356,7 @@ parentPort.on("message", message => {
 							updates.p2_rating = rp.rating;
 						}
 					}
-					Game.updateOne({game_id: workerData[0]}, {p1_rating: result_p1[0]['rating'], p2_rating: p222_rating}, {upsert: true})
+					Game.updateOne({game_id: workerData[0]}, updates, {upsert: true})
 						.then((qq) => {
 							console.log('p1 and p2 ratings updated');
 						});	
@@ -373,6 +373,12 @@ parentPort.on("message", message => {
   		}) 
   } else if (message.data == "update anonymous"){
   	  players_update['p1'] = message.player1;
+  } else if (message.data == "channel"){
+	  if(message.user_id == players['p1']){
+		  sand1.channel(message.channel, message.chan_data);
+	  } else if(message.user_id == players['p2']){
+		  sand2.channel(message.channel, message.chan_data);
+	  }
   }
 });
 
@@ -432,7 +438,7 @@ async function user_code(){
 		all_commands[players['p1']] = out.commands;
 		log1 = out.logs;
 		user_error1 = out.errors.map(clean_error);
-		gqueue1 = out.gqueue;
+		chan1 = out.channels;
 		if(run_err) {
 			handle_error(run_err, players['p1']);
 		}
@@ -460,7 +466,7 @@ async function user_code(){
 		all_commands[players['p2']] = out.commands;
 		log2 = out.logs;
 		user_error2 = out.errors.map(clean_error);
-		gqueue2 = out.gqueue;
+		chan2 = out.channels;
 		if(run_err) {
 			handle_error(run_err, players['p2']);
 		}
@@ -621,8 +627,8 @@ var test_s2 = {};
 var log1 = [];
 var log2 = [];
 
-var gqueue1 = [];
-var gqueue2 = [];
+var chan1 = [];
+var chan2 = [];
 
 var render_data2 = {
 	'move': [],
@@ -641,12 +647,6 @@ var render_data3 = {
 	'p2': [],
 	'e': [],
 	's': [],
-	'er1': [],
-	'er2': [],
-	'c1': [],
-	'c2': [],
-	'g1': [],
-	'g2': [],
 };
 
 var init_data = {
@@ -662,6 +662,7 @@ var memory2 = {a: 155};
 const {VM} = require('vm2');
 const ivm = require('isolated-vm');
 const fs = require('fs');
+const addons = require('../addons');
 
 function cutoff_log(log, cutoff){
 	if(log.length > cutoff){
@@ -672,11 +673,18 @@ function cutoff_log(log, cutoff){
 	return log;
 }
 
+function push_chan(chan, name, data){
+	if(chan[name] == undefined){
+		chan[name] = [];
+	}
+	chan[name].push(data);
+}
+
 function fill_error(plid, err_msg){
 	if (plid == players['p1']){
-		user_error1.push(err_msg);
+		push_chan(chan1, 'err', err_msg);
 	} else if (plid == players['p2']){
-		user_error2.push(err_msg);
+		push_chan(chan2, 'err', err_msg);
 	}
 }
 
@@ -717,8 +725,23 @@ class Sandbox {
 		this.funcs = {};
 		this.funcs.loadData = this.yd.getSync('loadData', {reference: true});
 		this.funcs.getOutput = this.yd.getSync('getOutput', {reference: true});
+		this.funcs.channel_in = this.yd.getSync('channel_in', {reference: true});
 		this.err = false;
 		this.code_err = null;
+	}
+
+	loadAddons(names) {
+		for(let name of names){
+			this.context.evalClosureSync(addons.get(name), [], {result: {reference: true}});
+		}
+	}
+
+	channel(name, data) {
+		try {
+			this.funcs.channel_in.applySync(this.yd.derefInto(), [name, data], {arguments: {copy: true}});
+		} catch(e) {
+			console.log(e);
+		}
 	}
 
 	setPlayerCode(code) {
@@ -753,7 +776,12 @@ class Sandbox {
 }
 
 var sand1 = new Sandbox();
+
+sand1.loadAddons(['graphics.js']);
+
 var sand2 = new Sandbox();
+
+sand2.loadAddons(['graphics.js']);
 
 if (!isMainThread){
 	class Spirit {
@@ -2052,10 +2080,6 @@ if (!isMainThread){
 				'ou': [],
 				'e': [],
 				's': [],
-				'er1': [],
-				'er2': [],
-				'c1': [],
-				'c2': [],
 				'end': end_winner
 			};
 			
@@ -2072,10 +2096,6 @@ if (!isMainThread){
 					'ou': [],
 					'e': [],
 					's': [],
-					'er1': [],
-					'er2': [],
-					'c1': [],
-					'c2': [],
 					'tutorial': [],
 					'end': end_winner
 				};
@@ -2112,10 +2132,6 @@ if (!isMainThread){
 					'ou': [],
 					'e': [],
 					's': [],
-					'er1': [],
-					'er2': [],
-					'c1': [],
-					'c2': [],
 					'end': end_winner
 				};
 				if (game_duration == 2000){
@@ -2128,30 +2144,7 @@ if (!isMainThread){
 			}
 			
 			if(game_duration >= 0) {
-		
 				process_stuff();
-			
-				log1 = cutoff_log(log1, 30);
-				log2 = cutoff_log(log2, 30);
-			
-				render_data3.er1 = user_error1;
-				render_data3.er2 = user_error2;
-
-				const gqueue_cutoff = 100;
-				render_data3.g1 = gqueue1;
-				render_data3.g2 = gqueue2;
-				if(render_data3.g1.length > gqueue_cutoff){
-					let l1 = render_data3.g1.length;
-					render_data3.g1.length = gqueue_cutoff;
-					log1.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l1 - gqueue_cutoff) + ' commands');
-				}
-				if(render_data3.g2.length > gqueue_cutoff){
-					let l2 = render_data3.g2.length;
-					render_data3.g2.length = gqueue_cutoff;
-					log2.push('WARN: graphics output too long (>' + gqueue_cutoff + ' commands), cutting off ' + (l2 - gqueue_cutoff) + ' commands');
-				}
-				render_data3.c1 = log1;
-				render_data3.c2 = log2;
 			}
 			
 			user_error1 = [];
@@ -2174,10 +2167,13 @@ if (!isMainThread){
 			//parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData[0], meta: ''});
 			//wss.broadcast();
 			
-			
 			update_vm_sandbox();
+
+			let user_data = {};
+			user_data[players['p1']] = chan1;
+			user_data[players['p2']] = chan2;
 			
-			parentPort.postMessage({data: JSON.stringify(render_data3), game_id: workerData[0], meta: ''});
+			parentPort.postMessage({data: JSON.stringify(render_data3), user_data: user_data, game_id: workerData[0], meta: ''});
 			
 			if (game_duration < 0) {
 				return;
