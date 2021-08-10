@@ -280,7 +280,7 @@ parentPort.on("message", message => {
 					  sand2.setPlayerCode(message.pl_code);
 					  if (message.resigning == 1){
 						  console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
-						  end_game(0, 1);
+						  end_game(1, 0);
 					  }
 					} else { 
 						parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
