@@ -37,11 +37,22 @@ function color_validity(color, clr_array){
 	
 }
 
+const config = require('../config');
+const AWS = require('aws-sdk');
+AWS.config.setPromisesDependency(null);
+
+s3client = new AWS.S3({
+	accessKeyId: config.s3.key,
+	secretAccessKey: config.s3.secret,
+	endpoint: config.s3.endpoint,
+	s3ForcePathStyle: !config.s3.bucketEndpoint,
+	s3BucketEndpoint: config.s3.bucketEndpoint
+});
 
 function end_game(was_p1 = 0, was_p2 = 0){
 	game_finished = 1;
 	//console.log(game_file);
-	var compressed_file = zlib.deflateSync(JSON.stringify(game_file)).toString('base64');
+	var game_data = JSON.stringify(game_file);
 	//console.log(JSON.stringify(game_file));
 	
 	//game history
@@ -56,85 +67,91 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	var gameLoser = '';
 	var loserRating = 0;
 	var newLoserRating = 0;
-	
-	if (p2won == 1){
-		gameWinner = players['p2'];
-	} else if (p1won == 1) {
-		gameWinner = players['p1'];
-	} else {
-		end_winner = 'No one';
-		cancel_game();
-		return;
-	}
-	
-	//to handle client
-	end_winner = gameWinner
-	
-    Game.find({game_id: workerData[0]})
-	  	.then((result) => {
-			if (p2won == 1){
-				gameWinner = players['p2'];
-				winnerRating = result[0]['p2_rating'];
-				gameLoser = players['p1'];
-				loserRating = result[0]['p1_rating'];
-			
-				newWinnerRating = getNewRating(winnerRating, loserRating, 1);
-				newLoserRating = getNewRating(loserRating, winnerRating, 0);
-				console.log('newWinnerRating');
-				console.log(newWinnerRating);
-				console.log('newLoserRating');
-				console.log(newLoserRating);
-			} else {
-				gameWinner = players['p1'];
-				winnerRating = result[0]['p1_rating'];
-				gameLoser = players['p2'];
-				loserRating = result[0]['p2_rating'];
-			
-				newWinnerRating = getNewRating(winnerRating, loserRating, 1);
-				newLoserRating = getNewRating(loserRating, winnerRating, 0);
-				console.log('newWinnerRating');
-				console.log(newWinnerRating);
-				console.log('newLoserRating');
-				console.log(newLoserRating);
-			}
+
+	s3client.putObject({
+		Body: game_data,
+		Bucket: config.s3.bucket,
+		Key: workerData[0] + '.json',
+	}).promise().catch(err => console.error(err)).finally(() => {
+
+		if (p2won == 1){
+			gameWinner = players['p2'];
+		} else if (p1won == 1) {
+			gameWinner = players['p1'];
+		} else {
+			end_winner = 'No one';
+			cancel_game();
+			return;
+		}
 		
-			console.log('result');
-			if (result[0]['ranked'] == 0) {
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_file: compressed_file, game_history: game_history}, {upsert: true})
-					.then((qq) => {
-						console.log('winner updated to ' + gameWinner);
-						setTimeout(function(){
-							process.exit(0);
-						}, 1000);
-					});	
-			} else if (result[0]['ranked'] == 1){
-			
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_file: compressed_file, game_history: game_history}, {upsert: true})
-					.then((qq) => {
-						console.log('winner updated to ' + gameWinner);
-						User.updateOne({user_id: gameWinner}, {rating: newWinnerRating}, {upsert: true})
-							.then((qq) => {
-								console.log('winner rating updated');
-								User.updateOne({user_id: gameLoser}, {rating: newLoserRating}, {upsert: true})
-									.then((qq) => {
-										console.log('loser rating updated');
-										setTimeout(function(){
-											process.exit(0);
-										}, 1000);
-									});	
-							});	
-					});	
-			}
+		//to handle client
+		end_winner = gameWinner
 		
-		})
-  		.catch((error) => {
-  			console.log(error);
-			setTimeout(function(){
-				process.exit(0);
-			}, 3000);
-			//process.exit(0);
-  		}) 
-	
+		Game.find({game_id: workerData[0]})
+			.then((result) => {
+				if (p2won == 1){
+					gameWinner = players['p2'];
+					winnerRating = result[0]['p2_rating'];
+					gameLoser = players['p1'];
+					loserRating = result[0]['p1_rating'];
+				
+					newWinnerRating = getNewRating(winnerRating, loserRating, 1);
+					newLoserRating = getNewRating(loserRating, winnerRating, 0);
+					console.log('newWinnerRating');
+					console.log(newWinnerRating);
+					console.log('newLoserRating');
+					console.log(newLoserRating);
+				} else {
+					gameWinner = players['p1'];
+					winnerRating = result[0]['p1_rating'];
+					gameLoser = players['p2'];
+					loserRating = result[0]['p2_rating'];
+				
+					newWinnerRating = getNewRating(winnerRating, loserRating, 1);
+					newLoserRating = getNewRating(loserRating, winnerRating, 0);
+					console.log('newWinnerRating');
+					console.log(newWinnerRating);
+					console.log('newLoserRating');
+					console.log(newLoserRating);
+				}
+			
+				console.log('result');
+				if (result[0]['ranked'] == 0) {
+					Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
+						.then((qq) => {
+							console.log('winner updated to ' + gameWinner);
+							setTimeout(function(){
+								process.exit(0);
+							}, 1000);
+						});	
+				} else if (result[0]['ranked'] == 1){
+				
+					Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
+						.then((qq) => {
+							console.log('winner updated to ' + gameWinner);
+							User.updateOne({user_id: gameWinner}, {rating: newWinnerRating}, {upsert: true})
+								.then((qq) => {
+									console.log('winner rating updated');
+									User.updateOne({user_id: gameLoser}, {rating: newLoserRating}, {upsert: true})
+										.then((qq) => {
+											console.log('loser rating updated');
+											setTimeout(function(){
+												process.exit(0);
+											}, 1000);
+										});	
+								});	
+						});	
+				}
+			
+			})
+			.catch((error) => {
+				console.log(error);
+				setTimeout(function(){
+					process.exit(0);
+				}, 3000);
+				//process.exit(0);
+			}) 
+	});
 }
 
 
@@ -151,7 +168,7 @@ const util = require('util');
 const mongoose = require('mongoose');
 const {User, Session} = require('../models/users.js');
 const Game = require('../models/newgame.js');
-const config = require('../config');
+
 
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
