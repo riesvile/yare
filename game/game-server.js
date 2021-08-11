@@ -30,6 +30,7 @@ var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
 
 const mongoose = require('mongoose');
 const Game = require('../models/newgame.js');
+//const {User, Session} = require('../models/users.js');
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to dbb'))
@@ -387,6 +388,140 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 });
 
 
+//app.get('/' + this_server + 'stripe', (req, res) => {
+//	console.log('stripe pay works');
+//	
+//	res.status(200).send({
+//		data: 'donezoa'
+//    });
+//	
+//});
+
+function get_color_num(color_name){
+	switch(color_name){
+		case 'gblue':
+			return 3;
+			break;
+		case 'purply':
+			return 1;
+			break;
+		case 'redish':
+			return 2;
+			break;
+		case 'yerange':
+			return 4;
+			break;
+		case 'wirple':
+			return 5;
+			break;
+		case 'pistagre':
+			return 6;
+			break;
+		case 'magion':
+			return 7;
+			break;
+		case 'brigenta':
+			return 8;
+			break;
+		case 'greson':
+			return 9;
+			break;
+		case 'mmmsalmon':
+			return 10;
+			break;
+		case 'skyblue':
+			return 11;
+			break;
+		default:
+			return 'color1';
+	}
+}
+
+function handleCheckout(checkout){
+	console.log('checkout reference id');
+	console.log(checkout.client_reference_id);
+	
+	let arr = checkout.client_reference_id.split(',');
+	console.log(arr[0]);
+	console.log(arr[1]);
+	
+	let c_code = get_color_num(arr[0]);
+	
+	add_color_to_user(arr[1], c_code)
+}
+
+function add_color_to_user(userid, color_code){
+	//User.find({user_id: userid})
+	//	.then((result) => {
+	//		//res.send(result);
+	//		if (result.length == 0){
+	//			console.log('user does not exist')
+	//		} else {
+	//			console.log('updating color ' + color_code);
+	//			User.updateOne({user_id: userid}, { $push: { colors: color_code } }, {upsert: true});
+	//		}
+	//	})
+	//	.catch((error) => {
+	//		console.log(error);
+	//	})
+		
+		
+//		
+//		User.findOneAndUpdate({user_id: userid},{
+//		            "$push": {"colors": color_code}
+//		        },{new: true, safe: true, upsert: true }).then((result) => {
+//					console.log('updating color ' + color_code);
+//		        }).catch((error) => {
+//					console.log('some error');
+//		        });
+//		
+		
+}
+
+
+
+app.post('/' + this_server + 'stripe', express.json({type: 'application/json'}), (request, response) => {
+	console.log('stripe pay works');
+	const event = request.body;
+	
+  // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+		console.log('payment intent succeeded');
+		console.log(paymentIntent);
+        // Then define and call a method to handle the successful payment intent.
+        // handlePaymentIntentSucceeded(paymentIntent);
+        break;
+      case 'checkout.session.completed':
+        const checkoutSession = event.data.object;
+	    console.log('checkout done');
+	    console.log(checkoutSession);
+		handleCheckout(checkoutSession);
+        // Then define and call a method to handle the successful payment intent.
+        // handlePaymentIntentSucceeded(paymentIntent);
+        break;
+      case 'payment_method.attached':
+        const paymentMethod = event.data.object;
+        console.log('payment method')
+        break;
+      // ... handle other event types
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+	
+	response.json({received: true});
+	
+});
+
+app.get('/' + this_server + 'strip', (req, res) => {
+	console.log('stripe pay works');
+	
+	res.status(200).send({
+		data: 'donezo tasdesasdst'
+    });
+	
+});
 
 
 app.get('/' + this_server + '/:game_id', (req, res) => {

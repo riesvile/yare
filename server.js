@@ -388,6 +388,21 @@ function get_color(color_name){
 		case 'pistagre':
 			return 'color6';
 			break;
+		case 'magion':
+			return 'color7';
+			break;
+		case 'brigenta':
+			return 'color8';
+			break;
+		case 'greson':
+			return 'color9';
+			break;
+		case 'mmmsalmon':
+			return 'color10';
+			break;
+		case 'skyblue':
+			return 'color11';
+			break;
 		default:
 			return 'color1';
 	}
@@ -1351,25 +1366,14 @@ app.post('/populate-hub', (req, res) => {
 		        	data: "no results"
 		        });
 			} else {
-				var out = result.map((game) => {
-					return {
-						game_id: game.game_id,
-						player1: game.player1,
-						p1_shape: game.p1_shape,
-						p1_color: game.p1_color,
-						p1_rating: game.p1_rating,
-						player2: game.player2,
-						p2_shape: game.p2_shape,
-						p2_color: game.p2_color,
-						p2_rating: game.p2_rating,
-						winner: game.winner,
-						ranked: game.ranked,
-						updatedAt: game.updatedAt
-					}
-				});
+				for (i = 0; i < result.length; i++){
+					result[i]['passwrd'] = '0';
+					result[i]['session_id'] = '0';
+					result[i]['game_file'] = '';
+				}
 				res.status(200).send({
 		        	data: "populate",
-					stream: out
+					stream: result
 		        });
 			}
 		})
@@ -1392,17 +1396,13 @@ app.post('/populate-leaderboard', (req, res) => {
 		        	data: "no results"
 		        });
 			} else {
-				let out = result.map((user) => {
-					return {
-						user_id: user.user_id,
-						rating: user.rating,
-						rating_stability: user.rating_stability,
-						games_count: user.games_count,
-					};
-				});
+				for (i = 0; i < result.length; i++){
+					result[i]['passwrd'] = '0';
+					result[i]['session_id'] = '0';
+				}
 				res.status(200).send({
 		        	data: "populate",
-					stream: out
+					stream: result
 		        });
 			}
 		})
@@ -1444,6 +1444,16 @@ app.post('/populate-leaderboard', (req, res) => {
 
 
 
+app.post('/stripe-payment', (req, res) => {
+	console.log('stripe pay');
+	console.log(req.body);
+	
+	res.status(200).send({
+		data: 'done'
+    });
+	
+});
+
 
 app.post('/deactivate', (req, res) => {
 	console.log('deactivating');
@@ -1455,6 +1465,7 @@ app.post('/deactivate', (req, res) => {
     });
 	
 });
+
 app.get('/t2f/est', (req, res) => {
 	console.log('triggerring');
 	trigger_deactivation();	

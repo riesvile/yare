@@ -107,6 +107,8 @@
 						<div id="color_pistagre"></div>
 					</div>
 					
+					<!--
+					
 					<div class="color_option ex_c_2 no_sell" id="color_wirple_border">
 						<div id="color_wirple"></div>
 					</div>
@@ -117,10 +119,10 @@
 					
 					
 					
-					<div class="color_option ex_c_4 buy" id="color_brigenta_border">
+					<a href="https://priceblocs.com/test/links/XwRcWh_bIuSKYVF3g4das?client_reference_id=brigenta," class="color_option ex_c_4 buy" id="color_brigenta_border">
 						<div id="color_brigenta"></div>
 						<span class="color_price">$2</span>
-					</div>
+					</a>
 					
 					<div class="color_option ex_c_5 buy" id="color_greson_border">
 						<div id="color_greson"></div>
@@ -131,6 +133,13 @@
 						<div id="color_mmmsalmon"></div>
 						<span class="color_price">$5</span>
 					</div>
+					
+					<div class="color_option ex_c_7 buy" id="color_skyblue_border">
+						<div id="color_skyblue"></div>
+						<span class="color_price">$20</span>
+					</div>
+						
+					-->
 					
 				</div>
 				
@@ -216,6 +225,7 @@
 		  'brigenta': ['rgba(198, 166, 224, 1)', 'rgba(218, 174, 240, 1)'],
 		  'greson': ['rgba(138, 228, 122, 1)', 'rgba(158, 248, 142, 1)'],
 		  'mmmsalmon': ['rgba(242, 208, 189, 1)', 'rgba(262, 228, 209, 1)'],
+		  'skyblue': ['rgba(108, 152, 234, 1)', 'rgba(128, 172, 248, 1)']
 		  
 	  };
 	  
@@ -271,6 +281,16 @@
 	  }
 
 
+	  function update_links(){
+		  let buy_links = document.querySelectorAll("a.buy");
+		  let this_user = getCookie('user_id');
+		  for (link of buy_links){
+			  link.href += this_user;
+			  console.log(link.href);
+		  }
+	  }
+
+
 	  //colors
 	  
 	  function draw_bord(clr){
@@ -311,16 +331,18 @@
 		  yerange_el.style.borderColor = color_table['default'][0];
 		  pistagre_el.style.borderWidth = '1px';
 		  pistagre_el.style.borderColor = color_table['default'][0];
-		  wirple_el.style.borderWidth = '1px';
-		  wirple_el.style.borderColor = color_table['default'][0];
-		  magion_el.style.borderWidth = '1px';
-		  magion_el.style.borderColor = color_table['default'][0];
-		  brigenta_el.style.borderWidth = '1px';
-		  brigenta_el.style.borderColor = color_table['default'][0];
-		  greson_el.style.borderWidth = '1px';
-		  greson_el.style.borderColor = color_table['default'][0];
-		  mmmsalmon_el.style.borderWidth = '1px';
-		  mmmsalmon_el.style.borderColor = color_table['default'][0];
+		  //wirple_el.style.borderWidth = '1px';
+		  //wirple_el.style.borderColor = color_table['default'][0];
+		  //magion_el.style.borderWidth = '1px';
+		  //magion_el.style.borderColor = color_table['default'][0];
+		  //brigenta_el.style.borderWidth = '1px';
+		  //brigenta_el.style.borderColor = color_table['default'][0];
+		  //greson_el.style.borderWidth = '1px';
+		  //greson_el.style.borderColor = color_table['default'][0];
+		  //mmmsalmon_el.style.borderWidth = '1px';
+		  //mmmsalmon_el.style.borderColor = color_table['default'][0];
+		  //skyblue_el.style.borderWidth = '1px';
+		  //skyblue_el.style.borderColor = color_table['default'][0];
 		  
 
 		  localStorage.setItem('chosen_color', ch_color);
@@ -567,22 +589,24 @@
 	  var redish_el = document.getElementById('color_redish_border');
 	  var yerange_el = document.getElementById('color_yerange_border');
 	  var pistagre_el = document.getElementById('color_pistagre_border');
-	  var wirple_el = document.getElementById('color_wirple_border');
-	  var magion_el = document.getElementById('color_magion_border');
-	  var brigenta_el = document.getElementById('color_brigenta_border');
-	  var greson_el = document.getElementById('color_greson_border');
-	  var mmmsalmon_el = document.getElementById('color_mmmsalmon_border');
+	  //var wirple_el = document.getElementById('color_wirple_border');
+	  //var magion_el = document.getElementById('color_magion_border');
+	  //var brigenta_el = document.getElementById('color_brigenta_border');
+	  //var greson_el = document.getElementById('color_greson_border');
+	  //var mmmsalmon_el = document.getElementById('color_mmmsalmon_border');
+	  //var skyblue_el = document.getElementById('color_skyblue_border');
 	  
 	  document.getElementById('color_gblue').style.backgroundColor = color_table['gblue'][0];
 	  document.getElementById('color_purply').style.backgroundColor = color_table['purply'][0];
 	  document.getElementById('color_redish').style.backgroundColor = color_table['redish'][0];
 	  document.getElementById('color_yerange').style.backgroundColor = color_table['yerange'][0];
 	  document.getElementById('color_pistagre').style.backgroundColor = color_table['pistagre'][0];
-	  document.getElementById('color_wirple').style.backgroundColor = color_table['wirple'][0];
-	  document.getElementById('color_magion').style.backgroundColor = color_table['magion'][0];
-	  document.getElementById('color_brigenta').style.backgroundColor = color_table['brigenta'][0];
-	  document.getElementById('color_greson').style.backgroundColor = color_table['greson'][0];
-	  document.getElementById('color_mmmsalmon').style.backgroundColor = color_table['mmmsalmon'][0];
+	  //document.getElementById('color_wirple').style.backgroundColor = color_table['wirple'][0];
+	  //document.getElementById('color_magion').style.backgroundColor = color_table['magion'][0];
+	  //document.getElementById('color_brigenta').style.backgroundColor = color_table['brigenta'][0];
+	  //document.getElementById('color_greson').style.backgroundColor = color_table['greson'][0];
+	  //document.getElementById('color_mmmsalmon').style.backgroundColor = color_table['mmmsalmon'][0];
+	  //document.getElementById('color_skyblue').style.backgroundColor = color_table['skyblue'][0];
 	  
 	  var circles_el = document.getElementById('shape_circles');
 	  var squares_el = document.getElementById('shape_squares');
@@ -603,11 +627,12 @@
 	  redish_el.addEventListener('click', color_selection.bind(null, 'redish'), false);
 	  yerange_el.addEventListener('click', color_selection.bind(null, 'yerange'), false);
 	  pistagre_el.addEventListener('click', color_selection.bind(null, 'pistagre'), false);
-	  wirple_el.addEventListener('click', color_selection.bind(null, 'wirple'), false);
-	  magion_el.addEventListener('click', color_selection.bind(null, 'magion'), false);
-	  brigenta_el.addEventListener('click', color_selection.bind(null, 'brigenta'), false);
-	  greson_el.addEventListener('click', color_selection.bind(null, 'greson'), false);
-	  mmmsalmon_el.addEventListener('click', color_selection.bind(null, 'mmmsalmon'), false);
+	  //wirple_el.addEventListener('click', color_selection.bind(null, 'wirple'), false);
+	  //magion_el.addEventListener('click', color_selection.bind(null, 'magion'), false);
+	  //brigenta_el.addEventListener('click', color_selection.bind(null, 'brigenta'), false);
+	  //greson_el.addEventListener('click', color_selection.bind(null, 'greson'), false);
+	  //mmmsalmon_el.addEventListener('click', color_selection.bind(null, 'mmmsalmon'), false);
+	  //skyblue_el.addEventListener('click', color_selection.bind(null, 'skyblue'), false);
 	  
 	  circles_el.addEventListener('click', shape_selection.bind(null, 'circles'), false);
 	  squares_el.addEventListener('click', shape_selection.bind(null, 'squares'), false);
