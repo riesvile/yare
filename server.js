@@ -1403,12 +1403,23 @@ if(!config.s3.bucketEndpoint) {
 
 app.get('/migrate_replays', async (req, res) => {
 	let skip = 0;
+	var num = 10;
 	while(true) {
-		let results = await Game.find({game_file: {$ne: ""}}).limit(10).skip(10*skip).exec();
+		let results = await Game.find({game_file: {"$exists" : true, "$ne": ""}}, {}, {limit: 10}).exec();
 		for(var game of results) {
 			try {
-				if(await s3client.headObject({Bucket: config.s3.bucket, Key: game.game_id + '.json'})) {
-					console.log('replay already exists');
+				if(!game.game_file || game.game_file == "") {
+					continue;
+				}
+				let found = true;
+				try { 
+					await s3client.headObject({Bucket: config.s3.bucket, Key: game.game_id + '.json'}).promise();
+				} catch (headErr) {
+					if (headErr.code === 'NotFound') {
+						found = false;
+					}
+				}
+				if(found) {
 					continue;
 				}
 				var decompressed_file = zlib.inflateSync(Buffer.from(game.game_file, 'base64'));
@@ -1417,6 +1428,8 @@ app.get('/migrate_replays', async (req, res) => {
 					Bucket: config.s3.bucket,
 					Key: game.game_id + '.json',
 				}).promise()
+				await Game.updateOne({game_id: game.game_id}, {$unset: {game_file: ""}}).exec();
+				res.write('processed replay for game ' + game.game_id + '\n');
 			} catch(err) {
 				console.log(err);
 			}
@@ -1424,8 +1437,12 @@ app.get('/migrate_replays', async (req, res) => {
 		if(results.length == 0) {
 			break;
 		}
-		skip++;
 		res.write('processed ' + results.length + ' replays\n');
+		num--;
+		if(num == 0) {
+			break;
+		}
+		skip++;
 	}
 	res.write('did ' + skip + ' chunks');
 	res.end();
