@@ -577,6 +577,14 @@ color_palettes['color4'] = 'rgba(201,161,101,1)';
 color_palettes['color5'] = 'rgba(120,12,196,1)';
 color_palettes['color6'] = 'rgba(148, 176, 108, 1)';
 
+color_palettes['color7'] = 'rgba(180, 27, 227, 1)';
+color_palettes['color8'] = 'rgba(198, 166, 224, 1)';
+color_palettes['color9'] = 'rgba(138, 228, 122, 1)';
+color_palettes['color10'] = 'rgba(232, 198, 179, 1)';
+color_palettes['color11'] = 'rgba(78, 142, 250, 1)';
+color_palettes['color12'] = 'rgba(240, 70, 60, 1)';
+
+
 
 
 var rawSpirits = {};

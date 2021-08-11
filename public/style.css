@@ -1325,6 +1325,26 @@ span.shape_name {
 	color: rgba(242, 246, 250, 0.86);
 }
 
+#buy_more_colors {
+	position: absolute;
+	line-height: 31px;
+	border: 1px solid rgba(242, 246, 250, 0.32);
+	border-radius: 34px;
+	display: inline-block;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	padding: 0px 16px 1px 16px;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+
+#buy_more_colors:hover {
+	border: 1px solid rgba(242, 246, 250, 0.49);
+	color: rgba(242, 246, 250, 0.89);
+}
+
 #color_gblue {
 	background-color: rgba(28, 196, 240, 1);
 }
@@ -1345,6 +1365,27 @@ span.shape_name {
 	background-color: rgba(148, 176, 108, 1);
 }
 
+#paid_colors {
+	
+}
+
+
+#paid_colors a:first-of-type {
+	margin-left: 20px;
+}
+
+a.buy {
+	opacity: 0;
+	display: none;
+	pointer-events: none;
+}
+
+
+.ex_c_1, .ex_c_2, .ex_c_3 {
+	opacity: 0;
+	display: none;
+	pointer-events: none;
+}
 
 
 #start_area {

@@ -30,7 +30,7 @@ var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
 
 const mongoose = require('mongoose');
 const Game = require('../models/newgame.js');
-//const {User, Session} = require('../models/users.js');
+const {User, Session} = require('../models/users.js');
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => console.log('connected to dbb'))
@@ -432,6 +432,9 @@ function get_color_num(color_name){
 		case 'skyblue':
 			return 11;
 			break;
+		case 'toored':
+			return 12;
+			break;
 		default:
 			return 'color1';
 	}
@@ -464,17 +467,15 @@ function add_color_to_user(userid, color_code){
 	//	.catch((error) => {
 	//		console.log(error);
 	//	})
+	//	
 		
 		
-//		
-//		User.findOneAndUpdate({user_id: userid},{
-//		            "$push": {"colors": color_code}
-//		        },{new: true, safe: true, upsert: true }).then((result) => {
-//					console.log('updating color ' + color_code);
-//		        }).catch((error) => {
-//					console.log('some error');
-//		        });
-//		
+		User.findOneAndUpdate({user_id: userid},{"$push": {"colors": color_code}},{new: true, safe: true, upsert: true }).then((result) => {
+					console.log('updating color ' + color_code);
+		        }).catch((error) => {
+					console.log('some error');
+		        });
+		
 		
 }
 
@@ -518,7 +519,7 @@ app.get('/' + this_server + 'strip', (req, res) => {
 	console.log('stripe pay works');
 	
 	res.status(200).send({
-		data: 'donezo tasdesasdst'
+		data: 'dwork'
     });
 	
 });
