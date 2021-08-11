@@ -17,6 +17,18 @@ ul.no_bullet li {
 	margin-bottom: 12px;
 }
 
+ul.faq li {
+	font-size: 20px;
+	line-height: 40px;
+	color: rgba(220, 188, 140, 1);
+}
+
+.para_faq {
+	font-weight: 500;
+	line-height: 36px;
+	max-width: 1000px;
+}
+
 .bullet {
 	position: absolute;
 	left: -28px;

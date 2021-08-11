@@ -679,6 +679,28 @@ input[type=submit] {
 		color: rgba(255, 190, 194, 1);
 	}
 	
+	#console_open {
+		position: absolute;
+		left: 788px;
+		top: 12px;
+		width: 40px;
+		height: 40px;
+		background-color: rgba(48, 45, 51, 1);
+		border-radius: 12px;
+		z-index: 9999;
+	}
+	
+	#console_open_ico {
+		width: 24px;
+		height: 24px;
+		display: block;
+		position: absolute;
+		top: 8px;
+		left: 8px;
+		background: url(asset/ico_console_window.png);
+		background-size: cover;
+	}
+	
 	
 	#countdown {
 		position: fixed;
