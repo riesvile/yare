@@ -473,6 +473,10 @@ function bot_game(req, res, pl_id, botinfo){
 	
 	var chosen_server = pick_server('real');
 
+	if(req.body.force_server != undefined){
+		chosen_server = req.body.force_server;
+	}
+
 	var pl1 = {
 		id: req.body.user_id,
 		session_id: req.body.session_id,
@@ -1230,15 +1234,74 @@ app.post('/gameinfo', (req, res) => {
 
 });
 
-app.post('/get_replay', (req, res) => {
+const AWS = require('aws-sdk');
+AWS.config.setPromisesDependency(null);
 
+s3client = new AWS.S3({
+	accessKeyId: config.s3.key,
+	secretAccessKey: config.s3.secret,
+	endpoint: config.s3.endpoint,
+	s3ForcePathStyle: !config.s3.bucketEndpoint,
+	s3BucketEndpoint: config.s3.bucketEndpoint
+});
+
+if(!config.s3.bucketEndpoint) {
+	s3client.createBucket({
+		ACL: 'public-read',
+		Bucket: config.s3.bucket,
+	}).promise().catch(err => console.log(err));
+}
+
+app.get('/migrate_replays', async (req, res) => {
+	let skip = 0;
+	while(true) {
+		let results = await Game.find({game_file: {$ne: ""}}).limit(10).skip(10*skip).exec();
+		for(var game of results) {
+			try {
+				if(await s3client.headObject({Bucket: config.s3.bucket, Key: game.game_id + '.json'})) {
+					console.log('replay already exists');
+					continue;
+				}
+				var decompressed_file = zlib.inflateSync(Buffer.from(game.game_file, 'base64'));
+				await s3client.putObject({
+					Body: decompressed_file,
+					Bucket: config.s3.bucket,
+					Key: game.game_id + '.json',
+				}).promise()
+			} catch(err) {
+				console.log(err);
+			}
+		}
+		if(results.length == 0) {
+			break;
+		}
+		skip++;
+		res.write('processed ' + results.length + ' replays\n');
+	}
+	res.write('did ' + skip + ' chunks');
+	res.end();
+});
+
+app.post('/get_replay', async (req, res) => {
+	let obj = s3client.getObject({
+		Bucket: config.s3.bucket,
+		Key: req.body.game_id + '.json',
+	}).promise();
+	try {
+		let data = await obj;
+		console.log(data);
+		res.status(200).send(data.Body);
+		return;
+	} catch (err) {
+		console.log("s3 miss");
+	}
 	Game.find({game_id: req.body.game_id})
 		.then((result) => {
 			//res.send(result);
 			console.log('getting game info for replay');
 			if (result.length == 0){
 				console.log('no game');
-				res.status(200).send({
+				res.status(404).send({
 		        	meta: "no game found"
 		        });
 			} else if (result[0]['game_file'] != ''){
@@ -1246,13 +1309,10 @@ app.post('/get_replay', (req, res) => {
 				console.log('replay file sent');
 				//console.log(decompressed_file);
 				
-				res.status(200).send({
-		        	meta: "gotit",
-					data: decompressed_file
-		        });
+				res.status(200).send(decompressed_file);
 			} else {
 				console.log('somthinwrong');
-				res.status(200).send({
+				res.status(404).send({
 		        	meta: "something went wrong"
 		        });
 			}

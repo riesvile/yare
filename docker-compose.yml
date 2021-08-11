@@ -7,6 +7,7 @@ services:
       - NODE_ENV=dev
     depends_on:
       - mongodb
+      - minio
     volumes:
       - ./public:/usr/src/app/public
   d1:
@@ -17,6 +18,7 @@ services:
       - NODE_ENV=dev
     depends_on:
       - mongodb
+      - minio
   d2:
     build:
       context: .
@@ -26,6 +28,7 @@ services:
       - NODE_ENV=dev
     depends_on:
       - mongodb
+      - minio
   tutorial:
     build:
       context: .
@@ -37,8 +40,6 @@ services:
     depends_on:
       - mongodb
   mongodb:
-    ports:
-      - "6000:6000"
     image: "mongo"
   frontend:
     build:
@@ -50,3 +51,10 @@ services:
       - d1
       - d2
       - tutorial
+      - minio
+  minio:
+    image: "minio/minio"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: ["server", "/data", "--console-address=:9001"]
