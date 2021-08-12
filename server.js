@@ -1420,7 +1420,8 @@ app.get('/migrate_replays', async (req, res) => {
 					}
 				}
 				if(found) {
-					await Game.updateOne({game_id: game.game_id}, {$unset: {game_file: ""}}).exec();
+					res.write('already processed replay for game ' + game.game_id + '\n');
+					await Game.updateOne({game_id: game.game_id}, {game_file: ""}).exec();
 					continue;
 				}
 				var decompressed_file = zlib.inflateSync(Buffer.from(game.game_file, 'base64'));
@@ -1429,7 +1430,7 @@ app.get('/migrate_replays', async (req, res) => {
 					Bucket: config.s3.bucket,
 					Key: game.game_id + '.json',
 				}).promise()
-				await Game.updateOne({game_id: game.game_id}, {$unset: {game_file: ""}}).exec();
+				await Game.updateOne({game_id: game.game_id}, {game_file: ""}).exec();
 				res.write('processed replay for game ' + game.game_id + '\n');
 			} catch(err) {
 				console.log(err);
