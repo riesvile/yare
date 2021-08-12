@@ -1420,6 +1420,7 @@ app.get('/migrate_replays', async (req, res) => {
 					}
 				}
 				if(found) {
+					await Game.updateOne({game_id: game.game_id}, {$unset: {game_file: ""}}).exec();
 					continue;
 				}
 				var decompressed_file = zlib.inflateSync(Buffer.from(game.game_file, 'base64'));
