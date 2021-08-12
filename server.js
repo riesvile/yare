@@ -1409,6 +1409,8 @@ app.get('/migrate_replays', async (req, res) => {
 		for(var game of results) {
 			try {
 				if(!game.game_file || game.game_file == "") {
+					res.write('clearing replay for game ' + game.game_id + '\n');
+					await Game.updateOne({game_id: game.game_id}, {game_file: ""}).exec();
 					continue;
 				}
 				let found = true;

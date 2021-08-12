@@ -41,7 +41,6 @@ services:
       - mongodb
   mongodb:
     image: "mongo"
-<<<<<<< HEAD
   mongo-express:
     image: "mongo-express"
     environment:
@@ -50,16 +49,6 @@ services:
       - mongodb
     ports:
       - "6001:8081"
-=======
-  mongoui:
-    ports:
-      - "6001:8081"
-    image: "mongo-express"
-    environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-    depends_on:
-      - mongodb
->>>>>>> d4dd8e4... fix migrate
   frontend:
     build:
       context: dev/haproxy
