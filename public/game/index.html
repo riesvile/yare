@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare.io</title>
+	<style>
+	</style>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="a/colors.css">
+	<link rel="stylesheet" href="a/style.css">
+	<link rel="stylesheet" href="a/style-mobile.css">
+	<script src="a/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="a/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+	<script src="a/anime.min.js"></script>
+	
+	<style>
+	.ace_scrollbar-h {
+		pointer-events: none;
+	}
+		
+	</style>
+	
+  </head>
+  <body>
+
+  <!--
+  <audio src="../sound/enemy_incoming.mp3" crossorigin="anonymous" id="au_enemy_incoming"></audio>
+  -->
+	  
+  <div id="new_account_wrap">
+	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+		  <span id="user_err_message">Something's wrong</span>
+	  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+		  <span id="password_err_message">Something's wrong</span>
+		  <br>
+		   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
+	  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+	  </form>
+  </div>
+  
+  <div id="login_wrap">
+	  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
+	  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
+		  <span id="login_err_message">Something's wrong</span>
+		  <br>
+	  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+	  </form>
+  </div>
+  
+  <div id="profile_links">  
+	  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
+	  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
+	  	<a href="#" class="profile_link" id="log_out">Log out</a>
+  </div>
+  
+  
+  <div id="hector">
+	  <h1 id="logo"><a href="https://yare.io">yare<span class="logo_lowlight">.io</span></a></h1>
+	  <div class="menu">
+		  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
+		  <div class="menu_line desktop_only"></div>
+		  <div class="menu_link new_acc" id="new_account">New account</div>
+		  <div class="menu_link" id="login">Log in</div>
+		  <div class="menu_link" id="signed_in">username</div>
+	  </div>
+  </div>
+	  
+	  
+  <canvas id='main_canvas'></canvas>
+  <canvas id='base_canvas'></canvas>
+  
+  
+  
+  <div id="tutorial_infobox">
+		  <p class="info_h">Reference to your spirit (an object).</p>
+		  <p class="info_p">In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>
+  </div>
+  
+  <div id="game_info_panel">
+	 <div id="game_info_panel_in">
+	  <div id="info_player1_shape"><span class="ico_circle"></span></div>
+	  <p id="info_player1_name">levmiseri</p>
+	  <div id="info_player2_shape"><span class="ico_circle"></span></div>
+	  <p id="info_player2_name">levmiseri</p>
+     </div>
+  </div>
+  
+  <div id="resign_game">
+	  <span class="resign_lbl" id="pre_resign_btn">Resign</span>
+	  <span class="resign_lbl" id="resign_btn">Yes, I resign</span>
+	  <span class="cancel_lbl" id="cancel_resign_btn">Cancel</span>
+	  <span class="you_sure_lbl">Are you sure?</span>
+  </div>
+  
+  
+  <div id="game_hover">
+  	<span class="spirit_id">haha1 · <span class="lowlight">24</span></span>
+	<span class="spirit_energy">24 <span class="lowlight">energy</span></span>
+  </div>
+  
+  <div id="overlay"></div>
+  <div id="game_over_overlay"></div>
+  <div id="overlay_pre_start"></div>
+  <div id="overlay_start"></div>
+  <div id="grad_top"></div>
+  <div id="grad_bottom"></div>
+  
+  <div id="console" class="collapsed">
+	  <div id="console_head">
+	  	<span id="console_lbl">CONSOLE</span>
+		<span id="console_drop"></span>
+	  </div>
+	  
+	  <div id="console_in">
+		  <p class="console_item console_error">.move() argument must be an array. E.g. s1.move([100, 100]) or s1.move(s2.position);</p>
+		  <p class="console_item">50</p>
+		  <p class="console_item">50</p>
+  	  </div>
+  </div>
+  
+  <!--
+  <div id="console_open">
+  	<span id="console_open_ico"></span>
+  </div>
+	  
+	  -->
+  
+  <div id="countdown">
+	  <p class="starting_when">Game starts in <span id="countdown_num">25</span><span id="waiting_for_what"> · Waiting for both players to upload code</span></p>
+  </div>
+  
+  <div id="panel" class="panel_start">
+    <div id="panel_dragger"><div id="drag_line1"></div><div id="drag_line2"></div></div>
+	  
+	  
+	
+	<!-- <div id="grad_bottom"></div> -->
+
+  
+  <div id="tutorial">
+	  <div id="tutorial_wrap">
+		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position)">COPY</span> into the code block below and press <span id="send_intro">SEND CODE</span>.</p>
+		<!-- <p id="tut_helper" class="tutorial_text">You can hover over the code snippet above for more information about each part</p> -->
+	  </div>
+  </div>
+  
+  <div id="editor_container" class="tutorial_editor">
+<div id="editor">// Your code goes here
+// Activate it by pressing the button below or with SHIFT+ENTER
+
+</div>
+  </div>  
+  
+  </div>
+  
+  <div id="update_switch_wrapper">
+  <a href="#" id="update_code"><span>UPDATE CODE</span></a>
+  <div id="shortcut_info">SHIFT + ENTER</div>
+  <div id="switch_view" class="mobile_only"><span class="switch_ico">{ }</span></div>
+  </div>
+  
+  
+  
+  
+  
+  <div id="game_over_block">
+	  <p id="game_result">You won</p>
+	  <p id="tutorial_over">Well done, you passed the tutorial. You should try your skills against other people!</p>
+	  
+	  <a class="game_over_link" id="over_new_account" href="#">Create a new account</a>
+	  <a class="game_over_link" id="over_login" href="#">Login</a>
+	  
+	  <div id="ranked_nonranked">Ranked game</div>
+	  <div class="game_table">
+		  <div class="gt_row">
+			  <div class="gt_row_in">
+				 <div class="player_shape" id="player1_shape"></div>
+				 <div class="player_name" id="player1_name"></div>
+				 <div class="player_rating" id="player1_rating">----<span class='player_delta' id='player1_delta'>+10</span></div>
+		  	  </div>
+		  </div>
+		  <div class="gt_row">
+			   <div class="gt_row_in">
+				  <div class="player_shape" id="player2_shape"></div>
+				  <div class="player_name" id="player2_name"></div>
+				  <div class="player_rating" id="player2_rating">----<span class="player_delta" id="player2_delta">+10</span></div>
+			   </div>
+		  </div>
+	  </div>
+	  
+	  <a class="game_over_link" id="watch_replay" href="#">Watch replay</a>
+	  <a class="game_over_link" id="back_to_hub" href="../hub">Back to player hub</a>
+	  <a class="game_over_link" id="back_to_new" href="../newgame">New game</a>
+	  
+	  
+	  
+  </div>
+ 
+  
+  
+  </body>
+  <script src="a/animations.js"></script>
+  <script src="a/game/script.js"></script>
+  <script src="a/tutorial_texts.js"></script>
+  <script src="a/rendering3.js"></script>
+  <script src="a/basics.js"></script>
+  <!--<script src="../sound.js"></script>-->
+  
+  <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
+  </html>

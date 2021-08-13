@@ -549,7 +549,7 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 				console.log(error);
 			})
 	} else if (active_game[0] == 1){
-		res.sendFile(base + '/public/game.html');
+		res.sendFile(base + '/public/game/index.html');
 	} else {
 		if (this_server_type == "tutorial" && active_game[0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');

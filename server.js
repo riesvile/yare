@@ -1221,7 +1221,7 @@ app.get('/all', (req, res) => {
 
 app.get('/game/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
-	res.sendFile(__dirname + '/public/game.html');
+	res.sendFile(__dirname + '/public/game/index.html');
 });
 
 
@@ -1682,7 +1682,7 @@ app.get('/challenge/:game_id', (req, res) => {
 		return;
 	}
 	if (active_game[0] == 1){
-		res.sendFile(__dirname + '/public/game.html');
+		res.sendFile(__dirname + '/public/game/index.html');
 	} else if (active_game[0] == 0.5){
 		//pending – waiting for p2 to connect
 		res.sendFile(__dirname + '/public/challenge.html');
@@ -2002,7 +2002,7 @@ app.get('/d1/:game_id', (req, res) => {
 	}
 
 	if (active_game[0] == 1){
-		res.sendFile(__dirname + '/public/game.html');
+		res.sendFile(__dirname + '/public/game/index.html');
 	} else {
 		if (this_server_type == "tutorial" && active_game[0] == 0){
 			console.log('game is being saved into db?? maybe??????????????????????????????????????');
