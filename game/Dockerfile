@@ -1,4 +1,4 @@
-FROM node:14
+FROM nikolaik/python-nodejs:python3.9-nodejs14
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -9,6 +9,8 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 RUN npm install
+
+RUN pip install transcrypt
 
 # If you are building your code for production
 # RUN npm ci --only=production

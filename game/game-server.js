@@ -23,6 +23,9 @@ const {Worker} = require('worker_threads');
 const config = require('../config');
 const path = require('path');
 const fetch = require('node-fetch');
+const uuid = require("uuid")
+const fs = require("fs")
+const {execSync} = require("child_process")
 require('isolated-vm'); // require to avoid glitch locally
 
 var this_server = process.env.SERVER || 'd1';
@@ -251,6 +254,23 @@ wss.broadcast = function broadcast(data, game_id) {
     });
 };
 
+function py2js(code){
+  let id = uuid.v4()
+  let pyfile = `./game/${id}.py`
+  fs.writeFileSync(pyfile, code, "utf-8")
+  let output = execSync(`cd game && sh py2js.sh ${id}`).toString()
+  let jscode = output.split("*/").slice(1).join("*/")
+  if (output.split("*/")[0].includes("Error while compiling")) {
+    let error = /Error while compiling [^]*Aborted/.exec(output);
+    if (error) error = error[0]
+    if (error) {
+      return `throw "${error.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"`
+    } else {
+      return `throw Error("Python compiling error")`
+    }
+  }
+  return jscode
+}
 
 wss.on('connection', function connection(ws, req) {
 	console.log('new client connected');
@@ -306,12 +326,26 @@ wss.on('connection', function connection(ws, req) {
 			}
 			if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
-				player1_code = message['u_code'];
+        let player1_code = message['u_code']
+				switch(message["lang"]) {
+          case "javascript":
+            break; // This is the default
+          case "python":
+            player1_code = py2js(player1_code);
+            break;
+        }
 
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
 			} else if (message['u_id'] == active_game[2]){
 				//code_temps['player2'] = message['u_code'];
-				player2_code = message['u_code'];
+				let player2_code = message['u_code']
+				switch(message["lang"]) {
+          case "javascript":
+            break; // This is the default
+          case "python":
+            player2_code = py2js(player2_code);
+            break;
+        }
 
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
 			}

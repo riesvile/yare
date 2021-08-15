@@ -1,0 +1,19 @@
+#langs {
+  border-radius: 0.6rem;
+  border: none;
+  width: 12rem;
+  height: 3rem;
+  background-color: rgba(42, 46, 78, 1);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: white;
+  font-size: large;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+#shortcut_info {
+  padding-right: 1rem;
+}

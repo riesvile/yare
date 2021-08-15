@@ -23,7 +23,9 @@ function getOS() {
 
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/clouds_midnight");
-editor.session.setMode("ace/mode/javascript");
+editor.session.setMode(
+  "ace/mode/" + document.getElementById("langs").value ?? "javascript"
+);
 editor.session.setOption("useWorker", false);
 editor.setFontSize(14);
 editor.setShowPrintMargin(false);
@@ -836,6 +838,7 @@ function update_code() {
   socket.send(
     JSON.stringify({
       u_code: user_code,
+      lang: document.getElementById("langs").value ?? "javascript",
       u_id: getCookie("user_id"),
       session_id: getCookie("session_id"),
     })

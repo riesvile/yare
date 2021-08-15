@@ -19,6 +19,8 @@ services:
     depends_on:
       - mongodb
       - minio
+    volumes:
+      - ./public:/usr/src/app/public
   d2:
     build:
       context: .
@@ -29,6 +31,8 @@ services:
     depends_on:
       - mongodb
       - minio
+    volumes:
+      - ./public:/usr/src/app/public
   tutorial:
     build:
       context: .

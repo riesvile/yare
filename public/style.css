@@ -140,7 +140,6 @@ div.tutorial_editor {
 }
 
 #shortcut_info {
-	width: 200px;
 	height: 67px;
 	font-size: 14px;
 	font-weight: 500;
@@ -152,7 +151,6 @@ div.tutorial_editor {
 }
 
 .shortcut_info_real {
-	width: 200px !important;
 	height: 48px !important;
 	line-height: 48px !important;
 }

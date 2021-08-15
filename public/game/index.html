@@ -15,6 +15,7 @@
 	<link rel="stylesheet" href="a/colors.css">
 	<link rel="stylesheet" href="a/style.css">
 	<link rel="stylesheet" href="a/style-mobile.css">
+  <link rel="stylesheet" href="a/game/styles.css">
 	<script src="a/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="a/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
 	<script src="a/anime.min.js"></script>
@@ -164,6 +165,27 @@
   <div id="update_switch_wrapper">
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
   <div id="shortcut_info">SHIFT + ENTER</div>
+
+  <script>
+    function setAceEditorLang(lang){
+      editor.session.setMode(`ace/mode/${lang}`);
+      localStorage.setItem("editor-lang", lang)
+    }
+    function setAceEditorDefaultLang(){
+      let lang = localStorage.getItem("editor-lang")
+      if (lang) {
+        document.getElementById("langs").value = lang
+        setAceEditorLang(lang)
+      }
+    }
+    window.onload = setAceEditorDefaultLang
+  </script>
+  
+  <select name="languages" id="langs" onchange="setAceEditorLang(this.value)">
+    <option value="javascript">JAVASCRIPT</option>
+    <option value="python">PYTHON 3.9 (BETA)</option>
+  </select>
+
   <div id="switch_view" class="mobile_only"><span class="switch_ico">{ }</span></div>
   </div>
   

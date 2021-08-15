@@ -97,7 +97,7 @@
 	height: 56px;
 	background-color: #2a2e4e;
 	line-height: 55px;
-	position: fixed;
+	/* position: fixed; */
 	bottom: 20px;
 	left: 20px;
 	border-radius: 12px;
