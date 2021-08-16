@@ -834,7 +834,9 @@ function discord_postmessage(hook, msg){
 }
 
 
-function discord_automatch_bot(usr){
+async function discord_automatch_bot(usr){
+  let matchingusers = await User.find({user_id: usr})
+  if (matchingusers.length === 0) return;
 	discord_postmessage(config.hooks.queue, usr + ' is waiting in the queue');
 }
 
