@@ -1563,6 +1563,14 @@ span.game_or, span.cancel_or {
 	font-weight: 500;
 }
 
+#sel_qual_bot .bot_name {
+	color: rgba(226, 186, 104, 1);
+}
+
+#sel_qual_bot:hover {
+	background-color: rgba(226, 186, 104, 0.16);
+}
+
 
 /* ----- */
 

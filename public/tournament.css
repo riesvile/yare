@@ -150,7 +150,45 @@ p.tour_p {
 }
 
 
+.qual_open_block {
+	color: #9be0af;
+	font-size: 22px;
+	line-height: 38px;
+	font-weight: 500;
+	background-color: rgba(16, 34, 21, 1);
+	display: inline-block;
+	padding: 20px 24px 20px 24px;
+	border-radius: 16px;
+}
 
+.qual_open_p {
+	max-width: 940px;
+}
+
+table.qualified_players {
+	font-size: 24px;
+	line-height: 82px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	width: 100%;
+	max-width: 1200px;
+	border-collapse: collapse;
+	
+}
+
+table.qualified_players tr {
+	border-bottom: 1px solid rgba(242, 246, 250, 0.2);
+}
+
+.qual_order {
+	color: rgba(242, 246, 250, 0.69);
+}
+
+.qual_date {
+	margin-right: 0px;
+	text-align: right;
+	color: rgba(242, 246, 250, 0.4);
+}
 
 
 

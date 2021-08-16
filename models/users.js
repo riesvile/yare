@@ -9,13 +9,19 @@ const user_schema = new Schema({
 	},
 	passwrd: {
 		type: String,
-		required: true,
+		required: true
 	},
 	colors: Array,
 	rating: Number,
 	rating_stability: Number,
 	games_count: Number,
-	games_history: Array
+	games_history: Array,
+	qualified: {
+		type: Number,
+		index: true
+	},
+	qualified_shape: String, 
+	goodenough: Number
 }, {timestamps: true});
 
 const session_schema = new Schema({

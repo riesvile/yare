@@ -529,16 +529,6 @@ app.post('/stripe', express.json({type: 'application/json'}), (request, response
 	
 });
 
-app.get('/' + this_server + 'strip', (req, res) => {
-	console.log('stripe pay works');
-	
-	res.status(200).send({
-		data: 'dwork'
-    });
-	
-});
-
-
 
 
 function color_validity(color, clr_array){
@@ -728,6 +718,16 @@ function bot_game(req, res, pl_id, botinfo){
 	
 }
 
+function qual_bot_game(req, res, pl_id){
+	bot_game(req, res, pl_id, {
+		id: 'qual-bot',
+		session_id: 'bot',
+		rating: 2000,
+		shape: 'triangles',
+		color: 'color12'
+	});
+}
+
 function will_bot_game(req, res, pl_id){
 	bot_game(req, res, pl_id, {
 		id: 'will-bot',
@@ -856,6 +856,8 @@ app.post('/new-game', (req, res) => {
 	} else {
 		if (req.body.type == 'easy-bot'){
 			tutorial_game(req, res, req.body.user_id);
+		} else if (req.body.type == 'qual-bot'){
+			qual_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'will-bot'){
 			will_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'medium-bot'){
@@ -1150,7 +1152,10 @@ app.post('/add-user', async (req, res) => {
 			rating_stability: 5,
 			games_count: 0,
 			games_history: '',
-			colors: [1, 2, 3, 4]
+			colors: [1, 2, 3, 4],
+			qualified: 0,
+			qualified_shape: "",
+			goodenough: 0
 		});
 
 		user.save()
@@ -1646,6 +1651,39 @@ app.post('/populate-leaderboard', (req, res) => {
 
 
 
+app.get('/set-qual', (req, res) => {
+	User.updateMany({}, {"$set":{"qualified": 0, "qualified_shape": ""}}, {upsert: true})
+		.then((result) => {
+			//res.send(result);
+			console.log('qual maybe updated?');
+			
+			res.status(200).send({
+	        	data: "done qual?"
+	        });
+			
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+app.get('/set-dumb', (req, res) => {
+	User.updateMany({}, {"$set":{"goodenough": 0}}, {upsert: true})
+		.then((result) => {
+			//res.send(result);
+			console.log('set dumb bot beaten?');
+			
+			res.status(200).send({
+	        	data: "done dumb?"
+	        });
+			
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+
 
 app.post('/stripe-payment', (req, res) => {
 	console.log('stripe pay');
@@ -1668,6 +1706,39 @@ app.post('/deactivate', (req, res) => {
     });
 	
 });
+
+
+app.post('/get-qualified', (req, res) => {
+	console.log('retreiving qualified players');
+	
+	User.find({qualified: 0})
+		.then((result) => {
+			//res.send(result);
+			console.log('getting qualified players');
+			console.log(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no players"
+		        });
+			} else {
+				console.log(result);
+				let qual_arr = [];
+				for (let i = 0; i < result.length; i++){
+					qual_arr.push([result[i].user_id, result[i].qualified_shape]);
+				}
+				console.log(qual_arr);
+				res.status(200).send({
+		        	data: "all good",
+					players: qual_arr
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+	
+});
+
 
 app.get('/t2f/est', (req, res) => {
 	console.log('triggerring');

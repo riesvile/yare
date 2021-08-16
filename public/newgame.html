@@ -180,6 +180,10 @@
 				  			<p class="bot_name">will-bot</p>
 							<p class="bot_desc">No way you will beat this square bot. Or Will you?</p>
 				  		</div>
+				  		<div class="select_bot_block" id="sel_qual_bot">
+				  			<p class="bot_name">qual-bot</p>
+							<p class="bot_desc">Win to qualify into the tournament</p>
+				  		</div>
 				  	</div>
 				  
 				  </div>
@@ -569,7 +573,7 @@
 	  			 //setCookie('game_id', game_id);
 	  		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
 	  			 //document.location.reload(true);
-	  		  } else if (response.meta == 'medium-bot' || response.meta == 'dumb-bot' || response.meta == 'will-bot'){
+	  		  } else if (response.meta == 'medium-bot' || response.meta == 'dumb-bot' || response.meta == 'will-bot' || response.meta == 'qual-bot'){
 			  	  window.location.href = './' + response.server + 'n/' + response.g_id;
 		  	  } else if (response.meta == 'waiting for p2'){
 	  			  waiting_for_p2(response.g_id);
@@ -664,6 +668,7 @@
 	  document.getElementById('sel_dumb_bot').addEventListener('click', start_game.bind(null, 'dumb-bot'), false);
 	  document.getElementById('sel_medium_bot').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
 	  document.getElementById('sel_will_bot').addEventListener('click', start_game.bind(null, 'will-bot'), false);
+	  document.getElementById('sel_qual_bot').addEventListener('click', start_game.bind(null, 'qual-bot'), false);
 	  
 	  gblue_el.addEventListener('click', color_selection.bind(null, 'gblue'), false);
 	  purply_el.addEventListener('click', color_selection.bind(null, 'purply'), false);
