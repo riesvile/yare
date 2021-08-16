@@ -643,7 +643,7 @@ function bot_game(req, res, pl_id, botinfo){
 		last_update: (+new Date())
 	});
 		
-	if (pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
+	if (pl1.id != 'qual-bot' && pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
 		User.find({user_id: pl1.id})
 			.then((results) => {
 				if (color_validity(pl1.color, results[0].colors)) {
@@ -673,7 +673,7 @@ function bot_game(req, res, pl_id, botinfo){
 			.catch((error) => {
 				console.log(error);
 			})
-	} else if (pl2.id != 'will-bot' && pl2.id != 'medium-bot' && pl2.id != 'dumb-bot' && !(basic_colors.includes(pl2.color))){
+	} else if (pl2.id != 'qual-bot' && pl2.id != 'will-bot' && pl2.id != 'medium-bot' && pl2.id != 'dumb-bot' && !(basic_colors.includes(pl2.color))){
 		User.find({user_id: pl2.id})
 			.then((results) => {
 				if (color_validity(pl2.color, results[0].colors)) {
@@ -1711,7 +1711,7 @@ app.post('/deactivate', (req, res) => {
 app.post('/get-qualified', (req, res) => {
 	console.log('retreiving qualified players');
 	
-	User.find({qualified: 0})
+	User.find({qualified: 1})
 		.then((result) => {
 			//res.send(result);
 			console.log('getting qualified players');

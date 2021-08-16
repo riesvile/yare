@@ -185,6 +185,8 @@ function setBotCode(name, sand) {
 		sand.setPlayerCode(botCodes['medium-bot']);
 	} else if (name == 'will-bot'){
 		sand.setPlayerCode(botCodes['will-bot']);
+	} else if (name == 'qual-bot'){
+		sand.setPlayerCode(botCodes['qual-bot']);
 	} else if (name == 'dumb-bot'){
 		sand.setPlayerCode(botCodes['dumb-bot']);
 	}
