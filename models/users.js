@@ -17,7 +17,7 @@ const user_schema = new Schema({
 	games_count: Number,
 	games_history: Array,
 	qualified: {
-		type: Number,
+		type: String,
 		index: true
 	},
 	qualified_shape: String, 
