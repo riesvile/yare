@@ -43,7 +43,7 @@ function interp(p1, p2, p) {
 
 memory.tick = (memory.tick || 0) + 1;
 
-var defdist = (outpost.energy > 300) ? -10 : -200;
+var defdist = (outpost.energy > 300) ? 0 : -200;
 
 var things = {
     star: star_zxq,
