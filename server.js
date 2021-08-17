@@ -1155,7 +1155,8 @@ app.post('/add-user', async (req, res) => {
 			colors: [1, 2, 3, 4],
 			qualified: 0,
 			qualified_shape: "",
-			goodenough: 0
+			goodenough: 0,
+			email: ""
 		});
 
 		user.save()
@@ -1651,21 +1652,21 @@ app.post('/populate-leaderboard', (req, res) => {
 
 
 
-app.get('/set-qual', (req, res) => {
-	User.updateMany({}, {"$set":{"qualified": 0, "qualified_shape": ""}}, {upsert: true})
-		.then((result) => {
-			//res.send(result);
-			console.log('qual maybe updated?');
-			
-			res.status(200).send({
-	        	data: "done qual?"
-	        });
-			
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-});
+//app.get('/set-qual', (req, res) => {
+//	User.updateMany({}, {"$set":{"qualified": "", "qualified_shape": ""}}, {upsert: true})
+//		.then((result) => {
+//			//res.send(result);
+//			console.log('qual maybe updated?');
+//			
+//			res.status(200).send({
+//	        	data: "done qual?"
+//	        });
+//			
+//		})
+//		.catch((error) => {
+//			console.log(error);
+//		})
+//});
 
 app.get('/set-dumb', (req, res) => {
 	User.updateMany({}, {"$set":{"goodenough": 0}}, {upsert: true})
@@ -1675,6 +1676,22 @@ app.get('/set-dumb', (req, res) => {
 			
 			res.status(200).send({
 	        	data: "done dumb?"
+	        });
+			
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+app.get('/set-email', (req, res) => {
+	User.updateMany({}, {"$set":{"email": ""}}, {upsert: true})
+		.then((result) => {
+			//res.send(result);
+			console.log('set email?');
+			
+			res.status(200).send({
+	        	data: "done email?"
 	        });
 			
 		})

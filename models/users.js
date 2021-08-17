@@ -21,7 +21,8 @@ const user_schema = new Schema({
 		index: true
 	},
 	qualified_shape: String, 
-	goodenough: Number
+	goodenough: Number,
+	email: String
 }, {timestamps: true});
 
 const session_schema = new Schema({
