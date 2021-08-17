@@ -1153,7 +1153,7 @@ app.post('/add-user', async (req, res) => {
 			games_count: 0,
 			games_history: '',
 			colors: [1, 2, 3, 4],
-			qualified: 0,
+			qualified: "",
 			qualified_shape: "",
 			goodenough: 0,
 			email: ""
