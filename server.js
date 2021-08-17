@@ -724,7 +724,7 @@ function qual_bot_game(req, res, pl_id){
 		session_id: 'bot',
 		rating: 2000,
 		shape: 'triangles',
-		color: 'color12'
+		color: 'color11'
 	});
 }
 
@@ -1711,7 +1711,7 @@ app.post('/deactivate', (req, res) => {
 app.post('/get-qualified', (req, res) => {
 	console.log('retreiving qualified players');
 	
-	User.find({qualified: 1})
+	User.find({qualified: {$ne: "", $exists: true}})
 		.then((result) => {
 			//res.send(result);
 			console.log('getting qualified players');

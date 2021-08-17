@@ -86,11 +86,13 @@ function end_game(was_p1 = 0, was_p2 = 0){
 		
 		//to handle client
 		end_winner = gameWinner
-		
+
 		Game.find({game_id: workerData[0]})
-			.then((result) => {
+			.then(async (result) => {
+				var winnerShape;
 				if (p2won == 1){
 					gameWinner = players['p2'];
+					winnerShape = result[0].p2_shape;
 					winnerRating = result[0]['p2_rating'];
 					gameLoser = players['p1'];
 					loserRating = result[0]['p1_rating'];
@@ -103,6 +105,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 					console.log(newLoserRating);
 				} else {
 					gameWinner = players['p1'];
+					winnerShape = result[0].p1_shape;
 					winnerRating = result[0]['p1_rating'];
 					gameLoser = players['p2'];
 					loserRating = result[0]['p2_rating'];
@@ -113,6 +116,10 @@ function end_game(was_p1 = 0, was_p2 = 0){
 					console.log(newWinnerRating);
 					console.log('newLoserRating');
 					console.log(newLoserRating);
+				}
+
+				if(gameLoser == 'qual-bot') {
+					await User.updateOne({user_id: gameWinner, $or: [{qualified: {$exists: false}}, {qualified: ""}]}, {qualified: workerData[0], qualified_shape: winnerShape}).exec();
 				}
 			
 				console.log('result');
