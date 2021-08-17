@@ -43,11 +43,13 @@ function interp(p1, p2, p) {
 
 memory.tick = (memory.tick || 0) + 1;
 
+var defdist = (outpost.energy > 300) ? -10 : -200;
+
 var things = {
     star: star_zxq,
     enemy_star: star_a1c,
 
-    base_defend: interp(base.position, star_zxq.position, -200),
+    base_defend: interp(base.position, star_zxq.position, defdist),
 
     out_base_pos: outpost.position,
     out_star_pos: star_p89.position
@@ -58,7 +60,7 @@ if (base.position[0] == 2600) {
         star: star_a1c,
         enemy_star: star_zxq,
 
-        base_defend: interp(base.position, star_a1c.position, -200),
+        base_defend: interp(base.position, star_a1c.position, defdist),
 
         out_base_pos: star_p89.position,
         out_star_pos: outpost.position
