@@ -1578,6 +1578,8 @@ app.post('/populate-hub', (req, res) => {
 				for (i = 0; i < result.length; i++){
 					result[i]['passwrd'] = '0';
 					result[i]['session_id'] = '0';
+					result[i]['p1_session_id'] = '0';
+					result[i]['p2_session_id'] = '0';
 					result[i]['game_file'] = '';
 				}
 				res.status(200).send({
@@ -1608,6 +1610,8 @@ app.post('/populate-leaderboard', (req, res) => {
 				for (i = 0; i < result.length; i++){
 					result[i]['passwrd'] = '0';
 					result[i]['session_id'] = '0';
+					result[i]['p1_session_id'] = '0';
+					result[i]['p2_session_id'] = '0';
 				}
 				res.status(200).send({
 		        	data: "populate",
