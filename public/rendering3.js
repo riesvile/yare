@@ -1868,6 +1868,13 @@ function render_state(timestamp){
 	} catch (e) {
 		//console.log(e);
 	}
+
+	try {
+		let event = new CustomEvent('yare-post-render', {detail: {ctx: c}});
+		document.dispatchEvent(event);
+	} catch (e) {
+
+	}
 	
 	
 	
