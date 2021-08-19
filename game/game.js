@@ -1864,6 +1864,8 @@ if (!isMainThread){
 				if(dist_sq(t.position, s.position) > 10**2) continue;
 				if(s.hp == 0 || t.hp == 0) continue;
 				t.merged.push(s.id);
+				t.merged = t.merged.concat(s.merged);
+				s.merged = [];
 				t.size += s.size;
 				t.energy += s.energy;
 				t.energy_capacity += s.energy_capacity;
