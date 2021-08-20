@@ -57,14 +57,6 @@ global.channels = {
     }
 };
 
-logChan = global.channels.get("log");
-
-global.console = {
-    log: function(...args) {
-        logChan.send(args);
-    }
-};
-
 function send_error(msg) {
     throw Error(msg);
     //yd.errors.push(msg);

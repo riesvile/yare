@@ -777,11 +777,11 @@ class Sandbox {
 
 var sand1 = new Sandbox();
 
-sand1.loadAddons(['graphics.js']);
+sand1.loadAddons(['graphics.js', 'console.js']);
 
 var sand2 = new Sandbox();
 
-sand2.loadAddons(['graphics.js']);
+sand2.loadAddons(['graphics.js', 'console.js']);
 
 if (!isMainThread){
 	class Spirit {
