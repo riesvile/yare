@@ -623,7 +623,7 @@
 					 
 					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
 
-					 game_blocks['t' + tick_counter].graphics = chan.graphics;
+					 game_blocks['t' + tick_counter].graphics = (chan || {}).graphics;
 					 
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
 					 //console.log(game_blocks);
