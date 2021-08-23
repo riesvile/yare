@@ -256,7 +256,7 @@
 			  }
 			  var gameDate = new Date(hub_data[i]['updatedAt']);
 			  
-			  tbl_data += "<div class='row'>							<div class='row_in'>								<span class='table_game_date'>" + timeSince(gameDate) + "</span>								<div class='table_game_players'>									<span class='table_player1'><span class='player1_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p1_color']) + "'></span></span>" + hub_data[i]['player1'] + "</span>									<span class='versus'>vs</span>									<span class='table_player2'><span class='player2_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p2_color']) + "'></span></span>" + hub_data[i]['player2'] + "</span>								</div>													<span class='table_game_duration'>30 min</span>								<span class='table_game_result" + resultString + "</span>								<span class='table_game_eloresult'>" + p_new_rating + "</span>							</div>						  </div>"
+			  tbl_data += "<a href='/replay/" + hub_data[i]['game_id'] + "' class='row'><div class='row_in'><span class='table_game_date'>" + timeSince(gameDate) + "</span><div class='table_game_players'><span class='table_player1'><span class='player1_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p1_color']) + "'></span></span>" + hub_data[i]['player1'] + "</span><span class='versus'>vs</span><span class='table_player2'><span class='player2_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p2_color']) + "'></span></span>" + hub_data[i]['player2'] + "</span></div><span class='table_game_duration'>30 min</span><span class='table_game_result" + resultString + "</span><span class='table_game_eloresult'>" + p_new_rating + "</span></div></a>"
 			  
 			  
 			  

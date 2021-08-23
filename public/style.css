@@ -1108,6 +1108,7 @@ span#hub_logout:hover {
 }
 
 .row {
+	display: block;
 	width: 100%;
 	height: 80px;
 	position: relative;
@@ -1128,6 +1129,7 @@ span#hub_logout:hover {
 
 .table_game_date {
 	width: 120px;
+	color: rgba(242, 246, 250, 0.5);
 }
 
 .table_game_players {
@@ -1159,6 +1161,7 @@ span#hub_logout:hover {
 
 .versus {
 	margin-left: 8px;
+	color: rgba(242, 246, 250, 0.5);
 }
 
 .table_game_duration {
@@ -1186,6 +1189,7 @@ span#hub_logout:hover {
 .table_game_eloresult {
 	text-align: right;
 	width: 90px;
+	color: rgba(242, 246, 250, 0.89);
 }
 
 /* leaderboard */
