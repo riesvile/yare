@@ -1864,19 +1864,16 @@ function render_state(timestamp){
 	
 	//objects energize
 	try {
-		if (game_blocks[active_block].g1.length > 0){
-			if (pla1 == getCookie('user_id')){
-				drawgqueue(game_blocks[active_block].g1);
-			}
-		}
-
-		if (game_blocks[active_block].g2.length > 0){
-			if (pla2 == getCookie('user_id')){
-				drawgqueue(game_blocks[active_block].g2);
-			}
-		}
+		drawgqueue(game_blocks[active_block].graphics);
 	} catch (e) {
 		//console.log(e);
+	}
+
+	try {
+		let event = new CustomEvent('yare-post-render', {detail: {ctx: c}});
+		document.dispatchEvent(event);
+	} catch (e) {
+
 	}
 	
 	

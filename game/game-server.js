@@ -94,7 +94,7 @@ function create_worker (game_id, game_type) {
         } else {
             console.log('processing render data');
             console.log(render_data.game_id);
-            wss.broadcast(render_data.data, render_data.game_id);
+            wss.broadcast(render_data.data, render_data.user_data, render_data.game_id);
         }
         
     })
@@ -240,12 +240,16 @@ function trigger_monitoring(gid, val){
 	}
 }
 
-wss.broadcast = function broadcast(data, game_id) {
+wss.broadcast = function broadcast(data, userData, game_id) {
+	var render = JSON.parse(data);
     wss.clients.forEach(function each(client) {
 		console.log(client.game_id);
         if (client.readyState === WebSocket.OPEN) {
 			if (client.game_id == game_id){
-				client.send(data);
+				let user_id = client.user_id;
+				let game = active_games[game_id];
+				
+				client.send(JSON.stringify({render: render, chan: userData[user_id]}));
 			}            
         }
     });
@@ -267,7 +271,7 @@ wss.on('connection', function connection(ws, req) {
 	//console.log(connections);
 	initiate_world(ws.client_id, g_id);
 	
-	ws.on('message', function incoming(message) {
+	ws.on('message', async function incoming(message) {
 		d1 = process.hrtime();
 		let active_game = active_games[g_id];
 		if(active_game == undefined){
@@ -294,6 +298,20 @@ wss.on('connection', function connection(ws, req) {
 				resigning1 = 0;
 				resigning2 = 0;
 			}
+		}
+
+		if(message.meta == 'connect') {
+			let session = await Session.findOne({session_id: message.session_id}).exec();
+			if(session) {
+				ws.user_id = session.user_id;
+				ws.send(JSON.stringify({meta: 'connected', user_id: ws.user_id}));
+			}
+			return;
+		}
+
+		if(message.meta == 'channel') {
+			workers[g_id].postMessage({data: "channel", user_id: ws.user_id, channel: message.channel, chan_data: message.data});
+			return;
 		}
 
 		connections[ws.client_id] = ws;
