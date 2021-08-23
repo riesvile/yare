@@ -874,7 +874,7 @@ if (!isMainThread){
 	}
 
 	function fast_dist_lt(item1, item2, range){
-		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) <= range**2;
+		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) < range**2;
 	}
 
 	function fast_dist_leq(item1, item2, range){
@@ -1892,14 +1892,30 @@ if (!isMainThread){
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(!commands[spirit].divide) continue;
 				
+				// we are dividing the orig spirit
+				// into orig.size spirits of size 1
+				
 				let orig = spirit_lookup[spirit];
-				let orig_size = orig.size;
+				let capacity_per_one = orig.energy_capacity / orig.size;
+				// right now, this holds:
+				// assert(capacity_per_one == 10);
+				
+				let energy_per_one = Math.floor(orig.energy / orig.size);
+				let energy_leftover = orig.energy % orig.size;
+
 				for(let did of orig.merged) {
 					var d = spirit_lookup[did];
 					d.hp = 1;
 					d.size = 1;
-					d.energy = Math.floor(orig.energy / orig_size);
-					d.energy_capacity = orig.energy_capacity / orig_size;
+					d.energy_capacity = capacity_per_one;
+					d.energy = energy_per_one;
+					if(energy_leftover > 0){
+						d.energy += 1;
+						energy_leftover -= 1;
+					}
+					// implied by orig.energy <= orig.energy_capacity
+					// assert(d.energy <= d.energy_capacity);
+
 					d.position = [orig.position[0], orig.position[1]];
 					let ang = Math.random() * Math.PI * 2;
 					let dist = Math.random() * 10;
@@ -1918,8 +1934,10 @@ if (!isMainThread){
 				
 				orig.merged = [];
 				orig.size = 1;
-				orig.energy = Math.floor(orig.energy / orig_size);
-				orig.energy_capacity = orig.energy_capacity / orig_size;
+				// otw, the energy per_one could be increased by one
+				// assert(energy_leftover == 0);
+				orig.energy = energy_per_one;
+				orig.energy_capacity = capacity_per_one;
 
 				render_data3.s.push(['d', orig.id]);
 			}
