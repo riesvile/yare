@@ -119,7 +119,7 @@ function end_game(was_p1 = 0, was_p2 = 0){
 				}
 
 				if(gameLoser == 'qual-bot') {
-					await User.updateOne({user_id: gameWinner, $or: [{qualified: {$exists: false}}, {qualified: ""}]}, {qualified: workerData[0], qualified_shape: winnerShape}).exec();
+					//await User.updateOne({user_id: gameWinner, $or: [{qualified: {$exists: false}}, {qualified: ""}]}, {qualified: workerData[0], qualified_shape: winnerShape}).exec();
 				}
 			
 				console.log('result');
