@@ -420,13 +420,18 @@ async function user_code(){
 	}
 	
 	all_commands = {};
-	
+
+	//
+	// Start both players' code to take advantage of isolate parallelism
+	//
+	let p1_async = sand1.run();
+	let p2_async = sand2.run();
+
 	//
 	// first player
 	//
-
-	let p1_async = sand1.run();
-	let p2_async = sand2.run();
+	
+	let player = players['p1'];
 	try {
 		let run_err = null;
 		try {
@@ -434,27 +439,32 @@ async function user_code(){
 		} catch (error) {
 			run_err = error;
 		}
+
 		let out = await sand1.output();
-		all_commands[players['p1']] = out.commands;
+		all_commands[player] = out.commands;
 		log1 = out.logs;
 		user_error1 = out.errors.map(clean_error);
 		chan1 = out.channels;
+
+		// log compile err first, as that corresponds to the latest
+		// user submitted code
+		if(sand1.last_compile_err){
+			fill_error(player, to_html(sand1.last_compile_err));
+		}
 		if(run_err) {
-			handle_error(run_err, players['p1']);
+			handle_error(run_err, player);
 		}
-		if(sand1.code_err){
-			user_error1.push(to_html(sand1.code_err));
-		}
-		
 	} catch (error){
-		console.log("error getting output" + error);
-		handle_error(error, players['p1']);
+		console.log("error getting output p1" + error);
+		handle_error(error, player);
 	}
 
 	//
 	// second player
 	//
+
 	
+	player = players['p2'];
 	try {
 		let run_err = null;
 		try {
@@ -462,21 +472,22 @@ async function user_code(){
 		} catch (error) {
 			run_err = error;
 		}
+
 		let out = await sand2.output();
-		all_commands[players['p2']] = out.commands;
+		all_commands[player] = out.commands;
 		log2 = out.logs;
 		user_error2 = out.errors.map(clean_error);
 		chan2 = out.channels;
+
+		if(sand2.last_compile_err){
+			fill_error(player, to_html(sand2.last_compile_err));
+		}
 		if(run_err) {
-			handle_error(run_err, players['p2']);
+			handle_error(run_err, player);
 		}
-		if(sand2.code_err){
-			user_error2.push(to_html(sand2.code_err));
-		}
-		
 	} catch (error){
-		console.log("error getting output" + error);
-		handle_error(error, players['p2']);
+		console.log("error getting output p2" + error);
+		handle_error(error, player);
 	}
 }
 
@@ -716,7 +727,7 @@ class Sandbox {
 		this.context = this.isolate.createContextSync();
 		this.jail = this.context.global;
 		this.script = this.isolate.compileScriptSync(``);
-		this.ready = false;
+		this.successful_compile = false;
 		this.jail.setSync("global", this.jail.derefInto());
 		this.jail.setSync("memory", {}, {copy: true});
 
@@ -727,7 +738,7 @@ class Sandbox {
 		this.funcs.getOutput = this.yd.getSync('getOutput', {reference: true});
 		this.funcs.channel_in = this.yd.getSync('channel_in', {reference: true});
 		this.err = false;
-		this.code_err = null;
+		this.last_compile_err = null;
 	}
 
 	loadAddons(names) {
@@ -745,12 +756,14 @@ class Sandbox {
 	}
 
 	setPlayerCode(code) {
-		this.code_err = null;
+		this.last_compile_err = null;
 		try {
 			this.script = this.isolate.compileScriptSync(code, {filename: "~sandbox/user.js"});
-			this.ready = true;
+			this.successful_compile = true;
 		}catch(err) {
-			this.code_err = "Last code compile error: " + err.message;
+			this.last_compile_err = "Submitted code has a compile error:\n    " + err.message;
+			if(this.successful_compile)
+				this.last_compile_err += "\nRunning Your previous valid code instead!!!\n"
 		}
 	}
 
@@ -2078,7 +2091,7 @@ if (!isMainThread){
 		let update_t0 = process.hrtime();
 		game_duration++;
 
-		if(game_duration < -3 && sand1.ready && sand2.ready) {
+		if(game_duration < -3 && sand1.successful_compile && sand2.successful_compile) {
 			game_duration = -3;
 		}
 
@@ -2192,6 +2205,21 @@ if (!isMainThread){
 			let user_data = {};
 			user_data[players['p1']] = chan1;
 			user_data[players['p2']] = chan2;
+
+			// FIXME - ugly hack
+			// JM:
+			// this is here so that we report the compile error BEFORE the game starts
+			// so that user has at least some feedback on the err (and time to fix it).
+			// without this, on submitting code with compile error, the user does get no
+			// feedback && the countdown continues as if no Update code btn was pressed
+			if (game_duration < 0) {
+				if(sand1.last_compile_err){
+					user_data[players['p1']] = {"err": [to_html(sand1.last_compile_err)]};
+				}
+				if(sand2.last_compile_err){
+					user_data[players['p2']] = {"err": [to_html(sand2.last_compile_err)]};
+				}
+			}
 			
 			parentPort.postMessage({data: JSON.stringify(render_data3), user_data: user_data, game_id: workerData[0], meta: ''});
 			
@@ -2199,15 +2227,9 @@ if (!isMainThread){
 				return;
 			}
 
-			delete render_data3["er1"];
-			delete render_data3["er2"];
-			delete render_data3["c1"];
-			delete render_data3["c2"];
-			
 			if (workerData[1] != 'tutorial'){
 				game_file.push(render_data3);
 			}
-			
 
 			log1 = [];
 			log2 = [];
