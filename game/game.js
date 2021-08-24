@@ -422,10 +422,15 @@ async function user_code(){
 	all_commands = {};
 
 	//
+	// Start both players' code to take advantage of isolate parallelism
+	//
+	let p1_async = sand1.run();
+	let p2_async = sand2.run();
+
+	//
 	// first player
 	//
 	
-	let p1_async = sand1.run();
 	let player = players['p1'];
 	try {
 		let run_err = null;
@@ -458,7 +463,7 @@ async function user_code(){
 	// second player
 	//
 
-	let p2_async = sand2.run();
+	
 	player = players['p2'];
 	try {
 		let run_err = null;
