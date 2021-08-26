@@ -108,7 +108,7 @@ function create_worker (game_id, game_type) {
   }
 
   function is_bot(id) {
-	return id == "dumb-bot" || id == "medium-bot" || id == "will-bot" || id == "qual-bot"
+	return id == "dumb-bot" || id == "medium-bot" || id == "will-bot" || id == "qual-bot" || id == "boom-bot"
   }
 
   function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_shape = 0, pla2_shape = 0, pla1_color = 'color1', pla2_color = 'color2', game_type = 'tutorial'){
