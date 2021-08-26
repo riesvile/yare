@@ -718,7 +718,7 @@ function bot_game(req, res, pl_id, botinfo){
 	
 }
 
-function qual_bot_game(req, res, pl_id){
+function boom_bot_game(req, res, pl_id){
 	bot_game(req, res, pl_id, {
 		id: 'boom-bot',
 		session_id: 'bot',
