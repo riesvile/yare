@@ -192,8 +192,8 @@ function setBotCode(name, sand) {
 		sand.setPlayerCode(botCodes['medium-bot']);
 	} else if (name == 'will-bot'){
 		sand.setPlayerCode(botCodes['will-bot']);
-	} else if (name == 'qual-bot'){
-		sand.setPlayerCode(botCodes['qual-bot']);
+	} else if (name == 'boom-bot'){
+		sand.setPlayerCode(botCodes['boom-bot']);
 	} else if (name == 'dumb-bot'){
 		sand.setPlayerCode(botCodes['dumb-bot']);
 	}
@@ -1854,15 +1854,13 @@ if (!isMainThread){
 		// stars energy update
 		
 		for (let i = 0; i < stars.length; i++){
-			stars[i].energy += Math.round(3 + (stars[i].energy * 0.02));
-			if (stars[i].energy >= 1000) stars[i].energy = 1000;
-			//console.log('star ' + i + ' energy = ' + stars[i].energy);
-			if (game_duration < stars[i].active_at){
-				stars[i].energy = 0;
-				stars[i].active_in = stars[i].active_at - game_duration;
-			} else {
+			stars[i].active_in = stars[i].active_at - game_duration;
+			if(game_duration >= stars[i].active_at) {
+				stars[i].energy += Math.round(2 + (stars[i].energy * 0.02));
 				stars[i].active_in = 0;
 			}
+			if (stars[i].energy >= 1000) stars[i].energy = 1000;
+
 			render_data3.st[i] = stars[i].energy;
 		}
 	

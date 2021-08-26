@@ -643,7 +643,7 @@ function bot_game(req, res, pl_id, botinfo){
 		last_update: (+new Date())
 	});
 		
-	if (pl1.id != 'qual-bot' && pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
+	if (pl1.id != 'qual-bot' && pl1.id != 'boom-bot' && pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
 		User.find({user_id: pl1.id})
 			.then((results) => {
 				if (color_validity(pl1.color, results[0].colors)) {
@@ -673,7 +673,7 @@ function bot_game(req, res, pl_id, botinfo){
 			.catch((error) => {
 				console.log(error);
 			})
-	} else if (pl2.id != 'qual-bot' && pl2.id != 'will-bot' && pl2.id != 'medium-bot' && pl2.id != 'dumb-bot' && !(basic_colors.includes(pl2.color))){
+	} else if (pl2.id != 'qual-bot' && pl2.id != 'boom-bot' && pl2.id != 'will-bot' && pl2.id != 'medium-bot' && pl2.id != 'dumb-bot' && !(basic_colors.includes(pl2.color))){
 		User.find({user_id: pl2.id})
 			.then((results) => {
 				if (color_validity(pl2.color, results[0].colors)) {
@@ -718,9 +718,9 @@ function bot_game(req, res, pl_id, botinfo){
 	
 }
 
-function qual_bot_game(req, res, pl_id){
+function boom_bot_game(req, res, pl_id){
 	bot_game(req, res, pl_id, {
-		id: 'qual-bot',
+		id: 'boom-bot',
 		session_id: 'bot',
 		rating: 2000,
 		shape: 'triangles',
@@ -856,8 +856,8 @@ app.post('/new-game', (req, res) => {
 	} else {
 		if (req.body.type == 'easy-bot'){
 			tutorial_game(req, res, req.body.user_id);
-		} else if (req.body.type == 'qual-bot'){
-			qual_bot_game(req, res, req.body.user_id);
+		} else if (req.body.type == 'qual-bot' || req.body.type == 'boom-bot'){
+			boom_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'will-bot'){
 			will_bot_game(req, res, req.body.user_id);
 		} else if (req.body.type == 'medium-bot'){
