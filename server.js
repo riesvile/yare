@@ -643,7 +643,7 @@ function bot_game(req, res, pl_id, botinfo){
 		last_update: (+new Date())
 	});
 		
-	if (pl1.id != 'qual-bot' && pl1.id != 'bool-bot' && pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
+	if (pl1.id != 'qual-bot' && pl1.id != 'boom-bot' && pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
 		User.find({user_id: pl1.id})
 			.then((results) => {
 				if (color_validity(pl1.color, results[0].colors)) {
