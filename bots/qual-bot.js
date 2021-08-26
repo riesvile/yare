@@ -430,7 +430,7 @@ var ratio = 26/36;
 
 var size = my_spirits[0].size;
 
-var maxHarvest = Math.ceil((things.star.energy / 100) + 1);
+var maxHarvest = Math.ceil((things.star.energy / 50));
 var prepRate = Math.ceil(maxHarvest/size) * size;
 
 if(tick < 100) {
@@ -438,12 +438,12 @@ if(tick < 100) {
 }
 
 if(things.star.energy > 800) {
-    prepRate = 15;
+    prepRate = 20;
 }
 
 if(things.star.energy > 900) {
-    maxHarvest = 10 + (things.star.energy-950) / 3;
-    prepRate = 15;
+    maxHarvest = 20 + (things.star.energy-950) / 3;
+    prepRate = 25;
 }
 
 var diff = size - (maxHarvest % size);
@@ -716,10 +716,10 @@ var out_mine = [];
 }
 
 
-var outstargrowth = (star_p89.energy / 100) - 3;
+var outstargrowth = (star_p89.energy / 50) - 3;
 
 if(star_p89.energy > 950) {
-    outstargrowth = 12;
+    outstargrowth = 21;
 }
 
 function getLowestAtPos(pos) {
