@@ -544,17 +544,17 @@ function spirit_cost(p_num, alives){
 	if (shape == 'circles'){
 		if (alives <= 50) bases[p_num-1].current_spirit_cost = 25;
 		if (alives > 50) bases[p_num-1].current_spirit_cost = 50;
-		if (alives > 100) bases[p_num-1].current_spirit_cost = 100;
-		if (alives > 200) bases[p_num-1].current_spirit_cost = 200;
-		if (alives > 300) bases[p_num-1].current_spirit_cost = 400;
+		if (alives > 100) bases[p_num-1].current_spirit_cost = 90;
+		if (alives > 200) bases[p_num-1].current_spirit_cost = 150;
 		if (alives > 500) bases[p_num-1].current_spirit_cost = 1000;
 	} else if (shape == 'squares'){
 		if (alives <= 10) bases[p_num-1].current_spirit_cost = 360;
-		if (alives > 10) bases[p_num-1].current_spirit_cost = 700;
+		if (alives > 10) bases[p_num-1].current_spirit_cost = 500;
+		if (alives > 16) bases[p_num-1].current_spirit_cost = 700;
 		if (alives > 400) bases[p_num-1].current_spirit_cost = 1100;
 	} else if (shape == 'triangles'){
 		if (alives <= 30) bases[p_num-1].current_spirit_cost = 90;
-		if (alives > 30) bases[p_num-1].current_spirit_cost = 120;
+		if (alives > 30) bases[p_num-1].current_spirit_cost = 160;
 		if (alives > 120) bases[p_num-1].current_spirit_cost = 300;
 		if (alives > 300) bases[p_num-1].current_spirit_cost = 1000;
 	}
@@ -1586,6 +1586,7 @@ if (!isMainThread){
 				from_obj.last_energized = to_id;
 
 				let friendly_beam = from_obj.player_id == to_obj.player_id;
+				let is_star = (to_obj.structure_type != undefined && to_obj.structure_type == 'star');
 				
 				// name prefix - safe (is outpost)
 				if (to_obj.id.startsWith('outpost') && outpost_lookup[to_id]){
@@ -1594,9 +1595,15 @@ if (!isMainThread){
 					render_data3.e.push([from_id, to_id, beam_strength]);
 				} 
 				else if (!friendly_beam){
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply.push([to_obj, -2 * beam_strength]);
-					render_data3.e.push([from_id, to_id, 2 * beam_strength]);
+					if (is_star){
+						energize_apply.push([from_obj, -beam_strength]);
+						energize_apply.push([to_obj, beam_strength]);
+						render_data3.e.push([from_id, to_id, beam_strength]);
+					} else {
+						energize_apply.push([from_obj, -beam_strength]);
+						energize_apply.push([to_obj, -2 * beam_strength]);
+						render_data3.e.push([from_id, to_id, 2 * beam_strength]);
+					}
 				}
 				else {
 					//else: target is friend
@@ -1847,7 +1854,7 @@ if (!isMainThread){
 		// stars energy update
 		
 		for (let i = 0; i < stars.length; i++){
-			stars[i].energy += Math.round(3 + (stars[i].energy * 0.01));
+			stars[i].energy += Math.round(3 + (stars[i].energy * 0.02));
 			if (stars[i].energy >= 1000) stars[i].energy = 1000;
 			//console.log('star ' + i + ' energy = ' + stars[i].energy);
 			if (game_duration < stars[i].active_at){
