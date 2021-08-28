@@ -1403,7 +1403,7 @@ if(!config.s3.bucketEndpoint) {
 
 app.get('/migrate_replays', async (req, res) => {
 	let skip = 0;
-	var num = 10;
+	var num = 100;
 	while(true) {
 		let results = await Game.find({game_file: {"$exists" : true, "$ne": ""}}, {}, {limit: 10}).exec();
 		for(var game of results) {
