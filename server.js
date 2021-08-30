@@ -1401,36 +1401,6 @@ if(!config.s3.bucketEndpoint) {
 	}).promise().catch(err => console.log(err));
 }
 
-app.get('/migrate_replays', async (req, res) => {
-	let skip = 0;
-	while(true) {
-		let results = await Game.find({game_file: {$ne: ""}}).limit(10).skip(10*skip).exec();
-		for(var game of results) {
-			try {
-				if(await s3client.headObject({Bucket: config.s3.bucket, Key: game.game_id + '.json'})) {
-					console.log('replay already exists');
-					continue;
-				}
-				var decompressed_file = zlib.inflateSync(Buffer.from(game.game_file, 'base64'));
-				await s3client.putObject({
-					Body: decompressed_file,
-					Bucket: config.s3.bucket,
-					Key: game.game_id + '.json',
-				}).promise()
-			} catch(err) {
-				console.log(err);
-			}
-		}
-		if(results.length == 0) {
-			break;
-		}
-		skip++;
-		res.write('processed ' + results.length + ' replays\n');
-	}
-	res.write('did ' + skip + ' chunks');
-	res.end();
-});
-
 app.post('/get_replay', async (req, res) => {
 	let obj = s3client.getObject({
 		Bucket: config.s3.bucket,
@@ -1442,36 +1412,11 @@ app.post('/get_replay', async (req, res) => {
 		res.status(200).send(data.Body);
 		return;
 	} catch (err) {
-		console.log("s3 miss");
+		res.status(404).send({
+			meta: "no replay found"
+		});
 	}
-	Game.find({game_id: req.body.game_id})
-		.then((result) => {
-			//res.send(result);
-			console.log('getting game info for replay');
-			if (result.length == 0){
-				console.log('no game');
-				res.status(404).send({
-		        	meta: "no game found"
-		        });
-			} else if (result[0]['game_file'] != ''){
-				var decompressed_file = zlib.inflateSync(Buffer.from(result[0].game_file, 'base64')).toString();
-				console.log('replay file sent');
-				//console.log(decompressed_file);
-				
-				res.status(200).send(decompressed_file);
-			} else {
-				console.log('somthinwrong');
-				res.status(404).send({
-		        	meta: "something went wrong"
-		        });
-			}
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-
 });
-
 
 app.post('/playerinfo', (req, res) => {
 	var p111_rating = 0;
