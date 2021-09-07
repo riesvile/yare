@@ -1133,7 +1133,7 @@ if (!isMainThread){
 			for (let b = 0; b < bases.length; b++){
 				let dsq = dist_sq(pos, bases[b].position);
 				// base sees spirit
-				if(dsq < visible_sq){
+				if(dsq <= visible_sq){
 					let friend = bases[b].player_id == spirit.player_id;
 
 					if(friend){
@@ -1142,7 +1142,7 @@ if (!isMainThread){
 						bases[b].sight.enemies.push(spirit.id);
 					}
 
-					if(dsq < beamable_sq){
+					if(dsq <= beamable_sq){
 						if(friend){
 							bases[b].sight.friends_beamable.push(spirit.id);
 						}else{
@@ -1161,7 +1161,7 @@ if (!isMainThread){
 				
 				if (outpost.energy >= 500) use_range = high_range_sq;
 				
-				if (dsq < use_range){
+				if (dsq <= use_range){
 					let friend = outpost.control == spirit.player_id;
 					if (friend){
 						//outposts[o].sight.friends.push(spirit.id);
@@ -1169,7 +1169,7 @@ if (!isMainThread){
 						outposts[o].sight.enemies.push(spirit.id);
 					}
 
-					if (dsq < beamable_sq){
+					if (dsq <= beamable_sq){
 						spirit.sight.structures.push(outpost.id);
 					}
 				}
@@ -1212,9 +1212,9 @@ if (!isMainThread){
 							living_spirits[bin[i]].position,
 							living_spirits[nb[j]].position,
 						);
-						if(dsq < visible_sq)
+						if(dsq <= visible_sq)
 							work(bin[i],nb[j]);
-						if(dsq < beamable_sq)
+						if(dsq <= beamable_sq)
 							work_beamable(bin[i],nb[j]);
 					}
 				}
@@ -1515,7 +1515,7 @@ if (!isMainThread){
 				continue;
 
 			let beam_strength = outpost.energy >= 500 ? 4 : 1;
-			let enemy = spirit_lookup[enemies[enemies.length * Math.random() | 0]];
+			let enemy = spirit_lookup[enemies[Math.floor(enemies.length * Math.random())]];
 			
 			energize_apply.push([enemy, -2 * beam_strength]);
 			outpost.energy -= beam_strength;
