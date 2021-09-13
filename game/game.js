@@ -886,7 +886,7 @@ if (!isMainThread){
 			}
 			this.collision_radius = 50;
 			
-			this.hp = 5;
+			this.hp = 8;
 			if (this.shape == 'circles'){
 				this.energy_capacity = 400;
 			} else if (this.shape == 'squares'){

@@ -180,23 +180,23 @@ p.tour_p {
 	max-width: 940px;
 }
 
-table.qualified_players {
+table.qualified_players, table.tour_timeline {
 	font-size: 24px;
-	line-height: 82px;
+	line-height: 52px;
 	font-weight: 500;
 	color: rgba(242, 246, 250, 1);
 	width: 100%;
 	max-width: 1200px;
 	border-collapse: collapse;
-	
 }
 
 table.qualified_players tr {
 	border-bottom: 1px solid rgba(242, 246, 250, 0.2);
 }
 
-.qual_order {
+.qual_order, .time_date {
 	color: rgba(242, 246, 250, 0.69);
+	width: 120px;
 }
 
 .qual_date {
@@ -205,8 +205,20 @@ table.qualified_players tr {
 	color: rgba(242, 246, 250, 0.4);
 }
 
+p.t_continue {
+	font-size: 24px;
+	color: rgba(220, 188, 140, 1);
+	font-weight: 500;
+	margin: 20px 0;
+}
 
-
+p.game_time {
+	font-size: 24px;
+	font-weight: 500;
+	margin: 20px 0;
+	line-height: 40px;
+	color: rgba(242, 246, 250, 0.69);;
+}
 
 
 

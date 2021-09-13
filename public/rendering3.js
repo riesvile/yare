@@ -1284,7 +1284,7 @@ class Base {
 		this.structure_type = 'base';
 		this.energy = energy;
 		
-		this.hp = 3;
+		this.hp = 8;
 		if (this.shape == 'circles') this.energy_capacity = 400;
 		if (this.shape == 'squares') this.energy_capacity = 1000;
 		if (this.shape == 'triangles') this.energy_capacity = 600;
