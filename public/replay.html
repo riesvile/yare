@@ -1391,7 +1391,19 @@
 	      return null;
 	  }
 	  
-	  
+	  window.onresize = function()
+	  {
+			var canvas1 = document.getElementById('main_canvas');
+		  var canvas2 = document.getElementById('base_canvas');
+			canvas1.width = window.innerWidth;
+			canvas1.style.width = window.innerWidth;
+			canvas1.height = window.innerHeight;
+			canvas1.style.height = window.innerHeight;
+			canvas2.width = window.innerWidth;
+			canvas2.style.width = window.innerWidth;
+			canvas2.height = window.innerHeight;
+			canvas2.style.height = window.innerHeight;
+	  }
 	 
 	  
 	 
