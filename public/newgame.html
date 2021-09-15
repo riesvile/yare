@@ -115,6 +115,10 @@
 						<div id="color_magion"></div>
 					</div>
 					
+					<div class="color_option ex_c_9 no_sell" id="color_rozblue_border">
+						<div id="color_rozblue"></div>
+					</div>
+					
 					<div id="paid_colors">
 					
 						<a href="https://priceblocs.com/links/fdXKQbJvNu47jMgeikZZX?client_reference_id=brigenta," class="color_option ex_c_4 buy" id="color_brigenta_border">
@@ -230,6 +234,7 @@
 		  'wirple': ['rgba(120,12,196,1)', 'rgba(150,52,236,1)'],
 		  'pistagre': ['rgba(148, 176, 108, 1)', 'rgba(168, 196, 128, 1)'],
 		  'magion': ['rgba(180, 27, 227, 1)', 'rgba(200, 57, 247, 1)'],
+		  'rozblue': ['rgba(18, 255, 248, 1)', 'rgba(28, 255, 254, 1)'],
 		  'brigenta': ['rgba(198, 166, 224, 1)', 'rgba(218, 174, 240, 1)'],
 		  'greson': ['rgba(138, 228, 122, 1)', 'rgba(158, 248, 142, 1)'],
 		  'mmmsalmon': ['rgba(232, 198, 179, 1)', 'rgba(252, 218, 199, 1)'],
@@ -344,6 +349,8 @@
 		  wirple_el.style.borderColor = color_table['default'][0];
 		  magion_el.style.borderWidth = '1px';
 		  magion_el.style.borderColor = color_table['default'][0];
+		  rozblue_el.style.borderWidth = '1px';
+		  rozblue_el.style.borderColor = color_table['default'][0];
 		  brigenta_el.style.borderWidth = '1px';
 		  brigenta_el.style.borderColor = color_table['default'][0];
 		  greson_el.style.borderWidth = '1px';
@@ -427,6 +434,7 @@
 			  } else {
 				  console.log(response.data);
 				  let clr_arr = response.data;
+				  //let clr_arr = [1, 2, 3, 4, 5, 6, 8];
 				  //console.log(temp_clr_arr);
 				  
 				  for (clr_code of clr_arr){
@@ -636,6 +644,7 @@
 	  var pistagre_el = document.getElementById('color_pistagre_border');
 	  var wirple_el = document.getElementById('color_wirple_border');
 	  var magion_el = document.getElementById('color_magion_border');
+	  var rozblue_el = document.getElementById('color_rozblue_border');
 	  var brigenta_el = document.getElementById('color_brigenta_border');
 	  var greson_el = document.getElementById('color_greson_border');
 	  var mmmsalmon_el = document.getElementById('color_mmmsalmon_border');
@@ -649,6 +658,7 @@
 	  document.getElementById('color_pistagre').style.backgroundColor = color_table['pistagre'][0];
 	  document.getElementById('color_wirple').style.backgroundColor = color_table['wirple'][0];
 	  document.getElementById('color_magion').style.backgroundColor = color_table['magion'][0];
+	  document.getElementById('color_rozblue').style.backgroundColor = color_table['rozblue'][0];
 	  document.getElementById('color_brigenta').style.backgroundColor = color_table['brigenta'][0];
 	  document.getElementById('color_greson').style.backgroundColor = color_table['greson'][0];
 	  document.getElementById('color_mmmsalmon').style.backgroundColor = color_table['mmmsalmon'][0];
@@ -677,6 +687,7 @@
 	  pistagre_el.addEventListener('click', color_selection.bind(null, 'pistagre'), false);
 	  wirple_el.addEventListener('click', color_selection.bind(null, 'wirple'), false);
 	  magion_el.addEventListener('click', color_selection.bind(null, 'magion'), false);
+	  rozblue_el.addEventListener('click', color_selection.bind(null, 'rozblue'), false);
 	  brigenta_el.addEventListener('click', color_selection.bind(null, 'brigenta'), false);
 	  greson_el.addEventListener('click', color_selection.bind(null, 'greson'), false);
 	  mmmsalmon_el.addEventListener('click', color_selection.bind(null, 'mmmsalmon'), false);

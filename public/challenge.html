@@ -60,6 +60,56 @@
 				<div class="color_option" id="color_yerange_border">
 					<div id="color_yerange"></div>
 				</div>
+				
+				<div class="extra_colors">
+					
+					<div class="color_option ex_c_1 no_sell" id="color_pistagre_border">
+						<div id="color_pistagre"></div>
+					</div>
+					
+					<div class="color_option ex_c_2 no_sell" id="color_wirple_border">
+						<div id="color_wirple"></div>
+					</div>
+					
+					<div class="color_option ex_c_3 no_sell" id="color_magion_border">
+						<div id="color_magion"></div>
+					</div>
+					
+					<div class="color_option ex_c_9 no_sell" id="color_rozblue_border">
+						<div id="color_rozblue"></div>
+					</div>
+					
+					<div id="paid_colors">
+					
+						<a href="https://priceblocs.com/links/fdXKQbJvNu47jMgeikZZX?client_reference_id=brigenta," class="color_option ex_c_4 buy" id="color_brigenta_border">
+							<div id="color_brigenta"></div>
+							<span class="color_price">€1</span>
+						</a>
+					
+						<a href="https://priceblocs.com/links/MwO4M8L-bUfh6XRi4Qf1J?client_reference_id=greson," class="color_option ex_c_5 buy" id="color_greson_border">
+							<div id="color_greson"></div>
+							<span class="color_price">€2</span>
+						</a>
+					
+						<a href="https://priceblocs.com/links/zeHSXBTCLsVYgvIDjK3g9?client_reference_id=mmmsalmon," class="color_option ex_c_6 buy" id="color_mmmsalmon_border">
+							<div id="color_mmmsalmon"></div>
+							<span class="color_price">€5</span>
+						</a>
+					
+						<a href="https://priceblocs.com/links/kZpt2mxFap0v41WhpaaT6?client_reference_id=skyblue," class="color_option ex_c_7 buy" id="color_skyblue_border">
+							<div id="color_skyblue"></div>
+							<span class="color_price">€20</span>
+						</a>
+						<a href="https://priceblocs.com/links/oT-VSUaKH_bUVfCus-nhy?client_reference_id=toored," class="color_option ex_c_8 buy" id="color_toored_border">
+							<div id="color_toored"></div>
+							<span class="color_price">€30</span>
+						</a>
+					
+					</div>
+					
+				</div>
+				
+				<div id="buy_more_colors"><span>Buy more colors<span></div>
 			  
 		  </div>
 		  
@@ -95,6 +145,24 @@
   
   <script>
 	  
+	  var color_table = {
+		  'default': ['rgba(242, 246, 250, 0.32)', 'rgba(242, 246, 250, 0.32)'],
+		  'gblue': ['rgba(28, 196, 240, 1)', 'rgba(48, 216, 260, 1)'],
+		  'purply': ['rgba(128, 140, 255, 1)', 'rgba(168, 180, 255, 1)'],
+		  'redish': ['rgba(235, 119, 103, 1)', 'rgba(255, 139, 123, 1)'],
+		  'yerange': ['rgba(218, 183, 96, 1)', 'rgba(238, 203, 116, 1)'],
+		  'wirple': ['rgba(120,12,196,1)', 'rgba(150,52,236,1)'],
+		  'pistagre': ['rgba(148, 176, 108, 1)', 'rgba(168, 196, 128, 1)'],
+		  'magion': ['rgba(180, 27, 227, 1)', 'rgba(200, 57, 247, 1)'],
+		  'rozblue': ['rgba(18, 255, 248, 1)', 'rgba(28, 255, 254, 1)'],
+		  'brigenta': ['rgba(198, 166, 224, 1)', 'rgba(218, 174, 240, 1)'],
+		  'greson': ['rgba(138, 228, 122, 1)', 'rgba(158, 248, 142, 1)'],
+		  'mmmsalmon': ['rgba(232, 198, 179, 1)', 'rgba(252, 218, 199, 1)'],
+		  'skyblue': ['rgba(78, 142, 250, 1)', 'rgba(108, 152, 255, 1)'],
+		  'toored': ['rgba(240, 70, 60, 1)', 'rgba(250, 90, 80, 1)']
+		  
+	  };
+	  
 	  function getCookie(name) {
 	      var nameEQ = name + "=";
 	      var ca = document.cookie.split(';');
@@ -111,196 +179,221 @@
 	  }
 
 
+
+
+	  function copyTextToClipboard(text, target) {
+		  var copyTextArea = document.createElement("textarea");
+		  copyTextArea.style.position = 'fixed';
+		  copyTextArea.style.top = 0;
+		  copyTextArea.style.left = 0;
+		  copyTextArea.style.width = '2em';
+		  copyTextArea.style.height = '2em';
+		  copyTextArea.style.border = 'none';
+		  copyTextArea.style.outline = 'none';
+		  copyTextArea.style.boxShadow = 'none';
+		  copyTextArea.style.background = 'transparent';
+		  copyTextArea.value = text;
+		  document.body.appendChild(copyTextArea);
+		  copyTextArea.focus();
+		  copyTextArea.select();
+		  
+		  try {
+		      var successful = document.execCommand('copy');
+		      var msg = successful ? 'successful' : 'unsuccessful';
+		      code_copy_success(target);
+		    } catch (err) {
+		      console.log('Oops, unable to copy');
+		    }
+		
+		  document.body.removeChild(copyTextArea);
+	  }
+	  
+	  copy_elements = document.getElementsByClassName('copy_code');
+	  for (ce = 0; ce < copy_elements.length; ce++){
+	  	copy_elements[ce].addEventListener('click', function(){
+			code_to_copy = this.getAttribute('code');
+			console.log('code_to_copy = ' + code_to_copy);
+			copyTextToClipboard(code_to_copy, this);
+	    }, false);
+	  }
+
+
+	  function update_links(){
+		  let buy_links = document.querySelectorAll("a.buy");
+		  let this_user = getCookie('user_id');
+		  for (link of buy_links){
+			  link.href += this_user;
+			  console.log(link.href);
+		  }
+	  }
+
 	  //colors
 	  
-	  function draw_borders(){
-		  switch(chosen_color){
-			  case 'gblue':
-				  console.log('it was gblue');
-				  chosen_color = 'gblue';
-				  gblue_el.style.borderWidth = '2px';
-				  gblue_el.style.borderColor = 'rgba(28, 196, 240, 1)';
-				  if (chosen_shape == 'circles') {
-					  circles_el.style.borderColor = 'rgba(28, 196, 240, 1)';
-					  document.getElementById('shape_name_circles').style.color = 'rgba(48, 216, 260, 1)';
-				  }
-				  if (chosen_shape == 'squares') {
-					  squares_el.style.borderColor = 'rgba(28, 196, 240, 1)';
-					  document.getElementById('shape_name_squares').style.color = 'rgba(48, 216, 260, 1)';
-				  }
-				  if (chosen_shape == 'triangles') {
-					  triangles_el.style.borderColor = 'rgba(28, 196, 240, 1)';
-					  document.getElementById('shape_name_triangles').style.color = 'rgba(48, 216, 260, 1)';
-				  }
-				  break;
-			  case 'purply':
-				  console.log('it was purply');
-				  chosen_color = 'purply';
-				  purply_el.style.borderWidth = '2px';
-				  purply_el.style.borderColor = 'rgba(128, 140, 255, 1)';
-				  if (chosen_shape == 'circles') {
-					  circles_el.style.borderColor = 'rgba(128, 140, 255, 1)';
-					  document.getElementById('shape_name_circles').style.color = 'rgba(168, 180, 255, 1)';
-				  }
-				  if (chosen_shape == 'squares') {
-					  squares_el.style.borderColor = 'rgba(128, 140, 255, 1)';
-					  document.getElementById('shape_name_squares').style.color = 'rgba(168, 180, 255, 1)';
-				  }
-				  if (chosen_shape == 'triangles') {
-					  triangles_el.style.borderColor = 'rgba(128, 140, 255, 1)';
-					  document.getElementById('shape_name_triangles').style.color = 'rgba(168, 180, 255, 1)';
-				  }
-				  break;
-			  case 'redish':
-				  console.log('it was redish');
-				  chosen_color = 'redish';
-				  redish_el.style.borderWidth = '2px';
-				  redish_el.style.borderColor = 'rgba(235, 119, 103, 1)';
-				  if (chosen_shape == 'circles') {
-					  circles_el.style.borderColor = 'rgba(235, 119, 103, 1)';
-					  document.getElementById('shape_name_circles').style.color = 'rgba(255, 139, 123, 1)';
-				  }
-				  if (chosen_shape == 'squares') {
-					  squares_el.style.borderColor = 'rgba(235, 119, 103, 1)';
-					  document.getElementById('shape_name_squares').style.color = 'rgba(255, 139, 123, 1)';
-				  }
-				  if (chosen_shape == 'triangles') {
-					  triangles_el.style.borderColor = 'rgba(235, 119, 103, 1)';
-					  document.getElementById('shape_name_triangles').style.color = 'rgba(255, 139, 123, 1)';
-				  }
-				  break;
-			  case 'yerange':
-				  console.log('it was yerange');
-				  chosen_color = 'yerange';
-				  yerange_el.style.borderWidth = '2px';
-				  yerange_el.style.borderColor = 'rgba(218, 183, 96, 1)';
-				  if (chosen_shape == 'circles') {
-					  circles_el.style.borderColor = 'rgba(218, 183, 96, 1)';
-					  document.getElementById('shape_name_circles').style.color = 'rgba(238, 203, 116, 1)';
-				  }
-				  if (chosen_shape == 'squares') {
-					  squares_el.style.borderColor = 'rgba(218, 183, 96, 1)';
-					  document.getElementById('shape_name_squares').style.color = 'rgba(238, 203, 116, 1)';
-				  }
-				  if (chosen_shape == 'triangles') {
-					  triangles_el.style.borderColor = 'rgba(218, 183, 96, 1)';
-					  document.getElementById('shape_name_triangles').style.color = 'rgba(238, 203, 116, 1)';
-				  }
-				  break;
-			  default:
-				  console.log('color defaulted');
-	  	  }
+	  function draw_bord(clr){
+	  	
+	  }
+	  
+	  function draw_borders(ele){
+		  
+		  ele.style.borderWidth = '2px';
+		  ele.style.borderColor = color_table[chosen_color][0];
+		  
+		   console.log('it wasss ' + chosen_color);
+		  
+		  if (chosen_shape == 'circles') {
+			  circles_el.style.borderColor = color_table[chosen_color][0];
+			  document.getElementById('shape_name_circles').style.color = color_table[chosen_color][1];
+		  }
+		  if (chosen_shape == 'squares') {
+			  squares_el.style.borderColor = color_table[chosen_color][0];
+			  document.getElementById('shape_name_squares').style.color = color_table[chosen_color][1];
+		  }
+		  if (chosen_shape == 'triangles') {
+			  triangles_el.style.borderColor = color_table[chosen_color][0];
+			  document.getElementById('shape_name_triangles').style.color = color_table[chosen_color][1];
+		  }
+		  
 	  }
 	  
 	  function color_selection(ch_color){
-		  switch(ch_color){
-			  case 'gblue':
-				  console.log('it was gblue');
-				  chosen_color = 'gblue';
-				  gblue_el.style.borderWidth = '2px';
-				  gblue_el.style.borderColor = 'rgba(28, 196, 240, 1)';
-				  purply_el.style.borderWidth = '1px';
-				  purply_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  redish_el.style.borderWidth = '1px';
-				  redish_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  yerange_el.style.borderWidth = '1px';
-				  yerange_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  draw_borders();
-				  break;
-			  case 'purply':
-				  console.log('it was purply');
-				  chosen_color = 'purply';
-				  gblue_el.style.borderWidth = '1px';
-				  gblue_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  purply_el.style.borderWidth = '2px';
-				  purply_el.style.borderColor = 'rgba(128, 140, 255, 1)';
-				  redish_el.style.borderWidth = '1px';
-				  redish_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  yerange_el.style.borderWidth = '1px';
-				  yerange_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  draw_borders();
-				  break;
-			  case 'redish':
-				  console.log('it was redish');
-				  chosen_color = 'redish';
-				  gblue_el.style.borderWidth = '1px';
-				  gblue_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  purply_el.style.borderWidth = '1px';
-				  purply_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  redish_el.style.borderWidth = '2px';
-				  redish_el.style.borderColor = 'rgba(235, 119, 103, 1)';
-				  yerange_el.style.borderWidth = '1px';
-				  yerange_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  draw_borders();
-				  break;
-			  case 'yerange':
-				  console.log('it was yerange');
-				  chosen_color = 'yerange';
-				  gblue_el.style.borderWidth = '1px';
-				  gblue_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  purply_el.style.borderWidth = '1px';
-				  purply_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  redish_el.style.borderWidth = '1px';
-				  redish_el.style.borderColor = 'rgba(242, 246, 250, 0.32)';
-				  yerange_el.style.borderWidth = '2px';
-				  yerange_el.style.borderColor = 'rgba(218, 183, 96, 1)';
-				  draw_borders();
-				  break;
-			  default:
-				  console.log('color defaulted');
-	  	  }
+		  
+		  gblue_el.style.borderWidth = '1px';
+		  gblue_el.style.borderColor = color_table['default'][0];
+		  purply_el.style.borderWidth = '1px';
+		  purply_el.style.borderColor = color_table['default'][0];
+		  redish_el.style.borderWidth = '1px';
+		  redish_el.style.borderColor = color_table['default'][0];
+		  yerange_el.style.borderWidth = '1px';
+		  yerange_el.style.borderColor = color_table['default'][0];
+		  pistagre_el.style.borderWidth = '1px';
+		  pistagre_el.style.borderColor = color_table['default'][0];
+		  wirple_el.style.borderWidth = '1px';
+		  wirple_el.style.borderColor = color_table['default'][0];
+		  magion_el.style.borderWidth = '1px';
+		  magion_el.style.borderColor = color_table['default'][0];
+		  rozblue_el.style.borderWidth = '1px';
+		  rozblue_el.style.borderColor = color_table['default'][0];
+		  brigenta_el.style.borderWidth = '1px';
+		  brigenta_el.style.borderColor = color_table['default'][0];
+		  greson_el.style.borderWidth = '1px';
+		  greson_el.style.borderColor = color_table['default'][0];
+		  mmmsalmon_el.style.borderWidth = '1px';
+		  mmmsalmon_el.style.borderColor = color_table['default'][0];
+		  skyblue_el.style.borderWidth = '1px';
+		  skyblue_el.style.borderColor = color_table['default'][0];
+		  toored_el.style.borderWidth = '1px';
+		  toored_el.style.borderColor = color_table['default'][0];
+		  
+
+		  localStorage.setItem('chosen_color', ch_color);
+		  
+		  chosen_color = ch_color;
+		  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
+		  draw_borders(current_color_el);
+		  
+		  document.getElementById('color_' + chosen_color + '_border').style.borderWidth = '2px';
+		  document.getElementById('color_' + chosen_color + '_border').style.borderColor = color_table[chosen_color][0];
+		  
 	  }
 	  
 	  function shape_selection(ch_shape){
 		  document.getElementById('start_area').style.opacity = 1;
 		  document.getElementById('start_area').style.cursor = 'default';
 		  document.getElementById('start_game_btn').style.cursor = 'pointer';
+		  //document.getElementById('bot_game_btn').style.cursor = 'pointer';
+		  //document.getElementById('challenge_friend_btn').style.cursor = 'pointer';
+		  //document.getElementById('play_bot_btn').style.cursor = 'pointer';
 		  
 		  console.log('chosen shape = ' + ch_shape);
-		  switch(ch_shape){
-			  case 'circles':
-				  circles_el.style.opacity = 1; 
-				  circles_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
-				  squares_el.style.opacity = 0.48; 
-				  squares_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
-				  triangles_el.style.opacity = 0.48; 
-				  triangles_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
-				  chosen_shape = 'circles';
-				  draw_borders();
-				  break;
-			  case 'squares':
-				  circles_el.style.opacity = 0.48; 
-				  circles_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
-				  squares_el.style.opacity = 1; 
-				  squares_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
-				  triangles_el.style.opacity = 0.48; 
-				  triangles_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
-				  chosen_shape = 'squares';
-				  draw_borders();
-				  break;
-			  case 'triangles':
-				  circles_el.style.opacity = 0.48; 
-				  circles_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
-				  squares_el.style.opacity = 0.48; 
-				  squares_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
-				  triangles_el.style.opacity = 1; 
-				  triangles_el.style.borderColor = 'transparent';
-				  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
-				  chosen_shape = 'triangles';
-				  draw_borders();
-				  break;
-			  default:
-				  console.log('shape defaulted');
-			  
+		  
+		  
+		  let changing_el = document.getElementById('shape_' + ch_shape);
+		  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
+		  chosen_shape = ch_shape;
+		  
+		  circles_el.style.opacity = 0.48; 
+		  circles_el.style.borderColor = 'transparent';
+		  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
+		  squares_el.style.opacity = 0.48; 
+		  squares_el.style.borderColor = 'transparent';
+		  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
+		  triangles_el.style.opacity = 0.48; 
+		  triangles_el.style.borderColor = 'transparent';
+		  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
+		  
+		  changing_el.style.opacity = 1;
+		  
+		  draw_borders(current_color_el)
+
+	  }
+	  
+	  function pre_select_bot(){
+		  console.log('selecting bot type');
+		  expand_bot_selection();
+	  }
+	  
+	  function get_user_colors(){
+		  //let temp_clr_arr = [1, 2, 3, 4, 5, 6, 8];
+		  
+	  	fetch('/get_colors', {
+	  	        method: "POST",
+	  	        headers: {
+	  	          Accept: "application/json",
+	  	          "Content-Type": "application/json"
+	  	        },
+	  	        body: JSON.stringify({
+	  		        user_id: getCookie('user_id'),
+	  		        session_id: getCookie('session_id')
+	  		    })
+
+	      }).then(response => response.json())
+	        .then(response => {
+	  		  //console.log(response);
+	  		  if (response.data == "no user found"){
+	  			  console.log('no such user');
+	  		  } else if (response.data == "something went wrong"){
+				  console.log('hmmm, something went wrong, not sure what')
+			  } else {
+				  console.log(response.data);
+				  let clr_arr = response.data;
+				  //let clr_arr = [1, 2, 3, 4, 5, 6, 8];
+				  //console.log(temp_clr_arr);
+				  
+				  for (clr_code of clr_arr){
+					  if (clr_code > 4) {
+						  els = document.getElementsByClassName('ex_c_' + (clr_code - 4));
+						  els[0].style.opacity = 1;
+						  els[0].style.display = "block";
+						  els[0].style.pointerEvents = "auto";
+						  els[0].href = "#";
+						  try {
+						  	document.querySelector('.ex_c_' + (clr_code - 4) + ' .color_price').style.display = 'none';
+						  } catch (e) {
+						  	
+						  }
+						  
+					  }
+				  	  
+				  }
+	  		  	  //add_user_colors(response.data)
+	  		  }
+	  	  })
+	        .catch(err => {
+	  		  console.log(err);
+	  	  });
+	  }
+	  
+	  function show_paid_colors(){
+		  document.getElementById("paid_colors").style.pointerEvents = "auto";
+		  document.getElementById("buy_more_colors").style.display = "none";
+		  
+		  let buy_colors = document.querySelectorAll("a.buy");
+		  for (clr of buy_colors){
+			  clr.style.opacity = 1;
+			  clr.style.display = "block";
+			  clr.style.pointerEvents = "auto";
 		  }
+		  
 	  }
 	  
 	  
@@ -429,31 +522,76 @@
 	  }
 	  
 	  
-	  var chosen_color = 'purply';
 	  var chosen_shape = '';
 	  
 	  var gblue_el = document.getElementById('color_gblue_border');
 	  var purply_el = document.getElementById('color_purply_border');
 	  var redish_el = document.getElementById('color_redish_border');
 	  var yerange_el = document.getElementById('color_yerange_border');
+	  var pistagre_el = document.getElementById('color_pistagre_border');
+	  var wirple_el = document.getElementById('color_wirple_border');
+	  var magion_el = document.getElementById('color_magion_border');
+	  var rozblue_el = document.getElementById('color_rozblue_border');
+	  var brigenta_el = document.getElementById('color_brigenta_border');
+	  var greson_el = document.getElementById('color_greson_border');
+	  var mmmsalmon_el = document.getElementById('color_mmmsalmon_border');
+	  var skyblue_el = document.getElementById('color_skyblue_border');
+	  var toored_el = document.getElementById('color_toored_border');
+	  
+	  document.getElementById('color_gblue').style.backgroundColor = color_table['gblue'][0];
+	  document.getElementById('color_purply').style.backgroundColor = color_table['purply'][0];
+	  document.getElementById('color_redish').style.backgroundColor = color_table['redish'][0];
+	  document.getElementById('color_yerange').style.backgroundColor = color_table['yerange'][0];
+	  document.getElementById('color_pistagre').style.backgroundColor = color_table['pistagre'][0];
+	  document.getElementById('color_wirple').style.backgroundColor = color_table['wirple'][0];
+	  document.getElementById('color_magion').style.backgroundColor = color_table['magion'][0];
+	  document.getElementById('color_rozblue').style.backgroundColor = color_table['rozblue'][0];
+	  document.getElementById('color_brigenta').style.backgroundColor = color_table['brigenta'][0];
+	  document.getElementById('color_greson').style.backgroundColor = color_table['greson'][0];
+	  document.getElementById('color_mmmsalmon').style.backgroundColor = color_table['mmmsalmon'][0];
+	  document.getElementById('color_skyblue').style.backgroundColor = color_table['skyblue'][0];
+	  document.getElementById('color_toored').style.backgroundColor = color_table['toored'][0];
 	  
 	  var circles_el = document.getElementById('shape_circles');
 	  var squares_el = document.getElementById('shape_squares');
 	  var triangles_el = document.getElementById('shape_triangles');
 	  
-	  //document.getElementById('start_game_btn').addEventListener('click', start_game.bind(null, 'automatch'), false);
+	  
+	  //document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
+	  
+	  //bots
 	  
 	  gblue_el.addEventListener('click', color_selection.bind(null, 'gblue'), false);
 	  purply_el.addEventListener('click', color_selection.bind(null, 'purply'), false);
 	  redish_el.addEventListener('click', color_selection.bind(null, 'redish'), false);
 	  yerange_el.addEventListener('click', color_selection.bind(null, 'yerange'), false);
+	  pistagre_el.addEventListener('click', color_selection.bind(null, 'pistagre'), false);
+	  wirple_el.addEventListener('click', color_selection.bind(null, 'wirple'), false);
+	  magion_el.addEventListener('click', color_selection.bind(null, 'magion'), false);
+	  rozblue_el.addEventListener('click', color_selection.bind(null, 'rozblue'), false);
+	  brigenta_el.addEventListener('click', color_selection.bind(null, 'brigenta'), false);
+	  greson_el.addEventListener('click', color_selection.bind(null, 'greson'), false);
+	  mmmsalmon_el.addEventListener('click', color_selection.bind(null, 'mmmsalmon'), false);
+	  skyblue_el.addEventListener('click', color_selection.bind(null, 'skyblue'), false);
+	  toored_el.addEventListener('click', color_selection.bind(null, 'toored'), false);
 	  
 	  circles_el.addEventListener('click', shape_selection.bind(null, 'circles'), false);
 	  squares_el.addEventListener('click', shape_selection.bind(null, 'squares'), false);
 	  triangles_el.addEventListener('click', shape_selection.bind(null, 'triangles'), false);
 	  
+	  var chosen_color = 'purply';
+	  if(localStorage.getItem('chosen_color') != null){
+		  chosen_color = localStorage.getItem('chosen_color');
+	  }
+	  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
+		draw_borders(current_color_el);
 	  
-	  draw_borders();
+	  //document.getElementById('color_gblue_border').addEventListener('click', chosencolor, false)
+		
+	  document.getElementById('buy_more_colors').addEventListener('click', show_paid_colors, false);
+	  
+	  get_user_colors();
+	  update_links();
 	  
 	  //document.getElementById('color_gblue_border').addEventListener('click', chosencolor, false)
 	  

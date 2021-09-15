@@ -406,6 +406,9 @@ function get_color(color_name){
 		case 'toored':
 			return 'color12';
 			break;
+		case 'rozblue':
+			return 'color13';
+			break;
 		default:
 			return 'color1';
 	}
@@ -448,6 +451,9 @@ function get_color_num(color_name){
 			break;
 		case 'toored':
 			return 12;
+			break;
+		case 'rozblue':
+			return 13;
 			break;
 		default:
 			return 'color1';

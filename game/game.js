@@ -610,6 +610,8 @@ color_palettes['color10'] = 'rgba(232, 198, 179, 1)';
 color_palettes['color11'] = 'rgba(78, 142, 250, 1)';
 color_palettes['color12'] = 'rgba(240, 70, 60, 1)';
 
+color_palettes['color13'] = 'rgba(18, 255, 248, 1)';
+
 
 
 
