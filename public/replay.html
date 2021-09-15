@@ -831,38 +831,77 @@
 	  var this_server = 't1';
 	  
 	  var game_file;
-	  
-	  //load_start();
-	  get_replay_file();
 
-		window.document.body.ondrop = (e) => {
-			e.preventDefault();
-			if (e.dataTransfer.items) {
-				// Use DataTransferItemList interface to access the file(s)
-				for (var i = 0; i < e.dataTransfer.items.length; i++) {
-					// If dropped items aren't files, reject them
-					if (e.dataTransfer.items[i].kind === 'file') {
-						var file = e.dataTransfer.items[i].getAsFile();
-						file.text().then((str) => {
-							var replay = JSON.parse(str);
-							unsafeWindow.bases = [];
-							unsafeWindow.bases_queue = [];
-							unsafeWindow.stars = [];
-							unsafeWindow.outposts = [];
-							unsafeWindow.game_active = 0;
-							unsafeWindow.world_initiated = 0;
-							unsafeWindow.game_file = str;
-							unsafeWindow.base_lookup = {};
-							unsafeWindow.process_replay_file(replay);
-						});
-						return;
+		if (this_game_id != "custom") {
+			//load_start();
+			get_replay_file();
+		} else {
+			document.getElementById("loading_msg").innerText = "Drop a replay on this page to start replaying"
+			// document.onload = () => {
+			// 	// Shoutout to derekt for this code
+				document.body.ondrop = (e) => {
+					e.preventDefault();
+					if (e.dataTransfer.items) {
+						// Use DataTransferItemList interface to access the file(s)
+						for (var i = 0; i < e.dataTransfer.items.length; i++) {
+							// If dropped items aren't files, reject them
+							if (e.dataTransfer.items[i].kind === 'file') {
+								var file = e.dataTransfer.items[i].getAsFile();
+								file.text().then((str) => {
+									var replay = JSON.parse(str);
+									bases = [];
+									bases_queue = [];
+									stars = [];
+									outposts = [];
+									all_spirits = [];
+									living_spirits = [];
+									spirit_lookup = {};
+									game_active = 0;
+									world_initiated = 0;
+									game_file = str;
+									base_lookup = {};
+									process_replay_file(replay);
+								});
+								return;
+							}
+						}
 					}
 				}
-			}
+			// }
 		}
 		window.document.body.ondragover = (e) => {
 			e.preventDefault();
 		}
+
+		// this doesn't work because of unsafeWindow (which only exists in tampermonkey), i fixed this and moved it to /replay/custom url only ^^^
+		// window.document.body.ondrop = (e) => {
+		// 	e.preventDefault();
+		// 	if (e.dataTransfer.items) {
+		// 		// Use DataTransferItemList interface to access the file(s)
+		// 		for (var i = 0; i < e.dataTransfer.items.length; i++) {
+		// 			// If dropped items aren't files, reject them
+		// 			if (e.dataTransfer.items[i].kind === 'file') {
+		// 				var file = e.dataTransfer.items[i].getAsFile();
+		// 				file.text().then((str) => {
+		// 					var replay = JSON.parse(str);
+		// 					unsafeWindow.bases = [];
+		// 					unsafeWindow.bases_queue = [];
+		// 					unsafeWindow.stars = [];
+		// 					unsafeWindow.outposts = [];
+		// 					unsafeWindow.game_active = 0;
+		// 					unsafeWindow.world_initiated = 0;
+		// 					unsafeWindow.game_file = str;
+		// 					unsafeWindow.base_lookup = {};
+		// 					unsafeWindow.process_replay_file(replay);
+		// 				});
+		// 				return;
+		// 			}
+		// 		}
+		// 	}
+		// }
+		// window.document.body.ondragover = (e) => {
+		// 	e.preventDefault();
+		// }
 	  
 	  
 	  //const socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
