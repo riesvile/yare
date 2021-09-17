@@ -1908,6 +1908,7 @@ if (!isMainThread){
 
 				if(s.hp == 0 || t.hp == 0) continue;
 				if(s.shape != 'circles' || t.shape != 'circles') continue;
+				if(t.merged.length + s.merged.length + 2 > 100) continue;
 
 				if(dist_sq(t.position, s.position) > 10**2) continue;
 				if(s.hp == 0 || t.hp == 0) continue;
@@ -1921,7 +1922,7 @@ if (!isMainThread){
 				s.size = 0;
 				s.energy = 0;
 				s.position = t.position;
-				merged[t] = true;
+				merged[tid] = true;
 
 				render_data3.s.push(['m', s.id, t.id]);
 			}
