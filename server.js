@@ -1390,6 +1390,7 @@ app.post('/gameinfo', (req, res) => {
 });
 
 const AWS = require('aws-sdk');
+let compress = require('./compress/compress.js');
 AWS.config.setPromisesDependency(null);
 
 s3client = new AWS.S3({
@@ -1408,12 +1409,24 @@ if(!config.s3.bucketEndpoint) {
 }
 
 app.post('/get_replay', async (req, res) => {
-	let obj = s3client.getObject({
-		Bucket: config.s3.bucket,
-		Key: req.body.game_id + '.json',
-	}).promise();
+	
 	try {
-		let data = await obj;
+		let data = await s3client.getObject({
+			Bucket: config.s3.bucket,
+			Key: 'replays/' + req.body.game_id + '.json.comp',
+		}).promise();
+		console.log(data);
+		res.status(200).send(compress.decompress(data.Body));
+		return;
+	} catch (err) {
+		console.log(err);
+	}
+
+	try {
+		let data = await s3client.getObject({
+			Bucket: config.s3.bucket,
+			Key: req.body.game_id + '.json',
+		}).promise();
 		console.log(data);
 		res.status(200).send(data.Body);
 		return;

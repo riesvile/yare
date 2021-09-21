@@ -39,6 +39,7 @@ function color_validity(color, clr_array){
 
 const config = require('../config');
 const AWS = require('aws-sdk');
+const compress = require('../compress/compress.js');
 AWS.config.setPromisesDependency(null);
 
 s3client = new AWS.S3({
@@ -49,10 +50,12 @@ s3client = new AWS.S3({
 	s3BucketEndpoint: config.s3.bucketEndpoint
 });
 
-function end_game(was_p1 = 0, was_p2 = 0){
+async function end_game(was_p1 = 0, was_p2 = 0){
 	game_finished = 1;
 	//console.log(game_file);
 	var game_data = JSON.stringify(game_file);
+
+	var compressed = compress.compress(game_file);
 	//console.log(JSON.stringify(game_file));
 	
 	//game history
@@ -68,10 +71,16 @@ function end_game(was_p1 = 0, was_p2 = 0){
 	var loserRating = 0;
 	var newLoserRating = 0;
 
-	s3client.putObject({
+	await s3client.putObject({
 		Body: game_data,
 		Bucket: config.s3.bucket,
 		Key: workerData[0] + '.json',
+	}).promise()
+
+	s3client.putObject({
+		Body: compressed,
+		Bucket: config.s3.bucket,
+		Key: 'replays/' + workerData[0] + '.json.comp',
 	}).promise().catch(err => console.error(err)).finally(() => {
 
 		if (p2won == 1){
