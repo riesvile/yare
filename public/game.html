@@ -479,7 +479,7 @@
 				}
 
 				 incoming = message.render;
-				 chan = message.chan;
+				 chan = message.chan || {};
 
 				 var chanEvent = new CustomEvent('chan', {detail: chan});
 				 document.dispatchEvent(chanEvent);
