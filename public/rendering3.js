@@ -38,7 +38,7 @@ function baseOffsetUpdate(){
 function offsetUpdate(){
 	
 	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
-	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
+	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
 	//c.fillStyle = 'rgba(6,8,100,0.1)';
 	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
@@ -70,14 +70,16 @@ function offsetUpdate(){
 
 function zoomUpdate(){
 	
-	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
-	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
+	
 	
 	
 	//c.setTransform(1, 0, 0, 1, 0, 0);
 	c_base.setTransform(scale, 0, 0, scale, 0, 0);
 	c_base.translate(offsetX, offsetY);
 	//c.translate(offsetX, offsetY);
+	
+	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
+	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
 	//world_spirits = living_spirits.length;
 	//for (i = 0; i < world_spirits; i++){
@@ -94,7 +96,7 @@ function zoomUpdate(){
 	//	base_lookup[bases[i].id].draw();
 	//}
 	
-	//draw_grid();
+	draw_grid();
 	
 }
 
