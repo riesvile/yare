@@ -4,6 +4,8 @@ global.my_spirits = [];
 global.stars = {};
 global.bases = {};
 global.outposts = {};
+global.pylons = {};
+global.fragments = [];
 
 yd.commands = {
     merge: new Map(),
@@ -115,18 +117,23 @@ class Spirit {
      * If target is the same spirit as origin, the spirit will attempt harvesting energy from a star.
      * @param {(Spirit|Base|Outpost)} target - target to energize
      */
-    energize(target) {
+    energize(target) {		
         let target_id = null;
-        if(typeof target == 'object'){
+		if (Array.isArray(target) && target.length == 2){
+			target_id = target;
+		} else if (typeof target == 'object'){
             target_id = target.id;
-        }else if(typeof target == 'string'){
+        } else if (typeof target == 'string'){
             target_id = target;
-        }
+        } 
+		
+		
+		//console.log(typeof target);
 
-        let bad = Array.isArray(target) || target_id == null || target == null;
+        let bad = target_id == null || target == null;
         if(bad){
             let example_id = this.player_id + "_2";
-            soft_error(".energize() argument must be a game object (e.g. spirit) with id, or its id (string).\n > E.g. my_spirits[0].energize(my_spirits[0])\n > or my_spirits[0].energize(spirits['" + example_id + "'])\n > or my_spirits[0].energize('" + example_id + "')\n > Received: " + target);
+            soft_error(".energize() argument must be a game object (e.g. spirit) with id or a position (e.g. [250, 350]).\n > E.g. my_spirits[0].energize(my_spirits[0])\n > or my_spirits[0].energize(spirits['" + example_id + "'])\n > or my_spirits[0].energize('" + example_id + "')\n > Received: " + target);
             return;
         }
         
@@ -263,6 +270,12 @@ class Outpost {
     }
 }
 
+class Pylon {
+    constructor(id){
+        this.id = id
+    }
+}
+
 class Base {
     constructor(id){
         this.id = id;
@@ -305,6 +318,21 @@ yd.loadData = function(data) {
         }
         Object.assign(global.outposts[id], od[id]);
     }
+    var py = data.pylons;
+    for(var id in py) {
+        if(!(id in global.pylons)) {
+            global.pylons[id] = new Pylon(id);
+            global[id] = global.pylons[id];
+            global.pylon = global.pylons[id];
+        }
+        Object.assign(global.pylons[id], py[id]);
+    }
+	var ef = data.fragments;
+	global.fragments = [];
+	for (let fgm of ef){
+		global.fragments.push(fgm)
+	}
+	
     var bd = data.bases;
     for(var id in bd) {
         if(!(id in global.bases)) {

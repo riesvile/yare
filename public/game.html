@@ -262,7 +262,7 @@
 	      getCompletions: function(editor, session, pos, prefix, callback) {
 	          var completions = [];
 	          // we can use session and pos here to decide what we are going to show
-	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "enemy_base", "base", "star_zxq", "star_p89", "star_a1c", "outpost", "my_spirits", "spirits", "tick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable", ].forEach(function(w) {
+	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "enemy_base", "base", "star_zxq", "star_p89", "star_nua", "star_a1c", "outpost", "pylon", "fragments", "my_spirits", "spirits", "tick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable", ].forEach(function(w) {
 	              completions.push({
 	                  value: w,
 	                  meta: "keyword",
@@ -324,33 +324,33 @@
 			  
 			  if (pla1 == cookie_user){
 				  if (temp_availWidth > 1800){
-					  offsetX = 0; //-670
-					  offsetY = -200; //-350
+					  offsetX = 650 + (window.innerWidth / 2);
+					  offsetY = 480 + (window.innerHeight / 2);
 				  } else if (temp_availWidth < 600) {
-					  offsetX = -1450 + temp_availWidth; //-670
-					  offsetY = -1100 + temp_availHeight; //-350
+					  offsetX = 650 + (window.innerWidth / 2);
+					  offsetY = 480 + (window.innerHeight / 2);
 					  scale = 0.6;
 					  multiplier = 1/scale;
 					  //console.log(scale + 'scale');
 				  } else {
-					  offsetX = -1700 + temp_availWidth; //-670
-					  offsetY = -1400 + temp_availHeight; //-350
+					  offsetX = 650 + (window.innerWidth / 2);
+					  offsetY = 480 + (window.innerHeight / 2);
 				  }
 				  
 			  } else if (pla2 == cookie_user){
 				  
 				  if (temp_availWidth > 1800){
-					  offsetX = -3800 + temp_availWidth;
-					  offsetY = -2100 + temp_availHeight;
+					  offsetX = -480 + (window.innerWidth / 2);
+					  offsetY = -650 + (window.innerHeight / 2);
 					  scale = 1;
 				  } else if (temp_availWidth < 600) {
-					  offsetX = -3100 + temp_availWidth;
-					  offsetY = -1600 + temp_availHeight;
+					  offsetX = -480 + (window.innerWidth / 2);
+					  offsetY = -650 + (window.innerHeight / 2);
 					  scale = 0.6;
 					  multiplier = 1/scale;
 				  } else {
-					  offsetX = -3800 + temp_availWidth;
-					  offsetY = -2100 + temp_availHeight;
+					  offsetX = -480 + (window.innerWidth / 2);
+					  offsetY = -650 + (window.innerHeight / 2);
 					  scale = 1;
 				  }
 			  }
@@ -620,8 +620,11 @@
 					 game_blocks['t' + tick_counter]['b2'][4] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
 					 
 					 game_blocks['t' + tick_counter]['st'] = incoming.st;
+					 game_blocks['t' + tick_counter]['ef'] = incoming.ef;
 					 
 					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
+					 game_blocks['t' + tick_counter]['py'] = incoming.py;
+					 //console.log(incoming.py);
 
 					 game_blocks['t' + tick_counter].graphics = (chan || {}).graphics;
 					 

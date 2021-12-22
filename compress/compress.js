@@ -52,6 +52,8 @@ function compress(orig) {
             b2: frame.b2,
             st: frame.st,
             ou: [frame.ou[0], mapName(frame.ou[1])],
+			py: [frame.py[0], mapName(frame.py[1])],
+			ef: frame.ef,
             e: frame.e.map(e => [mapName(e[0]), mapName(e[1]), e[2]]),
             s: frame.s.map(s => {
                 switch(s[0]) {   
@@ -91,6 +93,8 @@ function decompress(comp) {
             b2: frame.b2,
             st: frame.st,
             ou: frame.ou,
+			py: frame.py,
+			ef: frame.ef,
             e: frame.e.map(e => [IDsToNames[e[0]], IDsToNames[e[1]], e[2]]),
             s: frame.s.map(s => {
                 switch(s[0]) {   

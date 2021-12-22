@@ -238,6 +238,7 @@
 	  function process_replay_file(rep_file){
 		  //console.log('replay length: ' + rep_file.length);
 		  replay_length = (rep_file.length - 1);
+		  //console.log(rep_file);
 		  
 		  pla1 = rep_file[0].p1[0][0];
 		  pla1 = pla1.substring(0, pla1.length-2);
@@ -285,6 +286,8 @@
 	 			 'b2': [],
 	 			 'e': [],
 	 			 's': [],
+				 'ou': [],
+				 'py': [],
 	 			 'units': [],
 				 'total_u_1': 0,
 				 'total_u_2': 0,
@@ -419,6 +422,7 @@
 			 game_blocks['t' + tick_counter]['st'] = rep_file[t].st;
 			 
 			 game_blocks['t' + tick_counter]['ou'] = rep_file[t].ou;
+			 game_blocks['t' + tick_counter]['py'] = rep_file[t].py;
 
 			 game_blocks['t' + tick_counter]['g1'] = rep_file[t].g1;
 			 game_blocks['t' + tick_counter]['g2'] = rep_file[t].g2;
@@ -713,33 +717,33 @@
 			  
 			  if (pla1 == cookie_user){
 				  if (temp_availWidth > 1800){
-					  offsetX = 0; //-670
-					  offsetY = -200; //-350
+					  offsetX = -650; //-670
+					  offsetY = -480; //-350
 				  } else if (temp_availWidth < 600) {
-					  offsetX = -1450 + temp_availWidth; //-670
-					  offsetY = -1100 + temp_availHeight; //-350
+					  offsetX = -650 + temp_availWidth; //-670
+					  offsetY = -480 + temp_availHeight; //-350
 					  scale = 0.6;
 					  multiplier = 1/scale;
 					  //console.log(scale + 'scale');
 				  } else {
-					  offsetX = -1700 + temp_availWidth; //-670
-					  offsetY = -1400 + temp_availHeight; //-350
+					  offsetX = -650 + temp_availWidth; //-670
+					  offsetY = -480 + temp_availHeight; //-350
 				  }
 				  
 			  } else if (pla2 == cookie_user){
 				  
 				  if (temp_availWidth > 1800){
-					  offsetX = -3800 + temp_availWidth;
-					  offsetY = -2100 + temp_availHeight;
+					  offsetX = 480 + temp_availWidth;
+					  offsetY = 650 + temp_availHeight;
 					  scale = 1;
 				  } else if (temp_availWidth < 600) {
-					  offsetX = -3100 + temp_availWidth;
-					  offsetY = -1600 + temp_availHeight;
+					  offsetX = 480 + temp_availWidth;
+					  offsetY = 650 + temp_availHeight;
 					  scale = 0.6;
 					  multiplier = 1/scale;
 				  } else {
-					  offsetX = -3800 + temp_availWidth;
-					  offsetY = -2100 + temp_availHeight;
+					  offsetX = 480 + temp_availWidth;
+					  offsetY = 650 + temp_availHeight;
 					  scale = 1;
 				  }
 			  }
@@ -853,6 +857,7 @@
 									bases_queue = [];
 									stars = [];
 									outposts = [];
+									pylons = [];
 									all_spirits = [];
 									living_spirits = [];
 									spirit_lookup = {};
@@ -940,6 +945,8 @@
 						 'b2': [],
 						 'e': [],
 						 's': [],
+						 'ou': [],
+						 'py': [],
 						 'units': [],
 						 'g1': [],
 						 'g2': []
@@ -1053,11 +1060,12 @@
 					 game_blocks['t' + tick_counter]['st'] = incoming.st;
 					 
 					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
+					 game_blocks['t' + tick_counter]['py'] = incoming.py;
 
 					 game_blocks['t' + tick_counter]['g1'] = incoming.g1;
 					 game_blocks['t' + tick_counter]['g2'] = incoming.g2;
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
-					 //console.log(game_blocks);
+					 console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
 					 run_it();
 					 

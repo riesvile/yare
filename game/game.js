@@ -218,6 +218,8 @@ parentPort.on("message", message => {
 				'stars': [],
 				'bases': [],
 				'outposts': [],
+				'pylons': [],
+				'fragments': [],
 				'players': [],
 				'colors': [],
 				'shapes': [],
@@ -229,6 +231,8 @@ parentPort.on("message", message => {
 				'stars': [],
 				'bases': [],
 				'outposts': [],
+				'pylons': [],
+				'fragments': [],
 				'players': [],
 				'colors': [],
 				'shapes': [],
@@ -249,6 +253,14 @@ parentPort.on("message", message => {
 		
 		for (i = 0; i < outposts.length; i++){
 			init_data.outposts.push(outposts[i]);
+		}
+		
+		for (i = 0; i < pylons.length; i++){
+			init_data.pylons.push(pylons[i]);
+		}
+		
+		for (i = 0; i < fragments.length; i++){
+			init_data.fragments.push(fragments[i]);
 		}
 		
 		init_data.players[0] = players['p1'];
@@ -502,16 +514,19 @@ async function user_code(){
 
 //global
 var started = 0;
-var game_tick = 600; // 1s
+var game_tick = 600; //
 var base_speed = 20;
 var stars = [];
 var bases = [];
 var outposts = [];
+var pylons = [];
+var fragments = [];
 var living_spirits = [];
 var spirit_lookup = {};
 var star_lookup = {};
 var base_lookup = {};
 var outpost_lookup = {};
+var pylon_lookup = {};
 var structure_lookup = {};
 var spirits = [];
 var spirits2 = [];
@@ -524,7 +539,9 @@ var death_queue = [];
 var star_zxq;
 var star_a1c;
 var star_p89;
+var star_nua;
 var outpost_mdo;
+var pylon_u3p;
 var base1;
 var base2;
 
@@ -675,7 +692,9 @@ var init_data = {
 	'units': [],
 	'stars': [],
 	'bases': [],
-	'outposts': []
+	'outposts': [],
+	'pylons': [],
+	'fragments': []
 }
 
 var memory1 = {a: 150};
@@ -716,7 +735,8 @@ function jump_danger_zone(loc){
 	 || Math.abs(stars[2].position[0] - loc[0]) < 100 && Math.abs(stars[2].position[1] - loc[1]) < 100
 	 || Math.abs(bases[0].position[0] - loc[0]) < 50 && Math.abs(bases[0].position[1] - loc[1]) < 50
 	 || Math.abs(bases[1].position[0] - loc[0]) < 50 && Math.abs(bases[1].position[1] - loc[1]) < 50
-	 || Math.abs(outposts[0].position[0] - loc[0]) < 50 && Math.abs(outposts[0].position[1] - loc[1]) < 50){
+	 || Math.abs(outposts[0].position[0] - loc[0]) < 50 && Math.abs(outposts[0].position[1] - loc[1]) < 50
+	 || Math.abs(pylons[0].position[0] - loc[0]) < 50 && Math.abs(pylons[0].position[1] - loc[1]) < 50){
 		return true;
 	} else {
 		return false;
@@ -782,8 +802,10 @@ class Sandbox {
 		this.yd.getSync('init', {reference: true}).applySync(this.yd.derefInto(), [player_id], {arguments: {copy: true}});
 	}
 
+
+	//TODO: don't forget to add pylon here (and neutral bases?)
 	async loadData() {
-		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], spirits: rawSpirits, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
+		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], spirits: rawSpirits, fragments: fragments, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), pylons: JSON.parse(JSON.stringify(pylon_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
 	}
 
 	async run() {
@@ -822,7 +844,8 @@ if (!isMainThread){
 			this.sight = {
 				friends: [],
 				enemies: [],
-				structures: []
+				structures: [],
+				fragments: []
 			}
 			this.merged = [];
 			this.qcollisions = [];
@@ -882,6 +905,27 @@ if (!isMainThread){
 		}
 	}
 	
+	class Pylon {
+		constructor(id, position){
+			this.id = id
+			this.position = position;
+			this.size = 20;
+			this.control = '';
+			this.range = 400;
+			this.structure_type = 'pylon';
+			this.energy = 0;
+			this.energy_capacity = 1000;
+			//this.energy = energy;
+			this.collision_radius = 50;
+			
+			this.sight = {
+				friends: []
+			}
+		
+			pylons.push(this);
+		}
+	}
+	
 	class Base {
 		constructor(id, position, player, color, shape){
 			this.shape = shape;
@@ -931,6 +975,10 @@ if (!isMainThread){
 
 	function fast_dist_leq(item1, item2, range){
 		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) <= range**2;
+	}
+	
+	function fast_dist_simp(item1, item2, range){
+		return ((Math.abs(item1[0] - item2[0]) <= range) && (Math.abs(item1[1] - item2[1]) <= range))
 	}
 
 	function norm_sq(coor){
@@ -1061,7 +1109,8 @@ if (!isMainThread){
 				enemies_beamable: [],
 				friends: [],
 				enemies: [],
-				structures: []
+				structures: [],
+			    fragments: []
 		  }
 		  living_spirits[h].qcollisions = [];
 		}
@@ -1077,6 +1126,11 @@ if (!isMainThread){
 		for (let o = 0; o < outposts.length; o++){
   		  	outposts[o].sight = {
   				enemies: []
+		    }
+		}
+		for (let p = 0; p < pylons.length; p++){
+  		  	pylons[p].sight = {
+  				friends: []
 		    }
 		}
 
@@ -1185,6 +1239,57 @@ if (!isMainThread){
 					}
 				}
 			}
+			
+			//pylons
+			for (let p = 0; p < pylons.length; p++){
+				let pylon = pylons[p];
+				let use_range = visible_sq;
+				let dsq = dist_sq(spirit.position, pylon.position);
+				
+				//if (outpost.energy >= 500) use_range = high_range_sq;
+				
+				if (dsq <= use_range){
+					let friend = pylon.control == spirit.player_id;
+					if (friend){
+						pylons[p].sight.friends.push(spirit.id);
+					}else{
+						//pylons[p].sight.enemies.push(spirit.id);
+					}
+
+					if (dsq <= beamable_sq){
+						spirit.sight.structures.push(pylon.id);
+					}
+				}
+			}
+			
+			//fragments
+			for (let f = 0; f < fragments.length; f++){
+				if (is_in_sight(spirit, fragments[f])){
+					spirit.sight.fragments.push(fragments[f]);
+				}
+			}
+			
+			//fragments
+			//for (let f = 0; f < fragments.length; f++){
+			//	let fragment = fragments[f];
+			//	let use_range = visible_sq;
+			//	let dsq = dist_sq(spirit.position, fragment.position)
+			//	
+			//	if (dsq <= use_range){
+			//		let friend = pylon.control == spirit.player_id;
+			//		if (friend){
+			//			pylons[p].sight.friends.push(spirit.id);
+			//		}else{
+			//			//pylons[p].sight.enemies.push(spirit.id);
+			//		}
+            //
+			//		if (dsq <= beamable_sq){
+			//			spirit.sight.fragments.push(fragment);
+			//		}
+			//	}
+			//	
+			//}
+			
 		}
 
 		// histogram, handle sights for all
@@ -1254,7 +1359,8 @@ if (!isMainThread){
 				friends: [],
 				enemies: [],
 				enemies_beamable: [],
-				structures: []
+				structures: [],
+			    fragments: []
 		  }
 		  living_spirits[h].qcollisions = [];
 			
@@ -1317,6 +1423,20 @@ if (!isMainThread){
 			for (o = 0; o < outposts.length; o++){
 				if (is_in_sight(living_spirits[i], outposts[o])){
 					living_spirits[i].sight.structures.push(outposts[o].id);
+				}
+			}
+			
+			//pylons
+			for (p = 0; p < pylons.length; p++){
+				if (is_in_sight(living_spirits[i], pylons[p])){
+					living_spirits[i].sight.structures.push(pylons[p].id);
+				}
+			}
+			
+			//fragments
+			for (f = 0; f < fragments.length; f++){
+				if (is_in_sight(living_spirits[i], fragments[f])){
+					living_spirits[i].sight.fragments.push(fragments[f]);
 				}
 			}
 			
@@ -1490,7 +1610,9 @@ if (!isMainThread){
 	function energize_objects(){
 		let energize_apply = [];
 		let energize_apply_star = [];
+		let energize_apply_fragment = [];
 		let energize_apply_outpost = [];
+		let energize_apply_pylon = [];
 		
 		for(let spirit of Object.values(spirit_lookup)){
 			spirit.last_energized = '';
@@ -1532,15 +1654,50 @@ if (!isMainThread){
 			outpost.energy -= beam_strength;
 			render_data3.e.push([outpost.id, enemy.id, 2 * beam_strength]);
 		}
+		
+		for (let p = 0; p < pylons.length; p++){
+			let pylon = pylons[p];
+			let friends = pylons[p].sight.friends;
+			let friends_damaged = [];
+			if (friends.length == 0 || pylon.control == '')
+				continue;
+			
+			for (let f = 0; f < friends.length; f++){
+				let friend_real = spirit_lookup[friends[f]];
+				if (friend_real.energy < Math.ceil(friend_real.energy_capacity / 2)) friends_damaged.push(friend_real);
+			}
+			
+			let beam_strength = 1;
+			let targets = pylon.energy;
+			if (friends_damaged.length < pylon.energy) targets = friends_damaged.length;
+			
+			//TODO: order friends array by energy from lowest to highest
+			
+			for (let t = 0; t < targets; t++){
+				energize_apply.push([friends_damaged[t], 1 * beam_strength]);
+				pylon.energy -= beam_strength;
+				render_data3.e.push([pylon.id, friends_damaged[t].id, 1 * beam_strength]);
+			}
+			 
+		}
 
 		let last_beam = {};
 		for (let player in all_commands){
 			let queue = all_commands[player].spirit;
 
 			Object.keys(queue).forEach((from_id) => {
-				if(from_id == 'merge') return;
+				let temp_target_id = [];
+				
+				if (from_id == 'merge') return;
+				
+				//if ()
+				
 				const to_id = queue[from_id].energize;
-				if(!to_id) return;
+		
+				if(!to_id){
+					//console.log('thisss happened');
+					return;
+				} 
 				if(!from_id || !player_owns_spirit(from_id, player) || !to_id){
 					console.log("WTF: null or possible hack player " + player + 
 						" calls "  + from_id + ".energize(" + to_id+")");
@@ -1552,12 +1709,40 @@ if (!isMainThread){
 				last_beam[from_id] = to_id;
 				
 				const from_obj = spirit_lookup[from_id] || structure_lookup[from_id];
-				const to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
+				var to_obj;
+				
+				if (Array.isArray(to_id) && to_id.length == 2){
+					console.log('to_id is a position array !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+					to_obj = to_id;
+				} else {
+					to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
+				}
+				
 
-				if(!from_obj || !to_obj || from_obj.hp == 0 || to_obj.hp == 0) return;
+				if(!from_obj || !to_obj || from_obj.hp == 0 || to_obj.hp == 0){
+					console.log('tthis happened');
+					return;
+				}
+				
+				//console.log('from_obj.id = ' + from_obj.id);
+				//console.log('to_obj.id = ' + to_obj.id);
 
-				// harvest star
+				// harvest star or fragment (prioritize fragment)
 				if (from_id == to_id){
+					
+					let is_harving = 0;
+					
+					for (let f = 0; f < from_obj.sight.fragments.length; f++){
+						let fragment = from_obj.sight.fragments[f];
+						let fragment_close = fast_dist_leq(from_obj.position, fragment.position, min_beam);
+						
+						from_obj.last_energized = to_id;
+						energize_apply_fragment.push([from_obj, energy_value * from_obj.size, fragment]);
+						is_harving = 1;
+					}
+					
+					if (is_harving == 1) return;
+					
 					for (let j = 0; j < from_obj.sight.structures.length; j++){
 						//console.log('ilook here');
 						let struc_name = from_obj.sight.structures[j];
@@ -1585,10 +1770,18 @@ if (!isMainThread){
 					// no need to check other cases (outpost, friend, ...)
 					return;
 				}
+				
+				//console.log('to_obj is ' + to_obj);
+				
+				let to_check = to_obj.position;
+				if (Array.isArray(to_obj)) to_check = to_obj;
 
-				let target_close = fast_dist_leq(from_obj.position, to_obj.position, min_beam);
-				if(! target_close)
+				let target_close = fast_dist_leq(from_obj.position, to_check, min_beam);
+				if(! target_close){
+					//console.log('target not close enough');
 					return;
+				}
+					
 
 				let beam_strength = Math.min(energy_value * from_obj.size, from_obj.energy);
 				if(beam_strength <= 0)
@@ -1598,15 +1791,14 @@ if (!isMainThread){
 
 				let friendly_beam = from_obj.player_id == to_obj.player_id;
 				let is_star = (to_obj.structure_type != undefined && to_obj.structure_type == 'star');
+				let is_fragment = Array.isArray(to_id);
 				
-				// name prefix - safe (is outpost)
-				if (to_obj.id.startsWith('outpost') && outpost_lookup[to_id]){
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
-					render_data3.e.push([from_id, to_id, beam_strength]);
-				} 
-				else if (!friendly_beam){
+				if (!friendly_beam){
 					if (is_star){
+						energize_apply.push([from_obj, -beam_strength]);
+						energize_apply.push([to_obj, beam_strength]);
+						render_data3.e.push([from_id, to_id, beam_strength]);
+					} else if (is_fragment){
 						energize_apply.push([from_obj, -beam_strength]);
 						energize_apply.push([to_obj, beam_strength]);
 						render_data3.e.push([from_id, to_id, beam_strength]);
@@ -1615,6 +1807,18 @@ if (!isMainThread){
 						energize_apply.push([to_obj, -2 * beam_strength]);
 						render_data3.e.push([from_id, to_id, 2 * beam_strength]);
 					}
+				}
+				// name prefix - safe (is outpost)
+				else if (to_obj.id.startsWith('outpost') && outpost_lookup[to_id]){
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
+					render_data3.e.push([from_id, to_id, beam_strength]);
+				} 
+				// name prefix - safe (is pylon)
+				else if (to_obj.id.startsWith('pylon') && pylon_lookup[to_id]){
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply_pylon.push([from_obj, beam_strength, to_obj]);
+					render_data3.e.push([from_id, to_id, beam_strength]);
 				}
 				else {
 					//else: target is friend
@@ -1653,13 +1857,38 @@ if (!isMainThread){
 		// apply energize call
 		for (let i = energize_apply.length - 1; i >= 0; i--){
 			let target = energize_apply[i][0];
+			let is_fragment = (Array.isArray(target) && target.length == 2);
 			let amount = energize_apply[i][1];
-			target.energy += amount;
+			
+			if (is_fragment){
+				console.log('energizing fragmentTTTTTT!!!!!!!!!!');
+				let new_frag = 1;
+				let frag_target = {
+					'position': target,
+					'energy': 0
+				};
+				for (let f = 0; f < fragments.length; f++){
+					if (fast_dist_simp(target, fragments[f].position, 10)){
+						frag_target = fragments[f];
+						new_frag = 0;
+						break;
+					}
+				}
+				
+				frag_target.energy += amount;
+				
+				if (new_frag) fragments.push(frag_target);
+				
+			} else {
+				target.energy += amount;
 
-			if(!applied_to[target.id]){
-				applied_to[target.id] = true;
-				check.push(target);
+				if(!applied_to[target.id]){
+					applied_to[target.id] = true;
+					check.push(target);
+				}
 			}
+			
+			
 		}
 
 		// TODO Vilem check - presunul jsem tezbu PRED energize apply vyhodnoceni / death queue, aby
@@ -1673,6 +1902,31 @@ if (!isMainThread){
 		shuffle_array(energize_apply_star);
 
 		// apply harvest
+		// harvest fragment
+		for (let i = energize_apply_fragment.length - 1; i >= 0; i--){
+			let spirit = energize_apply_fragment[i][0];
+			let amount = energize_apply_fragment[i][1];
+			let fragment = energize_apply_fragment[i][2];
+
+			let can_harvest = Math.min(amount, fragment.energy);
+			if (can_harvest <= 0) continue;
+
+			// 
+			
+			let to_full_capacity = Math.max(0, spirit.energy_capacity - spirit.energy);
+			let actually_harvested = Math.min(can_harvest, to_full_capacity);
+
+			spirit.energy += actually_harvested;
+			fragment.energy -= actually_harvested;
+			render_data3.e.push([fragment.position, spirit.id, actually_harvested]);
+
+			if(!applied_to[spirit.id]){
+				applied_to[spirit.id] = true;
+				check.push(spirit);
+			}
+		}
+		
+		// harvest star
 		for (let i = energize_apply_star.length - 1; i >= 0; i--){
 			let spirit = energize_apply_star[i][0];
 			let amount = energize_apply_star[i][1];
@@ -1738,28 +1992,28 @@ if (!isMainThread){
 			let amount = energize_apply_outpost[i][1];
 			let outpost = energize_apply_outpost[i][2];
 
-			if(spirit.player_id == players['p1']){
-				if(incoming_p1[outpost.id] == undefined)
+			if (spirit.player_id == players['p1']){
+				if (incoming_p1[outpost.id] == undefined)
 					incoming_p1[outpost.id] = 0;
 				incoming_p1[outpost.id] += amount;
 			} else {
-				if(incoming_p2[outpost.id] == undefined)
+				if (incoming_p2[outpost.id] == undefined)
 					incoming_p2[outpost.id] = 0;
 				incoming_p2[outpost.id] += amount;
 			}
 		}
 		
-		for(let i = 0 ; i < outposts.length; i++){
+		for (let i = 0; i < outposts.length; i++){
 			let outpost = outposts[i];
 
 			let from_p1 = incoming_p1[outpost.id] || 0;
 			let from_p2 = incoming_p2[outpost.id] || 0;
 
-			if(outpost.control == ''){
+			if (outpost.control == ''){
 				// the case where from_p1 == from_p2 will have 0 energy and control '' set below
 				outpost.control = (from_p1 > from_p2) ? players['p1'] : players['p2'];
 				outpost.energy = Math.abs(from_p1 - from_p2);
-			} else{
+			} else {
 				let from_me = (outpost.control == players['p1']) ? from_p1 : from_p2;
 				let from_enemy = (outpost.control == players['p1']) ? from_p2 : from_p1;
 
@@ -1767,10 +2021,54 @@ if (!isMainThread){
 				outpost.energy -= 2 * from_enemy;
 			}
 
-			if(outpost.energy <= 0)
+			if (outpost.energy <= 0)
 				outpost.control = '';
 			outpost.energy = Math.max(0, Math.min(outpost.energy, outpost.energy_capacity));
 			outpost.range = outpost.energy <= 500 ? 400 : 600;
+		}
+		
+		//-- same for pylon
+		
+		for (let i = energize_apply_pylon.length - 1; i >= 0; i--){
+			let spirit = energize_apply_pylon[i][0];
+			let amount = energize_apply_pylon[i][1];
+			let pylon = energize_apply_pylon[i][2];
+        
+			if (spirit.player_id == players['p1']){
+				if(incoming_p1[pylon.id] == undefined)
+					incoming_p1[pylon.id] = 0;
+				incoming_p1[pylon.id] += amount;
+				//console.log('incoming amount 1 = ' + incoming_p1[pylon.id]);
+			} else {
+				if(incoming_p2[pylon.id] == undefined)
+					incoming_p2[pylon.id] = 0;
+				incoming_p2[pylon.id] += amount;
+				//console.log('incoming amount 2 = ' + incoming_p2[pylon.id]);
+			}
+		}
+		
+		for (let i = 0; i < pylons.length; i++){
+			let pylon = pylons[i];
+        
+			let from_p1_pylon = incoming_p1[pylon.id] || 0;
+			let from_p2_pylon = incoming_p2[pylon.id] || 0;
+        
+			if(pylon.control == ''){
+				// the case where from_p1 == from_p2 will have 0 energy and control '' set below
+				pylon.control = (from_p1_pylon > from_p2_pylon) ? players['p1'] : players['p2'];
+				pylon.energy = Math.abs(from_p1_pylon - from_p2_pylon);
+			} else{
+				let from_me_pylon = (pylon.control == players['p1']) ? from_p1_pylon : from_p2_pylon;
+				let from_enemy_pylon = (pylon.control == players['p1']) ? from_p2_pylon : from_p1_pylon;
+        
+				pylon.energy += from_me_pylon;
+				pylon.energy -= 2 * from_enemy_pylon;
+			}
+        
+			if(pylon.energy <= 0)
+				pylon.control = '';
+			pylon.energy = Math.max(0, Math.min(pylon.energy, pylon.energy_capacity));
+			//pylon.range = pylon.energy <= 500 ? 400 : 600;
 		}
 	}
 
@@ -1786,9 +2084,9 @@ if (!isMainThread){
 			} else {
 				if (p1_defend != 1){
 					top_s++;
-					global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [1580, 640], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+					global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [-690, -520], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 					base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
-					//global[players['p1'] + top_s].move([1600, 660]);
+					//global[players['p1'] + top_s].move([-710, -540]);
 					//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 					if (workerData[1] == 'tutorial')
 						progress_tut(5, true);
@@ -1798,9 +2096,9 @@ if (!isMainThread){
 		if (base_lookup['base_' + players['p2']].energy >= base_lookup['base_' + players['p2']].current_spirit_cost){
 			if (p2_defend != 1){
 				top_q++;
-				global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [2620, 1760], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [520, 690], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
-				//global[players['p2'] + top_q].move([2800, 1760]);
+				//global[players['p2'] + top_q].move([540, 710]);
 				//console.log(top_q);
 			}
 		}
@@ -1874,6 +2172,12 @@ if (!isMainThread){
 
 			render_data3.st[i] = stars[i].energy;
 		}
+		
+		//fragments update
+		for (let f = fragments.length - 1; f >= 0; f--){
+			if (fragments[f].energy <= 0) fragments.splice(f, 1);
+		}
+		
 	
 		//objects death & vm sandbox objects update
 		for (let i = death_queue.length - 1; i >= 0; i--){
@@ -1883,7 +2187,8 @@ if (!isMainThread){
 					progress_tut(8, true);
 			}
 			
-			death_queue[i].hp = 0;
+//			if (!death_queue[i].structure_type == 'outpost') 
+				death_queue[i].hp = 0;
 			//console.log(death_queue[i]);
 			//render_data2.death.push(death_queue[i].id);
 			
@@ -2128,6 +2433,8 @@ if (!isMainThread){
 				'b2': [],
 				'st': [],
 				'ou': [],
+				'py': [],
+				'ef': [],
 				'e': [],
 				's': [],
 				'end': end_winner
@@ -2144,6 +2451,8 @@ if (!isMainThread){
 					'b2': [],
 					'st': [],
 					'ou': [],
+					'py': [],
+					'ef': [],
 					'e': [],
 					's': [],
 					'tutorial': [],
@@ -2180,6 +2489,8 @@ if (!isMainThread){
 					'b2': [],
 					'st': [],
 					'ou': [],
+					'py': [],
+					'ef': [],
 					'e': [],
 					's': [],
 					'end': end_winner
@@ -2210,6 +2521,11 @@ if (!isMainThread){
 			render_data3.b2 = [bases[1].energy, bases[1].current_spirit_cost, p2_defend, bases[1].hp];
 			
 			render_data3.ou = [outposts[0].energy, outposts[0].control];
+			render_data3.py = [pylons[0].energy, pylons[0].control];
+			
+			for (let f = 0; f < fragments.length; f++){
+				render_data3.ef.push([fragments[f].position, fragments[f].energy]);
+			}
 		
 			//broadcast to clients
 			//console.log(JSON.stringify(render_data2))
@@ -2246,6 +2562,7 @@ if (!isMainThread){
 
 			if (workerData[1] != 'tutorial'){
 				game_file.push(render_data3);
+				//console.log(render_data3);
 			}
 
 			log1 = [];
@@ -2307,11 +2624,11 @@ if (!isMainThread){
 
 		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
 			if (s > 6){
-				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1230+s*20,620], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [-620-s*20,-600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1340+s*20,600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [-750-s*20,-580], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 				spirits.push(global[players['p1'] + s]);
 				top_s = s;
 			}
@@ -2320,11 +2637,11 @@ if (!isMainThread){
 
 		for (q = 1; q < 1+start_num_spirits-start_num_adjust2; q++){
 			if (q > 6){
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2970-q*20,1780], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [450+q*20,770], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2860-q*20,1800], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [580+q*20,750], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 				spirits2.push(global[players['p2'] + q]);
 				top_q = q;
 			}
@@ -2335,29 +2652,37 @@ if (!isMainThread){
 		// -- //
 	
 	
-		global['base_' + players['p1']] = new Base('base_' + players['p1'], [1600, 700], players['p1'], colors['player1'], shapes['player1']);
-		global['base_' + players['p2']] = new Base('base_' + players['p2'], [2600, 1700], players['p2'], colors['player2'], shapes['player2']);
+		global['base_' + players['p1']] = new Base('base_' + players['p1'], [-650, -480], players['p1'], colors['player1'], shapes['player1']);
+		global['base_' + players['p2']] = new Base('base_' + players['p2'], [480, 650], players['p2'], colors['player2'], shapes['player2']);
 
 	
 		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 	
-		star_zxq = new Star('star_zxq', [1000, 1000], 100, 220, 0);
+		star_zxq = new Star('star_zxq', [-1200, -340], 100, 100, 0);
 		star_lookup['star_zxq'] = star_zxq;
 	
-		star_a1c = new Star('star_a1c', [3200, 1400], 100, 220, 0);
+		star_a1c = new Star('star_a1c', [340, 1200], 100, 100, 0);
 		star_lookup['star_a1c'] = star_a1c;
 		
-		star_p89 = new Star('star_p89', [2000, 1300], 0, 80, 100);
+		star_p89 = new Star('star_p89', [-520, 520], 0, 100, 100);
 		star_lookup['star_p89'] = star_p89;
 		
-		outpost_mdo = new Outpost('outpost_mdo', [2200, 1100])
+		star_nua = new Star('star_nua', [420, -420], 0, 300, 0);
+		star_lookup['star_nua'] = star_nua;
+		
+		outpost_mdo = new Outpost('outpost_mdo', [-210, 210]);
 		outpost_lookup['outpost_mdo'] = outpost_mdo;
+		
+		pylon_u3p = new Pylon('pylon_u3p', [278, -278]);
+		pylon_lookup['pylon_u3p'] = pylon_u3p;
 
 		structure_lookup['outpost_mdo'] = outpost_mdo;
+		structure_lookup['pylon_u3p'] = pylon_u3p;
 		structure_lookup['star_zxq'] = star_zxq;
 		structure_lookup['star_a1c'] = star_a1c;
 		structure_lookup['star_p89'] = star_p89;
+		structure_lookup['star_nua'] = star_nua;
 		structure_lookup['base_' + players['p1']] = global['base_' + players['p1']];
 		structure_lookup['base_' + players['p2']] = global['base_' + players['p2']];
 	

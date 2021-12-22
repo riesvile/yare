@@ -1,7 +1,3 @@
-
-
-
-
 //Hello
 
 
@@ -41,7 +37,7 @@ function offsetUpdate(){
 	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
 	//c.fillStyle = 'rgba(6,8,100,0.1)';
-	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
+	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
 	
 	//c.setTransform(1, 0, 0, 1, 0, 0);
@@ -54,6 +50,8 @@ function offsetUpdate(){
 	//	spirit_lookup[living_spirits[i].id].draw();
 	//}
 	
+	draw_bg_grad();
+	
 	world_stars = stars.length;
 	for (i = 0; i < world_stars; i++){
 		star_lookup[stars[i].id].draw();
@@ -64,7 +62,7 @@ function offsetUpdate(){
 	//	base_lookup[bases[i].id].draw();
 	//}
 	
-	draw_grid();
+	//draw_grid();
 	
 }
 
@@ -81,6 +79,7 @@ function zoomUpdate(){
 	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
 	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
+	//draw_bg_grad();
 	//world_spirits = living_spirits.length;
 	//for (i = 0; i < world_spirits; i++){
 	//	spirit_lookup[living_spirits[i].id].draw();
@@ -96,8 +95,76 @@ function zoomUpdate(){
 	//	base_lookup[bases[i].id].draw();
 	//}
 	
-	draw_grid();
+	//draw_grid();
 	
+}
+
+function rgb_to_hsl(r,g,b) {
+  // Make r, g, and b fractions of 1
+  r /= 255;
+  g /= 255;
+  b /= 255;
+
+  // Find greatest and smallest channel values
+  let cmin = Math.min(r,g,b),
+      cmax = Math.max(r,g,b),
+      delta = cmax - cmin,
+      h = 0,
+      s = 0,
+      l = 0;
+
+  // Calculate hue
+  // No difference
+  if (delta == 0)
+    h = 0;
+  // Red is max
+  else if (cmax == r)
+    h = ((g - b) / delta) % 6;
+  // Green is max
+  else if (cmax == g)
+    h = (b - r) / delta + 2;
+  // Blue is max
+  else
+    h = (r - g) / delta + 4;
+
+  h = Math.round(h * 60);
+    
+  // Make negative hues positive behind 360°
+  if (h < 0)
+      h += 360;
+
+  // Calculate lightness
+  l = (cmax + cmin) / 2;
+
+  // Calculate saturation
+  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+    
+  // Multiply l and s by 100
+  s = +(s * 100).toFixed(1);
+  l = +(l * 100).toFixed(1);
+
+  return [h, s, l];
+}
+
+function draw_bg_grad(){
+	
+	
+	
+	
+	//let corner1_parts
+	//console.log(corner1_parts);
+	
+	var grdddd = c.createLinearGradient(-650, -480, 480, 650);
+	//grdddd.addColorStop(0, "hsla(0, 50%, 20%, 1)");
+	//grdddd.addColorStop(1, "hsla(50, 50%, 40%, 1)");
+	
+	grdddd.addColorStop(0, "hsla(" + corner1_parts_hsl[0] + "," + corner1_parts_hsl[1] + "% ," + 4 + "% ," + (corner1_parts[3] - 0.2) + ")");
+	grdddd.addColorStop(1, "hsla(" + corner2_parts_hsl[0] + "," + corner2_parts_hsl[1] + "% ," + 4 + "% ," + (corner2_parts[3] - 0.2) + ")");
+	
+
+	c.fillStyle = grdddd;
+	//c.fillRect(-2000, -2000, 2000, 2000);
+	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 }
 
 
@@ -326,6 +393,12 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 				hover_content.push(['outpost', outposts[o].control, outposts[o].energy]);
 			}
 		}
+		
+		for (p = 0; p < pylons.length; p++){
+			if (Math.abs(pylons[p].position[0] - board_xx) <= 50 && Math.abs(pylons[p].position[1] - board_yy) <= 50){
+				hover_content.push(['pylon', pylons[p].control, pylons[p].energy]);
+			}
+		}
 	
 	
 		if (hover_content.length == 0){
@@ -348,8 +421,13 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
 				hoveroid.style.left = xx - 20 + 'px';
 			} else if (hover_content[0][0] == 'outpost'){
-				hoveroid.innerHTML = "<span class='outpost_control'>outpost_mdo <span class='lowlight'> · " + hover_content[0][1] + "</span></span>";
+				hoveroid.innerHTML = "<span class='outpost_control'>outpost_mdo <span class='lowlight'> " + hover_content[0][1] + "</span></span>";
 				hoveroid.innerHTML += "<span class='outpost_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
+				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+				hoveroid.style.left = xx - 20 + 'px';
+			} else if (hover_content[0][0] == 'pylon'){
+				hoveroid.innerHTML = "<span class='pylon_control'>pylon_u3p <span class='lowlight'> " + hover_content[0][1] + "</span></span>";
+				hoveroid.innerHTML += "<span class='pylon_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
 				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
 				hoveroid.style.left = xx - 20 + 'px';
 			}
@@ -463,6 +541,7 @@ var panel_el_widtho = 0;
 
 
 
+
 //var canvasTouch = document.getElementById("base_canvas");
 //canvasTouch.addEventListener("ontouchstart")
 
@@ -541,6 +620,8 @@ base_canvas.height = innerHeight;
 c.scale (1, 1);
 c_base.scale (1, 1);
 
+//c.globalCompositeOperation = 'screen';
+
 base_canvas.onwheel = zoom;
 //c.translate(800, 900);
 
@@ -558,10 +639,13 @@ var living_spirits = [];
 var stars = [];
 var bases = [];
 var outposts = [];
+var pylons = [];
+var fragments = [];
 var spirit_lookup = {};
 var star_lookup = {};
 var base_lookup = {};
 var outpost_lookup = {};
+var pylon_lookup = {};
 
 var player1_color;
 var player2_color;
@@ -570,6 +654,11 @@ var colors = {};
 var shapes = {};
 colors['color1'] = 'rgba(128,140,255,1)';
 colors['color2'] = 'rgba(232,97,97,1)';
+
+var corner1_parts = colors['color1'].match(/[.?\d]+/g);
+var corner2_parts = colors['color2'].match(/[.?\d]+/g);
+var corner1_parts_hsl = [0, '100', '50'];
+var corner2_parts_hsl = [10, '100', '20'];
 
 var shouting = {};
 var shouting_helper = {};
@@ -773,12 +862,17 @@ function draw_grid(){
 
 function resolve_energy_point(energy_point){
 	//console.log(energy_point);
-	if (energy_point.startsWith('base')){
+	if (Array.isArray(energy_point)){
+		//console.log('energy_point is array');
+		return energy_point;
+	} else if (energy_point.startsWith('base')){
 		return base_lookup[energy_point];
 	} else if (energy_point.startsWith('star')){
 		return star_lookup[energy_point];
 	} else if (energy_point.startsWith('outpost')){
 		return outpost_lookup[energy_point];
+	} else if (energy_point.startsWith('pylon')){
+		return pylon_lookup[energy_point];
 	} else {
 		return spirit_lookup[energy_point];
 	}
@@ -1208,7 +1302,7 @@ class Star {
 		
 		c_base.beginPath();
 		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(255, 255, 255, 0.2)";
+		c_base.fillStyle = "rgba(255, 255, 255, " + (this.size / 100) + 0.1 + ")";
 		//c_base.fill();
 		
 		//c_base.beginPath();
@@ -1216,24 +1310,28 @@ class Star {
 		//c_base.fillStyle = "rgba(248, 247, 255, 1)";
 		//c_base.fill();
 		
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 200 + this.size, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(54, 195, 255, " + this.size / 10000 +")";
-		c_base.fill();
+		//c_base.beginPath();
+		//c_base.arc(this.position[0], this.position[1], 200 + this.size, 0, Math.PI * 2, false);
+		//c_base.fillStyle = "rgba(54, 195, 255, " + this.size / 10000 +")";
+		//c_base.fill();
 		
 		c_base.save();
 		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 5 + this.size, 0, Math.PI * 2, false);
+		c_base.arc(this.position[0], this.position[1], 6 + this.size, 0, Math.PI * 2, false);
 		c_base.clip();
 		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 15 + this.size, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(254, 15, 25, 0.2)";
+		c_base.arc(this.position[0], this.position[1], 14 + this.size, 0, Math.PI * 2, false);
+		c_base.fillStyle = "rgba(254, 15, 25, " + (this.size / 100) + 0.1 + ")";
 		//c_base.fill();
 		c_base.strokeStyle = 'rgba(255,255,255,1)';
-		c_base.shadowColor='rgba(205, 240, 250, ' + this.size / 275 + ')';
-		c_base.shadowBlur= this.size / 2;
-		c_base.lineWidth = 10;
+		c_base.shadowColor='rgba(225, 250, 255, ' + this.size / 175 + ')';
+		c_base.shadowBlur= this.size / ((4 + (this.size / 130)) * (multiplier / 2.5));
+		c_base.lineWidth = 8;
 		c_base.stroke();
+		//c_base.stroke();
+		
+		
+		
 		c_base.shadowColor=null;
 		c_base.shadowBlur = null;
 		c_base.restore();
@@ -1241,6 +1339,77 @@ class Star {
 		
 		var teX = this.position[0];
 		var teY = this.position[1];
+		
+		//console.log(multiplier)
+		
+	}
+	
+	
+	draw_energy() {
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], 1 + this.energy / 100, 0, Math.PI * 2, false);
+		c.fillStyle = "rgba(248, 247, 255, 1)";
+		c.fill();
+	}
+	
+	
+	update_resource(new_energy){
+		this.energy = new_energy;
+	}
+	
+	
+}
+
+class Fragment {
+	constructor(position, energy){
+		this.position = position;
+		this.energy = energy;
+		fragments.push(this);
+	}
+	
+	draw() {
+		
+		c_base.beginPath();
+		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
+		c_base.fillStyle = "rgba(255, 255, 255, " + (this.size / 100) + 0.1 + ")";
+		//c_base.fill();
+		
+		//c_base.beginPath();
+		//c_base.arc(this.position[0], this.position[1], 5, 0, Math.PI * 2, false);
+		//c_base.fillStyle = "rgba(248, 247, 255, 1)";
+		//c_base.fill();
+		
+		//c_base.beginPath();
+		//c_base.arc(this.position[0], this.position[1], 200 + this.size, 0, Math.PI * 2, false);
+		//c_base.fillStyle = "rgba(54, 195, 255, " + this.size / 10000 +")";
+		//c_base.fill();
+		
+		//c_base.save();
+		//c_base.beginPath();
+		//c_base.arc(this.position[0], this.position[1], 6 + this.size, 0, Math.PI * 2, false);
+		//c_base.clip();
+		//c_base.beginPath();
+		//c_base.arc(this.position[0], this.position[1], 14 + this.size, 0, Math.PI * 2, false);
+		//c_base.fillStyle = "rgba(254, 15, 25, " + (this.size / 100) + 0.1 + ")";
+		////c_base.fill();
+		//c_base.strokeStyle = 'rgba(255,255,255,1)';
+		//c_base.shadowColor='rgba(225, 250, 255, ' + this.size / 175 + ')';
+		//c_base.shadowBlur= this.size / ((4 + (this.size / 130)) * (multiplier / 2.5));
+		//c_base.lineWidth = 8;
+		//c_base.stroke();
+		////c_base.stroke();
+		//
+		//
+		//
+		//c_base.shadowColor=null;
+		//c_base.shadowBlur = null;
+		//c_base.restore();
+		//
+		//
+		//var teX = this.position[0];
+		//var teY = this.position[1];
+		
+		//console.log(multiplier)
 		
 	}
 	
@@ -1282,7 +1451,7 @@ class Base {
 		this.shape = shape;
 		this.id = id
 		this.position = position;
-		this.size = 20;
+		this.size = 25;
 		this.structure_type = 'base';
 		this.energy = energy;
 		
@@ -1292,6 +1461,8 @@ class Base {
 		if (this.shape == 'triangles') this.energy_capacity = 600;
 		this.player_id = player;
 		this.color = color;
+		this.color_parts = color.match(/[.?\d]+/g);
+		this.color_hsl = rgb_to_hsl(this.color_parts[0], this.color_parts[1], this.color_parts[2]);
 		this.current_spirit_cost = 100;
 		
 		
@@ -1305,70 +1476,90 @@ class Base {
 	draw() {
 		var color_parts = this.color.match(/[.?\d]+/g);
 		var production_percent = this.energy / this.current_spirit_cost;
+		var true_ratio = production_percent;
+		if (production_percent > 1) production_percent = 1;
 		if (this.energy <= 0) this.energy = 0.1;
 		
 		if (this.shape == 'circles'){
-			//inner circle
-			if (this.def_status == 1){
-				c.beginPath();
-				c.setLineDash([2, 4]);
-			}
+			
+			//base bg
 			c.beginPath();
-			c.arc(this.position[0], this.position[1], this.size, Math.PI * 0, Math.PI * 2, false);
+			c.arc(this.position[0], this.position[1], 50, 0, Math.PI * 2, false);
 			c.closePath();
-			if (this.shape == 'squares'){
-				c.lineWidth = mapValues(this.def_status, 2, 5, 9, 5);
-			} else {
-				c.lineWidth = mapValues(this.def_status, 0, 1, 4, (this.hp * 2));
-			}
+			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
+			c.fill();
+			
+			//inner base
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
+			c.closePath();
 			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
+			c.lineWidth = 10;
 			c.stroke();
 			c.setLineDash([]);
-		
-			//outer circle
-			var shield = (this.energy / this.energy_capacity);
-			if (shield < 0) shield = 0;
+			
+			//defense ring
 			c.beginPath();
-			c.arc(this.position[0], this.position[1], (this.size + 10), 0, Math.PI * 2, false);
-			c.lineWidth = mapValues(this.def_status, 0, 1, 2, 14 * shield);
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.49 + ')';
+			c.arc(this.position[0], this.position[1], this.size + 20, 0, Math.PI * 2, false);
+			c.closePath();
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 1) + ')';
+			c.lineWidth = this.hp + (this.energy / 100);
+			c.setLineDash([2, 4]);
 			c.stroke();
-		
-			//production %
-			var r_start_angle = -90 / 360 * 2 * Math.PI; 
-			var r_end_angle = ((360 * production_percent - 90) / 360) * 2 * Math.PI; 
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], (this.size + 10), r_start_angle, r_end_angle, false);
-			c.lineWidth = c.lineWidth = mapValues(this.def_status, 0, 1, 2, 0.1);;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.69 + ')';
-			c.stroke();
+			c.setLineDash([]);
+			
+			let stroke_width = 10 * production_percent;
+			let stroke_offset = stroke_width / 2;
+			if (stroke_width < 1){
+				stroke_width = 0;
+				stroke_offset = 0;
+			}
+			
+			if (stroke_width > 1){
+				c.beginPath();
+				c.arc(this.position[0], this.position[1], (this.size - 5 + stroke_offset), Math.PI * 0, Math.PI * 2, false);
+				c.lineWidth = stroke_width;
+				c.strokeStyle = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
+				c.stroke();
+			}
+			
+			
 		} else if (this.shape == 'squares'){
-			//inner square
-			c.lineWidth = 4;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.89 + ')';
-			c.strokeRect((this.position[0] - this.size / 2), (this.position[1] - this.size / 2), this.size, this.size);
 			
-			//outer square
-			var outer_width = this.size + 20;
-			c.lineWidth = 4;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.16 + ')';
-			c.strokeRect((this.position[0] - outer_width / 2), (this.position[1] - outer_width / 2), outer_width, outer_width);
+			//base bg
+			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
+			c.fillRect((this.position[0] - 45), (this.position[1] - 45), this.size + 65, this.size + 65);
 			
-			//top
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(production_percent, 0, 0.25, 0, 1) + ')';
-			c.fillRect((this.position[0] - outer_width / 2 + 2), (this.position[1] - outer_width / 2 - 2), outer_width, 4);
 			
-			//bottom
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(production_percent, 0.5, 0.75, 0, 1) + ')';
-			c.fillRect((this.position[0] - outer_width / 2 - 2), (this.position[1] + outer_width / 2 - 2), outer_width, 4);
+			//inner base
+			c.lineWidth = 8;
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
+			c.strokeRect((this.position[0] - 4 - (this.size / 2)), (this.position[1] - 4 - (this.size / 2)), this.size + 8, this.size + 8);
 			
-			//right
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(production_percent, 0.25, 0.5, 0, 1) + ')';
-			c.fillRect((this.position[0] + outer_width / 2 - 2), (this.position[1] - outer_width / 2 + 2), 4, outer_width);
+			//defense ring
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 1) + ')';
+			c.lineWidth = this.hp + (this.energy / 100);
+			c.setLineDash([2, 4]);
+			c.strokeRect((this.position[0] - 35), (this.position[1] - 35), this.size + 45, this.size + 45);
+			c.setLineDash([]);
 			
-			//left
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(production_percent, 0.75, 1, 0, 1) + ')';
-			c.fillRect((this.position[0] - outer_width / 2 - 2), (this.position[1] - outer_width / 2 - 2), 4, outer_width);
+			
+			let stroke_width = 8 * production_percent;
+			let stroke_offset = stroke_width / 2;
+			if (stroke_width < 1){
+				stroke_width = 0;
+				stroke_offset = 0;
+			}
+			
+			if (stroke_width > 1){
+				c.beginPath();
+				c.arc(this.position[0], this.position[1], (this.size - 5 + stroke_offset), Math.PI * 0, Math.PI * 2, false);
+				c.lineWidth = stroke_width;
+				c.strokeStyle = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
+				c.strokeRect((this.position[0] - stroke_offset - (this.size / 2)), (this.position[1] - stroke_offset - (this.size / 2)), this.size + (stroke_offset * 2), this.size + (stroke_offset * 2));
+			}
+			
+			
 		} else if (this.shape == 'triangles'){
 			let current_color = this.color;
 			let L = 60;
@@ -1378,10 +1569,17 @@ class Base {
 
 		  let R = (L *.5) / Math.cos(Math.PI/6);
 		  
-		  c.beginPath();
-		  c.arc(this.position[0], this.position[1], this.size, Math.PI * 0, Math.PI * 3, false);
-		  c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.86 + ')';
+		  //c.beginPath();
+		  //c.arc(this.position[0], this.position[1], this.size, Math.PI * 0, Math.PI * 3, false);
+		  //c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.86 + ')';
 		  //c.stroke();
+		  
+		  //base bg
+		  //c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
+		  //c.fillRect((this.position[0] - 45), (this.position[1] - 45), this.size + 65, this.size + 65);
+		  
+		  let tri_base_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
+		  draw_polygon(this.position[0],this.position[1],3,40,40,tri_base_color,0,0)
 		  
 		  
 		  //let triangle = get_triangle(this.position[0], this.position[1], 20);
@@ -1396,7 +1594,26 @@ class Base {
 		  //	  inc_angle = incoming.t;
 		  //}
 		  
-		  draw_polygon(this.position[0],this.position[1],3,30,4,current_color,0,inc_angle)
+		  let basic_base_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
+		  draw_polygon(this.position[0],this.position[1],3,26,8,basic_base_color,0,inc_angle)
+		  
+		  
+		  //defense ring
+		  let tri_defense_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 0.5) + ')';
+		  let defense_thickness = this.hp + (this.energy / 100);
+		  let defense_overthick = 0;
+		  if (defense_thickness > 4){
+			  defense_overthick = defense_thickness - 4;
+			  defense_thickness = 4;
+		  } 
+			  
+		  draw_polygon(this.position[0],this.position[1],3,50,defense_thickness,tri_defense_color,0,inc_angle)
+		  
+		  if (defense_overthick > 0){
+		  	draw_polygon(this.position[0],this.position[1],3,64,defense_overthick,tri_defense_color,0,inc_angle)
+		  }
+		  
+		  
 		  
 		  //c.beginPath();
 		  //c.moveTo(this.base_points[0], this.base_points[1]);
@@ -1411,9 +1628,23 @@ class Base {
 		  
 		  //console.log(incoming.t);
 		  
-		  let progress_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * production_percent + ')';
+		  //let progress_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * production_percent + ')';
 		  
-		  draw_polygon(this.position[0],this.position[1],3,15,2,progress_color,0,inc_angle + 60)
+		  //draw_polygon(this.position[0],this.position[1],3,15,2,progress_color,0,inc_angle + 60)
+		  
+		  let progress_color = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
+		  
+		  let stroke_width = 8 * production_percent;
+		  let stroke_offset = stroke_width / 2;
+		  if (stroke_width < 1){
+		  	stroke_width = 0;
+		  	stroke_offset = 0;
+		  }
+		  
+		  if (stroke_width > 1){
+			draw_polygon(this.position[0],this.position[1],3,22 + stroke_offset,stroke_width,progress_color,0,inc_angle)
+		  }
+		  
 		  
 		  
 		}
@@ -1422,14 +1653,29 @@ class Base {
 	}
 	
 	charge(prev_energy, new_energy){
-		if (prev_energy > new_energy && (prev_energy - new_energy) > (this.current_spirit_cost/1.5)){
-			this.energy = new_energy * (total_time / game_tick);
-		} else if (prev_energy >= new_energy){
-			this.energy = new_energy;
-		} else if (prev_energy < new_energy){
+		
+		let elapso = (total_time / game_tick)
+		
+		
+		if (new_energy < prev_energy){
+			//this.energy = prev_energy;
+			elapso = ((total_time * 4) / game_tick);
+			if (elapso > 1) elapso = 1;
+			this.energy = prev_energy + ((new_energy - prev_energy) * elapso);
+		} else {
 			this.energy = prev_energy;
-			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / game_tick));
-		} 
+			this.energy = prev_energy + ((new_energy - prev_energy) * elapso);
+		}
+		
+		
+		//if (prev_energy > new_energy && (prev_energy - new_energy) > (this.current_spirit_cost/1.5)){
+		//	this.energy = new_energy * (total_time / game_tick);
+		//} else if (prev_energy >= new_energy){
+		//	this.energy = new_energy;
+		//} else if (prev_energy < new_energy){
+		//	this.energy = prev_energy;
+		//	this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / game_tick));
+		//} 
 	}
 	
 	defend(new_status){
@@ -1497,7 +1743,7 @@ class Outpost {
 		
 		
 		
-		var energy_ratio = Math.round(this.energy / (this.energy_capacity / 10));
+		let energy_ratio = Math.round(this.energy / (this.energy_capacity / 10));
 		
 		//console.log('this.color = ' + this.color);
 		let current_color = this.color;
@@ -1542,38 +1788,106 @@ class Outpost {
 		c.fillStyle = this.color;
 		c.fill();
 		
+	}
+}
+
+class Pylon {
+	constructor(id, position, energy, control = ''){
+		this.id = id
+		this.position = position;
+		this.size = 20;
+		this.structure_type = 'pylon';
+		this.energy = energy;
+		this.energy_capacity = 1000;
+		this.control = control;
+		
+		if (this.control == pla1) this.color = colors['color1'];
+		if (this.control == pla2) this.color = colors['color2'];
+		if (this.control == '') this.color = "rgba(89, 82, 108, 1)";
 		
 		
-		
-		
+		pylons.push(this);
 	}
 	
-	
-	/*
-	charge() {
-		var color_parts = this.color.match(/[.?\d]+/g);
-		//logic on slowing down production when amount of spirits > x
-		var new_when = 100;
-		if(1 == 1){
-			new_when = 100;
+	draw(enrg, cntrl = '') {
+		if (cntrl == pla1) this.color = colors['color1'];
+		if (cntrl == pla2) this.color = colors['color2'];
+		if (cntrl == '') this.color = "rgba(89, 82, 108, 1)";
+		
+		this.energy = enrg;
+		this.control = cntrl;
+		
+		
+		
+		let energy_ratio = Math.round(this.energy / (this.energy_capacity / 10));
+		
+		//console.log('this.color = ' + this.color);
+		let current_color = this.color;
+		//c.lineWidth = 4;
+		//c.strokeStyle = this.color;
+		//c.strokeRect((this.position[0] - 12), (this.position[1] - 12), 24, 24);
+		var draw_angle = 45;
+		if (cntrl != ''){
+			if (this.energy < 500) {
+				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 135);
+				this.range = 400;
+			} else {
+				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 225);
+				this.range = 600;
+			}
+			
+			var color_parts = this.color.match(/[.?\d]+/g);
+			// outer circle
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
+			c.closePath();
+			c.lineWidth = 2;
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.06 + ')';
+			c.stroke();
 		}
-		var production_percent = this.energy / new_when;
-		var new_angle = Math.PI * 2 * production_percent
 		
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], (this.size + 10), Math.PI * 1.5 + (new_angle), Math.PI * 2 * production_percent, false);
-		console.log('production_percent');
-		console.log(production_percent);
-		c_base.lineWidth = 2;
-		c_base.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.5 + ')';
-		c_base.stroke();
+		// rotated square
+		//drawRotated(this.position[0] - 12, this.position[1] - 12, 24, 24, draw_angle, current_color);
+
+		// other circles (not center)
+		c.lineWidth = 1;
+		c.strokeStyle = this.color;
+		
+		c.beginPath();
+		c.arc(this.position[0] + 8, this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
+		c.moveTo(this.position[0], this.position[1]);
+		c.arc(this.position[0] - 8, this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
+		c.moveTo(this.position[0] + 8, this.position[1] + 8);
+		c.arc(this.position[0], this.position[1] + 8, 8, Math.PI * 0, Math.PI * 2, false);
+		c.moveTo(this.position[0] + 8, this.position[1] - 8);
+		c.arc(this.position[0], this.position[1] - 8, 8, Math.PI * 0, Math.PI * 2, false);
+		c.closePath();
+		
+		c.stroke();
+
+		
+		// inner-outer circle
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
+		c.closePath();
+		c.lineWidth = 1;
+		c.strokeStyle = this.color;
+		c.stroke();
+		
+		// inner-inner circle
+		c.beginPath();
+		c.arc(this.position[0], this.position[1], energy_ratio, Math.PI * 0, Math.PI * 2, false);
+		c.closePath();
+		c.fillStyle = this.color;
+		c.fill();
+		
 	}
-	*/
 }
 
 
 
 function draw_energize(origin, target, energy_strength, color){
+	if (energy_strength == 0) return;
 	var color_parts = color.match(/[.?\d]+/g);
 	//console.log(Number(color_parts[0]) + 50)
 	try {
@@ -1616,11 +1930,13 @@ function initiate_world(){
 		//console.log('base drawn ' + bases_queue[i].id);
 	}
 	
-	star_lookup['star_zxq'] = new Star('star_zxq', [1000, 1000], 50, 220);
-	star_lookup['star_a1c'] = new Star('star_a1c', [3200, 1400], 50, 220);	
-	star_lookup['star_p89'] = new Star('star_p89', [2000, 1300], 50, 80);
+	star_lookup['star_zxq'] = new Star('star_zxq', [-1200, -340], 50, 140);
+	star_lookup['star_a1c'] = new Star('star_a1c', [340, 1200], 50, 140);	
+	star_lookup['star_p89'] = new Star('star_p89', [-520, 520], 50, 140);
+	star_lookup['star_nua'] = new Star('star_nua', [420, -420], 50, 680);
 	
-	outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [2200, 1100], 0);	
+	outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [-210, 210], 0);	
+	pylon_lookup['pylon_u3p'] = new Pylon('pylon_u3p', [278, -278], 0);	
 	
 	//star_energy_lookup['star_zxq'] = new Star_energy('star_zxq', [1000, 1000], 50);
 	//star_energy_lookup['star_a1c'] = new Star_energy('star_a1c', [3200, 1400], 50);
@@ -1628,11 +1944,19 @@ function initiate_world(){
 	star_lookup['star_zxq'].draw();
 	star_lookup['star_a1c'].draw();
 	star_lookup['star_p89'].draw();
+	star_lookup['star_nua'].draw();
 	
 	//outpost_lookup['outpost_mdo'].draw();
 	
 	//draw_grid();
 	offsetUpdate();
+	
+	
+	corner1_parts = colors['color1'].match(/[.?\d]+/g);
+	corner2_parts = colors['color2'].match(/[.?\d]+/g);
+
+	corner1_parts_hsl = rgb_to_hsl(corner1_parts[0], corner1_parts[1], corner1_parts[2]);
+	corner2_parts_hsl = rgb_to_hsl(corner2_parts[0], corner2_parts[1], corner2_parts[2]);
 	
 	
 	world_initiated = 1;
@@ -1705,10 +2029,13 @@ function render_state(timestamp){
 	
 	//c.clearRect(0, 0, main_canvas.width, main_canvas.height);
 	c.fillStyle = 'rgba(6,8,10,1)';
-	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier, main_canvas.height * multiplier);
+	//c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
+	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 	
 	c.setTransform(scale, 0, 0, scale, 0, 0);
 	c.translate(offsetX, offsetY);
+	
+	draw_bg_grad();
 	
 	if (panning == 1){
 		offsetUpdate();
@@ -1794,10 +2121,22 @@ function render_state(timestamp){
 		var energy_target = resolve_energy_point(energy_blocks[i][1]);
 		var energy_color = energy_origin.color;
 		
-		if (energy_origin.id.startsWith('star')) energy_color = energy_target.color;
+		let eori = energy_origin.position;
+		let etar = energy_target.position;
+		
+		if (Array.isArray(energy_origin)){
+			energy_color = energy_target.color;
+			eori = energy_origin;
+		} else if (energy_origin.id.startsWith('star')){
+			energy_color = energy_target.color;
+		}
+		
+		if (Array.isArray(energy_target)) etar = energy_target;
+		
+		
 		
 		if (energy_origin.hp != 0 && energy_target.hp != 0){
-			draw_energize(energy_origin.position, energy_target.position, energy_blocks[i][2], energy_color);
+			draw_energize(eori, etar, energy_blocks[i][2], energy_color);
 		}
 	}
 	
@@ -1842,6 +2181,7 @@ function render_state(timestamp){
 	bases[1].draw();
 	
 	outposts[0].draw(game_blocks[active_block].ou[0], game_blocks[active_block].ou[1]);
+	pylons[0].draw(game_blocks[active_block].py[0], game_blocks[active_block].py[1]);
 	
 	
 	// star is drawn on the other static canvas. Draw only the center?
@@ -1849,10 +2189,23 @@ function render_state(timestamp){
 	stars[0].update_resource(game_blocks[active_block].st[0]);
 	stars[1].update_resource(game_blocks[active_block].st[1]);
 	stars[2].update_resource(game_blocks[active_block].st[2]);
+	stars[3].update_resource(game_blocks[active_block].st[3]);
 	stars[0].draw_energy();
 	stars[1].draw_energy();
 	stars[2].draw_energy();
+	stars[3].draw_energy();
 	
+	for (let f = 0; f < game_blocks[active_block].ef.length; f++){
+		//fragments[f].update_resource(game_blocks[active_block].ef[f]);
+		//fragments[f].draw_energy();
+		
+		let fragment = game_blocks[active_block].ef[f];
+		
+		c.beginPath();
+		c.arc(fragment[0][0], fragment[0][1], 1 + fragment[1] / 100, 0, Math.PI * 2, false);
+		c.fillStyle = "rgba(248, 247, 255, 1)";
+		c.fill();
+	}
 	
 	
 	/*
