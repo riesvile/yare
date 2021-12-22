@@ -38,7 +38,7 @@
 		 var temp_active_html = '';
 		 		 
 		 for (var key of Object.keys(active_games)) {
-		     temp_active_html += "<a href='https://yare.io/" + active_games[key][3] + "/" + key + "' class='qq_table_row'><span class='qq_game_id'>" + key + "</span><span class='qq_server'>" + active_games[key][3] + "</span><span class='qq_player1'>" + active_games[key][1] + "</span><span class='qq_player2'>" + active_games[key][2] + "</span>"
+		     temp_active_html += "<a href='/" + active_games[key][3] + "/" + key + "' class='qq_table_row'><span class='qq_game_id'>" + key + "</span><span class='qq_server'>" + active_games[key][3] + "</span><span class='qq_player1'>" + active_games[key][1] + "</span><span class='qq_player2'>" + active_games[key][2] + "</span>"
 		 }
 		 
 		 document.getElementById("qq_active").innerHTML = temp_active_html;
