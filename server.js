@@ -1969,7 +1969,7 @@ app.get("/admin-panel/dash", async (req,res,next) => {
 			userSessions: (await Session.count({})),
 			gameServers: servers,
 			games: active_games,
-			usersInQueue: automatch_looking
+			usersInQueue: matchmaking_queue
 		}
 	})
 	res.status(200).send(rendered)

@@ -25,8 +25,8 @@ Total memory: <%= Math.round(sysinfo.mem.total / 1024 / 1024 / 1024 * 10) / 10 %
 Used memory:  <%= Math.round(sysinfo.mem.used / 1024 / 1024 / 1024 * 10) / 10 %> GiB
 Free memory:  <%= Math.round(sysinfo.mem.free / 1024 / 1024 / 1024 * 10) / 10 %> GiB
 
-Main server uptime: <%= Math.round(Number(sysinfo.uptime) / 60) %> minutes and <%= Math.round(Number(sysinfo.uptime) % 60) %> seconds
-Host server uptime: <%= Math.round(Number(sysinfo.hostUptime) / 60) %> minutes and <%= Math.round(Number(sysinfo.hostUptime) % 60) %> seconds
+Main server uptime: <%= Math.floor(Number(sysinfo.uptime) / 60) %> minutes and <%= Math.round(Number(sysinfo.uptime) % 60) %> seconds
+Host server uptime: <%= Math.floor(Number(sysinfo.hostUptime) / 60) %> minutes and <%= Math.round(Number(sysinfo.hostUptime) % 60) %> seconds
 </pre>
     </div>
 
@@ -70,7 +70,7 @@ Users in queue: <%= gameinfo.usersInQueue.length %>
       <div class="sep"></div>
       <div class="half">
         <h1>Queue</h1>
-        <pre><% for (let user of gameinfo.usersInQueue){ %><%= user + "\n" %><% } %></pre>
+        <pre><% for (let user of gameinfo.usersInQueue){ %><%= [user.id, user.rating + "mmr", user.time_in_queue/1000 + "s"].join(" - ") + "\n" %><% } %></pre>
       </div>
     </div>
   </div>
