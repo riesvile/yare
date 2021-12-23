@@ -1,34 +1,44 @@
+//setup
+const express = require('express');
+const app = express();
+const crypto = require("crypto");
+const fetch = require('node-fetch');
+const sha256 = hash_string => crypto.createHash('sha256').update(hash_string, 'utf8').digest('hex');
+const server = require('http').createServer(app);
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ server });
+const {Worker} = require('worker_threads');
+const config = require('./config');
+const zlib = require('zlib');
+const ejs = require('ejs');
+const os = require('os');
+const bcrypt = require('bcrypt');
+var hashRounds = 10;
+const YARE_SERVER_ADDRESS = "https://yare.io";
+// you can change this to your LAN ip and port 5000 get matchmaking working in development
+// example: "http://192.168.1.10:5000"
+// do not include a slash at the end
+
 function randomString(length) {
-    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+	return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
 }
 
 function generateUniqueString(prefix) {
-    var timeStampo = String(new Date().getTime()),
-        i = 0,
-        out = '';
+	var timeStampo = String(new Date().getTime()),
+			i = 0,
+			out = '';
 
-    for (i = 0; i < timeStampo.length; i += 2) {
-        out += Number(timeStampo.substr(i, 2)).toString(36);
-    }
+	for (i = 0; i < timeStampo.length; i += 2) {
+			out += Number(timeStampo.substr(i, 2)).toString(36);
+	}
 
-    return (randomString(prefix) + out);
+	return (randomString(prefix) + out);
 }
 
 
-// ----- automatching -----
-
-
-var game_pairs = [];
-var automatch_looking = [];
-var paired_and_waiting = {};
-
-//checking if user is knocking on the server (didn't close browser window)
-var actively_waiting = {};
-
-//rewrite this entire stupidity later, you fucking moron. What were you even doing, the fuck?
+// // ----- automatching -----
 
 function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2color, p1rating, p2rating){
-	
 	const game = new Game({
 		game_id: gid,
 		server: srvr,
@@ -56,24 +66,24 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 			console.log('am game saved to db');
 			console.log(result);
 			try {
-				fetch('https://yare.io/' + srvr + 'ns/' + gid, {
-			        method: "POST",
-			        headers: {
-			          Accept: "application/json",
-			          "Content-Type": "application/json"
-			        },
-			        body: JSON.stringify({
-				        game_id: gid
-				    })
+				fetch(YARE_SERVER_ADDRESS + '/' + srvr + 'ns/' + gid, { // CHANGE THIS BEFORE COMMIT
+							method: "POST",
+							headers: {
+								Accept: "application/json",
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								game_id: gid
+						})
 				}).then(response => response.json())
-			      .then(response => {
-					  active_games[gid][0] = 1;
-					  console.log(active_games[gid]);
-					  console.log(response);
-				  })
-			      .catch(err => {
-					  console.log(err);
-				  });
+						.then(response => {
+						active_games[gid][0] = 1;
+						console.log(active_games[gid]);
+						console.log(response);
+					})
+						.catch(err => {
+						console.log(err);
+					});
 			} catch (error) {
 				console.log(error);
 			}
@@ -81,158 +91,82 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 		.catch((error) => {
 			console.log(error);
 		})
-	
 }
 
-function games_paired(){
-	
-	
-	//players are matched, check server loads, redirect to the right server and start a game worker there
-	
-	for (j = 0; j < game_pairs.length; j++){
-		
-		var chosen_server = pick_server('real');
-		var p1p1 = game_pairs[j][0];
-		var p2p2 = game_pairs[j][1];
-	
-		g_id = new_game(p1p1[0], p2p2[0], init_status = 0.5, chosen_server);
+// new matchmaking system
+
+let matchmaking_queue = [];
+
+// let matchmaking_user_example = {
+// 	id: 'test',
+// 	rating: 1500,
+// 	time_in_queue: 0, // in milliseconds
+// 	shape: 'circles',
+// 	color: '???',
+// 	lives: 3, // if this number touches 0, the user is removed from the queue
+// }
+
+let users_joining_match = {};
+
+// add time to users in queue
+setInterval(()=>{
+	for (i = 0; i < matchmaking_queue.length; i++){
+		matchmaking_queue[i].lives -= 1; // knocking on the /automatch-status endpoint adds a life
+		matchmaking_queue[i].time_in_queue += 1000;
+	}
+	matchmaking_queue = matchmaking_queue.filter(user => user.lives > 0);
+}, 1000)
+
+function matchmake(){
+	// if theres 1 or fewer users in the queue, you can't pair them up...
+	if (matchmaking_queue.length < 2) return;
+	console.log("Matchmaking...");
+
+	// people that has been in the queue for the longest time should be prioritized
+	let prioritized_queue = matchmaking_queue.sort((a,b)=>
+		a.time_in_queue - b.time_in_queue
+	);
+
+	let matched_pairs = []
+
+	// Find pairs and add them to matched_pairs
+	for (let user of prioritized_queue) {
+		let closest_rated_user = prioritized_queue
+			.filter((user2) => user2.id !== user.id)
+			.sort(
+				(a, b) =>
+					Math.abs(user.rating - a.rating) - Math.abs(user.rating - b.rating)
+			)[0];
+		matchmaking_queue = matchmaking_queue.filter(u =>
+			u.id !== closest_rated_user.id &&
+			u.id !== user.id
+		);
+		prioritized_queue = prioritized_queue.filter(u =>
+			u.id !== closest_rated_user.id &&
+			u.id !== user.id
+		);
+		if (user != null && closest_rated_user != null)
+			matched_pairs.push([user, closest_rated_user]);
+	}
+
+	console.log("Matchmaking matched pairs:", matched_pairs);
+
+	// Start games with the matched pairs
+	for (let pair of matched_pairs) {
+		let chosen_server = pick_server('real');
+
+		let user1 = pair[0];
+		let user2 = pair[1];
+
+		let game_id = new_game(user1.id, user2.id, init_status = 0.5, chosen_server);
 		
 		//add server
-		paired_and_waiting[p1p1[0]] = [g_id, chosen_server];
-		paired_and_waiting[p2p2[0]] = [g_id, chosen_server];
+		users_joining_match[user1.id] = {game_id, server: chosen_server};
+		users_joining_match[user2.id] = {game_id, server: chosen_server};
 		
-		update_game_db(g_id, chosen_server, p1p1[0], p2p2[0], p1p1[2], p2p2[2], p1p1[3], p2p2[3], p1p1[1], p2p2[1]);
-				
+		update_game_db(game_id, chosen_server, user1.id, user2.id, user1.shape, user2.shape, user1.color, user2.color, user1.rating, user2.rating);
 	}
-	
-	game_pairs = [];
-	console.log('paired and waiting');
-	console.log(paired_and_waiting);
-	
-	//check if this works by extending the automatch tick time and trying matching multiple people
-	
 }
-
-
-	setInterval(function(){
-		if(automatch_looking.length > 0){
-			for (i = 0; i < automatch_looking.length; i++){
-				//[user_id, rating, shape, color, time_spent_in_queue, matched?]
-				console.log(automatch_looking[i]);
-				if (actively_waiting[automatch_looking[i][0]] == undefined){
-					console.log('undefined');
-					continue;
-				} else if (actively_waiting[automatch_looking[i][0]] == 0){
-					console.log(automatch_looking[i][0] + ' is not in the queue anymore');
-					paired_and_waiting[automatch_looking[i][0]] = 'interrupted';
-					automatch_looking[i][5] = 1;
-					delete actively_waiting[automatch_looking[i][0]]
-					continue;
-				} else if (actively_waiting[automatch_looking[i][0]] == 1){
-					console.log(automatch_looking[i][0] + ' is in queue');
-					actively_waiting[automatch_looking[i][0]] = 0;
-					//continue;
-				}
-				
-				
-				var looker1 = automatch_looking[i];
-				var topCandidate = '';
-				
-				if (looker1[5] == 1) continue;
-				
-				for (j = i+1; j < automatch_looking.length; j++){
-					var looker2 = automatch_looking[j];
-					
-					console.log('lookers');
-					console.log(looker1);
-					console.log(looker2);
-					console.log(Math.abs(looker1[1] - looker2[1]));
-					
-					var rating_difference = Math.abs(looker1[1] - looker2[1])
-					
-					if (looker1[0] == looker2[0]){
-						console.log('it is the same person!!!!!');
-						looker1[5] = 1;
-						continue;
-					}
-					
-					if (looker1[4] < 4100){
-						if (rating_difference < 100){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else if (looker1[4] < 8100){
-						if (rating_difference < 200){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else if (looker1[4] < 12100){
-						if (rating_difference < 300){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					} else {
-						if (rating_difference < 500){
-							game_pairs.push([looker1, looker2]);
-							looker1[5] = 1;
-							looker2[5] = 1;
-						}
-					}
-				}
-			}
-			
-			//clearing out matched items from the automatch queue
-			for (i = automatch_looking.length - 1; i >= 0; i--){
-				if (automatch_looking[i][5] == 1){
-					automatch_looking.splice(i, 1);
-				}
-			}
-			
-			if (game_pairs.length > 0) {
-				console.log('paired players');
-				console.log(game_pairs);
-				games_paired();
-			}
-			
-			//add time_spent_in_queue
-			for (q = 0; q < automatch_looking.length; q++){
-				automatch_looking[q][4] += 4000;
-			}
-			
-		}
-		
-		console.log('automatch tick');
-		
-	}, 4000)
-	
-
-// -----
-// --------------__---_-___
-
-
-
-
-//setup
-const express = require('express');
-const app = express();
-const crypto = require("crypto");
-const fetch = require('node-fetch');
-const sha256 = hash_string => crypto.createHash('sha256').update(hash_string, 'utf8').digest('hex');
-const server = require('http').createServer(app);
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ server });
-const {Worker} = require('worker_threads');
-const config = require('./config');
-const zlib = require('zlib');
-const ejs = require('ejs');
-const os = require('os');
-const bcrypt = require('bcrypt');
-var hashRounds = 10;
-
-
 
 function generateSecureString(length) {
 	return crypto.randomBytes(length/2).toString('hex');
@@ -896,7 +830,15 @@ app.post('/new-game', (req, res) => {
 							play_color = 'color1';
 						} 
 						
-						automatch_looking.push([result[0].user_id, result[0].rating, req.body.user_shape, play_color, 0, 0]);
+						matchmaking_queue.push({
+							id: result[0].user_id,
+							rating: result[0].rating,
+							time_in_queue: 0, // in milliseconds
+							shape: req.body.user_shape,
+							color: play_color,
+							lives: 3 // how many seconds user has to be inactive to be removed from queue
+						})
+						matchmake()
 						res.status(200).send({
 							//g_id: g_id,
 							meta: 'automatching'
@@ -918,37 +860,26 @@ app.post('/automatch-status', (req, res) => {
 	
 	console.log('automatch knock from ' + req.body.user_id);
 	
-	actively_waiting[req.body.user_id] = 1;
-	
-	if (paired_and_waiting[req.body.user_id] == undefined){
-		res.status(200).send({
-			data: 'am-not-yet'
-        });
-	} else if (paired_and_waiting[req.body.user_id] == 'interrupted'){
-		res.status(200).send({
-			data: 'interrupted'
-        });
-	} else {
-		if (active_games[paired_and_waiting[req.body.user_id][0]][0] == 1){
-			res.status(200).send({
-				game_id: paired_and_waiting[req.body.user_id][0],
-				server: paired_and_waiting[req.body.user_id][1],
+	let userIndex = matchmaking_queue.findIndex(u => u.id === req.body.user_id);
+	if (userIndex === -1) {
+		if (users_joining_match[req.body.user_id]) {
+			return res.status(200).send({
+				game_id: users_joining_match[req.body.user_id].game_id,
+				server: users_joining_match[req.body.user_id].server,
 				data: 'am-ready'
-	        });
-			delete paired_and_waiting[req.body.user_id];
+			});
 		} else {
-			res.status(200).send({
-				data: 'am-not-yet'
-	        });
+			return res.status(200).send({data:"am-not-yet"})
 		}
-		
 	}
-	
+	console.log(userIndex, matchmaking_queue, matchmaking_queue[userIndex]);
+	matchmaking_queue[userIndex].lives = Math.min(matchmaking_queue[userIndex].lives + 1, 3);
+	return res.status(200).send({data:"am-not-yet"})
 });
 
 app.post('/automatch-anyone', (req, res) => {
 
-	if (automatch_looking.length > 0){
+	if (matchmaking_queue.length > 0){
 		res.status(200).send({
 			data: 'yes-waiting'
         });
@@ -1247,7 +1178,7 @@ app.get('/game/:game_id', (req, res) => {
 
 function trigger_deactivation(game_id){
 	try {
-		fetch('https://yare.io/deactivate', {
+		fetch(YARE_SERVER_ADDRESS + '/deactivate', {
 	        method: "POST",
 	        headers: {
 	          Accept: "application/json",
@@ -1271,7 +1202,7 @@ function trigger_deactivation(game_id){
 
 function trigger_monitoring(gid, val){
 	try {
-		fetch('https://yare.io/monitor', {
+		fetch(YARE_SERVER_ADDRESS + '/monitor', {
 	        method: "POST",
 	        headers: {
 	          Accept: "application/json",
@@ -1995,82 +1926,6 @@ function findAgain(req, res, g_id){
 			console.log(error);
 		})
 }
-app.post('/d1ns/:game_id', (req, res) => {
-	let g_id = req.params.game_id;
-		
-	console.log('finding game via mongoooooooooooooooooooose');
-	Game.find({game_id: g_id})
-		.then((result) => {
-			//res.send(result);
-			console.log('db result');
-			//console.log(result);
-			if (result.length == 0){
-				findAgain(req, res);
-			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
-				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
-				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
-					.then((qq) => {
-						console.log('game is reeeady');
-						res.status(200).send({
-				        	data: "game ready",
-							server: 'd1'
-				        });
-					});			
-			} else if (result[0]['active'] == 1 && result[0]['server'] == 'd1'){
-				console.log('game already active, redirect');
-				res.status(200).send({
-		        	data: "game already active",
-					server: 'd1'
-		        });				
-			} else {
-				res.status(404).send({
-		        	data: "something went wrongg"
-		        });
-			}
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-});
-
-app.get('/d1/:game_id', (req, res) => {
-	let g_id = req.params.game_id;
-	let active_game = active_games[g_id];
-	if (active_game == undefined){
-		//add a simple page stating the result and stats of a game
-		console.log('game ended or does not exist');
-		Game.find({game_id: g_id})
-			.then((result) => {
-				//res.send(result);
-				console.log('dbdb result');
-				console.log(result);
-				if (result.length == 0){
-					res.sendFile(__dirname + '/public/nope.html');
-				} else if (result.length == 1){
-					res.sendFile(__dirname + '/public/game-status.html');
-				} else {
-					console.log('something went wrong');
-					res.sendFile(__dirname + '/public/nope.html');
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			})
-		return;
-	}
-
-	if (active_game[0] == 1){
-		res.sendFile(__dirname + '/public/game.html');
-	} else {
-		if (this_server_type == "tutorial" && active_game[0] == 0){
-			console.log('game is being saved into db?? maybe??????????????????????????????????????');
-		} else {
-			console.log('not sure what happened here');
-			res.send(404);
-		}
-		
-	}
-});
 
 // This is a pretty bad way of doing it, should be changed
 const adminpassword = "swordfish"
