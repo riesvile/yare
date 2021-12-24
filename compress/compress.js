@@ -93,7 +93,7 @@ function decompress(comp) {
             b2: frame.b2,
             st: frame.st,
             ou: frame.ou,
-			py: frame.py,
+			py: [frame.py[0], IDsToNames[frame.py[1]]],
 			ef: frame.ef,
             e: frame.e.map(e => [IDsToNames[e[0]], IDsToNames[e[1]], e[2]]),
             s: frame.s.map(s => {

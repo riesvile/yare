@@ -188,18 +188,12 @@ class Spirit {
     }
     
     jump(target){
-        if (this.shape != 'squares'){
-            soft_error("Only squaress can use jump(). See Documentation for available methods.");
-            return;
-        }
-        
         if (Array.isArray(target) == false){
             soft_error('.jump() argument must be an array. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
             return;
         } else if (target.length != 2){
             soft_error('.jump() argument must be an array of length 2. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
             return;
-            
         }
 
         if (this.hp != 0){
@@ -215,6 +209,26 @@ class Spirit {
         
         if (this.hp != 0){
             command(this.id).explode = true;
+        }
+    }
+
+    lock(){
+        if (this.shape != 'squares'){
+            soft_error("Only squares can use lock(). See Documentation for available methods.");
+            return;
+        }
+        if (this.hp != 0){
+            command(this.id).lock = true;
+        }
+    }
+
+    unlock(){
+        if (this.shape != 'squares'){
+            soft_error("Only squares can use unlock(). See Documentation for available methods.");
+            return;
+        }
+        if (this.hp != 0){
+            command(this.id).unlock = true;
         }
     }
     
