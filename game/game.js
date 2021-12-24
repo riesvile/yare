@@ -840,6 +840,8 @@ if (!isMainThread){
 			this.last_energized = '';
 			this.color = color;
 			this.mark = '';
+			this.locked = false;
+			this.beam_range = min_beam;
 		
 			this.sight = {
 				friends: [],
@@ -1543,7 +1545,7 @@ if (!isMainThread){
 				const spirit = spirit_lookup[id];
 				if (spirit.hp == 0)
 					return;
-				
+				if(spirit.locked) return;
 				const tpos = queue[id].move;
 				if(!tpos) return;
 				const pos = spirit.position;
@@ -1693,7 +1695,7 @@ if (!isMainThread){
 				//if ()
 				
 				const to_id = queue[from_id].energize;
-		
+
 				if(!to_id){
 					//console.log('thisss happened');
 					return;
@@ -1776,7 +1778,7 @@ if (!isMainThread){
 				let to_check = to_obj.position;
 				if (Array.isArray(to_obj)) to_check = to_obj;
 
-				let target_close = fast_dist_leq(from_obj.position, to_check, min_beam);
+				let target_close = fast_dist_leq(from_obj.position, to_check, from_obj.beam_range);
 				if(! target_close){
 					//console.log('target not close enough');
 					return;
@@ -2315,8 +2317,8 @@ if (!isMainThread){
 				if(spirit == 'merge') continue;
 				if(!player_owns_spirit(spirit, player)) continue;
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(spirit_lookup[spirit].shape != "squares") continue;
 				if(!commands[spirit].jump) continue;
+				if(spirit_lookup[spirit].locked) continue;
 
 				let s = spirit_lookup[spirit];
 
@@ -2324,11 +2326,12 @@ if (!isMainThread){
 				let incr = sub(tpos, s.position);
 
 				let dist = Math.sqrt(norm_sq(incr));
-				let cost = dist / 5;
+				let cost = dist/5 + (s.size^2) / 5;
 				if(cost > s.energy) {
-					incr = mult((s.energy * 5) / dist, incr);
+					let remainder = s.energy - (s.size^2)/5;
+					incr = mult((remainder * 5) / dist, incr);
 					tpos = add(s.position, incr);
-					dist = s.energy * 5;
+					dist = remainder * 5;
 					cost = s.energy;
 				}
 
@@ -2357,6 +2360,55 @@ if (!isMainThread){
 				s.energy -= Math.ceil(cost);
 
 				render_data3.s.push(['j', spirit]);
+			}
+		}
+
+		// update locked spirit beam_ranges
+		for(let sid in spirit_lookup) {
+			let spirit = spirit_lookup[sid];
+			if(!spirit.locked) continue;
+			spirit.beam_range += 25;
+			if(spirit.beam_range > 300) {
+				spirit.beam_range = 300;
+			}
+		}
+
+		// spirit lock
+		for(let player in all_commands) {
+			let commands = all_commands[player].spirit;
+			for(let spirit in commands) {
+				if(spirit == 'merge') continue;
+				if(!player_owns_spirit(spirit, player)) continue;
+				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
+				if(!commands[spirit].lock) continue;
+
+				let s = spirit_lookup[spirit];
+				
+				if(s.shape != 'squares') continue;
+
+				if(s.locked) continue;
+
+				s.locked = true;
+			}
+		}
+
+		// spirit unlock
+		for(let player in all_commands) {
+			let commands = all_commands[player].spirit;
+			for(let spirit in commands) {
+				if(spirit == 'merge') continue;
+				if(!player_owns_spirit(spirit, player)) continue;
+				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
+				if(!commands[spirit].unlock) continue;
+
+				let s = spirit_lookup[spirit];
+				
+				if(s.shape != 'squares') continue;
+
+				if(!s.locked) continue;
+
+				s.locked = false;
+				s.beam_range = min_beam;
 			}
 		}
 
