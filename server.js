@@ -531,7 +531,7 @@ function tutorial_game(req, res, pl_id){
 function bot_game(req, res, pl_id, botinfo){
 
 	// REMOVE FROM AUTO-MATCH QUEUE
-	actively_waiting[req.body.user_id] = 0;
+	// actively_waiting[req.body.user_id] = 0;
 	let basic_colors = ['color1', 'color2', 'color3', 'color4'];
 	
 	var chosen_server = pick_server('real');
