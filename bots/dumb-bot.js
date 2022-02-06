@@ -4,11 +4,19 @@ function dist_sq(coor1, coor2){
     return a*a + b*b;
 }
 
-var my_star = star_zxq;
-var e_star = star_a1c;
+var my_base = base_zxq;
+var e_base = base_a2c;
 
-if(dist_sq(star_a1c.position, base.position) < dist_sq(star_zxq.position, base.position)){
-    my_star = star_a1c;
+if (base_a2c.control == this_player_id){
+	my_base = base_a2c;
+	e_base = base_zxq;
+}
+
+var my_star = star_zxq;
+var e_star = star_a2c;
+
+if(dist_sq(star_a2c.position, my_base.position) < dist_sq(star_zxq.position, my_base.position)){
+    my_star = star_a2c;
     e_star = star_zxq;
 }
 
@@ -21,7 +29,7 @@ for (var s of mine){
         miners--;
     }
     if (memory[s.id] == 'attacker') {
-        if(base.sight.enemies.length == 0) {
+        if(my_base.sight.enemies.length == 0) {
             memory[s.id] = 'charging';
         }
     } else if (s.energy == s.energy_capacity){
@@ -36,17 +44,17 @@ for (var s of mine){
     } 
 
     if (memory[s.id] == 'charging'){
-        s.move(base.position);
-        s.energize(base);
+        s.move(my_base.position);
+        s.energize(my_base);
     } else if(memory[s.id] == 'harvesting'){
         s.move(my_star.position);
         s.energize(s);
     } else if(memory[s.id] == 'defending'){
-        s.move(base.position);
+        s.move(my_base.position);
     }
 }
 
-if (base.sight.enemies.length > 0){
+if (my_base.sight.enemies.length > 0){
     console.log('i see you');
     var i = 0;
     for (var s of mine){
@@ -54,7 +62,7 @@ if (base.sight.enemies.length > 0){
             memory[s.id] = 'attacker';
         }
         if(memory[s.id] == 'attacker'){
-            var invader = spirits[base.sight.enemies[i%base.sight.enemies.length]];
+            var invader = spirits[my_base.sight.enemies[i%my_base.sight.enemies.length]];
             s.move(invader.position);
             s.energize(invader);
             i++;

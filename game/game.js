@@ -537,7 +537,7 @@ var all_commands = {};
 var birth_queue = [];
 var death_queue = [];
 var star_zxq;
-var star_a1c;
+var star_a2c;
 var star_p89;
 var star_nua;
 var outpost_mdo;
@@ -566,24 +566,48 @@ var p2_process_time_check = 0;
 var p2_process_time_res = 0;
 
 function spirit_cost(p_num, alives){
-	var shape = shapes["player" + p_num];
-	if (shape == 'circles'){
-		if (alives <= 50) bases[p_num-1].current_spirit_cost = 25;
-		if (alives > 50) bases[p_num-1].current_spirit_cost = 50;
-		if (alives > 100) bases[p_num-1].current_spirit_cost = 90;
-		if (alives > 200) bases[p_num-1].current_spirit_cost = 150;
-		if (alives > 500) bases[p_num-1].current_spirit_cost = 1000;
-	} else if (shape == 'squares'){
-		if (alives <= 10) bases[p_num-1].current_spirit_cost = 360;
-		if (alives > 10) bases[p_num-1].current_spirit_cost = 500;
-		if (alives > 16) bases[p_num-1].current_spirit_cost = 700;
-		if (alives > 400) bases[p_num-1].current_spirit_cost = 1100;
-	} else if (shape == 'triangles'){
-		if (alives <= 30) bases[p_num-1].current_spirit_cost = 90;
-		if (alives > 30) bases[p_num-1].current_spirit_cost = 160;
-		if (alives > 120) bases[p_num-1].current_spirit_cost = 300;
-		if (alives > 300) bases[p_num-1].current_spirit_cost = 1000;
+	//var shape = shapes["player" + p_num];
+	//if (shape == 'circles'){
+	//	if (alives <= 50) bases[p_num-1].current_spirit_cost = 25;
+	//	if (alives > 50) bases[p_num-1].current_spirit_cost = 50;
+	//	if (alives > 100) bases[p_num-1].current_spirit_cost = 90;
+	//	if (alives > 200) bases[p_num-1].current_spirit_cost = 150;
+	//	if (alives > 500) bases[p_num-1].current_spirit_cost = 1000;
+	//} else if (shape == 'squares'){
+	//	if (alives <= 10) bases[p_num-1].current_spirit_cost = 360;
+	//	if (alives > 10) bases[p_num-1].current_spirit_cost = 500;
+	//	if (alives > 16) bases[p_num-1].current_spirit_cost = 700;
+	//	if (alives > 400) bases[p_num-1].current_spirit_cost = 1100;
+	//} else if (shape == 'triangles'){
+	//	if (alives <= 30) bases[p_num-1].current_spirit_cost = 90;
+	//	if (alives > 30) bases[p_num-1].current_spirit_cost = 160;
+	//	if (alives > 120) bases[p_num-1].current_spirit_cost = 300;
+	//	if (alives > 300) bases[p_num-1].current_spirit_cost = 1000;
+	//}
+	
+	
+	let shape = shapes["player" + p_num];
+	for (let b = 0; b < bases.length; b++){
+		if (bases[b].control != players["p" + p_num]) continue;
+		if (shape == 'circles'){
+			if (alives <= 50) bases[b].current_spirit_cost = 25;
+			if (alives > 50) bases[b].current_spirit_cost = 50;
+			if (alives > 100) bases[b].current_spirit_cost = 90;
+			if (alives > 200) bases[b].current_spirit_cost = 150;
+			if (alives > 500) bases[b].current_spirit_cost = 1000;
+		} else if (shape == 'squares'){
+			if (alives <= 10) bases[b].current_spirit_cost = 360;
+			if (alives > 10) bases[b].current_spirit_cost = 500;
+			if (alives > 16) bases[b].current_spirit_cost = 700;
+			if (alives > 400) bases[b].current_spirit_cost = 1100;
+		} else if (shape == 'triangles'){
+			if (alives <= 30) bases[b].current_spirit_cost = 90;
+			if (alives > 30) bases[b].current_spirit_cost = 160;
+			if (alives > 120) bases[b].current_spirit_cost = 300;
+			if (alives > 300) bases[b].current_spirit_cost = 1000;
+		}
 	}
+	
 	
 	if (workerData[1] == 'tutorial'){
 		bases[0].current_spirit_cost = 100;
@@ -621,6 +645,7 @@ var colors = {};
 var shapes = {};
 colors['player1'] = "rgba(255, 0, 0, 1)";
 colors['player2'] = "rgba(0, 100, 255, 1)";
+colors['neutral'] = "rgba(160, 168, 180, 1)";
 var color_palettes = {};
 color_palettes['color1'] = 'rgba(128,140,255,1)';
 color_palettes['color2'] = 'rgba(232,97,97,1)';
@@ -735,6 +760,7 @@ function jump_danger_zone(loc){
 	 || Math.abs(stars[2].position[0] - loc[0]) < 100 && Math.abs(stars[2].position[1] - loc[1]) < 100
 	 || Math.abs(bases[0].position[0] - loc[0]) < 50 && Math.abs(bases[0].position[1] - loc[1]) < 50
 	 || Math.abs(bases[1].position[0] - loc[0]) < 50 && Math.abs(bases[1].position[1] - loc[1]) < 50
+	 || Math.abs(bases[2].position[0] - loc[0]) < 50 && Math.abs(bases[2].position[1] - loc[1]) < 50
 	 || Math.abs(outposts[0].position[0] - loc[0]) < 50 && Math.abs(outposts[0].position[1] - loc[1]) < 50
 	 || Math.abs(pylons[0].position[0] - loc[0]) < 50 && Math.abs(pylons[0].position[1] - loc[1]) < 50){
 		return true;
@@ -943,16 +969,19 @@ if (!isMainThread){
 			}
 			this.collision_radius = 50;
 			
-			this.hp = 8;
+			//this.hp = 8;
 			if (this.shape == 'circles'){
 				this.energy_capacity = 400;
 			} else if (this.shape == 'squares'){
 				this.energy_capacity = 1000;
 			} else if (this.shape == 'triangles'){
 				this.energy_capacity = 600;
+			} else {
+				this.energy_capacity = 100;
 			}
 			
 			this.player_id = player;
+			this.control = player;
 			this.color = color;
 			//this.energy = energy;
 			
@@ -1201,16 +1230,16 @@ if (!isMainThread){
 				let dsq = dist_sq(pos, bases[b].position);
 				// base sees spirit
 				if(dsq <= visible_sq){
-					let friend = bases[b].player_id == spirit.player_id;
+					let friend = bases[b].control == spirit.player_id;
 
-					if(friend){
+					if (friend){
 						bases[b].sight.friends.push(spirit.id);
-					}else{
+					} else {
 						bases[b].sight.enemies.push(spirit.id);
 					}
 
-					if(dsq <= beamable_sq){
-						if(friend){
+					if (dsq <= beamable_sq){
+						if (friend){
 							bases[b].sight.friends_beamable.push(spirit.id);
 						}else{
 							bases[b].sight.enemies_beamable.push(spirit.id);
@@ -1344,7 +1373,7 @@ if (!isMainThread){
 			// convert bool to number
 			let trouble = 0 + (bases[m].sight.enemies.length > 0);
 
-			if (bases[m].player_id == players['p1']){
+			if (bases[m].control == players['p1']){
 				p1_defend = trouble;
 			} else {
 				p2_defend = trouble;
@@ -1460,35 +1489,38 @@ if (!isMainThread){
 				if (living_spirits[n].hp == 0) continue;
 				
 				if (is_in_sight(living_spirits[n], bases[m], 400)){
-					if (bases[m].player_id == players['p1']){
+					//console.log(bases[m].id + ' controlled by ' + bases[m].control);
+					if (bases[m].control == players['p1']){
 						if (living_spirits[n].player_id == players['p1']){
 							bases[m].sight.friends.push(living_spirits[n].id);
 						} else {
 							bases[m].sight.enemies.push(living_spirits[n].id);
+						}
+					} else if (bases[m].control == players['p2']){
+						if (living_spirits[n].player_id == players['p1']){
+							bases[m].sight.enemies.push(living_spirits[n].id);
+						} else {
+							bases[m].sight.friends.push(living_spirits[n].id);
 						}
 					} else {
-						if (living_spirits[n].player_id == players['p1']){
-							bases[m].sight.enemies.push(living_spirits[n].id);
-						} else {
-							bases[m].sight.friends.push(living_spirits[n].id);
-						}
+						bases[m].sight.enemies.push(living_spirits[n].id);
 					}
 				}
 			}
 			
-			if (bases[m].sight.enemies.length > 0){
-				if (bases[m].player_id == players['p1']){
-					p1_defend = 1;
-				} else {
-					p2_defend = 1;
-				}
-			} else {
-				if (bases[m].player_id == players['p1']){
-					p1_defend = 0;
-				} else {
-					p2_defend = 0;
-				}
-			}
+			//if (bases[m].sight.enemies.length > 0){
+			//	if (bases[m].control == players['p1']){
+			//		p1_defend = 1;
+			//	} else {
+			//		p2_defend = 1;
+			//	}
+			//} else {
+			//	if (bases[m].control == players['p1']){
+			//		p1_defend = 0;
+			//	} else {
+			//		p2_defend = 0;
+			//	}
+		    //}
 			
 		}
 	
@@ -1614,6 +1646,7 @@ if (!isMainThread){
 		let energize_apply_star = [];
 		let energize_apply_fragment = [];
 		let energize_apply_outpost = [];
+		let energize_apply_base = [];
 		let energize_apply_pylon = [];
 		
 		for(let spirit of Object.values(spirit_lookup)){
@@ -1720,6 +1753,9 @@ if (!isMainThread){
 					to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
 				}
 				
+				
+				//console.log('from_obj.id = ' + from_obj.id);
+				//console.log('to_obj.id = ' + to_obj.id);
 
 				if(!from_obj || !to_obj || from_obj.hp == 0 || to_obj.hp == 0){
 					console.log('tthis happened');
@@ -1795,12 +1831,33 @@ if (!isMainThread){
 				let is_star = (to_obj.structure_type != undefined && to_obj.structure_type == 'star');
 				let is_fragment = Array.isArray(to_id);
 				
-				if (!friendly_beam){
+				
+				//fragment first
+				if (is_fragment){
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply.push([to_obj, beam_strength]);
+					render_data3.e.push([from_id, to_id, beam_strength]);
+				}
+				// name prefix - safe (is outpost)
+				else if (to_obj.id.startsWith('outpost') && outpost_lookup[to_id]){
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
+					render_data3.e.push([from_id, to_id, beam_strength]);
+				} 
+				else if (to_obj.id.startsWith('base') && base_lookup[to_id]){
+					console.log('energizing base---------------------------');
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply_base.push([from_obj, beam_strength, to_obj]);
+					render_data3.e.push([from_id, to_id, beam_strength]);
+				} 
+				// name prefix - safe (is pylon)
+				else if (to_obj.id.startsWith('pylon') && pylon_lookup[to_id]){
+					energize_apply.push([from_obj, -beam_strength]);
+					energize_apply_pylon.push([from_obj, beam_strength, to_obj]);
+					render_data3.e.push([from_id, to_id, beam_strength]);
+				}
+				else if (!friendly_beam){
 					if (is_star){
-						energize_apply.push([from_obj, -beam_strength]);
-						energize_apply.push([to_obj, beam_strength]);
-						render_data3.e.push([from_id, to_id, beam_strength]);
-					} else if (is_fragment){
 						energize_apply.push([from_obj, -beam_strength]);
 						energize_apply.push([to_obj, beam_strength]);
 						render_data3.e.push([from_id, to_id, beam_strength]);
@@ -1809,18 +1866,6 @@ if (!isMainThread){
 						energize_apply.push([to_obj, -2 * beam_strength]);
 						render_data3.e.push([from_id, to_id, 2 * beam_strength]);
 					}
-				}
-				// name prefix - safe (is outpost)
-				else if (to_obj.id.startsWith('outpost') && outpost_lookup[to_id]){
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
-					render_data3.e.push([from_id, to_id, beam_strength]);
-				} 
-				// name prefix - safe (is pylon)
-				else if (to_obj.id.startsWith('pylon') && pylon_lookup[to_id]){
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply_pylon.push([from_obj, beam_strength, to_obj]);
-					render_data3.e.push([from_id, to_id, beam_strength]);
 				}
 				else {
 					//else: target is friend
@@ -1966,20 +2011,27 @@ if (!isMainThread){
 
 			if (target.energy < 0){
 				
-				if (target.structure_type == 'base' && target.hp > 1){
-					target.hp--;
-					target.energy = 0;
-					continue;
-				}
+				//if (target.structure_type == 'base' && target.hp > 1){
+				//	target.hp--;
+				//	target.energy = 0;
+				//	continue;
+				//}
+				
+				//if (target.structure_type == 'outpost' || target.structure_type == 'pylon'){
+				//	continue;
+				//}
 				
 				death_queue.push(target);
 
 				if (target.structure_type == 'base' && game_finished != 1){
-					game_finished = 1;
-					console.log(target.player_id + ' lost');
-
-					let p2won = target.player_id == players['p1'] ? 1 : 0;
-					end_game(1 - p2won, p2won);
+					
+					//console.log('find out whether player controls any other structures - otherwise end the game')
+					
+					//game_finished = 1;
+					//console.log(target.player_id + ' lost');
+                    //
+					//let p2won = target.player_id == players['p1'] ? 1 : 0;
+					//end_game(1 - p2won, p2won);
 				}
 			}
 		}
@@ -1995,12 +2047,10 @@ if (!isMainThread){
 			let outpost = energize_apply_outpost[i][2];
 
 			if (spirit.player_id == players['p1']){
-				if (incoming_p1[outpost.id] == undefined)
-					incoming_p1[outpost.id] = 0;
+				if (incoming_p1[outpost.id] == undefined) incoming_p1[outpost.id] = 0;
 				incoming_p1[outpost.id] += amount;
 			} else {
-				if (incoming_p2[outpost.id] == undefined)
-					incoming_p2[outpost.id] = 0;
+				if (incoming_p2[outpost.id] == undefined) incoming_p2[outpost.id] = 0;
 				incoming_p2[outpost.id] += amount;
 			}
 		}
@@ -2072,6 +2122,64 @@ if (!isMainThread){
 			pylon.energy = Math.max(0, Math.min(pylon.energy, pylon.energy_capacity));
 			//pylon.range = pylon.energy <= 500 ? 400 : 600;
 		}
+		
+		
+		// similar for bases
+		
+		for (let i = energize_apply_base.length - 1; i >= 0; i--){
+			let spirit = energize_apply_base[i][0];
+			let amount = energize_apply_base[i][1];
+			let base = energize_apply_base[i][2];
+
+			if (spirit.player_id == players['p1']){
+				if (incoming_p1[base.id] == undefined) incoming_p1[base.id] = 0;
+				incoming_p1[base.id] += amount;
+			} else {
+				if (incoming_p2[base.id] == undefined) incoming_p2[base.id] = 0;
+				incoming_p2[base.id] += amount;
+			}
+		}
+		
+		for (let i = 0; i < bases.length; i++){
+			let base = bases[i];
+
+			let from_p1 = incoming_p1[base.id] || 0;
+			let from_p2 = incoming_p2[base.id] || 0;
+			
+			if (from_p1 == 0 && from_p2 == 0) continue;
+
+			if (base.control == ''){
+				// the case where from_p1 == from_p2 will have 0 energy and control '' set below
+				if (from_p1 - from_p2 != 0){
+					base.control = (from_p1 > from_p2) ? players['p1'] : players['p2'];
+					let owner_shape = shapes['player1'];
+					if (players['p2'] == base.control) owner_shape = shapes['player2'];
+					base.shape = owner_shape;
+					
+					if (owner_shape == 'circles') base.energy_capacity = 400;
+					if (owner_shape == 'squares') base.energy_capacity = 1000;
+					if (owner_shape == 'triangles') base.energy_capacity = 600;
+					
+				}
+				base.energy = Math.abs(from_p1 - from_p2);
+			} else {
+				let from_me = (base.control == players['p1']) ? from_p1 : from_p2;
+				let from_enemy = (base.control == players['p1']) ? from_p2 : from_p1;
+
+				base.energy += from_me;
+				base.energy -= 2 * from_enemy;
+			}
+
+			if (base.energy < 0){
+				base.control = '';
+				base.shape = 'neutral';
+				console.log('find out whether player controls any other structures - otherwise end the game');
+			}
+			base.energy = Math.max(0, Math.min(base.energy, base.energy_capacity));
+			
+		}
+		
+		
 	}
 
 	function process_stuff(){
@@ -2080,30 +2188,61 @@ if (!isMainThread){
 		// objects birth
 		//
 		
-		if (base_lookup['base_' + players['p1']].energy >= base_lookup['base_' + players['p1']].current_spirit_cost){
-			if (workerData[1] == 'tutorial' && top_s > 20){
-				//console.log('can not have more than 20 spirits in tutorial');
-			} else {
-				if (p1_defend != 1){
-					top_s++;
-					global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [-690, -520], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
-					base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
-					//global[players['p1'] + top_s].move([-710, -540]);
-					//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-					if (workerData[1] == 'tutorial')
-						progress_tut(5, true);
-				}
+		//if (base_lookup['base_' + players['p1']].energy >= base_lookup['base_' + players['p1']].current_spirit_cost){
+		//	if (workerData[1] == 'tutorial' && top_s > 20){
+		//		//console.log('can not have more than 20 spirits in tutorial');
+		//	} else {
+		//		if (p1_defend != 1){
+		//			top_s++;
+		//			global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [-690, -520], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+		//			base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
+		//			//global[players['p1'] + top_s].move([-710, -540]);
+		//			//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+		//			if (workerData[1] == 'tutorial')
+		//				progress_tut(5, true);
+		//		}
+		//	}
+		//}
+		//if (base_lookup['base_' + players['p2']].energy >= base_lookup['base_' + players['p2']].current_spirit_cost){
+		//	if (p2_defend != 1){
+		//		top_q++;
+		//		global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [520, 690], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+		//		base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
+		//		//global[players['p2'] + top_q].move([540, 710]);
+		//		//console.log(top_q);
+		//	}
+		//}
+		
+		for (i = 0; i < bases.length; i++){
+			let bs = bases[i];
+			if (bs.energy < bs.current_spirit_cost) continue;
+			if (bs.sight.enemies.length > 0) continue;
+			let x_axis = 1;
+			let y_axis = 1;
+			if (bs.position[0] < 0) x_axis = -1;
+			if (bs.position[1] < 0) y_axis = -1;
+			
+			if (bs.control == players['p1']){
+				top_s++;
+				global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [bs.position[0] + (x_axis * 40), bs.position[1] + (y_axis * 40)], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
+				bs.energy -= bs.current_spirit_cost;
 			}
-		}
-		if (base_lookup['base_' + players['p2']].energy >= base_lookup['base_' + players['p2']].current_spirit_cost){
-			if (p2_defend != 1){
+			
+			if (bs.control == players['p2']){
 				top_q++;
-				global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [520, 690], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
-				base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
-				//global[players['p2'] + top_q].move([540, 710]);
-				//console.log(top_q);
+				global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [bs.position[0] + (x_axis * 40), bs.position[1] + (y_axis * 40)], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
+				bs.energy -= bs.current_spirit_cost;
 			}
 		}
+		
+		//for (i = 0; i < bases.length; i++){
+		//	let bs = bases[i];
+		//	if (bs.energy < spirit_cost[bs.control])
+		//
+		//}
+		
+		
+		
 			
 		
 		birthlings = birth_queue.length;
@@ -2458,6 +2597,7 @@ if (!isMainThread){
 				spirit_cost(1, p1_living);
 				spirit_cost(2, p2_living);
 		} 
+		console.log(bases[2].id + " control = " + bases[2].control)
 	}
 			
 
@@ -2483,6 +2623,7 @@ if (!isMainThread){
 				'p2': [],
 				'b1': [],
 				'b2': [],
+				'b3': [],
 				'st': [],
 				'ou': [],
 				'py': [],
@@ -2501,6 +2642,7 @@ if (!isMainThread){
 					'p2': [],
 					'b1': [],
 					'b2': [],
+					'b3': [],
 					'st': [],
 					'ou': [],
 					'py': [],
@@ -2539,6 +2681,7 @@ if (!isMainThread){
 					'p2': [],
 					'b1': [],
 					'b2': [],
+					'b3': [],
 					'st': [],
 					'ou': [],
 					'py': [],
@@ -2569,8 +2712,10 @@ if (!isMainThread){
 			}
 		
 			render_data3.t = game_duration;
-			render_data3.b1 = [bases[0].energy, bases[0].current_spirit_cost, p1_defend, bases[0].hp];
-			render_data3.b2 = [bases[1].energy, bases[1].current_spirit_cost, p2_defend, bases[1].hp];
+			render_data3.b1 = [bases[0].energy, bases[0].current_spirit_cost, bases[0].sight.enemies.length, bases[0].control];
+			render_data3.b2 = [bases[1].energy, bases[1].current_spirit_cost, bases[1].sight.enemies.length, bases[1].control];
+			render_data3.b3 = [bases[2].energy, bases[2].current_spirit_cost, bases[2].sight.enemies.length, bases[2].control];
+			render_data3.b4 = [bases[3].energy, bases[3].current_spirit_cost, bases[3].sight.enemies.length, bases[3].control];
 			
 			render_data3.ou = [outposts[0].energy, outposts[0].control];
 			render_data3.py = [pylons[0].energy, pylons[0].control];
@@ -2704,18 +2849,22 @@ if (!isMainThread){
 		// -- //
 	
 	
-		global['base_' + players['p1']] = new Base('base_' + players['p1'], [-650, -480], players['p1'], colors['player1'], shapes['player1']);
-		global['base_' + players['p2']] = new Base('base_' + players['p2'], [480, 650], players['p2'], colors['player2'], shapes['player2']);
+		global['base_zxq'] = new Base('base_zxq', [-650, -480], players['p1'], colors['player1'], shapes['player1']);
+		global['base_a2c'] = new Base('base_a2c', [480, 650], players['p2'], colors['player2'], shapes['player2']);
+		global['base_p89'] = new Base('base_p89', [-780, 780], '', colors['neutral'], 'neutral');
+		global['base_nua'] = new Base('base_nua', [860, -860], '', colors['neutral'], 'neutral');
 
 	
-		base_lookup['base_' + players['p1']] = global['base_' + players['p1']];
-		base_lookup['base_' + players['p2']] = global['base_' + players['p2']];
+		base_lookup['base_zxq'] = global['base_zxq'];
+		base_lookup['base_a2c'] = global['base_a2c'];
+		base_lookup['base_p89'] = global['base_p89'];
+		base_lookup['base_nua'] = global['base_nua'];
 	
 		star_zxq = new Star('star_zxq', [-1200, -340], 100, 100, 0);
 		star_lookup['star_zxq'] = star_zxq;
 	
-		star_a1c = new Star('star_a1c', [340, 1200], 100, 100, 0);
-		star_lookup['star_a1c'] = star_a1c;
+		star_a2c = new Star('star_a2c', [340, 1200], 100, 100, 0);
+		star_lookup['star_a2c'] = star_a2c;
 		
 		star_p89 = new Star('star_p89', [-520, 520], 0, 100, 100);
 		star_lookup['star_p89'] = star_p89;
@@ -2732,11 +2881,14 @@ if (!isMainThread){
 		structure_lookup['outpost_mdo'] = outpost_mdo;
 		structure_lookup['pylon_u3p'] = pylon_u3p;
 		structure_lookup['star_zxq'] = star_zxq;
-		structure_lookup['star_a1c'] = star_a1c;
+		structure_lookup['star_a2c'] = star_a2c;
 		structure_lookup['star_p89'] = star_p89;
 		structure_lookup['star_nua'] = star_nua;
-		structure_lookup['base_' + players['p1']] = global['base_' + players['p1']];
-		structure_lookup['base_' + players['p2']] = global['base_' + players['p2']];
+		structure_lookup['base_zxq'] = global['base_zxq'];
+		structure_lookup['base_a2c'] = global['base_a2c'];
+		structure_lookup['base_p89'] = global['base_p89'];
+		structure_lookup['base_nua'] = global['base_nua'];
+		//structure_lookup['base_p89'] = global['base_p89'];
 	
 		mainLoop();
 	}

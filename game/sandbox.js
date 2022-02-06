@@ -351,10 +351,11 @@ yd.loadData = function(data) {
     for(var id in bd) {
         if(!(id in global.bases)) {
             global.bases[id] = new Base(id);
-            if(bd[id].player_id == global.this_player_id) {
-                global.base = global.bases[id];
+			global[id] = global.bases[id];
+            if (bd[id].player_id == global.this_player_id) {
+                //global.base = global.bases[id];
             } else {
-                global.enemy_base = global.bases[id];
+                //global.enemy_base = global.bases[id];
             }
         }
         Object.assign(global.bases[id], bd[id]);

@@ -506,6 +506,8 @@
 						 'p2': {},
 						 'b1': [],
 						 'b2': [],
+						 'b3': [],
+						 'b4': [],
 						 'e': [],
 						 's': [],
 						 'units': [],
@@ -614,10 +616,14 @@
 					 game_blocks['t' + tick_counter]['s'] = incoming.s;
 					 game_blocks['t' + tick_counter]['b1'] = incoming.b1;
 					 game_blocks['t' + tick_counter]['b2'] = incoming.b2;
+					 game_blocks['t' + tick_counter]['b3'] = incoming.b3;
+					 game_blocks['t' + tick_counter]['b4'] = incoming.b4;
 					 
 					 //previous energy for animation purposes
 					 game_blocks['t' + tick_counter]['b1'][4] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
 					 game_blocks['t' + tick_counter]['b2'][4] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
+					 game_blocks['t' + tick_counter]['b3'][4] = game_blocks['t' + (tick_counter - 1)]['b3'][0];
+					 game_blocks['t' + tick_counter]['b4'][4] = game_blocks['t' + (tick_counter - 1)]['b4'][0];
 					 
 					 game_blocks['t' + tick_counter]['st'] = incoming.st;
 					 game_blocks['t' + tick_counter]['ef'] = incoming.ef;

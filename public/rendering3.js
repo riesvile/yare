@@ -161,10 +161,10 @@ function draw_bg_grad(){
 	grdddd.addColorStop(0, "hsla(" + corner1_parts_hsl[0] + "," + corner1_parts_hsl[1] + "% ," + 4 + "% ," + (corner1_parts[3] - 0.2) + ")");
 	grdddd.addColorStop(1, "hsla(" + corner2_parts_hsl[0] + "," + corner2_parts_hsl[1] + "% ," + 4 + "% ," + (corner2_parts[3] - 0.2) + ")");
 	
-
 	c.fillStyle = grdddd;
 	//c.fillRect(-2000, -2000, 2000, 2000);
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
+	
 }
 
 
@@ -367,7 +367,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 		var hoveroid = document.getElementById('game_hover');
 		hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
 		hoveroid.style.left = xx + 'px';
-		var hover_content = [];
+		let hover_content = [];
 	
 		for (i = 0; i < living_spirits.length; i++){
 			if(living_spirits[i].hp == 0) continue;
@@ -378,7 +378,7 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 	
 		for (b = 0; b < bases.length; b++){
 			if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
-				hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status, bases[b].current_spirit_cost, bases[b].hp]);
+				hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status, bases[b].current_spirit_cost, bases[b].control]);
 			}
 		}
 	
@@ -408,10 +408,16 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			if (hover_content[0][0] == 'spirit'){
 				hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
 			} else if (hover_content[0][0] == 'base'){
-				hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + " · </span>" + hover_content[0][6] + "<span class='lowlight'> hp</span></span><span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
-				hoveroid.innerHTML += "<span class='new_when'>new spirit at <span class='highlight'>" + hover_content[0][5] + "</span></span>"
-				if (hover_content[0][4] == 1){
-					hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
+				let base_control = hover_content[0][6];
+				if (base_control == ''){
+					base_control = 'neutral';
+					hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + " · </span>" + base_control;
+				} else {
+					hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + " · </span>" + hover_content[0][6] + "<span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+					hoveroid.innerHTML += "<span class='new_when'>new spirit at <span class='highlight'>" + hover_content[0][5] + "</span></span>"
+					if (hover_content[0][4] == 1){
+						hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
+					}
 				}
 				hoveroid.style.bottom = window.innerHeight - yy - 20 + 'px';
 				hoveroid.style.left = xx + 50 + 'px';
@@ -481,7 +487,7 @@ function zoom(event) {
   
   
   
-  if (scale > 2 || scale < 0.5){
+  if (scale > 3 || scale < 0.1){
   	
   } else {
 	  var mousePos = getMousePos(event);
@@ -733,6 +739,19 @@ function draw_polygon(centerX,centerY,sideCount,size,strokeWidth,strokeColor,fil
     if (fillColor != 0)c.fill();
     c.rotate(-radians);
     c.translate(-centerX,-centerY);    
+}
+
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+  if (w < 2 * r) r = w / 2;
+  if (h < 2 * r) r = h / 2;
+  this.beginPath();
+  this.moveTo(x+r, y);
+  this.arcTo(x+w, y,   x+w, y+h, r);
+  this.arcTo(x+w, y+h, x,   y+h, r);
+  this.arcTo(x,   y+h, x,   y,   r);
+  this.arcTo(x,   y,   x+w, y,   r);
+  this.closePath();
+  return this;
 }
 
 function calcAngleDegrees(x, y) {
@@ -1455,15 +1474,22 @@ class Base {
 		this.structure_type = 'base';
 		this.energy = energy;
 		
-		this.hp = 8;
+		this.hp = 1;
 		if (this.shape == 'circles') this.energy_capacity = 400;
 		if (this.shape == 'squares') this.energy_capacity = 1000;
 		if (this.shape == 'triangles') this.energy_capacity = 600;
-		this.player_id = player;
-		this.color = color;
+		this.control = player;
+		//this.color = color;
+		if (this.control == pla1) this.color = colors['color1'];
+		if (this.control == pla2) this.color = colors['color2'];
+		if (this.control == '') this.color = "rgba('155, 155, 155, 0.5')";
 		this.color_parts = color.match(/[.?\d]+/g);
 		this.color_hsl = rgb_to_hsl(this.color_parts[0], this.color_parts[1], this.color_parts[2]);
 		this.current_spirit_cost = 100;
+		
+		if (this.control == pla1) this.shape = shapes['shape1'];
+		if (this.control == pla2) this.shape = shapes['shape2'];
+		if (this.control == '') this.shape = 'neutral';
 		
 		
 		// 1 if under attack
@@ -1473,8 +1499,28 @@ class Base {
 		if (this.shape == 'triangles') this.base_points = get_triangle(this.position[0], this.position[1], 30);
 	}
 	
-	draw() {
+	draw(cntrl = '') {
+		//console.log(this.control);
+		if (cntrl == pla1){
+			this.color = colors['color1'];
+			this.shape = shapes['shape1'];
+		}
+		if (cntrl == pla2){
+			this.color = colors['color2'];
+			this.shape = shapes['shape2'];
+		} 
+		if (cntrl == ''){
+			this.shape = 'neutral';
+			this.color = "rgba('155, 155, 155, 0.5')";
+		} 
+		
 		var color_parts = this.color.match(/[.?\d]+/g);
+		if (this.control != cntrl){
+			//console.log('control change');
+			this.control = cntrl;
+			this.color_hsl = rgb_to_hsl(color_parts[0], color_parts[1], color_parts[2]);
+		} 
+		
 		var production_percent = this.energy / this.current_spirit_cost;
 		var true_ratio = production_percent;
 		if (production_percent > 1) production_percent = 1;
@@ -1503,7 +1549,7 @@ class Base {
 			c.arc(this.position[0], this.position[1], this.size + 20, 0, Math.PI * 2, false);
 			c.closePath();
 			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 1) + ')';
-			c.lineWidth = this.hp + (this.energy / 100);
+			c.lineWidth = 2 + (this.energy / 100);
 			c.setLineDash([2, 4]);
 			c.stroke();
 			c.setLineDash([]);
@@ -1538,7 +1584,7 @@ class Base {
 			
 			//defense ring
 			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 1) + ')';
-			c.lineWidth = this.hp + (this.energy / 100);
+			c.lineWidth = 2 + (this.energy / 100);
 			c.setLineDash([2, 4]);
 			c.strokeRect((this.position[0] - 35), (this.position[1] - 35), this.size + 45, this.size + 45);
 			c.setLineDash([]);
@@ -1600,7 +1646,7 @@ class Base {
 		  
 		  //defense ring
 		  let tri_defense_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 0.5) + ')';
-		  let defense_thickness = this.hp + (this.energy / 100);
+		  let defense_thickness = 2 + (this.energy / 100);
 		  let defense_overthick = 0;
 		  if (defense_thickness > 4){
 			  defense_overthick = defense_thickness - 4;
@@ -1647,6 +1693,27 @@ class Base {
 		  
 		  
 		  
+		} else if (this.shape == 'neutral'){
+			//console.log('neutral shape');
+			
+			
+			c.lineWidth = 1;
+			c.strokeStyle = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
+			
+			c.roundRect((this.position[0] - 9 - (this.size / 2)), (this.position[1] - 9 - (this.size / 2)), this.size + 18, this.size + 18, 16);
+			c.stroke();
+			c.roundRect((this.position[0] - 2 - (this.size / 2)), (this.position[1] - 2 - (this.size / 2)), this.size + 4, this.size + 4, 10);
+			c.stroke();
+			
+			
+			
+			
+			//base bg
+			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.03 + (0.02 * true_ratio)) + ')';
+			c.roundRect((this.position[0] - 45), (this.position[1] - 45), this.size + 65, this.size + 65, 24);
+			c.fill();
+			
+			
 		}
 		
 		
@@ -1680,10 +1747,12 @@ class Base {
 	
 	defend(new_status){
 		//def_status is number between 0 and 1 (0 and 1 values obvious, everything inbetween for animation purposes)
+		
 		if (new_status != this.def_status){
 			this.def_status = Math.abs((new_status * (total_time / game_tick)) + ((new_status - 1) * ((total_time / game_tick) - 1)));
 			if (Math.abs(this.def_status - new_status) < 0.05) this.def_status = new_status;
 			//console.log('this.def_status = ' + this.def_status);
+			//console.log('updating def status of ' + this.id + ' to ' + new_status);
 		}
 	}
 	
@@ -1931,7 +2000,7 @@ function initiate_world(){
 	}
 	
 	star_lookup['star_zxq'] = new Star('star_zxq', [-1200, -340], 50, 140);
-	star_lookup['star_a1c'] = new Star('star_a1c', [340, 1200], 50, 140);	
+	star_lookup['star_a2c'] = new Star('star_a2c', [340, 1200], 50, 140);	
 	star_lookup['star_p89'] = new Star('star_p89', [-520, 520], 50, 140);
 	star_lookup['star_nua'] = new Star('star_nua', [420, -420], 50, 680);
 	
@@ -1942,7 +2011,7 @@ function initiate_world(){
 	//star_energy_lookup['star_a1c'] = new Star_energy('star_a1c', [3200, 1400], 50);
 	
 	star_lookup['star_zxq'].draw();
-	star_lookup['star_a1c'].draw();
+	star_lookup['star_a2c'].draw();
 	star_lookup['star_p89'].draw();
 	star_lookup['star_nua'].draw();
 	
@@ -2117,7 +2186,7 @@ function render_state(timestamp){
 	for (i = 0; i < energy_blocks.length; i++){
 		//console.log(energy_blocks[i]);
 		var energy_origin = resolve_energy_point(energy_blocks[i][0]);
-		//console.log(energy_blocks[i][1]);
+		//console.log(energy_blocks[i][0]);
 		var energy_target = resolve_energy_point(energy_blocks[i][1]);
 		var energy_color = energy_origin.color;
 		
@@ -2167,18 +2236,57 @@ function render_state(timestamp){
 	shouting_count_p1 = 0;
 	shouting_count_p2 = 0;
 	
+	let bases_def_status = [];
 	
-	bases[0].charge(game_blocks[active_block].b1[4], game_blocks[active_block].b1[0]);
-	bases[1].charge(game_blocks[active_block].b2[4], game_blocks[active_block].b2[0]);
-	bases[0].defend(game_blocks[active_block].b1[2]);
-	bases[1].defend(game_blocks[active_block].b2[2]);
-	bases[0].shield(game_blocks[active_block].b1[3]);
-	bases[1].shield(game_blocks[active_block].b2[3]);
-	//console.log(game_blocks[active_block].b2[3]);
-	bases[0].current_spirit_cost = game_blocks[active_block].b1[1];
-	bases[1].current_spirit_cost = game_blocks[active_block].b2[1];
-	bases[0].draw();
-	bases[1].draw();
+	//let b1_def_status = 0
+	//let b2_def_status = 0
+	//let b3_def_status = 0
+	//
+	//if (game_blocks[active_block].b1[2] > 0) b1_def_status = 1;
+	//if (game_blocks[active_block].b2[2] > 0) b2_def_status = 1;
+	//if (game_blocks[active_block].b3[2] > 0) b3_def_status = 1;
+	
+	for (let b = 0; b < bases.length; b++){
+		bases_def_status[b] = 0;
+		if (game_blocks[active_block]['b' + (b+1)][2] > 0) bases_def_status[b] = 1;
+		bases[b].charge(game_blocks[active_block]['b' + (b+1)][4], game_blocks[active_block]['b' + (b+1)][0]);
+		bases[b].defend(bases_def_status[b]);
+		bases[b].shield(game_blocks[active_block]['b' + (b+1)][3]);
+		bases[b].current_spirit_cost = game_blocks[active_block]['b' + (b+1)][1];
+		bases[b].draw(game_blocks[active_block]['b' + (b+1)][3]);
+	}
+	
+	
+	//bases[0].charge(game_blocks[active_block].b1[4], game_blocks[active_block].b1[0]);
+	//bases[1].charge(game_blocks[active_block].b2[4], game_blocks[active_block].b2[0]);
+	//bases[2].charge(game_blocks[active_block].b3[4], game_blocks[active_block].b3[0]);
+	//
+	//
+	//
+	//
+	//
+	//bases[0].defend(b1_def_status);
+	//bases[1].defend(b2_def_status);
+	//bases[2].defend(b3_def_status);
+	//bases[0].shield(game_blocks[active_block].b1[3]);
+	//bases[1].shield(game_blocks[active_block].b2[3]);
+	//bases[2].shield(game_blocks[active_block].b3[3]);
+	////console.log(b1_def_status);
+	////console.log(b2_def_status);
+	////console.log(b3_def_status);
+	////console.log('---');
+	////console.log(game_blocks[active_block].b1[3]);
+	////console.log(game_blocks[active_block].b2[3]);
+	////console.log(game_blocks[active_block].b3[3]);
+	////console.log('---');
+	//
+	//
+	//bases[0].current_spirit_cost = game_blocks[active_block].b1[1];
+	//bases[1].current_spirit_cost = game_blocks[active_block].b2[1];
+	//bases[2].current_spirit_cost = game_blocks[active_block].b3[1];
+	//bases[0].draw(game_blocks[active_block].b1[3]);
+	//bases[1].draw(game_blocks[active_block].b2[3]);
+	//bases[2].draw(game_blocks[active_block].b3[3]);
 	
 	outposts[0].draw(game_blocks[active_block].ou[0], game_blocks[active_block].ou[1]);
 	pylons[0].draw(game_blocks[active_block].py[0], game_blocks[active_block].py[1]);
@@ -2201,10 +2309,33 @@ function render_state(timestamp){
 		
 		let fragment = game_blocks[active_block].ef[f];
 		
+		let frag_grd = c.createRadialGradient(fragment[0][0], fragment[0][1], 1, fragment[0][0], fragment[0][1], 12);
+		frag_grd.addColorStop(0, "rgba(248, 247, 255, 0)");
+		frag_grd.addColorStop(1, "rgba(248, 247, 255, " + (0.05 + Math.min(0.1 * fragment[1] / 100, 0.1) + fragment[1] / 1200) + ")");
+		
 		c.beginPath();
-		c.arc(fragment[0][0], fragment[0][1], 1 + fragment[1] / 100, 0, Math.PI * 2, false);
+		c.arc(fragment[0][0], fragment[0][1], 1 + Math.min(fragment[1] / 50, 8), 0, Math.PI * 2, false);
 		c.fillStyle = "rgba(248, 247, 255, 1)";
 		c.fill();
+		
+		c.beginPath();
+		c.arc(fragment[0][0], fragment[0][1], 12, 0, Math.PI * 2, false);
+		c.fillStyle = frag_grd;
+		c.fill();
+		
+		//c.save();
+		//c.beginPath();
+		//c.arc(fragment[0][0], fragment[0][1], 6, 0, Math.PI * 2, false);
+		//c.clip();
+		//c.beginPath();
+		//c.arc(fragment[0][0], fragment[0][1], 14, 0, Math.PI * 2, false);
+		//c.fillStyle = "rgba(254, 15, 25, " + 0.2 + ")";
+		////
+		//c.strokeStyle = 'rgba(255,255,255,1)';
+		//c.shadowColor='rgba(225, 250, 255, ' + '1' + ')';
+		//c.shadowBlur= 2 * (multiplier / 2.5);
+		//c.lineWidth = 8;
+		//c.stroke();
 	}
 	
 	
