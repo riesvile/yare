@@ -73,6 +73,7 @@
 	  </div>
   </div>
 	  
+  <div id="modules_plate"></div>	  
 	  
   <canvas id='main_canvas'></canvas>
   <canvas id='base_canvas'></canvas>
@@ -385,6 +386,7 @@
 		 }
 	  }
 	  
+	  var client_object = {};
 	  
 	  var dragging_timeline = 0;
 	  
@@ -975,6 +977,12 @@
 		  //game_over()
 	  }
 	  
+	  function update_client_object(){
+		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id'), meta: 'resign'}));
+		  //var temp_winner = '';
+		  //game_over()
+	  }
+	  
 	  document.getElementById('update_code').addEventListener("click",function(e){
 		  update_code();
 	  },false);
@@ -1141,6 +1149,10 @@
 	  }
 	  
 	  
+	  var script_name = 'user_script';
+	  var script_insert = document.createElement('script');
+	  script_insert.src = 'a/' + script_name + '.js';
+	  document.head.appendChild(script_insert);
 	  
 	  
 	  
