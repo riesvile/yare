@@ -35,8 +35,34 @@ function generateUniqueString(prefix) {
 	return (randomString(prefix) + out);
 }
 
+const userSocketMap = {}
 
 // // ----- automatching -----
+
+function requestGameServerUpdate(srvr, gid){
+		try {
+			fetch(YARE_SERVER_ADDRESS + '/' + srvr + 'ns/' + gid, { // CHANGE THIS BEFORE COMMIT
+						method: "POST",
+						headers: {
+							Accept: "application/json",
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							game_id: gid
+					})
+			}).then(response => response.json())
+					.then(response => {
+					active_games[gid][0] = 1;
+					console.log(active_games[gid]);
+					console.log(response);
+				})
+					.catch(err => {
+					console.log(err);
+				});
+		} catch (error) {
+			console.log(error);
+		}
+}
 
 function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2color, p1rating, p2rating){
 	const game = new Game({
@@ -62,31 +88,10 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 	});
 
 	game.save()
-		.then((result) => {
+		.then((result)=>{
 			console.log('am game saved to db');
 			console.log(result);
-			try {
-				fetch(YARE_SERVER_ADDRESS + '/' + srvr + 'ns/' + gid, { // CHANGE THIS BEFORE COMMIT
-							method: "POST",
-							headers: {
-								Accept: "application/json",
-								"Content-Type": "application/json"
-							},
-							body: JSON.stringify({
-								game_id: gid
-						})
-				}).then(response => response.json())
-						.then(response => {
-						active_games[gid][0] = 1;
-						console.log(active_games[gid]);
-						console.log(response);
-					})
-						.catch(err => {
-						console.log(err);
-					});
-			} catch (error) {
-				console.log(error);
-			}
+			return requestGameServerUpdate(srvr, gid);
 		})
 		.catch((error) => {
 			console.log(error);
@@ -165,6 +170,21 @@ function matchmake(){
 		users_joining_match[user2.id] = {game_id, server: chosen_server};
 		
 		update_game_db(game_id, chosen_server, user1.id, user2.id, user1.shape, user2.shape, user1.color, user2.color, user1.rating, user2.rating);
+	}
+
+	for (let x of Object.entries(users_joining_match)) {
+		let userid = x[0];
+		let game = x[1];
+		let user = matched_pairs.flat().find(u => u.id == userid);
+		if (game == null || user.socket == null) {console.log(user);continue};
+		user.socket.send(JSON.stringify({
+			type: "match-found",
+			data: {
+				game_id: game.game_id,
+				server: game.server
+			}
+		}))
+		users_joining_match[userid] = null;
 	}
 }
 
@@ -482,26 +502,19 @@ function color_validity(color, clr_array){
 	
 }
 
-function tutorial_game(req, res, pl_id){
+function tutorial_game(data){
 	
 	var chosen_server = pick_server('tutorial');
 	
 	
-	g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
-	
-
-	res.status(200).send({
-		g_id: g_id,
-		meta: 'easy-bot',
-		server: chosen_server
-    });
+	g_id = new_game(data.user_id, 'easy-bot', 1, chosen_server);
 	
 	const game = new Game({
 		game_id: g_id,
 		server: chosen_server,
 		player1: 'anonymous',
 		player2: 'easy-bot',
-		p1_session_id: req.body.session_id,
+		p1_session_id: data.session_id,
 		p2_session_id: 'bot',
 		p1_shape: 'circles',
 		p2_shape: 'circles',
@@ -526,9 +539,15 @@ function tutorial_game(req, res, pl_id){
 		.catch((error) => {
 			console.log(error);
 		})
+
+	return {
+		g_id: g_id,
+		meta: 'easy-bot',
+		server: chosen_server
+		}
 }
 
-function bot_game(req, res, pl_id, botinfo){
+function bot_game(data, botinfo){
 
 	// REMOVE FROM AUTO-MATCH QUEUE
 	// actively_waiting[req.body.user_id] = 0;
@@ -536,16 +555,16 @@ function bot_game(req, res, pl_id, botinfo){
 	
 	var chosen_server = pick_server('real');
 
-	if(req.body.force_server != undefined){
-		chosen_server = req.body.force_server;
+	if(data.force_server != undefined){
+		chosen_server = data.force_server;
 	}
 
 	var pl1 = {
-		id: req.body.user_id,
-		session_id: req.body.session_id,
+		id: data.user_id,
+		session_id: data.session_id,
 		rating: 1000,
-		color: get_color(req.body.user_color),
-		shape: req.body.user_shape,
+		color: get_color(data.user_color),
+		shape: data.user_shape,
 	}
 	var pl2 = botinfo;
 
@@ -553,13 +572,7 @@ function bot_game(req, res, pl_id, botinfo){
 		[pl1, pl2] = [pl2, pl1];
 	}
 	
-	g_id = new_game(pl1.id, pl2.id, 1, chosen_server);
-
-	res.status(200).send({
-		g_id: g_id,
-		meta: botinfo.id,
-		server: chosen_server
-    });
+	g_id = new_game(pl1.id, pl2.id, 0.5, chosen_server);
 	
 	const game = new Game({
 		game_id: g_id,
@@ -582,84 +595,33 @@ function bot_game(req, res, pl_id, botinfo){
 		game_file: '',
 		last_update: (+new Date())
 	});
-		
-	if (pl1.id != 'qual-bot' && pl1.id != 'boom-bot' && pl1.id != 'will-bot' && pl1.id != 'medium-bot' && pl1.id != 'dumb-bot' && !(basic_colors.includes(pl1.color))){
-		User.find({user_id: pl1.id})
-			.then((results) => {
-				if (color_validity(pl1.color, results[0].colors)) {
-					//console.log('p1 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK');
-					game.save()
-						.then((result) => {
-							console.log('game saved to db');
-							console.log(result);
-						})
-						.catch((error) => {
-							console.log(error);
-						});
-				} else {
-					//console.log('p1 can NOT user color dfgnidugb!!!!');
-					game.p1_color = 'color1';
-					console.log(game);
-					game.save()
-						.then((result) => {
-							console.log('game saved to db');
-							console.log(result);
-						})
-						.catch((error) => {
-							console.log(error);
-						});
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			})
-	} else if (pl2.id != 'qual-bot' && pl2.id != 'boom-bot' && pl2.id != 'will-bot' && pl2.id != 'medium-bot' && pl2.id != 'dumb-bot' && !(basic_colors.includes(pl2.color))){
-		User.find({user_id: pl2.id})
-			.then((results) => {
-				if (color_validity(pl2.color, results[0].colors)) {
-					//console.log('p2 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK')
-					game.save()
-						.then((result) => {
-							console.log('game saved to db');
-							console.log(result);
-						})
-						.catch((error) => {
-							console.log(error);
-						});
-				} else {
-					//console.log('p2 can NOT user color dfgnidugb!!!!');
-					game.p2_color = 'color1';
-					console.log(game);
-					game.save()
-						.then((result) => {
-							console.log('game saved to db');
-							console.log(result);
-						})
-						.catch((error) => {
-							console.log(error);
-						});
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			})
-	} else {
-		console.log('no color check');
+
+	// let bot = [pl1,pl2].find(x => x.session_id === "bot");
+	let playerIndex = [pl1,pl2].findIndex(x => x.session_id !== "bot");
+	let player = [pl1,pl2][playerIndex];
+
+	User.findOne({user_id: player.id}).then(result => {
+		if (!color_validity(player.color, result.colors)) {
+			game[(playerIndex===0?"p1":"p2")+"_color"] = "color1"
+		}
 		game.save()
 			.then((result) => {
 				console.log('game saved to db');
-				console.log(result);
+				requestGameServerUpdate(chosen_server, g_id);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
+	}) 
+	return {
+		g_id: g_id,
+		meta: botinfo.id,
+		server: chosen_server
 	}
-		
-	
 }
 
-function boom_bot_game(req, res, pl_id){
-	bot_game(req, res, pl_id, {
+function boom_bot_game(data){
+	return bot_game(data, {
 		id: 'boom-bot',
 		session_id: 'bot',
 		rating: 2000,
@@ -668,8 +630,8 @@ function boom_bot_game(req, res, pl_id){
 	});
 }
 
-function will_bot_game(req, res, pl_id){
-	bot_game(req, res, pl_id, {
+function will_bot_game(data){
+	return bot_game(data, {
 		id: 'will-bot',
 		session_id: 'bot',
 		rating: 1700,
@@ -678,8 +640,8 @@ function will_bot_game(req, res, pl_id){
 	});
 }
 
-function medium_bot_game(req, res, pl_id){
-	bot_game(req, res, pl_id, {
+function medium_bot_game(data){
+	return bot_game(data, {
 		id: 'medium-bot',
 		session_id: 'bot',
 		rating: 1000,
@@ -689,8 +651,8 @@ function medium_bot_game(req, res, pl_id){
 }
 
 
-function dumb_bot_game(req, res, pl_id){
-	bot_game(req, res, pl_id, {
+function dumb_bot_game(data){
+	return bot_game(data, {
 		id: 'dumb-bot',
 		session_id: 'bot',
 		rating: 500,
@@ -699,25 +661,21 @@ function dumb_bot_game(req, res, pl_id){
 	});
 }
 
-function friend_challenge(req, res){
+function friend_challenge(data){
 	
 	var chosen_server = pick_server('real');
-	var color_code = get_color(req.body.user_color);
+	var color_code = get_color(data.user_color);
 		
-	g_id = new_game(req.body.user_id, 0, init_status = 0.5, chosen_server);
-	res.status(200).send({
-		g_id: g_id,
-		meta: 'waiting for p2'
-    });
+	g_id = new_game(data.user_id, 0, init_status = 0.5, chosen_server);
 		
 	const game = new Game({
 		game_id: g_id,
 		server: chosen_server,
-		player1: req.body.user_id,
+		player1: data.user_id,
 		player2: '',
-		p1_session_id: req.body.session_id,
+		p1_session_id: data.session_id,
 		p2_session_id: '',
-		p1_shape: req.body.user_shape,
+		p1_shape: data.user_shape,
 		p2_shape: 'circles',
 		p1_color: color_code,
 		//p1_color: req.body.user_color,
@@ -736,11 +694,15 @@ function friend_challenge(req, res){
 	game.save()
 		.then((result) => {
 			console.log('game saved to db');
-			console.log(result);
 		})
 		.catch((error) => {
 			console.log(error);
-		})
+		});
+
+	return {
+		g_id: g_id,
+		meta: 'waiting for p2'
+  }
 	//redirect and wait for both players to connect
 }
 
@@ -787,108 +749,6 @@ app.use(express.urlencoded({ extended: true }));
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
-// Client requests new game
-app.post('/new-game', (req, res) => {
-	console.log('creating new game');
-	console.log(req.body);
-	if (req.body.user_id == 'anonymous'){
-		tutorial_game(req, res, 'anonymous');
-	} else {
-		if (req.body.type == 'easy-bot'){
-			tutorial_game(req, res, req.body.user_id);
-		} else if (req.body.type == 'qual-bot' || req.body.type == 'boom-bot'){
-			boom_bot_game(req, res, req.body.user_id);
-		} else if (req.body.type == 'will-bot'){
-			will_bot_game(req, res, req.body.user_id);
-		} else if (req.body.type == 'medium-bot'){
-			medium_bot_game(req, res, req.body.user_id);
-		} else if (req.body.type == 'dumb-bot'){
-			dumb_bot_game(req, res, req.body.user_id);
-		} else if (req.body.type == 'challenge'){
-			friend_challenge(req, res);
-		} else if (req.body.type == 'automatch'){
-			console.log('automatching...');
-			
-			User.find({user_id: req.body.user_id})
-				.then((result) => {
-					console.log(result);
-					console.log('...auto match added');
-					//[user_id, rating, shape, color, time_spent_in_queue, matched?]
-					
-					discord_automatch_bot(req.body.user_id);
-					
-					let play_color = get_color(req.body.user_color)
-					
-					if (req.body.user_id == 'anonymous'){
-						res.status(200).send({
-							//g_id: g_id,
-							meta: 'anonymous'
-					    });
-					} else {
-						if (!color_validity(play_color, result[0].colors)) {
-							//console.log('p1 can use color ODFIGJOFDIGJ ODFIGJ OIJSD OSFIHPUSH FIUH IFEUHD ISUHK');
-							play_color = 'color1';
-						} 
-						
-						matchmaking_queue.push({
-							id: result[0].user_id,
-							rating: result[0].rating,
-							time_in_queue: 0, // in milliseconds
-							shape: req.body.user_shape,
-							color: play_color,
-							lives: 3 // how many seconds user has to be inactive to be removed from queue
-						})
-						matchmake()
-						res.status(200).send({
-							//g_id: g_id,
-							meta: 'automatching'
-					    });
-					}
-					
-				})
-				.catch((error) => {
-					console.log(error);
-				})
-			
-			
-				
-		}
-	}
-});
-
-app.post('/automatch-status', (req, res) => {
-	
-	console.log('automatch knock from ' + req.body.user_id);
-	
-	let userIndex = matchmaking_queue.findIndex(u => u.id === req.body.user_id);
-	if (userIndex === -1) {
-		if (users_joining_match[req.body.user_id]) {
-			return res.status(200).send({
-				game_id: users_joining_match[req.body.user_id].game_id,
-				server: users_joining_match[req.body.user_id].server,
-				data: 'am-ready'
-			});
-		} else {
-			return res.status(200).send({data:"am-not-yet"})
-		}
-	}
-	console.log(userIndex, matchmaking_queue, matchmaking_queue[userIndex]);
-	matchmaking_queue[userIndex].lives = Math.min(matchmaking_queue[userIndex].lives + 1, 3);
-	return res.status(200).send({data:"am-not-yet"})
-});
-
-app.post('/automatch-anyone', (req, res) => {
-
-	if (matchmaking_queue.length > 0){
-		res.status(200).send({
-			data: 'yes-waiting'
-        });
-	} else {
-		res.status(200).send({
-			data: 'no-noone'
-        });
-	}
-});
 
 app.post('/check-status/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
@@ -1761,12 +1621,23 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 								console.log('WTF 2 game ' + g_id + ' probably canceled in the meantime? race condition?');
 							//start_world(g_id);
 						});
+					Game.findOne({game_id: g_id}).then(result=>{
+						requestGameServerUpdate(active_game[3], g_id);
+						res.status(200).send({
+							data: "accepted",
+							server: active_game[3]
+						});
+						userSocketMap[result.player1].send(JSON.stringify({
+							type: "match-found",
+							data: {
+								server: active_game[3],
+								game_id: g_id
+							}
+						}))
+					})
 				
 					//create_worker(g_id, 'nonranked');
-					res.status(200).send({
-			        	data: "waiting for p1 to start",
-						server: active_game[3]
-			        });
+					
 				}
 			})
 			.catch((error) => {
@@ -1978,6 +1849,152 @@ app.get("/admin-panel/dash", async (req,res,next) => {
 app.get("/admin-panel", (req,res,next)=>{res.redirect("/admin-panel/login")})
 
 app.use(express.static('public', {extensions: ["html"]}));
+
+function wssBroadcast(data){
+	wss.clients.forEach(function each(client) {
+		if (client.readyState === WebSocket.OPEN) {
+			client.send(data);
+		}
+	});
+}
+
+function automatchStatusContent(){
+	return JSON.stringify({
+		type: "automatch-status",
+		data: {
+			peopleAutomatching: matchmaking_queue.length,
+		}
+	})
+}
+
+function sendAutomatchStatus(){
+	wssBroadcast(automatchStatusContent())
+}
+
+async function newGame(data, socket){
+	let response = {}
+	switch(data.type) {
+		case "easy-bot":
+			// TODO swz: fix this
+			// response = tutorial_game()
+			break;
+		case "boom-bot":
+			response = boom_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "will-bot":
+			response = will_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "medium-bot":
+			response = medium_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "dumb-bot":
+			response = dumb_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "challenge":
+			response = friend_challenge(data);
+			socket.send(JSON.stringify({
+				type: "challenge-wait",
+				data: {
+					game_id: response.g_id
+				}
+			}))
+			break
+		case "automatch":
+			const user = await User.findOne({user_id: data.user_id})
+			if (user == null) {
+				console.error("User not found")
+				return;
+			}
+			if (matchmaking_queue.findIndex(x => x.user_id == user.user_id) != -1) {
+				response = {
+					meta: "already-in-queue",
+				}
+				return;
+			}
+			discord_automatch_bot(data.user_id);
+			let play_color = get_color(data.user_color)
+
+			if (!color_validity(play_color, user.colors)) {
+				play_color = 'color1';
+			} 
+
+			let toAdd = {
+				id: user.user_id,
+				rating: user.rating,
+				time_in_queue: 0, // in milliseconds
+				shape: data.user_shape,
+				color: play_color,
+				lives: Infinity, // how many seconds user has to be inactive to be removed from queue
+				socket
+			}
+			
+			matchmaking_queue.push(toAdd)
+			matchmake()
+			sendAutomatchStatus()
+			response = {
+				meta: 'automatching'
+			}
+			socket.on("close", ()=>{
+				matchmaking_queue = matchmaking_queue.filter(e => e.id != toAdd.id)
+				sendAutomatchStatus()
+			})
+			break;
+	}
+}
+
+// Automatch socket system
+wss.on("connection", (ws)=>{
+	ws.send(automatchStatusContent())
+	ws.on("message", async (msg) => {
+		let message = JSON.parse(msg);
+		switch(message.type){
+			case "join":
+				if (message.data.user_id == 'anonymous'){
+					tutorial_game(message.data);
+					return;
+				}
+				let session = await Session.find({session_id: message.data.session_id})
+				if (session == null) return;
+				userSocketMap[message.data.user_id] = ws;
+				newGame(message.data, ws)
+				ws.send(JSON.stringify({
+					type: "joining",
+					data: {
+						message: "OK"
+					}
+				}))
+			break;
+		}
+	})
+})
 
 server.listen(5000, () => console.log('Listening on port :5000'))
 automatch();

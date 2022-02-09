@@ -357,14 +357,7 @@ wss.on('connection', function connection(ws, req) {
 
 
 app.get('/' + this_server + 'n/:game_id', (req, res) => {
-	let g_id = req.params.game_id;
-	// JM if uncomment, fix the active_games[g_id] == undefined possibility
-	//if (active_games[g_id][0] == 1){
-	//	res.redirect('/' + this_server + '/' + g_id);
-	//} else {
 	res.sendFile(base + '/public/wait.html');
-	//}
-	
 });
 
 app.post('/' + this_server + 'ns/:game_id', (req, res) => {
