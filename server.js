@@ -502,19 +502,26 @@ function color_validity(color, clr_array){
 	
 }
 
-function tutorial_game(data){
+function tutorial_game(req, res, pl_id){
 	
 	var chosen_server = pick_server('tutorial');
 	
 	
-	g_id = new_game(data.user_id, 'easy-bot', 1, chosen_server);
+	g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
+	
+
+	res.status(200).send({
+		g_id: g_id,
+		meta: 'easy-bot',
+		server: chosen_server
+    });
 	
 	const game = new Game({
 		game_id: g_id,
 		server: chosen_server,
 		player1: 'anonymous',
 		player2: 'easy-bot',
-		p1_session_id: data.session_id,
+		p1_session_id: req.body.session_id,
 		p2_session_id: 'bot',
 		p1_shape: 'circles',
 		p2_shape: 'circles',
@@ -535,16 +542,11 @@ function tutorial_game(data){
 		.then((result) => {
 			console.log('game saved to db');
 			console.log(result);
+			requestGameServerUpdate(chosen_server, g_id);
 		})
 		.catch((error) => {
 			console.log(error);
 		})
-
-	return {
-		g_id: g_id,
-		meta: 'easy-bot',
-		server: chosen_server
-		}
 }
 
 function bot_game(data, botinfo){
@@ -1761,6 +1763,9 @@ app.get('/replay/:game_id', (req, res) => {
 	//}
 	
 });
+app.post("/launchtut", (req,res) => {
+	tutorial_game(req,res,req.body.user_id)
+})
 function findAgain(req, res, g_id){
 	Game.find({game_id: g_id})
 		.then((result) => {
@@ -1874,10 +1879,6 @@ function sendAutomatchStatus(){
 async function newGame(data, socket){
 	let response = {}
 	switch(data.type) {
-		case "easy-bot":
-			// TODO swz: fix this
-			// response = tutorial_game()
-			break;
 		case "boom-bot":
 			response = boom_bot_game(data)
 			socket.send(JSON.stringify({
@@ -1977,10 +1978,7 @@ wss.on("connection", (ws)=>{
 		let message = JSON.parse(msg);
 		switch(message.type){
 			case "join":
-				if (message.data.user_id == 'anonymous'){
-					tutorial_game(message.data);
-					return;
-				}
+				if (message.data.user_id == 'anonymous') return;
 				let session = await Session.find({session_id: message.data.session_id})
 				if (session == null) return;
 				userSocketMap[message.data.user_id] = ws;

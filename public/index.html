@@ -92,8 +92,29 @@ JavaScript code.</h1>
 		
 		
 		<div class="index_spacer_medium"></div>
+
+		<script>
+			function launchTutorial(){
+				fetch('/launchtut', {
+					method: "POST",
+					headers: {
+						Accept: "application/json",
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						user_id: getCookie('user_id'),
+						session_id: getCookie('session_id')
+					})
+				})
+					.then(response => response.json())
+					.then(response => {
+						game_id = response.g_id;
+						window.location.href = './' + response.server + 'n/' + response.g_id;
+					})
+				}
+		</script>
 		
-		<div class="action_block" id="action_tut" onclick="new_game('easy-bot')">
+		<div class="action_block" id="action_tut" onclick="launchTutorial()">
 			<h4 class="action_head">TUTORIAL</h4>
 			<p class="action_desc">Learn the basics of the game in an interactive tutorial</p>
 			<div class="ico_arrow arrow_tut"></div>
