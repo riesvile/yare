@@ -242,6 +242,7 @@
 		  'toored': ['rgba(240, 70, 60, 1)', 'rgba(250, 90, 80, 1)']
 		  
 	  };
+		const socket = new WebSocket('ws://' + window.location.host + '/');
 	  
 	  function getCookie(name) {
 	      var nameEQ = name + "=";
@@ -508,36 +509,32 @@
 	  
 	  
 	  function am_knock(usid){
-	  	knockknock = setInterval(function(){
-	  		console.log('checking with server');
-	  		fetch('/automatch-status', {
-	  	        method: "POST",
-	  	        headers: {
-	  	          Accept: "application/json",
-	  	          "Content-Type": "application/json"
-	  	        },
-	  	        body: JSON.stringify({
-	  		        user_id: usid
-	  		    })
-	  		}).then(response => response.json())
-	  	      .then(response => {
-	  			  //redirect to game id
-	  			  console.log(response);
-	  			  if (response.data == 'am-not-yet'){
-	  				  console.log('not matched yet');
-	  			  } else if (response.data == 'am-ready'){
-	  				  console.log('game is ready');
-	  				  //document.getElementById("get_in").style.display = "block";
-	  				  window.location = './' + response.server + '/' + response.game_id;
-	  			  }
-		  
-		 
-	  		  })
-	  	      .catch(err => {
-	  			  console.log(err);
-	  		  });
-	  	}, 1000);
-	  }
+			// knocking is no longer needed because of sockets (:
+		}
+
+		socket.onmessage = (event) => {
+			let msg = event.data
+			let message = JSON.parse(msg)
+			switch (message.type) {
+				case "automatching":
+					console.log("got automatching message")
+					break;
+				case "automatch-status":
+					console.log("got automatch-status message")
+					document.getElementById('someone_in_queue').style.display = message.data.peopleAutomatching > 0 ? "block" : "none";
+					break;
+				case "challenge-wait":
+					console.log("got challenge-wait message")
+					const challengeLink = `${location.origin}/challenge/${message.data.game_id}`
+					document.getElementById("ch_link").innerText = challengeLink
+					document.getElementById('friend_link').setAttribute('code', challengeLink);
+					break;
+				case "match-found":
+					console.log("got match-found message", message.data)
+					window.location.href = `/${message.data.server}n/${message.data.game_id}`;
+					break;
+			}
+		}
 	  
 	  
 	  
@@ -557,47 +554,16 @@
 		} else {
 			wait_opponent_view();
 		}
-		
-		  
-	  	fetch('/new-game', {
-	          method: "POST",
-	          headers: {
-	            Accept: "application/json",
-	            "Content-Type": "application/json"
-	          },
-	          body: JSON.stringify({
-	  	        user_id: getCookie('user_id'),
-				user_shape: chosen_shape,
+			socket.send(JSON.stringify({
+				"type": "join",
+				"data": {
+					user_id: getCookie('user_id'),
+					user_shape: chosen_shape,
 			    user_color: chosen_color,
-	  	        session_id: getCookie('session_id'),
+					session_id: getCookie('session_id'),
 	  			type: type
-	  	    })
-	  	}).then(response => response.json())
-	        .then(response => {
-	  		  //redirect to game id
-	  		  console.log(response);
-	  		  game_id = response.g_id;
-	  		  if (response.meta == 'easy-bot'){
-	  			 //setCookie('game_id', game_id);
-	  		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
-	  			 //document.location.reload(true);
-	  		  } else if (response.meta == 'medium-bot' || response.meta == 'dumb-bot' || response.meta == 'will-bot' || response.meta == 'boom-bot' || response.meta == 'qual-bot'){
-			  	  window.location.href = './' + response.server + 'n/' + response.g_id;
-		  	  } else if (response.meta == 'waiting for p2'){
-	  			  waiting_for_p2(response.g_id);
-	  		  } else if (response.meta == 'automatching'){
-	  			  am_knock(getCookie('user_id'));
-	  		  } else if (response.meta == 'anonymous'){
-	  			  console.log('create a new account or login')
-	  		  }
-		  
-		 
-	  	  })
-	        .catch(err => {
-	  		  console.log(err);
-	  	  });
-	  	  console.log(getCookie('user_id'));
-		  
+	  	  }
+			}))
 	  }
 	  
 	  function challenge_friend(){
@@ -711,7 +677,6 @@
 	  
 	  get_user_colors();
 	  update_links();
-  	  am_anyone();
   
   
   </script>

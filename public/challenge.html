@@ -472,11 +472,9 @@
 	  	
 	  		  } else if (response.data == "accepted"){
 	  		  	  console.log("Challenge accepted");
+							window.location = '/' + response.server + 'n/' + game_id
 	  		  } else if (response.data == "waiting for p1 to start"){
 				  console.log('start in five sec');
-			  	setTimeout(function(){
-			    	window.location = '../' + response.server + '/' + game_id;
-			  	}, 2000);
 	  		  }
 	  	  })
 	        .catch(err => {
