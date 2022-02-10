@@ -161,6 +161,11 @@
 			<h2 class="deer_h" id="waiting_head_text">Looking for an opponent</h2>
 			<p class="deer_p" id="waiting_secondary_text">Average time: 1 minute</p>
 		</div>
+
+		<div id="wait_container" class="hidden">
+			<p id="load_para">Preparing the game...</p>
+			<div id="tr_loader"></div>
+		</div>
 				  
 		  
 		  
@@ -512,6 +517,8 @@
 			// knocking is no longer needed because of sockets (:
 		}
 
+		const joinSound = new Audio("/sound/join_game.mp3");
+
 		socket.onmessage = (event) => {
 			let msg = event.data
 			let message = JSON.parse(msg)
@@ -531,7 +538,10 @@
 					break;
 				case "match-found":
 					console.log("got match-found message", message.data)
-					window.location.href = `/${message.data.server}n/${message.data.game_id}`;
+					joinSound.play()
+					setTimeout(() => {
+						window.location.href = `/${message.data.server}n/${message.data.game_id}`;
+					}, joinSound.duration * 1000)
 					break;
 			}
 		}
@@ -551,6 +561,11 @@
 		
 		if (type == 'challenge'){
 			wait_challenge_view();
+		} else if (["easy-bot", "dumb-bot", "medium-bot", "will-bot", "boom-bot"].includes(type)){
+			document.getElementById("start_area").classList.add("hidden")
+			document.getElementById("user_selections").classList.add("hidden")
+			document.getElementById("overlay").classList.add("hidden")
+			document.getElementById("wait_container").classList.remove("hidden")
 		} else {
 			wait_opponent_view();
 		}
