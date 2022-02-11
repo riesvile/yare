@@ -247,7 +247,8 @@
 	  editor.setOptions({
 	      enableBasicAutocompletion: true,
 		  enableSnippets: true,
-   	   	  enableLiveAutocompletion: true
+   	   	  enableLiveAutocompletion: true,
+		  firstLineNumber: 2
 	  });
 	  editor.commands.addCommand({
 	      name: "update_code",
@@ -386,7 +387,7 @@
 		 }
 	  }
 	  
-	  var client_object = {
+	  var client = {
 		  temp: 'test'
 	  };
 	  
@@ -958,6 +959,36 @@
 	  	  });
 	  }
 	  
+	  function store_script() {
+		  let script_id = 'testscript';
+		  let script_name = 'Test Script';
+		  let script_content = {
+			  data: editor.getValue()
+		  }
+		  console.log('script content:');
+		  console.log(script_content);
+		  
+	  	  	fetch('/store_script', {
+	  	  	        method: "POST",
+	  	  	        headers: {
+	  	  	          Accept: "application/json",
+	  	  	          "Content-Type": "application/json"
+	  	  	        },
+    	  	        body: JSON.stringify({
+    	  		        script_content: JSON.stringify(script_content),
+						script_id: script_id,
+						script_name: script_name
+    	  		    })
+
+	  	      }).then(response => {
+	  	  		  console.log(response);
+				  
+	  	  	  })
+	  	        .catch(err => {
+	  	  		  console.log(err);
+	  	  	  });
+	  }
+	  
 	  function update_code(){
 		  update_success();
 		  if (tutorial_started == 0){
@@ -968,7 +999,7 @@
 		  //console.log('clicked');
 		  user_code = editor.getValue();
 		  localStorage.setItem("code_code", user_code);
-		  socket.send(JSON.stringify({u_code: "test_var[tick] = " + JSON.stringify(client_object) + "\n" + user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
+		  socket.send(JSON.stringify({u_code: "client[tick] = " + JSON.stringify(client) + "\n" + user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  }
 	  
 	  function resign_game(){

@@ -1230,6 +1230,27 @@ app.post('/get_replay', async (req, res) => {
 	}
 });
 
+app.post('/store_script', async (req, res) => {
+	
+	
+	
+	
+	let user_script = JSON.stringify(req.body.script_content);
+	console.log(user_script);
+	console.log('script_id = ' + req.body.script_id);
+	
+	
+	await s3client.putObject({
+		Body: user_script,
+		Bucket: config.s3.bucket,
+		Key: req.body.script_id + '.json',
+	}).promise()
+	
+	
+});
+
+
+
 app.post('/playerinfo', (req, res) => {
 	var p111_rating = 0;
 	var p222_rating = 0;
