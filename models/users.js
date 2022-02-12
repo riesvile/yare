@@ -22,7 +22,11 @@ const user_schema = new Schema({
 	},
 	qualified_shape: String, 
 	goodenough: Number,
-	email: String
+	email: String,
+	marker: Number,
+	visible_modules: Array,
+	active_modules: Array,
+	audio_preference: Array
 }, {timestamps: true});
 
 const session_schema = new Schema({
