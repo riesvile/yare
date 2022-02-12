@@ -258,6 +258,7 @@ function submit_test(){
 
 function create_module(){
 	
+	var user_name = getCookie('user_id');
 	
 	fetch('/add-module', {
 	        method: "POST",
@@ -281,8 +282,6 @@ function create_module(){
       .catch(err => {
 		  console.log(err);
 	  });
-  
-});
 	
 	
 }

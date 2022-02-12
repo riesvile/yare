@@ -234,6 +234,7 @@ const mongoose = require('mongoose');
 const {User, Session} = require('./models/users.js');
 const Game = require('./models/newgame.js');
 const Server = require('./models/servers.js');
+const Module = require('./models/modules.js');
 const dbURI = config.mongo;
 mongoose.set('useCreateIndex', true);
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
