@@ -234,6 +234,7 @@ const mongoose = require('mongoose');
 const {User, Session} = require('./models/users.js');
 const Game = require('./models/newgame.js');
 const Server = require('./models/servers.js');
+const Module = require('./models/modules.js');
 const dbURI = config.mongo;
 mongoose.set('useCreateIndex', true);
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -955,7 +956,11 @@ app.post('/add-user', async (req, res) => {
 			qualified: "",
 			qualified_shape: "",
 			goodenough: 0,
-			email: ""
+			email: "",
+			marker: 0,
+			visible_modules: [],
+			active_modules: [],
+			audio_preference: [50, 60] 
 		});
 
 		user.save()
@@ -976,6 +981,40 @@ app.post('/add-user', async (req, res) => {
 				});
 			});
 	}
+	
+});
+
+app.post('/add-module', async (req, res) => {
+	console.log(req.body);
+	
+	var module_id = generateUniqueString("mod");
+
+	const module = new Module({
+		module_id: module_id,
+		type: "",
+		name: req.body.module_name,
+		description: "",
+		public: 0,
+		subscribers: [req.body.user_name],
+		client_script_location: "",
+		server_script_location: "",
+		author: req.body.user_name
+	});
+
+	module.save()
+		.then((qq) => {
+			res.status(200).send({
+				module_id: module_id,
+				data: "module created"
+			});
+		})
+		.catch((error) => {
+			console.log(error);
+			res.status(400).send({
+				data: "something went wrong :/"
+			});
+		});
+	
 	
 });
 
@@ -1030,11 +1069,6 @@ app.get('/game/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
 	res.sendFile(__dirname + '/public/game.html');
 });
-
-
-//game servers (change t1 to server's responsibility (d1, d2 ...))
-// ------
-// ------
 
 
 
@@ -1229,6 +1263,27 @@ app.post('/get_replay', async (req, res) => {
 		});
 	}
 });
+
+app.post('/store_script', async (req, res) => {
+	
+	
+	
+	
+	let user_script = JSON.stringify(req.body.script_content);
+	console.log(user_script);
+	console.log('script_id = ' + req.body.script_id);
+	
+	
+	await s3client.putObject({
+		Body: user_script,
+		Bucket: config.s3.bucket,
+		Key: 'modules/' + req.body.script_id + '.txt',
+	}).promise()
+	
+	
+});
+
+
 
 app.post('/playerinfo', (req, res) => {
 	var p111_rating = 0;

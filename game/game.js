@@ -787,6 +787,7 @@ class Sandbox {
 		this.successful_compile = false;
 		this.jail.setSync("global", this.jail.derefInto());
 		this.jail.setSync("memory", {}, {copy: true});
+		this.jail.setSync("client", {}, {copy: true});
 
 		this.yd = this.context.evalClosureSync(sandboxCode, [], {result: {reference: true}});
 

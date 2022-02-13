@@ -256,6 +256,37 @@ function submit_test(){
 }
 
 
+function create_module(){
+	
+	var user_name = getCookie('user_id');
+	
+	fetch('/add-module', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name,
+		        module_name: 'test module'
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  //console.log(response);
+		  if (response.data == "module created"){
+			  console.log('all good');
+			  console.log('module_id = ' + response.module_id);
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+	
+	
+}
+
+
 try {
 	document.getElementById("new_acc_form").addEventListener("submit", function(e){
     
