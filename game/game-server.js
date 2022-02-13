@@ -314,6 +314,14 @@ wss.on('connection', function connection(ws, req) {
 			return;
 		}
 
+		if (message['u_code_lang'] != undefined && message['u_code_lang'] != "javascript") {
+			let req = await fetch("http://transpiler:5000/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
+			// console.log(await req.text());
+			let res = await req.json();
+			if (res.result) message['u_code'] = res.result;
+			if (res.error) message['u_code'] = `throw "${res.error.replace(/\n/g, '\\n').replace("\"", "\\\"")}";`;
+		}
+
 		connections[ws.client_id] = ws;
 		//player1_code = message;
 		try {

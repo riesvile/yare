@@ -17,4 +17,4 @@ RUN npm install
 COPY . .
 
 EXPOSE 8080
-CMD [ "node", "--experimental-wasm-mv", "game/game-server.js" ]
+CMD [ "node", "--experimental-wasm-mv", "--enable-source-maps", "game/game-server.js" ]

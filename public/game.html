@@ -968,7 +968,7 @@
 		  //console.log('clicked');
 		  user_code = editor.getValue();
 		  localStorage.setItem("code_code", user_code);
-		  socket.send(JSON.stringify({u_code: "test_var[tick] = " + JSON.stringify(client_object) + "\n" + user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
+		  socket.send(JSON.stringify({u_code: user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  }
 	  
 	  function resign_game(){
