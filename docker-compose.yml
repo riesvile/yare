@@ -19,6 +19,7 @@ services:
     depends_on:
       - mongodb
       - minio
+      - transpiler
   d2:
     build:
       context: .
@@ -29,6 +30,7 @@ services:
     depends_on:
       - mongodb
       - minio
+      - transpiler
   tutorial:
     build:
       context: .
@@ -66,3 +68,9 @@ services:
       - "9000:9000"
       - "9001:9001"
     command: ["server", "/data", "--console-address=:9001"]
+  transpiler:
+    ports:
+      - "8075:5000"
+    build:
+      context: ./transpiler
+      dockerfile: Dockerfile
