@@ -14,7 +14,8 @@ const module_schema = new Schema({
 	subscribers: Array,
 	client_script_location: String,
 	server_script_location: String,
-	author: String
+	author: String,
+	alive: Number
 }, {timestamps: true});
 
 

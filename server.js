@@ -984,21 +984,85 @@ app.post('/add-user', async (req, res) => {
 	
 });
 
+app.post('/store_script', async (req, res) => {
+	
+	let user_script = JSON.stringify(req.body.script_content);
+	console.log(user_script);
+	console.log('script_id = ' + req.body.script_id);
+	
+	
+	await s3client.putObject({
+		Body: user_script,
+		Bucket: config.s3.bucket,
+		Key: 'modules/' + req.body.script_id + '.txt',
+	}).promise()
+	
+});
+
+app.post('/download_script', async (req, res) => {
+	
+	let module_id = req.body.module_id;
+	let script_type = req.body.script_type + '/';
+	console.log("downloading " + script_type + " script of module " + module_id);
+	
+	try {
+		let data = await s3client.getObject({
+			Bucket: config.s3.bucket,
+			Key: 'modules/' + script_type + module_id + '.js',
+		}).promise();
+		console.log(data);
+		res.status(200).send({
+			data: data.Body,
+			meta: 'script_retreived'
+		});
+		return;
+	} catch (err) {
+		console.log(err);
+	}
+	
+});
+
+function store_script(script_file, module_id, client = 1){
+	let fold = 'client/';
+	if (client == 0) fold = 'server/'; 
+	
+	let temp_help = script_file.split(',')[1];
+	
+	let deco = Buffer.from(temp_help, 'base64');
+
+	console.log('script_file = ');
+	console.log(script_file);
+	
+	console.log('decoded.toString() = ');
+	console.log(deco.toString());
+	
+	s3client.putObject({
+		Body: deco.toString(),
+		Bucket: config.s3.bucket,
+		ACL: 'public-read',
+		Key: 'modules/' + fold + module_id + '.js',
+	}).promise()
+}
+
+
 app.post('/add-module', async (req, res) => {
 	console.log(req.body);
 	
-	var module_id = generateUniqueString("mod");
+	let module_id = generateUniqueString("mod");
+	
+	store_script(req.body.module_content_client, module_id);
 
 	const module = new Module({
 		module_id: module_id,
 		type: "",
 		name: req.body.module_name,
 		description: "",
-		public: 0,
-		subscribers: [req.body.user_name],
-		client_script_location: "",
-		server_script_location: "",
-		author: req.body.user_name
+		public: 1,
+		subscribers: ['test', req.body.user_name],
+		client_script_location: "modules/client",
+		server_script_location: "modules/server",
+		author: req.body.user_name,
+		alive: 1
 	});
 
 	module.save()
@@ -1014,9 +1078,92 @@ app.post('/add-module', async (req, res) => {
 				data: "something went wrong :/"
 			});
 		});
-	
-	
 });
+
+app.post('/get-available-modules', async (req, res) => {
+	console.log(req.body);
+	
+	Module.find({$or:[{public: 1},{subscribers: req.body.user_id}]})
+		.then((result) => {
+			//res.send(result);
+			console.log('getting available modules');
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no module found"
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "modules retreived",
+					stream: result
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+
+   //
+   //User.find({user_id: req.body.user_name})
+   //	.then((result) => {
+   //		//res.send(result);
+   //		console.log('getting available modules');
+   //		if (result.length == 0){
+   //			res.status(200).send({
+   //	        	data: "no module found"
+   //	        });
+   //		} else if (result[0]['rating'] != undefined){
+   //			
+   //			let module_locations = [];
+   //			//loop through active modules and put source (url?) into active_locations? sounds stupid :/
+   //			
+   //			res.status(200).send({
+   //	        	data: "modules retreived",
+   //				visible_modules: result[0]['visible_modules'],
+   //				active_modules: result[0]['active_modules'],
+   //				active_locations: "" // can this be inferred from the active_modules id?
+   //	        });
+   //		} else {
+   //			res.status(200).send({
+   //	        	data: "something went wrong"
+   //	        });
+   //		}
+   //	})
+   //	.catch((error) => {
+   //		console.log(error);
+   //	})
+});
+
+app.post('/get-module-info', async (req, res) => {
+	console.log(req.body);
+
+	Module.find({module_id: req.body.module_id})
+		.then((result) => {
+			//res.send(result);
+			console.log('getting modules info');
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no module found"
+		        });
+			} else if (result[0]['name'] != undefined){
+				res.status(200).send({
+		        	data: "module info retreived",
+					m_type: result[0]['type'],
+					m_name: result[0]['name'],
+					m_description: result[0]['description']
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "somethinnnng went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+
+
 
 app.post('/' + this_server + '/tutorial-signup', (req, res) => {
 
@@ -1262,25 +1409,6 @@ app.post('/get_replay', async (req, res) => {
 			meta: "no replay found"
 		});
 	}
-});
-
-app.post('/store_script', async (req, res) => {
-	
-	
-	
-	
-	let user_script = JSON.stringify(req.body.script_content);
-	console.log(user_script);
-	console.log('script_id = ' + req.body.script_id);
-	
-	
-	await s3client.putObject({
-		Body: user_script,
-		Bucket: config.s3.bucket,
-		Key: 'modules/' + req.body.script_id + '.txt',
-	}).promise()
-	
-	
 });
 
 

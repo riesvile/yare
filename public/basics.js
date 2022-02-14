@@ -255,35 +255,140 @@ function submit_test(){
 	//console.log('submit teest');
 }
 
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
 
 function create_module(){
 	
-	var user_name = getCookie('user_id');
+	let user_name = getCookie('user_id');
 	
-	fetch('/add-module', {
+	let client_uploader = document.getElementById("file_script_client");
+	let server_uploader = document.getElementById("file_script_server");
+	
+	getBase64(document.getElementById("file_script_client").files[0]).then(
+		data => {
+			console.log(data);
+			let file_client = data;
+			fetch('/add-module', {
+			        method: "POST",
+			        headers: {
+			          Accept: "application/json",
+			          "Content-Type": "application/json"
+			        },
+			        body: JSON.stringify({
+				        user_name: user_name,
+				        module_name: 'test module',
+						module_content_client: file_client
+						module_content_server: "" 
+				    })
+					//TODO: server script file
+
+		    }).then(response => response.json())
+		      .then(response => {
+				  //console.log(response);
+				  if (response.data == "module created"){
+					  console.log('all good');
+					  console.log('module_id = ' + response.module_id);
+				  } 
+			  })
+		      .catch(err => {
+				  console.log(err);
+			  });
+		});
+	
+}
+
+
+function download_module_script(module_id, client = 1){
+	
+	let script_type = 'server';
+	if (client == 1) script_type = 'client';
+	
+	fetch('/download_script', {
 	        method: "POST",
 	        headers: {
 	          Accept: "application/json",
 	          "Content-Type": "application/json"
 	        },
 	        body: JSON.stringify({
-		        user_name: user_name,
-		        module_name: 'test module'
+		        module_id: module_id,
+		        script_type: script_type
 		    })
 
     }).then(response => response.json())
       .then(response => {
-		  //console.log(response);
-		  if (response.data == "module created"){
-			  console.log('all good');
-			  console.log('module_id = ' + response.module_id);
-		  } 
+		  console.log('receiving script file');
+		  console.log(response.data.toString());
+		  //if (response.data == "script downloaded"){
+		  //	  console.log('all good');
+		  //	  console.log('module_id = ' + response.module_id);
+		  //} 
 	  })
       .catch(err => {
 		  console.log(err);
 	  });
 	
+}
+
+
+function get_all_modules(){
 	
+	let user_name = getCookie('user_id');
+	
+	fetch('/get-available-modules', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  console.log(response);
+		  if (response.data == "modules retreived"){
+			  console.log('all good');
+			  console.log('data stream = ');
+			  console.log(response.stream);
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+}
+
+function get_module_info(module_id){
+	
+	fetch('/get-module-info', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        module_id: module_id
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  console.log(response);
+		  if (response.data == "module info retreived"){
+			  console.log('all good');
+			  console.log('module name = ' + response.m_name);
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
 }
 
 
