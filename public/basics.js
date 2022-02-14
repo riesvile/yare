@@ -285,7 +285,7 @@ function create_module(){
 			        body: JSON.stringify({
 				        user_name: user_name,
 				        module_name: 'test module',
-						module_content_client: file_client
+						module_content_client: file_client,
 						module_content_server: "" 
 				    })
 					//TODO: server script file
