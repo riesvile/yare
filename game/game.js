@@ -184,6 +184,7 @@ const util = require('util');
 const mongoose = require('mongoose');
 const {User, Session} = require('../models/users.js');
 const Game = require('../models/newgame.js');
+const {SourceMapConsumer} = require("source-map")
 
 
 const dbURI = config.mongo;
@@ -407,7 +408,7 @@ function to_html(txt){
 	return txt.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
 }
 
-function clean_error(error){
+async function clean_error(error, sourcemap){
 	if(!(error instanceof Error)) {
 		return String(error);
 	}
@@ -416,14 +417,35 @@ function clean_error(error){
 	let stack = error.stack.split("\n");
 
 	stack = stack.filter(l => /~sandbox/.test(l));
+	if (sourcemap !== null) {
+		stack = await Promise.all(stack.map(async l => {
+			let coords = l.match(/\d+:\d+/)[0].split(":");
+			let line = +coords[0];
+			let col = +coords[1];
+
+			let rawSourceMap = JSON.parse(Buffer.from(sourcemap.split("data:application/json;base64,")[1], 'base64').toString('ascii'))
+	
+			let originalPosition = await SourceMapConsumer.with(rawSourceMap, null, consumer => {
+				return consumer.originalPositionFor({
+					line: line,
+					column: col
+				})
+			})
+			return l.replace(/\d+:\d+/, `${originalPosition.line}:${originalPosition.column}`)
+		}))
+	}
 	
 	message += "\n" + stack.join("\n");
 
 	return message;
 }
 
-function handle_error(error, player){
-	message = clean_error(error);
+async function handle_error(error, player, code){
+	let sourcemap = code.split("//# sourceMappingURL=").reverse()[0];
+	if (!sourcemap.startsWith("data:application/json;base64,")) {
+		sourcemap = null
+	}
+	message = await clean_error(error, sourcemap);
 
 	fill_error(player, to_html(message));
 }
@@ -473,11 +495,11 @@ async function user_code(){
 			fill_error(player, to_html(sand1.last_compile_err));
 		}
 		if(run_err) {
-			handle_error(run_err, player);
+			handle_error(run_err, player, sand1.currentCode);
 		}
 	} catch (error){
 		console.log("error getting output p1" + error);
-		handle_error(error, player);
+		handle_error(error, player, sand1.currentCode);
 	}
 
 	//
@@ -504,11 +526,11 @@ async function user_code(){
 			fill_error(player, to_html(sand2.last_compile_err));
 		}
 		if(run_err) {
-			handle_error(run_err, player);
+			handle_error(run_err, player, sand2.currentCode);
 		}
 	} catch (error){
 		console.log("error getting output p2" + error);
-		handle_error(error, player);
+		handle_error(error, player, sand2.currentCode);
 	}
 }
 
@@ -784,6 +806,7 @@ class Sandbox {
 		this.context = this.isolate.createContextSync();
 		this.jail = this.context.global;
 		this.script = this.isolate.compileScriptSync(``);
+		this.currentCode = ""
 		this.successful_compile = false;
 		this.jail.setSync("global", this.jail.derefInto());
 		this.jail.setSync("memory", {}, {copy: true});
@@ -816,6 +839,7 @@ class Sandbox {
 	setPlayerCode(code) {
 		this.last_compile_err = null;
 		try {
+			this.currentCode = code
 			this.script = this.isolate.compileScriptSync(code, {filename: "~sandbox/user.js"});
 			this.successful_compile = true;
 		}catch(err) {
