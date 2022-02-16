@@ -26,7 +26,8 @@ app.post('/transpile', function (req, res) {
     res.status(200).send({result})
     console.log(`Transpiled from ${language} successfully`)
   }catch(e){
-    res.status(400).send({error: e.message})
+    let errorMessage = e.message.split("\n").slice(1).join("\n")
+    res.status(400).send({error: errorMessage})
   }
   
 })

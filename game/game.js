@@ -423,7 +423,11 @@ async function clean_error(error, sourcemap){
 			let line = +coords[0];
 			let col = +coords[1];
 
-			let rawSourceMap = JSON.parse(Buffer.from(sourcemap.split("data:application/json;base64,")[1], 'base64').toString('ascii'))
+			let base64SourceMap = sourcemap.split(/^data:(application|text)\/json;base64,/)[2]
+
+			let textSourceMap = Buffer.from(base64SourceMap, 'base64').toString('ascii');
+
+			let rawSourceMap = JSON.parse(textSourceMap)
 	
 			let originalPosition = await SourceMapConsumer.with(rawSourceMap, null, consumer => {
 				return consumer.originalPositionFor({
@@ -441,8 +445,8 @@ async function clean_error(error, sourcemap){
 }
 
 async function handle_error(error, player, code){
-	let sourcemap = code.split("//# sourceMappingURL=").reverse()[0];
-	if (!sourcemap.startsWith("data:application/json;base64,")) {
+	let sourcemap = code.split("//# sourceMappingURL=").reverse()[0].trim();
+	if (!(/^data:(application|text)\/json;base64,/.test(sourcemap))) {
 		sourcemap = null
 	}
 	message = await clean_error(error, sourcemap);
