@@ -319,7 +319,10 @@ wss.on('connection', function connection(ws, req) {
 			// console.log(await req.text());
 			let res = await req.json();
 			if (res.result) message['u_code'] = res.result;
-			if (res.error) message['u_code'] = `throw "${res.error.replace(/\n/g, '\\n').replace("\"", "\\\"")}";`;
+			if (res.error) {
+				let tempJSON = JSON.stringify(JSON.stringify({error: res.error}));
+				message['u_code'] = `throw JSON.parse(${tempJSON})["error"];`;
+			}
 		}
 
 		connections[ws.client_id] = ws;

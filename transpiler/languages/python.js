@@ -3,32 +3,43 @@ const fs = require("fs")
 const {v4: uuid} = require('uuid')
 const path = require("path")
 
-module.exports = function(code) {
-  let output = ""
-  try {
-    output = execSync(
-      `python3 -m metapensiero.pj -s - -o -`, {
-        input: code
-      }
-    )
-  } catch (error) {
-      console.log(error.message);
-      console.log("error", error.stdout.toString());
-  }
+module.exports = javascripthon
+
+function javascripthon(code) {
+  console.log("stage 1")
+  let output = execSync(
+    `python3 -m metapensiero.pj --inline-map --source-name "~sandbox/user.py" -s - -o -`, {
+      input: code
+    }
+  )
+  console.log("stage 2")
   return output.toString()
 }
 
-const transcrypt = function(code) {
+// transcrypt refuses to find the python file for some reason ):<
+function transcrypt(code) {
+  let srcdir = "/tmp/transcrypt/"
+  // if (fs.existsSync(srcdir)) {
+  //   fs.rmdirSync(srcdir, { recursive: true })
+  // }
+  if (!fs.existsSync(srcdir)) {
+    fs.mkdirSync(srcdir)
+    fs.chmodSync(srcdir, 0o777)
+  }
   let id = uuid()
-  let tempFile = path.join("/tmp/", id + ".py")
-  let tempDir = path.join("/tmp/", id)
+  let tempFile = path.join(srcdir, id + ".py")
+  let tempDir = path.join(srcdir, id)
   let outFile = path.join(tempDir, id + ".js")
   fs.mkdirSync(tempDir)
   fs.writeFileSync(tempFile, code)
-  console.log(fs.readdirSync("/tmp"), fs.readFileSync(tempFile, "utf-8"))
+  console.log(fs.readdirSync(srcdir), fs.readFileSync(tempFile, "utf-8"))
+  let transcryptOutput = ""
   try {
-    const transcryptOutput = execSync(
-      `cd /tmp && python3 -m transcrypt -b -m -n ${id + ".py"} -od ${tempDir}`
+    transcryptOutput = execSync(
+      `find ${srcdir} && python3 -m transcrypt -m -n -v -p .none ${tempFile} -od ./${id}`,
+      {
+        cwd: srcdir
+      }
     )
   } catch (error) {
       console.log(error.message);
