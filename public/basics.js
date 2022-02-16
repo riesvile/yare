@@ -3,6 +3,8 @@ var active_session = 0;
 var game_id = '';
 var link_filled = 0;
 
+var modules_local = {};
+
 function setCookie(name,value,days){
     var expires = "";
     if (days) {
@@ -271,29 +273,112 @@ function create_module(){
 	
 	let client_uploader = document.getElementById("file_script_client");
 	let server_uploader = document.getElementById("file_script_server");
+	let module_name_input = document.getElementById("module_name_input");
 	
-	getBase64(document.getElementById("file_script_client").files[0]).then(
+	let has_client = 0;
+	let has_server = 0;
+	
+	if (client_uploader.value != "") has_client = 1;
+	if (server_uploader.value != "") has_server = 1;
+	
+	
+	if (has_client == 0 && has_server == 0){
+		alert('Please upload at least one .js file');
+		return
+	}
+	
+	console.log('module name = ' + module_name_input.value);
+	
+	
+
+	fetch('/new-module', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name,
+		        module_name: 'test module'
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  //console.log(response);
+		  if (response.data == "module created"){
+			  console.log('all good');
+			  console.log('module_id = ' + response.module_id);
+			  modules_local['mod_' + response.module_id] = {
+				  name: "test_module"
+			  };
+			  if (has_client) upload_script(response.module_id, "client");
+			  if (has_server) upload_script(response.module_id, "server");
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });	
+}
+
+function update_module_info(module_id){
+	
+	let user_name = getCookie('user_id');
+	let module_name = document.getElementById("module_name_input").value;
+	
+	if (module_name == modules_local['mod_' + module_id]['name']) return;
+	
+	fetch('/update-module-info', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name,
+				module_id: module_id,
+		        module_name: module_name
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  //console.log(response);
+		  if (response.data == "module updated"){
+			  console.log('all good');
+		  } else {
+			  console.log(response);
+		  }
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });	
+	
+}
+
+
+function upload_script(module_id, script_type){
+	
+	console.log('uploading ' + script_type + ' script');
+	
+	getBase64(document.getElementById("file_script_" + script_type).files[0]).then(
 		data => {
 			console.log(data);
 			let file_client = data;
-			fetch('/add-module', {
+			fetch('/upload-script', {
 			        method: "POST",
 			        headers: {
 			          Accept: "application/json",
 			          "Content-Type": "application/json"
 			        },
 			        body: JSON.stringify({
-				        user_name: user_name,
-				        module_name: 'test module',
-						module_content_client: file_client,
-						module_content_server: "" 
+				        module_id: module_id,
+						script_type: script_type,
+						script_file: file_client
 				    })
-					//TODO: server script file
 
 		    }).then(response => response.json())
 		      .then(response => {
 				  //console.log(response);
-				  if (response.data == "module created"){
+				  if (response.data == "script uploaded"){
 					  console.log('all good');
 					  console.log('module_id = ' + response.module_id);
 				  } 
@@ -302,7 +387,6 @@ function create_module(){
 				  console.log(err);
 			  });
 		});
-	
 }
 
 
@@ -311,7 +395,7 @@ function download_module_script(module_id, client = 1){
 	let script_type = 'server';
 	if (client == 1) script_type = 'client';
 	
-	fetch('/download_script', {
+	fetch('/download-script', {
 	        method: "POST",
 	        headers: {
 	          Accept: "application/json",

@@ -984,22 +984,18 @@ app.post('/add-user', async (req, res) => {
 	
 });
 
-app.post('/store_script', async (req, res) => {
+app.post('/upload-script', async (req, res) => {
 	
-	let user_script = JSON.stringify(req.body.script_content);
-	console.log(user_script);
-	console.log('script_id = ' + req.body.script_id);
+	let file_type = req.body.script_type == "client";
 	
+	console.log('module_id = ' + req.body.module_id);
+	console.log('fold = ' + req.body.script_type);
 	
-	await s3client.putObject({
-		Body: user_script,
-		Bucket: config.s3.bucket,
-		Key: 'modules/' + req.body.script_id + '.txt',
-	}).promise()
+	store_script(req.body.script_file, req.body.module_id, file_type);
 	
 });
 
-app.post('/download_script', async (req, res) => {
+app.post('/download-script', async (req, res) => {
 	
 	let module_id = req.body.module_id;
 	let script_type = req.body.script_type + '/';
@@ -1019,6 +1015,39 @@ app.post('/download_script', async (req, res) => {
 	} catch (err) {
 		console.log(err);
 	}
+	
+});
+
+app.post('/update-module-info', async (req, res) => {
+	
+	//later on description and other stuff
+	console.log('updating a module');
+	
+	Module.find({module_id: req.body.module_id})
+		.then((result) => {
+			//res.send(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no module found"
+		        });
+			} else if (result[0]['author'] == req.body.user_name){
+				Module.updateOne({module_id: req.body.module_id}, {name: req.body.module_name})
+					.then((qq) => {
+						console.log('name changed to ' + req.body.module_name);
+						res.status(200).send({
+				        	data: "module updated"
+				        });
+					});	
+			} else {
+				res.status(200).send({
+		        	data: "somethiinnng went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+	
 	
 });
 
@@ -1045,12 +1074,12 @@ function store_script(script_file, module_id, client = 1){
 }
 
 
-app.post('/add-module', async (req, res) => {
+app.post('/new-module', async (req, res) => {
 	console.log(req.body);
 	
 	let module_id = generateUniqueString("mod");
 	
-	store_script(req.body.module_content_client, module_id);
+	//store_script(req.body.module_content_client, module_id);
 
 	const module = new Module({
 		module_id: module_id,
