@@ -14,10 +14,6 @@ const ejs = require('ejs');
 const os = require('os');
 const bcrypt = require('bcrypt');
 var hashRounds = 10;
-const YARE_SERVER_ADDRESS = "https://yare.io";
-// you can change this to your LAN ip and port 5000 get matchmaking working in development
-// example: "http://192.168.1.10:5000"
-// do not include a slash at the end
 
 function randomString(length) {
 	return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
@@ -41,7 +37,7 @@ const userSocketMap = {}
 
 function requestGameServerUpdate(srvr, gid){
 		try {
-			fetch(YARE_SERVER_ADDRESS + '/' + srvr + 'ns/' + gid, { // CHANGE THIS BEFORE COMMIT
+			fetch(config.frontendAddress + '/' + srvr + 'ns/' + gid, { // CHANGE THIS BEFORE COMMIT
 						method: "POST",
 						headers: {
 							Accept: "application/json",
@@ -1250,7 +1246,7 @@ app.get('/game/:game_id', (req, res) => {
 
 function trigger_deactivation(game_id){
 	try {
-		fetch(YARE_SERVER_ADDRESS + '/deactivate', {
+		fetch(config.frontendAddress + '/deactivate', {
 	        method: "POST",
 	        headers: {
 	          Accept: "application/json",
@@ -1274,7 +1270,7 @@ function trigger_deactivation(game_id){
 
 function trigger_monitoring(gid, val){
 	try {
-		fetch(YARE_SERVER_ADDRESS + '/monitor', {
+		fetch(config.frontendAddress + '/monitor', {
 	        method: "POST",
 	        headers: {
 	          Accept: "application/json",
