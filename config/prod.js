@@ -13,4 +13,6 @@ config.s3 = {
     bucketEndpoint: true
 };
 
+config.frontendAddress = "https://yare.io"
+
 module.exports = config;

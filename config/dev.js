@@ -22,4 +22,6 @@ config.s3 = {
     bucketEndpoint: true
 };
 
+config.frontendAddress = "http://frontend:5000"
+
 module.exports = config;
