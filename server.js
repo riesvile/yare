@@ -1023,6 +1023,9 @@ app.post('/update-module-info', async (req, res) => {
 	//later on description and other stuff
 	console.log('updating a module');
 	
+	let isalive = 1;
+	if (req.body.delete_module == 1) isalive = 0;
+	
 	Module.find({module_id: req.body.module_id})
 		.then((result) => {
 			//res.send(result);
@@ -1031,7 +1034,10 @@ app.post('/update-module-info', async (req, res) => {
 		        	data: "no module found"
 		        });
 			} else if (result[0]['author'] == req.body.user_name){
-				Module.updateOne({module_id: req.body.module_id}, {name: req.body.module_name})
+				//this is so stupid, rewrite later! Lev! Wtf!
+				let new_name = result[0]['name'];
+				if (req.body.module_name != '') new_name = req.body.module_name
+				Module.updateOne({module_id: req.body.module_id}, {name: new_name, alive: isalive})
 					.then((qq) => {
 						console.log('name changed to ' + req.body.module_name);
 						res.status(200).send({
@@ -1040,15 +1046,13 @@ app.post('/update-module-info', async (req, res) => {
 					});	
 			} else {
 				res.status(200).send({
-		        	data: "somethiinnng went wrong"
+		        	data: "somethiinnng went wrong - probably not the author of the module"
 		        });
 			}
 		})
 		.catch((error) => {
 			console.log(error);
 		})
-	
-	
 });
 
 function store_script(script_file, module_id, client = 1){
@@ -1086,7 +1090,7 @@ app.post('/new-module', async (req, res) => {
 		type: "",
 		name: req.body.module_name,
 		description: "",
-		public: 1,
+		public: 0,
 		subscribers: ['test', req.body.user_name],
 		client_script_location: "modules/client",
 		server_script_location: "modules/server",
@@ -1112,7 +1116,14 @@ app.post('/new-module', async (req, res) => {
 app.post('/get-available-modules', async (req, res) => {
 	console.log(req.body);
 	
-	Module.find({$or:[{public: 1},{subscribers: req.body.user_id}]})
+	Module.find({
+		
+		$and: [
+			{alive: 1},
+			{$or:[{public: 1},{subscribers: req.body.user_id}]}
+		]
+		
+		})
 		.then((result) => {
 			//res.send(result);
 			console.log('getting available modules');
@@ -1121,9 +1132,23 @@ app.post('/get-available-modules', async (req, res) => {
 		        	data: "no module found"
 		        });
 			} else {
+				let result_array = [];
+				for (i = 0; i < result.length; i++){
+					let temp_obj = {
+						module_id: result[i].module_id,
+						author: result[i].author,
+						description: result[i].description,
+						name: result[i].name,
+						subscribers: result[i].subscribers,
+						type: result[i].type,
+						client_script_location: result[i].client_script_location,
+						server_script_location: result[i].server_script_location
+					}
+					result_array.push(temp_obj);
+				}
 				res.status(200).send({
 		        	data: "modules retreived",
-					stream: result
+					stream: result_array
 		        });
 			}
 		})
@@ -1160,6 +1185,66 @@ app.post('/get-available-modules', async (req, res) => {
    //	.catch((error) => {
    //		console.log(error);
    //	})
+});
+
+app.post('/get-active-modules', async (req, res) => {
+	console.log(req.body);
+	
+    User.find({user_id: req.body.user_name})
+    	.then((result) => {
+    		//res.send(result);
+    		console.log('getting active modules');
+    		if (result.length == 0){
+    			res.status(200).send({
+    	        	data: "no module found"
+    	        });
+    		} else if (result[0]['rating'] != undefined){
+				console.log('rrrr');
+				console.log(result[0]);    			
+    			res.status(200).send({
+    	        	data: "modules retreived",
+    				visible_modules: result[0]['visible_modules'],
+    				active_modules: result[0]['active_modules']
+    	        });
+    		} else {
+    			res.status(200).send({
+    	        	data: "something went wrong"
+    	        });
+    		}
+    	})
+    	.catch((error) => {
+    		console.log(error);
+    	})
+});
+
+app.post('/set-active-modules', async (req, res) => {
+	console.log(req.body);
+	
+    User.find({user_id: req.body.user_name})
+    	.then((result) => {
+    		//res.send(result);
+    		console.log('setting active modules');
+    		if (result.length == 0){
+    			res.status(200).send({
+    	        	data: "no module found"
+    	        });
+    		} else if (result[0]['rating'] != undefined){
+				User.updateOne({user_id: req.body.user_name}, {active_modules: req.body.active_modules}, {upsert: true})
+				.then((qq) => {
+					console.log('activated modules: ' + req.body.active_modules);
+					res.status(200).send({
+			        	data: "updated"
+			        });
+				});
+    		} else {
+    			res.status(200).send({
+    	        	data: "something went wrong"
+    	        });
+    		}
+    	})
+    	.catch((error) => {
+    		console.log(error);
+    	})
 });
 
 app.post('/get-module-info', async (req, res) => {

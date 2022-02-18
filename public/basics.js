@@ -4,6 +4,7 @@ var game_id = '';
 var link_filled = 0;
 
 var modules_local = {};
+var something_changed = 0;
 
 function setCookie(name,value,days){
     var expires = "";
@@ -320,12 +321,12 @@ function create_module(){
 	  });	
 }
 
-function update_module_info(module_id){
+function update_module_info(module_id, delete_module = 0){
 	
 	let user_name = getCookie('user_id');
 	let module_name = document.getElementById("module_name_input").value;
 	
-	if (module_name == modules_local['mod_' + module_id]['name']) return;
+	if (modules_local['mod_' + module_id] == undefined || module_name == modules_local['mod_' + module_id]['name']) module_name = '';
 	
 	fetch('/update-module-info', {
 	        method: "POST",
@@ -336,7 +337,8 @@ function update_module_info(module_id){
 	        body: JSON.stringify({
 		        user_name: user_name,
 				module_id: module_id,
-		        module_name: module_name
+		        module_name: module_name,
+				delete_module: delete_module
 		    })
 
     }).then(response => response.json())
@@ -423,7 +425,6 @@ function download_module_script(module_id, client = 1){
 
 
 function get_all_modules(){
-	
 	let user_name = getCookie('user_id');
 	
 	fetch('/get-available-modules', {
@@ -442,7 +443,86 @@ function get_all_modules(){
 		  if (response.data == "modules retreived"){
 			  console.log('all good');
 			  console.log('data stream = ');
-			  console.log(response.stream);
+			  //console.log(response.stream);
+			  for (let i = 0; i < response.stream.length; i++){
+				  modules_local['mod_' + response.stream[i].module_id] = response.stream[i];
+				  modules_local['mod_' + response.stream[i].module_id]['active'] = 0;
+			  }
+			  console.log(modules_local);
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+}
+
+function get_active_modules(){
+	let user_name = getCookie('user_id');
+	
+	fetch('/get-active-modules', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  console.log(response);
+		  if (response.data == "modules retreived"){
+			  console.log('all good');
+			  console.log('active modules = ');
+			  console.log(response.active_modules);
+			  for (let i = 0; i < response.active_modules.length; i++){
+				  modules_local['mod_' + response.active_modules[i]]['active'] = 1;
+			  }
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+}
+
+function activate_module(module_id){
+	modules_local['mod_' + module_id]['active'] = 1;
+}
+
+function deactivate_module(module_id){
+	modules_local['mod_' + module_id]['active'] = 0;
+}
+
+function set_active_modules(){
+	let user_name = getCookie('user_id');
+	let active_array = [];
+	
+	for (const mod_id of Object.keys(modules_local)) {
+	    //console.log(key, modules_local[mod_id]);
+		if (modules_local[mod_id]['active'] == 1) active_array.push(modules_local[mod_id]['module_id']);
+	}
+	
+	console.log('new active modules = ' + active_array);
+	
+	fetch('/set-active-modules', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name,
+				active_modules: active_array
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  console.log(response);
+		  if (response.data == "modules retreived"){
+			  console.log('all good');
+			  console.log('active modules = ');
+			  console.log(response.active_modules);
 		  } 
 	  })
       .catch(err => {
@@ -473,6 +553,10 @@ function get_module_info(module_id){
       .catch(err => {
 		  console.log(err);
 	  });
+}
+
+function integrate_modules(){
+	get_all_modules();
 }
 
 
