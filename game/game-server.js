@@ -315,7 +315,7 @@ wss.on('connection', function connection(ws, req) {
 		}
 
 		if (message['u_code_lang'] != undefined && message['u_code_lang'] != "javascript") {
-			let req = await fetch("http://transpiler:5000/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
+			let req = await fetch(config.frontendAddress + "/transpiler/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
 			// console.log(await req.text());
 			let res = await req.json();
 			if (res.result) message['u_code'] = res.result;

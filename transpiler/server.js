@@ -2,13 +2,15 @@ const fs = require('fs');
 const express = require('express')
 const app = express()
 
-app.use(express.json())
+const router = new express.Router()
 
-app.post("/ping", (req, res, next)=>{
+router.use(express.json())
+
+router.post("/ping", (req, res, next)=>{
   res.status(200).send("I'm alive!")
 })
 
-app.post('/transpile', function (req, res) {
+router.post('/transpile', function (req, res) {
   let requiredOptions = [
     "language",
     "code"
@@ -31,6 +33,15 @@ app.post('/transpile', function (req, res) {
   }
   
 })
+
+router.get("/languages", (req, res) => {
+  let languages = fs.readdirSync(`./languages`)
+  languages = languages.map(l => l.split(".")[0])
+  res.status(200).send(languages)
+})
+
+// haproxy sends requests starting with /transpiler >:(
+app.use("/transpiler", router)
 
 // listen to 5000
 app.listen(5000)
