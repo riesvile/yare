@@ -1113,10 +1113,10 @@ app.post('/get-available-modules', async (req, res) => {
 	console.log(req.body);
 	
 	Module.find({
-		
+		//TODO: change public to 1
 		$and: [
 			{alive: 1},
-			{$or:[{public: 1},{subscribers: req.body.user_id}]}
+			{$or:[{public: 0},{subscribers: req.body.user_id}]}
 		]
 		
 		})

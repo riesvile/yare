@@ -310,8 +310,12 @@ function create_module(){
 			  console.log('all good');
 			  console.log('module_id = ' + response.module_id);
 			  modules_local['mod_' + response.module_id] = {
-				  name: "test_module"
+			  	  name: "test_module",
+				  author: user_name,
+				  module_id: response.module_id,
+				  active: 0
 			  };
+			  sessionStorage.setItem('populated', 'no');
 			  if (has_client) upload_script(response.module_id, "client");
 			  if (has_server) upload_script(response.module_id, "server");
 		  } 
@@ -326,7 +330,11 @@ function update_module_info(module_id, delete_module = 0){
 	let user_name = getCookie('user_id');
 	let module_name = document.getElementById("module_name_input").value;
 	
-	if (modules_local['mod_' + module_id] == undefined || module_name == modules_local['mod_' + module_id]['name']) module_name = '';
+	let retreived = sessionStorage.getItem('mod_' + module_id);
+	let retreived_parsed = JSON.parse(retreived);
+	
+	//if (modules_local['mod_' + module_id] == undefined || module_name == modules_local['mod_' + module_id]['name']) module_name = '';
+	if (retreived_parsed == undefined || module_name == retreived_parsed['name']) module_name = '';
 	
 	fetch('/update-module-info', {
 	        method: "POST",
@@ -353,6 +361,16 @@ function update_module_info(module_id, delete_module = 0){
       .catch(err => {
 		  console.log(err);
 	  });	
+	  
+	if (delete_module == 1){
+		sessionStorage.removeItem('mod_' + module_id);
+		delete modules_local['mod_' + module_id];
+	}
+	
+	if (module_name != ''){
+		modules_local['mod_' + module_id]['name'] = module_name;
+		sessionStorage.setItem('mod_' + module_id, modules_local['mod_' + module_id])
+	}
 	
 }
 
@@ -425,6 +443,16 @@ function download_module_script(module_id, client = 1){
 
 
 function get_all_modules(){
+	
+	//console.log(allSessionStorage());
+	
+	if (sessionStorage.getItem('populated') == 'yes'){
+		console.log('session retreival');
+		allSessionStorage();
+		integrate_modules();
+		return;
+	}
+	
 	let user_name = getCookie('user_id');
 	
 	fetch('/get-available-modules', {
@@ -447,8 +475,11 @@ function get_all_modules(){
 			  for (let i = 0; i < response.stream.length; i++){
 				  modules_local['mod_' + response.stream[i].module_id] = response.stream[i];
 				  modules_local['mod_' + response.stream[i].module_id]['active'] = 0;
+				  sessionStorage.setItem('mod_' + response.stream[i].module_id, JSON.stringify(modules_local['mod_' + response.stream[i].module_id]));
 			  }
-			  console.log(modules_local);
+			  sessionStorage.setItem('populated', 'yes');
+			  get_active_modules();
+			  //console.log(modules_local);
 		  } 
 	  })
       .catch(err => {
@@ -478,7 +509,9 @@ function get_active_modules(){
 			  console.log(response.active_modules);
 			  for (let i = 0; i < response.active_modules.length; i++){
 				  modules_local['mod_' + response.active_modules[i]]['active'] = 1;
+				  sessionStorage.setItem('mod_' + response.active_modules[i], JSON.stringify(modules_local['mod_' + response.active_modules[i]]));
 			  }
+			  integrate_modules();
 		  } 
 	  })
       .catch(err => {
@@ -488,10 +521,12 @@ function get_active_modules(){
 
 function activate_module(module_id){
 	modules_local['mod_' + module_id]['active'] = 1;
+	sessionStorage.setItem('mod_' + module_id, JSON.stringify(modules_local['mod_' + module_id]));
 }
 
 function deactivate_module(module_id){
 	modules_local['mod_' + module_id]['active'] = 0;
+	sessionStorage.setItem('mod_' + module_id, JSON.stringify(modules_local['mod_' + module_id]));
 }
 
 function set_active_modules(){
@@ -519,10 +554,9 @@ function set_active_modules(){
     }).then(response => response.json())
       .then(response => {
 		  console.log(response);
-		  if (response.data == "modules retreived"){
-			  console.log('all good');
-			  console.log('active modules = ');
-			  console.log(response.active_modules);
+		  if (response.data == "updated"){
+			  console.log('active modules updated');
+			  sessionStorage.setItem('populated', 'no');
 		  } 
 	  })
       .catch(err => {
@@ -556,7 +590,45 @@ function get_module_info(module_id){
 }
 
 function integrate_modules(){
-	get_all_modules();
+	// get active modules from modules_local and populate <head> with scripts (get url from the module_id);
+	
+	let ready_insertion = Object.values(modules_local).filter(item => item.active == 1);
+	console.log(ready_insertion);
+	
+	for (let i = 0; i < ready_insertion.length; i++){
+		let script_name = ready_insertion[i].name;
+		let script_insert = document.createElement('script');
+		script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/" + ready_insertion[i].module_id + ".js";
+		document.head.appendChild(script_insert);
+		console.log(ready_insertion[i].module_id + ' should be appended');
+	}
+	
+	
+	
+    //let script_name2 = 'user_script';
+    //let script_insert2 = document.createElement('script');
+    //script_insert2.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/aNg182b242as0.js";
+    //document.head.appendChild(script_insert2);
+	
+	
+}
+
+
+function allSessionStorage() {
+
+	let theThing = {}
+
+	Object.keys(sessionStorage).forEach((key) => {
+	    //storage[key] = localStorage.getItem(key);
+		//console.log(sessionStorage.getItem(key));
+		if (key.startsWith('mod_')){
+			theThing[key] = JSON.parse(sessionStorage.getItem(key));
+			modules_local[key] = JSON.parse(sessionStorage.getItem(key));
+		}
+		
+	});
+	
+	//console.log(theThing);
 }
 
 
