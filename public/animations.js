@@ -1,3 +1,56 @@
+function module_edit_mode_on(){
+	document.getElementById('module_edit_mode').style.top = '0vh';
+	document.getElementById('profile_links').style.pointerEvents = 'none';
+	document.getElementById('overlay').style.pointerEvents = 'none';
+	document.getElementById('hector').style.pointerEvents = 'none';
+	anime({
+		targets: '#module_edit_mode',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	anime({
+		targets: '#profile_links',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	anime({
+		targets: '#hector',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0)',
+		backdropFilter: 'blur(0px)',
+		"-webkit-backdrop-filter": 'blur(0px)',
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+}
+
+function module_edit_mode_off(){
+	anime({
+		targets: '#module_edit_mode',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	anime({
+		targets: '#hector',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	setTimeout(function(){
+  		document.getElementById('module_edit_mode').style.top = '-101vh';
+		document.getElementById('hector').style.pointerEvents = 'auto';
+	}, 300);
+}
+
 function dismissals(){
 	if (dismiss_intent == 0){
 		dismiss_intent = 1;
@@ -52,7 +105,7 @@ function dismissals(){
 	
 	anime({
 		targets: '#profile_links',
-		translateY: [10, 0],
+		//translateY: [10, 0],
 		opacity: 0,
 		easing: 'easeOutQuad',
 		duration: 200
@@ -73,13 +126,19 @@ function dismissals(){
 	document.getElementById('login_wrap').style.pointerEvents = 'none';
 	document.getElementById('profile_links').style.pointerEvents = 'none';
 	
-	if (resign_open == 1){
-		dont_resign();
+	try {
+		if (resign_open == 1){
+			dont_resign();
+		}
+	
+		if (bot_sel_open == 1){
+			collapse_bot_selection();
+		}
+	} catch (e){
+		console.log('whatever');
 	}
 	
-	if (bot_sel_open == 1){
-		collapse_bot_selection();
-	}
+	module_edit_mode_off();
 }
 
 function dismiss_helper(){
@@ -447,7 +506,7 @@ function user_links(){
 	//console.log('userlinko !!!!!');
 	anime({
 		targets: '#profile_links',
-		translateY: [0, 10],
+		//translateY: [0, 10],
 		opacity: [0, 1],
 		easing: 'easeOutQuad',
 		duration: 300

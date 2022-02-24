@@ -263,7 +263,7 @@ input:focus {
 	font-weight: 500;
 	color: rgba(234, 133, 133, 0.69);
 	cursor: pointer;
-	z-index: 99999;
+	z-index: 9999;
 	display: none;
 }
 
@@ -374,20 +374,35 @@ h1#logo {
 	z-index: 20000;
 	opacity: 0;
 	pointer-events: none;
+	height: 100%;
+	overflow: scroll;
 }
 
 .profile_link {
 	font-weight: 500;
 	font-size: 14px;
-	line-height: 44px;
+	line-height: 32px;
 	text-align: right;
 	color: rgba(242, 246, 250, 1);
 	cursor: pointer;
 	display: block;
 }
 
+.acc_info {
+	font-weight: 500;
+	font-size: 13px;
+	color: rgba(216, 232, 251, 0.69);
+	display: block;
+	text-align: right;
+	margin-bottom: 12px;
+}
+
+#acc_info_name {
+	color: rgba(216, 232, 251, 0.45);
+}
+
 #log_out {
-	color: rgba(242, 246, 250, 0.69);
+	color: rgba(251, 216, 216, 0.8);
 }
 
 .new_acc {
@@ -408,6 +423,481 @@ h1#logo {
 /*	opacity: 1; */
 /*	display: block; */
 }
+
+
+	/* ----- Preferences ----- */
+
+
+	#acc_basics {
+		position: fixed;
+		bottom: 40px;
+		right: 40px;
+		z-index: 9;
+	}
+	
+	.basics_bg {
+		position: fixed;
+		right: 0;
+		bottom: 0;
+		width: 300px;
+		height: 300px;
+		background: rgb(0,0,0);
+		background: linear-gradient(133deg, rgba(0,0,0,0) 40%, rgba(0,0,0,1) 100%);
+		z-index: -1;
+		pointer-events: none;
+	}
+
+	#audio_settings {
+		position: absolute;
+		top: 0;
+		right: 0;
+		height: 42px;
+	}
+	
+	#language_settings {
+		position: absolute;
+		top: 0;
+		right: 400px;
+		height: 42px;
+		white-space: nowrap;
+	}
+	
+	#modules_section {
+		float: right;
+		clear: both;
+	}
+	
+	.pref_slider_item {
+		width: 160px;
+		height: 42px;
+		background-color: rgba(29, 29, 33, 0.9);
+		float: right;
+		margin-left: 12px;
+		position: relative;
+		border-radius: 12px;
+	}
+	
+	.slider_value {
+		width: 50%;
+		height: 42px;
+		border-radius: 12px 4px 4px 12px;
+		background-color: rgba(95, 90, 126, 0.9);
+	}
+	
+	
+	
+	.set_label, .set_value {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 14px;
+		font-weight: 500;
+		color: rgba(242, 246, 250, 1);
+	}
+	
+	.set_label {
+		left: 20px;
+	}
+	
+	.set_value {
+		right: 16px;
+		color: rgba(242, 246, 250, 0.49);
+	}
+	
+	.pref_section_label {
+		letter-spacing: 1px;
+		font-size: 12px;
+		font-weight: 500;
+		text-align: right;
+		clear: both;
+		margin-top: 52px;
+		margin-bottom: 20px;
+		display: inline-block;
+		color: rgba(242, 246, 250, 0.48);
+		float: right;
+	}
+	
+	.lang_chip {
+		display: inline-block;
+		background-color: rgba(29, 29, 33, 0.9);
+		padding: 0px 20px 1px 20px;
+		margin-right: 8px;
+		border-radius: 12px;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 41px;
+		color: rgba(242, 246, 250, 0.96);
+		cursor: pointer;
+	}
+	
+	.module_card, .module_card_mine {
+		border-radius: 20px;
+		background-color: rgba(29, 29, 33, 0.9);
+		width: 248px;
+		height: 280px;
+		position: relative;
+		float: right;
+		margin-left: 16px;
+		margin-bottom: 16px;
+		cursor: pointer;
+	}
+	
+	.module_card_mine {
+		height: 136px;
+	}
+	
+	.module_card_bg {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 20px;
+		transition: 0.4s ease-in-out;
+	}
+	
+	#bg_mdl_code_editor {
+		background: rgb(59,19,20);
+		background: linear-gradient(222deg, rgba(59,19,20,1) 0%, rgba(26,26,39,1) 86%);
+	}
+	
+	#bg_mdl_manual1 {
+		background: rgb(19,52,41);
+		background: linear-gradient(222deg, rgba(19,52,41,1) 0%, rgba(38,24,50,1) 86%);
+	}
+	
+	#bg_mdl_basic_info_graphs {
+		background: rgb(28,44,42);
+		background: linear-gradient(222deg, rgba(28,44,42,1) 0%, rgba(26,26,39,1) 86%);
+	}
+	
+	#bg_mdl_mine {
+		background: rgb(81,94,104);
+		background: linear-gradient(222deg, rgba(81,94,104,1) 0%, rgba(28,22,34,1) 100%);
+	}
+	
+	.module_on .module_card_bg {
+		opacity: 1;
+		transition: 0.3s ease-in-out;
+	}
+	
+	.module_off .module_card_bg {
+		opacity: 0;
+		transition: 0.3s ease-in-out;
+	}
+	
+	.module_main_tag {
+		position: absolute;
+		top: 24px;
+		left: 28px;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 1px;
+		text-transform: uppercase;
+		color: rgba(242, 246, 250, 0.48);
+	}
+	
+	.module_name {
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 24px;
+		position: absolute;
+		top: 58px;
+		left: 28px;
+		width: 180px;
+	}
+	
+	.module_toggle {
+		width: 60px;
+		height: 32px;
+		position: absolute;
+		top: 16px;
+		right: 16px;
+		border-radius: 32px;
+		border: 1px solid rgba(242, 246, 250, 0.48);
+		box-sizing: border-box;
+		transition: 0.3s ease-in-out;
+	}
+	
+	.the_toggle {
+		position: absolute;
+		top: 3px;
+		width: 24px;
+		height: 24px;
+		border-radius: 24px;
+		transition: 0.3s ease-in-out;
+	}
+	
+	div.module_toggle:hover .the_toggle {
+		background-color: rgba(166, 198, 247, 1);
+		transition: 0.3s ease-in-out;
+	}
+	
+	.module_off .module_toggle .the_toggle {
+		background-color: rgba(242, 246, 250, 0.48);
+		left: 3px;
+		transition: 0.3s ease-in-out;
+	}
+	
+	.module_on .module_toggle {
+		background-color: rgba(242, 246, 250, 0.48);
+		border: 1px solid rgba(242, 246, 250, 0);
+		transition: 0.3s ease-in-out;
+	}
+	
+	.module_on .module_toggle .the_toggle {
+		background-color: rgba(242, 246, 250, 1);
+		left: 32px;
+		transition: 0.3s ease-in-out;
+	}
+	
+	#create_new_module {
+		width: 80px;
+		height: 280px;
+		background-color: rgba(104, 140, 194, 1);
+		margin-left: 16px;
+		float: right;
+		border-radius: 20px;
+		position: relative;
+		cursor: pointer;
+	}
+	
+	#create_new_module:hover {
+		background-color: rgba(124, 160, 232, 1);
+	}
+	
+	.ico_new_module {
+		width: 24px;
+		height: 24px;
+		background: url('./asset/ico_plus.png') no-repeat scroll;
+		background-size: cover;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+	
+	.new_module_label {
+		font-size: 13px;
+		font-weight: 500;
+		text-align: center;
+		width: 80px;
+		position: absolute;
+		bottom: 20px;
+		color: rgba(246, 250, 255, 1);
+	}
+	
+	#modules_section_mine {
+		clear: both;
+		float: right;
+		margin-top: 24px;
+	}
+	
+	@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+		
+		.pref_slider_item, .slider_value, .lang_chip, .module_card, .module_card_mine {
+ 	 	   -webkit-backdrop-filter: blur(20px);
+ 	 	   backdrop-filter: blur(20px);
+		}
+		
+	 	.pref_slider_item {
+	 	   background-color: rgba(217, 211, 240, 0.1);
+	 	}
+	  
+  		.slider_value {
+ 	 	   background-color: rgba(144, 142, 208, 0.32);
+  		}
+		
+		.lang_chip {
+  	 	   background-color: rgba(217, 211, 240, 0.1);
+		}
+		
+		.module_card, .module_card_mine {
+			background-color: rgba(217, 211, 240, 0.12);
+		}
+	}
+
+ 	/* ----- */
+	
+	
+	/* ---- Module edit mode ---- */
+	
+	#module_edit_mode {
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+		top: -101vh;
+		left: 0;
+		background-color: rgba(26, 41, 65, 0.5);
+		z-index: 99999;
+		border: 2px solid rgba(145, 178, 228, 1);
+		box-sizing: border-box;
+		pointer-events: none;
+		opacity: 0;
+	}
+	
+	#module_edit_mode > * {
+		pointer-events: auto;
+	}
+	
+	a#close_module_edit {
+		position: absolute;
+		top: 26px;
+		right: 28px;
+		font-size: 13px;
+		font-weight: 500;
+		line-height: 16px;
+		color: rgba(242, 246, 250, 1);
+		display: inline-block;
+		padding: 4px;
+	}
+	
+	#create_module_btn, #update_module_btn {
+		position: absolute;
+		top: 16px;
+		right: 92px;
+		cursor: pointer;
+		padding: 0 16px;
+		line-height: 44px;
+		background-color: rgba(104, 140, 194, 1);
+		font-size: 13px;
+		font-weight: 500;
+		color: rgba(242, 246, 250, 1);
+		border-radius: 12px;
+	}
+	
+	#update_module_btn {
+		background-color: rgba(175, 196, 226, 0.5);
+		visibility: hidden;
+	}
+	
+	#create_module_btn:hover {
+		background-color: rgba(124, 160, 214, 1);
+	}
+	
+	#update_module_btn:hover {
+		background-color: rgba(175, 196, 226, 0.6);
+	}
+	
+	label.file_upload_label input[type="file"] {
+		position: absolute;
+		top: -1000px;
+	}
+	
+	#file_uploads_wrap {
+		position: absolute;
+		top: 16px;
+		right: 248px;
+	}
+	
+	#modules_server_message {
+		position: fixed;
+		top: 76px;
+		right: 94px;
+		text-align: right;
+		font-size: 13px;
+		font-weight: 500;
+	}
+	
+	.srv_ok {
+		color: rgba(228, 245, 220, 1);
+	}
+	
+	.srv_err {
+		color: rgba(245, 226, 220, 1);
+	}
+	
+	.file_upload_label {
+		width: 232px;
+		height: 44px;
+		background-color: rgba(59, 60, 77, 1);
+		color: rgba(242, 246, 250, 0.89);
+		font-size: 13px;
+		display: inline-block;
+		border-radius: 12px;
+		position: relative;
+		cursor: pointer;
+		margin-left: 4px;
+	}
+	
+	.file_upload_label:hover {
+		background-color: rgba(69, 70, 87, 1);
+	}
+	
+	.file_upload_label span {
+		line-height: 44px;
+		font-size: 13px;
+		font-weight: 500;
+		max-width: 148px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	
+	.lbl_type {
+		position: absolute;
+		right: 20px;
+		color: rgba(242, 246, 250, 0.55);
+	}
+	
+	.lbl_name {
+		position: absolute;
+		left: 20px;
+		color: rgba(242, 246, 250, 0.89);
+	}
+	
+	#module_name_input {
+		font-family: 'Montserrat', sans-serif;
+		font-weight: 500;
+		line-height: 44px;
+		font-size: 13px;
+		border: 1px solid rgba(175, 196, 226, 0.2);
+		border-radius: 12px;
+		background-color: rgba(11, 11, 13, 0.96);
+		color: rgba(242, 246, 250, 0.89);
+		width: 220px;
+		padding-left: 20px;
+		display: inline-block;
+		position: absolute;
+		top: 16px;
+		left: 16px;
+		box-sizing: border-box;
+	}
+	
+	#module_name_input::placeholder {
+		color: rgba(242, 246, 250, 0.55);
+		opacity: 1;
+	}
+	
+	@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+		
+		#module_name_input, .file_upload_label {
+ 	 	   -webkit-backdrop-filter: blur(32px);
+ 	 	   backdrop-filter: blur(32px);
+		}
+		
+	 	#module_name_input {
+	 	   background-color: rgba(175, 196, 226, 0.01);
+	 	}
+	  
+  		.file_upload_label {
+ 	 	   background-color: rgba(175, 196, 226, 0.2);
+  		}
+		
+		.file_upload_label:hover {
+			background-color: rgba(175, 196, 226, 0.32);
+		}
+		
+		.lang_chip {
+  	 	   background-color: rgba(217, 211, 240, 0.1);
+		}
+		
+		.module_card, .module_card_mine {
+			background-color: rgba(217, 211, 240, 0.12);
+		}
+	}
+	
+	/* ----- */
 
 .pref_toggle {
 	width: 480px;
@@ -710,7 +1200,7 @@ input[type=submit] {
 		padding: 0 20px;
 		line-height: 52px;
 		background-color: rgba(56, 60, 94, 1);
-		z-index: 99999;
+		z-index: 9999;
 		border-radius: 12px;
 		color: rgba(242, 246, 250, 0.69);
 	}

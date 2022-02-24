@@ -268,6 +268,7 @@ function getBase64(file) {
 }
 
 
+
 function create_module(){
 	
 	let user_name = getCookie('user_id');
@@ -284,8 +285,8 @@ function create_module(){
 	
 	
 	if (has_client == 0 && has_server == 0){
-		alert('Please upload at least one .js file');
-		return
+		document.getElementById("modules_server_message").innerHTML = "Please upload at least one .js file"
+		return;
 	}
 	
 	console.log('module name = ' + module_name_input.value);
@@ -487,6 +488,34 @@ function get_all_modules(){
 	  });
 }
 
+function toggle_toggle(e){
+	something_changed = 1;
+	
+    e = e || window.event;
+    let el = (e.target || e.srcElement)
+	
+	let el_id = el.id
+	let el_parent = el.parentNode;
+	
+	if (!el_parent.classList.contains("module_card") && !el_parent.classList.contains("module_card_mine")) el_parent = el_parent.parentNode;
+	
+	//if (target.classList.contains(''))
+	//el_parent.style="background-color:#f00";
+	
+	if (el_parent.classList.contains('module_off')){
+		el_parent.classList.add('module_on');
+		el_parent.classList.remove('module_off');
+		//TODO: modules_local with a module id from el_id (make active)
+	} else {
+		el_parent.classList.add('module_off');
+		el_parent.classList.remove('module_on');
+	}
+	
+	//TODO: call set_active
+	
+	console.log('toggle id: ' + el_id);
+}
+
 function get_active_modules(){
 	let user_name = getCookie('user_id');
 	
@@ -512,6 +541,14 @@ function get_active_modules(){
 				  sessionStorage.setItem('mod_' + response.active_modules[i], JSON.stringify(modules_local['mod_' + response.active_modules[i]]));
 			  }
 			  integrate_modules();
+			  
+			  //TODO: populate module cards
+			  
+			  let mod_toggles = document.getElementsByClassName("module_toggle");
+			  
+			  for (let i=0; i<mod_toggles.length; i++) {
+			      mod_toggles[i].addEventListener('click', toggle_toggle, false);
+			  }
 		  } 
 	  })
       .catch(err => {
@@ -704,6 +741,15 @@ try {
 }
 
 
+
+//other module triggers
+try {
+	document.getElementById('create_new_module').addEventListener('click', module_edit_mode_on, false);
+	document.getElementById('close_module_edit').addEventListener('click', module_edit_mode_off, false);
+	document.getElementById('create_module_btn').addEventListener('click', create_module, false);
+} catch (e){
+	
+}
 
 
 
