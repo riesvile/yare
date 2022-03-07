@@ -340,8 +340,8 @@ h1#logo {
 .menu {
 	text-align: right;
 	position: absolute;
-	right: 40px;
-	top: 30px;
+	right: 16px;
+	top: 16px;
 }
 
 .menu .menu_link {
@@ -365,6 +365,50 @@ h1#logo {
     height: 40px;
     background-color: rgba(242, 246, 250, 0.12);
     margin-left: 30px;
+}
+
+#resign_game_menu {
+	display: inline-block;
+	line-height: 44px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(255, 176, 181, 0.89);
+	cursor: pointer;
+	z-index: 9999;
+	float: left;
+	margin-left: 36px;
+	position: relative;
+	width: 70px;
+	height: 44px;
+}
+
+#resign_game_menu #resign_btn {
+	margin-left: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+}
+
+#resign_game_menu #cancel_resign_btn {
+	pointer-events: none;
+}
+
+#resign_game_menu span.resign_lbl {
+	white-space: nowrap;
+	text-align: left;
+	width: auto;
+	display: inline-block;
+}
+
+#resign_game_menu span.cancel_lbl {
+	position: absolute;
+	top: 0;
+	left: -64px;
+	text-align: left;
+	display: inline-block;
+	color: rgba(242, 246, 250, 0.69);
 }
 
 #profile_links {
@@ -493,10 +537,13 @@ h1#logo {
 		font-size: 14px;
 		font-weight: 500;
 		color: rgba(242, 246, 250, 1);
+		line-height: 41px;
+		display: inline-block;
+		padding: 0px 0px 1px 20px;
 	}
 	
 	.set_label {
-		left: 20px;
+		left: 0px;
 	}
 	
 	.set_value {
@@ -526,8 +573,17 @@ h1#logo {
 		font-size: 14px;
 		font-weight: 500;
 		line-height: 41px;
-		color: rgba(242, 246, 250, 0.96);
+		color: rgba(242, 246, 250, 0.72);
 		cursor: pointer;
+	}
+	
+	.lang_chip:hover {
+		background-color: rgba(39, 39, 43, 0.96);
+	}
+	
+	#language_settings div.lang_on {
+		background-color: rgba(70, 74, 105, 0.96);
+		color: rgba(242, 246, 250, 0.96);
 	}
 	
 	.module_card, .module_card_mine {
@@ -544,6 +600,7 @@ h1#logo {
 	
 	.module_card_mine {
 		height: 136px;
+		transition: 0.3s ease-out;
 	}
 	
 	.module_card_bg {
@@ -553,17 +610,17 @@ h1#logo {
 		width: 100%;
 		height: 100%;
 		border-radius: 20px;
-		transition: 0.4s ease-in-out;
+		transition: 0.4s ease-out;
 	}
 	
 	#bg_mdl_code_editor {
 		background: rgb(59,19,20);
-		background: linear-gradient(222deg, rgba(59,19,20,1) 0%, rgba(26,26,39,1) 86%);
+		background: linear-gradient(222deg, rgba(75,35,35,1) 0%, rgba(36,36,49,1) 86%);
 	}
 	
 	#bg_mdl_manual1 {
-		background: rgb(19,52,41);
-		background: linear-gradient(222deg, rgba(19,52,41,1) 0%, rgba(38,24,50,1) 86%);
+		background: rgb(3,24,86);
+		background: linear-gradient(222deg, rgba(3,24,86,1) 0%, rgba(34,24,50,1) 100%);
 	}
 	
 	#bg_mdl_basic_info_graphs {
@@ -578,12 +635,12 @@ h1#logo {
 	
 	.module_on .module_card_bg {
 		opacity: 1;
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	.module_off .module_card_bg {
 		opacity: 0;
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	.module_main_tag {
@@ -605,6 +662,12 @@ h1#logo {
 		top: 58px;
 		left: 28px;
 		width: 180px;
+		pointer-events: none;
+	}
+	
+	.module_card_mine .module_name {
+		top: auto !important;
+		bottom: 24px;
 	}
 	
 	.module_toggle {
@@ -616,7 +679,7 @@ h1#logo {
 		border-radius: 32px;
 		border: 1px solid rgba(242, 246, 250, 0.48);
 		box-sizing: border-box;
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	.the_toggle {
@@ -625,30 +688,30 @@ h1#logo {
 		width: 24px;
 		height: 24px;
 		border-radius: 24px;
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	div.module_toggle:hover .the_toggle {
 		background-color: rgba(166, 198, 247, 1);
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	.module_off .module_toggle .the_toggle {
 		background-color: rgba(242, 246, 250, 0.48);
 		left: 3px;
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	.module_on .module_toggle {
 		background-color: rgba(242, 246, 250, 0.48);
 		border: 1px solid rgba(242, 246, 250, 0);
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	.module_on .module_toggle .the_toggle {
 		background-color: rgba(242, 246, 250, 1);
 		left: 32px;
-		transition: 0.3s ease-in-out;
+		transition: 0.3s ease-out;
 	}
 	
 	#create_new_module {
@@ -693,6 +756,100 @@ h1#logo {
 		margin-top: 24px;
 	}
 	
+	.module_options {
+		position: absolute;
+		top: 18px;
+		left: 18px;
+	}
+	
+	.module_options_btn {
+		height: 28px;
+		line-height: 28px;
+		color: rgba(242, 246, 250, 0.69);
+		padding: 0px 14px;
+		margin-right: 4px;
+		border-radius: 12px;
+		background-color: rgba(242, 246, 250, 0.12);
+		float: left;
+		font-size: 11px;
+		font-weight: 500;
+	}
+	
+	.module_options_btn:hover {
+		background-color: rgba(242, 246, 250, 0.16);
+	}
+	
+	
+	.delete_confirm {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 200px;
+		opacity: 0;
+		pointer-events: none;
+	}
+	
+	.delete_module {
+		background-color: rgba(255, 186, 186, 0.12);
+		color: rgba(255, 192, 192, 0.96);
+	}
+	
+	.delete_module:hover {
+		background-color: rgba(255, 186, 186, 0.16);
+	}
+	
+	.cancel_delete {
+		background-color: rgba(242, 246, 250, 0.04);
+	}
+	
+	.cancel_delete:hover {
+		background-color: rgba(242, 246, 250, 0.08);
+	}
+	
+		/* -- Expanded -- */
+		
+		#module_expanded {
+			width: 600px;
+			background-color: rgba(20, 24, 26, 1);
+			position: absolute;
+			top: 100px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 9999;
+		}
+		
+		#module_expanded .module_main_tag {
+			position: absolute;
+			top: 38px;
+			left: 36px;
+		}
+		
+		#module_expanded h3 {
+			font-size: 24px;
+			font-weight: 500;
+			position: absolute;
+			top: 90px;
+			left: 36px;
+		}
+		
+		.module_expanded_buttons {
+			margin: 188px 0 0 36px;
+		}
+		
+		.btn_expanded {
+			line-height: 41px;
+			font-size: 14px;
+			font-weight: 500;
+			padding: 0px 20px 1px 20px;
+			margin-right: 12px;
+			background-color: rgba(242, 246, 250, 0.2);
+			display: inline-block;
+			border-radius: 12px;
+		}
+	
+	
+	
+	
 	@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
 		
 		.pref_slider_item, .slider_value, .lang_chip, .module_card, .module_card_mine {
@@ -712,8 +869,16 @@ h1#logo {
   	 	   background-color: rgba(217, 211, 240, 0.1);
 		}
 		
+		.lang_chip:hover {
+			background-color: rgba(217, 211, 240, 0.16);
+		}
+		
 		.module_card, .module_card_mine {
 			background-color: rgba(217, 211, 240, 0.12);
+		}
+		
+		.module_card:hover {
+			background-color: rgba(217, 211, 240, 0.16);
 		}
 	}
 
@@ -728,7 +893,7 @@ h1#logo {
 		position: fixed;
 		top: -101vh;
 		left: 0;
-		background-color: rgba(26, 41, 65, 0.5);
+		background-color: rgba(26, 41, 65, 0.1);
 		z-index: 99999;
 		border: 2px solid rgba(145, 178, 228, 1);
 		box-sizing: border-box;
@@ -797,6 +962,7 @@ h1#logo {
 		text-align: right;
 		font-size: 13px;
 		font-weight: 500;
+		opacity: 0;
 	}
 	
 	.srv_ok {
@@ -808,7 +974,7 @@ h1#logo {
 	}
 	
 	.file_upload_label {
-		width: 232px;
+		width: 192px;
 		height: 44px;
 		background-color: rgba(59, 60, 77, 1);
 		color: rgba(242, 246, 250, 0.89);
@@ -964,7 +1130,15 @@ h1#logo {
 }
 
 #new_account, #signed_in {
+	/* margin-left: 12px; */
+}
+
+#new_account {
 	margin-left: 30px;
+}
+
+#login {
+	margin-right: 12px;
 }
 
 #new_user_name:focus, #new_user_password:focus, #user_name:focus, #user_password:focus {
@@ -1007,6 +1181,35 @@ input[type=submit] {
 
 #signed_in {
 	display: none;
+	background-color: rgba(54, 51, 64, 0.69);
+	color: rgba(216, 232, 251, 1);
+	padding: 0 24px 1px 48px;
+	border-radius: 16px;
+	line-height: 43px;
+	position: relative;
+	top: 1px;
+	margin-left: 12px;
+}
+
+#signed_in:hover {
+	background-color: rgba(54, 51, 64, 0.76);
+	color: rgba(224, 240, 255, 1);
+}
+
+#signed_in:hover #module_ico {
+	opacity: 0.6;
+}
+
+#module_ico {
+	display: block;
+	position: absolute;
+	top: 12px;
+	left: 15px;
+	width: 20px;
+	height: 20px;
+	background: url('./asset/ico_modules.png');
+	background-size: cover;
+	opacity: 0.5;
 }
 
 #new_g {
@@ -2895,9 +3098,6 @@ a.index_link:hover {
 	display: none;
 }
 
-
-
-
 #modules_plate {
 	width: 100%;
 	height: 100%;
@@ -2905,13 +3105,20 @@ a.index_link:hover {
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 100000;
+	z-index: 9999;
 	pointer-events: none;
 }
 
 #modules_plate * {
 	pointer-events: auto;
 }
+
+
+
+
+
+
+
 
 
 

@@ -3,6 +3,7 @@ var active_session = 0;
 var game_id = '';
 var link_filled = 0;
 
+var lang_sel = 'javascript';
 var modules_local = {};
 var something_changed = 0;
 
@@ -258,6 +259,128 @@ function submit_test(){
 	//console.log('submit teest');
 }
 
+
+function get_lang(){
+	let user_name = getCookie('user_id');
+	
+	fetch('/get-pref-lang', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  //console.log(response);
+		  if (response.data == "lang incoming"){
+			  console.log('all good');
+			  lang_sel = response.lang;
+			  console.log('preferred lang = ' + response.lang);
+			  
+		  	let sel_js = document.getElementById("lang_js");
+		  	let sel_ts = document.getElementById("lang_ts");
+		  	let sel_py = document.getElementById("lang_py");
+			  
+		  	if (response.lang == 'javascript'){
+		  		sel_js.classList.add('lang_on');
+		  		sel_ts.classList.remove('lang_on');
+		  		sel_py.classList.remove('lang_on');
+		  		lang_sel = 'javascript';
+		  		window.codeLanguage = "javascript";
+		  	} else if (response.lang == 'typescript'){
+		  		sel_js.classList.remove('lang_on');
+		  		sel_ts.classList.add('lang_on');
+		  		sel_py.classList.remove('lang_on');
+		  		lang_sel = 'typescript';
+		  		window.codeLanguage = "typescript";
+		  	} else if (response.lang == 'python'){
+		  		sel_js.classList.remove('lang_on');
+		  		sel_ts.classList.remove('lang_on');
+		  		sel_py.classList.add('lang_on');
+		  		lang_sel = 'python';
+		  		window.codeLanguage = "python";
+		  	}
+			  
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });	
+}
+
+function set_lang(){
+	//TODO: trigger only if changed!!!
+	
+	let user_name = getCookie('user_id');
+	
+	fetch('/set-pref-lang', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name,
+				session_id: getCookie('session_id'),
+				pref_lang: lang_sel
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  //console.log(response);
+		  if (response.data == "lang updated"){
+			  console.log('language is updated');
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+}
+
+
+function lang_toggle(e){
+	
+    e = e || window.event;
+    let el = (e.target || e.srcElement);
+	
+	let el_id = el.id;
+	
+	console.log('lang = ' + el_id);
+	
+	let sel_js = document.getElementById("lang_js");
+	let sel_ts = document.getElementById("lang_ts");
+	let sel_py = document.getElementById("lang_py");
+	
+	
+	//TODO: store preferred language in preferences?
+	
+	if (el_id == 'lang_js'){
+		sel_js.classList.add('lang_on');
+		sel_ts.classList.remove('lang_on');
+		sel_py.classList.remove('lang_on');
+		lang_sel = 'javascript';
+		window.codeLanguage = "javascript";
+	} else if (el_id == 'lang_ts'){
+		sel_js.classList.remove('lang_on');
+		sel_ts.classList.add('lang_on');
+		sel_py.classList.remove('lang_on');
+		lang_sel = 'typescript';
+		window.codeLanguage = "typescript";
+	} else if (el_id == 'lang_py'){
+		sel_js.classList.remove('lang_on');
+		sel_ts.classList.remove('lang_on');
+		sel_py.classList.add('lang_on');
+		lang_sel = 'python';
+		window.codeLanguage = "python";
+	}
+	
+}
+
+
 function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -267,6 +390,11 @@ function getBase64(file) {
   });
 }
 
+
+
+function expand_card(m_id){
+  console.log('expanding ' + m_id);
+}
 
 
 function create_module(){
@@ -285,11 +413,20 @@ function create_module(){
 	
 	
 	if (has_client == 0 && has_server == 0){
-		document.getElementById("modules_server_message").innerHTML = "Please upload at least one .js file"
+		document.getElementById("modules_server_message").style.opacity = 1;
+		document.getElementById("modules_server_message").innerHTML = "Upload at least one .js file";
 		return;
+	} else if (module_name_input.value == "") {
+		document.getElementById("modules_server_message").style.opacity = 1;
+		document.getElementById("modules_server_message").innerHTML = "Give your module a name";
+		module_name_highlight();
+		return;
+	} else {
+		document.getElementById("modules_server_message").style.opacity = 0;
 	}
 	
 	console.log('module name = ' + module_name_input.value);
+	
 	
 	
 
@@ -301,7 +438,7 @@ function create_module(){
 	        },
 	        body: JSON.stringify({
 		        user_name: user_name,
-		        module_name: 'test module'
+		        module_name: module_name_input.value
 		    })
 
     }).then(response => response.json())
@@ -311,19 +448,48 @@ function create_module(){
 			  console.log('all good');
 			  console.log('module_id = ' + response.module_id);
 			  modules_local['mod_' + response.module_id] = {
-			  	  name: "test_module",
+			  	  name: module_name_input.value,
 				  author: user_name,
 				  module_id: response.module_id,
-				  active: 0
+				  active: 1
 			  };
 			  sessionStorage.setItem('populated', 'no');
 			  if (has_client) upload_script(response.module_id, "client");
 			  if (has_server) upload_script(response.module_id, "server");
+			  
+	  		  document.getElementById("modules_server_message").style.opacity = 1;
+	  		  document.getElementById("modules_server_message").innerHTML = "Module updated. Check browser console for client script errors.";
 		  } 
 	  })
       .catch(err => {
 		  console.log(err);
 	  });	
+}
+
+function integrate_new_module(mod_id){
+	console.log('goes here');
+	
+	let m_id = mod_id;
+	let script_name = modules_local['mod_' + m_id].name;
+	let m_author = modules_local['mod_' + mod_id].author;
+	let mod_state = 'module_off';
+	if (modules_local['mod_' + mod_id].active == 1) mod_state = 'module_on';
+	
+	console.log('script name = ' + script_name);
+	
+	let user_module_html_string = "<div class='module_card_mine " + mod_state + "' id='mdl_" + m_id + "'><div class='module_card_bg' id='bg_mdl_mine'></div><div class='module_options' id='options_" + m_id + "'><a href='#' class='module_options_btn btn_edit' id='edit_" + m_id + "'>Edit</a><a href='#' class='module_options_btn btn_pre_delete_module' id='predel_" + m_id + "'>Delete</a><div class='delete_confirm' id='confirm_" + m_id + "'><a href='#' class='module_options_btn delete_module' id='del_" + m_id + "'>Yes, delete</a><a href='#' class='module_options_btn cancel_delete' id='cancel_" + m_id + "'>Cancel</a></div></div><div class='module_toggle' id='toggle_" + m_id + "'><div class='the_toggle' id='thetog'></div></div><h3 class='module_name'>" + script_name + "</h3></div>";
+	
+	document.getElementById('modules_section_mine').insertAdjacentHTML('beforeend', user_module_html_string);
+	
+	
+	let script_insert = document.createElement('script');
+	script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/" + mod_id + ".js";
+	document.head.appendChild(script_insert);
+	console.log('module ' + mod_id + " should be appended");
+	
+	document.getElementById("toggle_" + m_id).addEventListener('click', toggle_toggle, false);
+	document.getElementById("options_" + m_id).addEventListener('click', mod_options_cross, false);
+	
 }
 
 function update_module_info(module_id, delete_module = 0){
@@ -366,6 +532,7 @@ function update_module_info(module_id, delete_module = 0){
 	if (delete_module == 1){
 		sessionStorage.removeItem('mod_' + module_id);
 		delete modules_local['mod_' + module_id];
+		return;
 	}
 	
 	if (module_name != ''){
@@ -401,7 +568,8 @@ function upload_script(module_id, script_type){
 				  //console.log(response);
 				  if (response.data == "script uploaded"){
 					  console.log('all good');
-					  console.log('module_id = ' + response.module_id);
+					  console.log(script_type);
+					  if (script_type == 'client') integrate_new_module(module_id);
 				  } 
 			  })
 		      .catch(err => {
@@ -499,21 +667,74 @@ function toggle_toggle(e){
 	
 	if (!el_parent.classList.contains("module_card") && !el_parent.classList.contains("module_card_mine")) el_parent = el_parent.parentNode;
 	
+	let m_id = el_parent.id.split("_")[1];
+	
 	//if (target.classList.contains(''))
 	//el_parent.style="background-color:#f00";
 	
 	if (el_parent.classList.contains('module_off')){
 		el_parent.classList.add('module_on');
 		el_parent.classList.remove('module_off');
+		
 		//TODO: modules_local with a module id from el_id (make active)
+		try {
+			modules_local['mod_' + m_id]['active'] = 1;
+			sessionStorage.setItem('mod_' + m_id, JSON.stringify(modules_local['mod_' + m_id]))
+		} catch (e){
+			console.log(e);
+		}
 	} else {
 		el_parent.classList.add('module_off');
 		el_parent.classList.remove('module_on');
+		
+		try {
+			modules_local['mod_' + m_id]['active'] = 0;
+			sessionStorage.setItem('mod_' + m_id, JSON.stringify(modules_local['mod_' + m_id]))
+		} catch (e){
+			console.log(e);
+		}
 	}
 	
-	//TODO: call set_active
+	console.log('parent id: ' + el_parent.id);
+}
+
+function mod_options_cross(e){
+	something_changed = 1;
 	
-	console.log('toggle id: ' + el_id);
+    e = e || window.event;
+    let el = (e.target || e.srcElement)
+	
+	let el_id = el.id;
+	
+	if (!el_id.includes("_")) return;
+	
+	el_mod_action = el_id.split("_")[0];
+	el_mod_id = el_id.split("_")[1];
+	
+	console.log(el_mod_action);
+	
+	switch (el_mod_action) {
+	case "predel":
+		console.log('predeleting');
+		module_pre_delete(el_mod_id);
+		break;
+	case "del":
+		console.log('deleting');
+		update_module_info(el_mod_id, 1);
+		document.getElementById("mdl_" + el_mod_id).style.opacity = "0";
+		document.getElementById("mdl_" + el_mod_id).style.pointerEvents = "none";
+		break;
+	case "edit":
+		console.log('editing');
+		break;
+	case "cancel":
+		module_cancel_delete(el_mod_id);
+		console.log('cancelling');
+		break;
+	default:
+		console.log('defaulted');
+		break;
+	}
 }
 
 function get_active_modules(){
@@ -541,14 +762,6 @@ function get_active_modules(){
 				  sessionStorage.setItem('mod_' + response.active_modules[i], JSON.stringify(modules_local['mod_' + response.active_modules[i]]));
 			  }
 			  integrate_modules();
-			  
-			  //TODO: populate module cards
-			  
-			  let mod_toggles = document.getElementsByClassName("module_toggle");
-			  
-			  for (let i=0; i<mod_toggles.length; i++) {
-			      mod_toggles[i].addEventListener('click', toggle_toggle, false);
-			  }
 		  } 
 	  })
       .catch(err => {
@@ -594,6 +807,7 @@ function set_active_modules(){
 		  if (response.data == "updated"){
 			  console.log('active modules updated');
 			  sessionStorage.setItem('populated', 'no');
+			  location.reload();
 		  } 
 	  })
       .catch(err => {
@@ -627,18 +841,62 @@ function get_module_info(module_id){
 }
 
 function integrate_modules(){
+	let user_name = getCookie('user_id');
 	// get active modules from modules_local and populate <head> with scripts (get url from the module_id);
+	
+	//first populating module cards
+	let card_insertion = Object.values(modules_local);
+	console.log(card_insertion);
+	
+	for (let i=0; i < card_insertion.length; i++){
+		let m_id = card_insertion[i].module_id;
+		let script_name = card_insertion[i].name;
+		let m_author = card_insertion[i].author;
+		let mod_state = 'module_off';
+		if (card_insertion[i].active == 1) mod_state = 'module_on';
+		
+		//user modules
+		if (m_author == user_name){
+			let user_module_html_string = "<div class='module_card_mine " + mod_state + "' id='mdl_" + m_id + "'><div class='module_card_bg' id='bg_mdl_mine'></div><div class='module_options'><a href='#' class='module_options_btn btn_edit' id='edit_" + m_id + "'>Edit</a><a href='#' class='module_options_btn btn_pre_delete_module' id='predel_" + m_id + "'>Delete</a><div class='delete_confirm' id='confirm_" + m_id + "'><a href='#' class='module_options_btn delete_module' id='del_" + m_id + "'>Yes, delete</a><a href='#' class='module_options_btn cancel_delete' id='cancel_" + m_id + "'>Cancel</a></div></div><div class='module_toggle' id='toggle_" + m_id + "'><div class='the_toggle' id='thetog'></div></div><h3 class='module_name'>" + script_name + "</h3></div>";
+		
+			document.getElementById('modules_section_mine').insertAdjacentHTML('beforeend', user_module_html_string);
+		}
+		
+		//TODO: 'official modules'
+		
+	}
+	
+	
 	
 	let ready_insertion = Object.values(modules_local).filter(item => item.active == 1);
 	console.log(ready_insertion);
 	
 	for (let i = 0; i < ready_insertion.length; i++){
+		let m_id = ready_insertion[i].module_id;
 		let script_name = ready_insertion[i].name;
 		let script_insert = document.createElement('script');
+		let m_author = ready_insertion[i].author;
 		script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/" + ready_insertion[i].module_id + ".js";
 		document.head.appendChild(script_insert);
 		console.log(ready_insertion[i].module_id + ' should be appended');
+		console.log('module author: ' + m_author);
+				
 	}
+	
+	
+	
+  //TODO: populate module cards (use the loop above)
+  
+  let mod_toggles = document.getElementsByClassName("module_toggle");
+  let mod_options = document.getElementsByClassName("module_options");
+  
+  for (let i=0; i<mod_toggles.length; i++) {
+      mod_toggles[i].addEventListener('click', toggle_toggle, false);
+  }
+  
+  for (let i=0; i<mod_options.length; i++) {
+      mod_options[i].addEventListener('click', mod_options_cross, false);
+  }
 	
 	
 	
@@ -747,9 +1005,13 @@ try {
 	document.getElementById('create_new_module').addEventListener('click', module_edit_mode_on, false);
 	document.getElementById('close_module_edit').addEventListener('click', module_edit_mode_off, false);
 	document.getElementById('create_module_btn').addEventListener('click', create_module, false);
+	
+	document.getElementById('language_settings').addEventListener('click', lang_toggle, false);
 } catch (e){
 	
 }
 
+get_lang();
+get_all_modules();
 
 

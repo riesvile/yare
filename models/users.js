@@ -26,6 +26,7 @@ const user_schema = new Schema({
 	marker: Number,
 	visible_modules: Array,
 	active_modules: Array,
+	lang_preference: String,
 	audio_preference: Array
 }, {timestamps: true});
 

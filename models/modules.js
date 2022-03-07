@@ -15,6 +15,7 @@ const module_schema = new Schema({
 	client_script_location: String,
 	server_script_location: String,
 	author: String,
+	illustration: String,
 	alive: Number
 }, {timestamps: true});
 

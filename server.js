@@ -956,6 +956,7 @@ app.post('/add-user', async (req, res) => {
 			marker: 0,
 			visible_modules: [],
 			active_modules: [],
+			lang_preference: 'javascript',
 			audio_preference: [50, 60] 
 		});
 
@@ -980,6 +981,66 @@ app.post('/add-user', async (req, res) => {
 	
 });
 
+app.post('/get-pref-lang', async (req, res) => {
+	
+	//later on description and other stuff
+	console.log('getting preferred language');
+	
+	User.find({user_id: req.body.user_name})
+		.then((result) => {
+			//res.send(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no user found"
+		        });
+			} else if (result[0]['lang_preference'] != undefined){
+				console.log('getting language ' + result[0]['lang_preference']);
+				res.status(200).send({
+		        	data: "lang incoming",
+					lang: result[0]['lang_preference']
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "somethiinnng went wrong -"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
+app.post('/set-pref-lang', async (req, res) => {
+	
+	//TODO: protect with session_id check of the incoming request
+	console.log('setting preferred language');
+	
+	User.find({user_id: req.body.user_name})
+		.then((result) => {
+			//res.send(result);
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no user found"
+		        });
+			} else if (result[0]['lang_preference'] != undefined){
+				User.updateOne({user_id: req.body.user_name}, {lang_preference: req.body.pref_lang})
+					.then((qq) => {
+						console.log('language preference updated to ' + req.body.pref_lang);
+						res.status(200).send({
+				        	data: "lang updated"
+				        });
+					});	
+			} else {
+				res.status(200).send({
+		        	data: "somethiinnng went wrong - probably not the author of the module"
+		        });
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
 app.post('/upload-script', async (req, res) => {
 	
 	let file_type = req.body.script_type == "client";
@@ -988,6 +1049,12 @@ app.post('/upload-script', async (req, res) => {
 	console.log('fold = ' + req.body.script_type);
 	
 	store_script(req.body.script_file, req.body.module_id, file_type);
+	
+	setTimeout(function(){
+		res.status(200).send({
+			data: 'script uploaded'
+		});
+	}, 3000);
 	
 });
 
@@ -1091,6 +1158,7 @@ app.post('/new-module', async (req, res) => {
 		client_script_location: "modules/client",
 		server_script_location: "modules/server",
 		author: req.body.user_name,
+		illustration: 'link',
 		alive: 1
 	});
 

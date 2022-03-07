@@ -51,6 +51,93 @@ function module_edit_mode_off(){
 	}, 300);
 }
 
+function module_pre_delete(mod_id){
+	anime({
+		targets: '#edit_' + mod_id,
+		marginLeft: '20px',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	anime({
+		targets: '#predel_' + mod_id,
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	anime({
+		targets: '#toggle_' + mod_id,
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 0
+	});
+	anime({
+		targets: '#toggle_' + mod_id,
+		right: 8,
+		easing: 'easeOutQuad',
+		duration: 0
+	});
+	anime({
+		targets: '#confirm_' + mod_id,
+		opacity: 1,
+		easing: 'easeOutQuad',
+		delay: 200,
+		duration: 100
+	});
+	
+	document.getElementById('confirm_' + mod_id).style.pointerEvents = 'auto';
+	
+}
+
+function module_cancel_delete(mod_id){
+	anime({
+		targets: '#edit_' + mod_id,
+		marginLeft: '0px',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		delay: 100,
+		duration: 200
+	});
+	anime({
+		targets: '#predel_' + mod_id,
+		opacity: 1,
+		easing: 'easeOutQuad',
+		delay: 100,
+		duration: 200
+	});
+	anime({
+		targets: '#toggle_' + mod_id,
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 0
+	});
+	anime({
+		targets: '#toggle_' + mod_id,
+		right: 16,
+		easing: 'easeOutQuad',
+		duration: 0
+	});
+	anime({
+		targets: '#confirm_' + mod_id,
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 200
+	});
+	
+	document.getElementById('confirm_' + mod_id).style.pointerEvents = 'none';
+}
+
+function module_name_highlight(){
+	anime({
+		targets: '#module_name_input',
+		translateY: [10, 0],
+		borderColor: ['rgba(255, 83, 83, 1)', 'rgba(175, 196, 226, 0.2)'],
+		backgroundColor: ['rgba(250, 50, 50, 1)', 'rgba(175, 196, 226, 0.01)'],
+		easing: 'easeOutQuad',
+		duration: 2000
+	});
+}
+
 function dismissals(){
 	if (dismiss_intent == 0){
 		dismiss_intent = 1;
@@ -139,6 +226,14 @@ function dismissals(){
 	}
 	
 	module_edit_mode_off();
+	
+	set_lang();
+	
+	if (something_changed == 1) {
+		something_changed = 0;
+		set_active_modules();
+	}
+	
 }
 
 function dismiss_helper(){
@@ -394,7 +489,7 @@ function login_success(user_name){
 		console.log(error);
 	}
 	
-	document.getElementById('signed_in').innerHTML = user_name;
+	document.getElementById('the_name').innerHTML = user_name;
 	document.getElementById('signed_in').style.display = 'block';
 	//console.log('iodsjfoidsjf');
 	
@@ -417,7 +512,7 @@ function login_success(user_name){
 	}
 	
 	try {
-		if (temp_from_nongame) window.location = 'https://yare.io/hub';
+		//if (temp_from_nongame) window.location = 'https://yare.io/hub';
 	} catch (e){
 		console.log(e);
 	}
@@ -623,25 +718,21 @@ function pre_resign(){
 	resign_open = 1;
 	
   	anime({
-  		targets: '#resign_game',
-  		translateY: [0, -10],
-		translateX: [0, -10],
-		width: 200,
-		height: 44,
-		fontSize: 14,
-		backgroundColor: 'rgba(30, 30, 32, 1)',
+  		targets: '#resign_game_menu',
+		width: 100,
+		marginLeft: 96,
   		easing: 'easeOutQuad',
   		duration: 200
   	});
 	
-	anime({
-		targets: '#overlay',
-		backgroundColor: 'rgba(0, 0, 0, 0.39)',
-		backdropFilter: 'blur(12px)',
-		"-webkit-backdrop-filter": 'blur(12px)',
-		easing: 'easeOutQuad',
-		duration: 200
-	});
+	//anime({
+	//	targets: '#overlay',
+	//	backgroundColor: 'rgba(0, 0, 0, 0.39)',
+	//	backdropFilter: 'blur(12px)',
+	//	"-webkit-backdrop-filter": 'blur(12px)',
+	//	easing: 'easeOutQuad',
+	//	duration: 200
+	//});
 	
 	anime({
 		targets: '#resign_btn',
@@ -664,30 +755,28 @@ function pre_resign(){
 		duration: 200
 	});
 	
-	anime({
-		targets: '.you_sure_lbl',
-		opacity: 1,
-		easing: 'easeOutQuad',
-		duration: 200
-	});
+	//anime({
+	//	targets: '.you_sure_lbl',
+	//	opacity: 1,
+	//	easing: 'easeOutQuad',
+	//	duration: 200
+	//});
 
-	document.getElementById('overlay').style.pointerEvents = 'auto';
+	//document.getElementById('overlay').style.pointerEvents = 'auto';
 	document.getElementById('pre_resign_btn').style.display = 'none';
-	document.getElementById('resign_btn').style.display = 'block';
-	document.getElementById('cancel_resign_btn').style.display = 'block';
+	//document.getElementById('resign_btn').style.display = 'inline-block';
+	//document.getElementById('cancel_resign_btn').style.display = 'inline-block';
+	document.getElementById('resign_btn').style.pointerEvents = 'auto';
+	document.getElementById('cancel_resign_btn').style.pointerEvents = 'auto';
 }
 
 function dont_resign(){
 	resign_open = 0;
 	
   	anime({
-  		targets: '#resign_game',
-  		translateY: [-10, 0],
-		translateX: [-10, 0],
-		width: 75,
-		height: 36,
-		fontSize: 12,
-		backgroundColor: 'rgba(58, 40, 38, 0.69)',
+  		targets: '#resign_game_menu',
+		width: 70,
+		marginLeft: 36,
   		easing: 'easeOutQuad',
   		duration: 200
   	});
@@ -731,8 +820,8 @@ function dont_resign(){
 
 	document.getElementById('overlay').style.pointerEvents = 'none';
 	document.getElementById('pre_resign_btn').style.display = 'block';
-	document.getElementById('resign_btn').style.display = 'none';
-	document.getElementById('cancel_resign_btn').style.display = 'none';
+	document.getElementById('resign_btn').style.pointerEvents = 'none';
+	document.getElementById('cancel_resign_btn').style.pointerEvents = 'none';
 }
 
 

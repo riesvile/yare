@@ -658,6 +658,7 @@ var player2_color;
 
 var colors = {};
 var shapes = {};
+var players = {};
 colors['color1'] = 'rgba(128,140,255,1)';
 colors['color2'] = 'rgba(232,97,97,1)';
 
