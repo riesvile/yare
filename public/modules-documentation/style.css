@@ -1,0 +1,155 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;1,700;1,400;1,500;1,600;1,700&display=swap");
+
+#doc_sections {
+  width: 68%;
+  margin-top: 44px;
+  margin-left: 16%;
+  position: absolute;
+  top: 0;
+}
+
+.doc_sec_link {
+  display: inline-block;
+  margin-right: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(242, 246, 250, 0.55);
+}
+
+.doc_sec_active {
+  color: rgba(242, 246, 250, 0.89);
+}
+
+.content {
+  margin-top: 179px;
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0px 2rem;
+  color: #F2F6FA;
+  font-family: 'Montserrat', sans-serif;
+}
+.semibold {
+  font-weight: 600;
+}
+.size1 {
+  font-size: 24px;
+}
+.size2 {
+  font-size: 20px;
+}
+.monospace {
+  font-family: 'Courier New', monospace;
+  display: inline;
+}
+.gray {
+  color: rgba(242, 246, 250, 55%);
+}
+.size1 .gray,
+.size2 .gray {
+  display: inline;
+}
+img {
+  width: 100%;
+  height: auto;
+}
+
+
+/* Tables from documentation.css */
+/* ---- Tables ---- */
+
+.table_doc {
+	width: 100%;
+}
+
+.row_doc {
+	width: calc(100% + 64px);
+	margin-left: -32px;
+	border-radius: 12px;
+}
+
+.row_in_doc {
+	width: calc(100% - 64px);
+	line-height: 36px;
+	margin-left: 32px;
+	padding-top: 16px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+	position: relative;
+	overflow: hidden;
+	
+}
+
+.row_in_doc_head {
+	width: 100%;
+	padding-bottom: 12px;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.row_in_doc_head span {
+	font-size: 12px;
+	font-family: Montserrat, sans-serif;
+	text-transform: uppercase;
+	color: rgba(242, 246, 250, 0.48);
+	letter-spacing: 1px;
+}
+
+.row_in_doc_head span.table_doc_method {
+	width: 20%;
+}
+
+.table_doc_property, .table_doc_type, .table_doc_value, .table_doc_method, .table_doc_argument, .table_doc_usedby {
+	display: inline-block;
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+}
+
+.table_doc_property {
+	width: 6%;
+}
+
+.table_doc_type {
+	text-align: left;
+	font-family: Lucida Sans Typewriter, Lucida Console, monaco, Bitstream Vera Sans Mono, monospace;
+	font-size: 14px;
+	color: rgba(242, 246, 250, 0.69);
+	width: 10%;
+}
+
+.table_doc_value {
+	float: right;
+	text-align: right;
+	margin-right: 0;
+	margin-left: auto;
+}
+
+.table_doc_method {
+	width: 20%;
+}
+
+.table_doc_argument {
+	width: 26%;
+}
+
+/* Special cases */
+.valueExamples {
+  display: flex;
+  justify-content: left;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.valueExamples img {
+  margin-bottom: 1rem;
+}
+.wsinfo {
+  display: flex;
+  align-items: center;
+}
+
+/* Mobile stuff */
+@media (orientation: portrait) {
+  #window {
+    content:url("/modules-documentation/assets/window_mobile.svg")
+  }
+}

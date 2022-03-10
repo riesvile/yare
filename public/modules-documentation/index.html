@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/modules-documentation/style.css">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/anime.min.js"></script>
+  <script src="/animations.js"></script>
+  <script src="/basics.js"></script>
+  <title>yare.io</title>
+</head>
+<body>
+  <div id="hector">
+    <h1 id="logo"><a href="/">yare<span class="logo_lowlight">.io</span></a></h1>
+    <div id="doc_sections">
+      <a href="/documentation" class="doc_sec_link">Documentation</a>
+      <!-- <div class="menu_line"></div> --> <!-- Yeah this should be fixed, couldn't get a separator working -->
+      <a class="doc_sec_link doc_sec_active">Modules</a>
+    </div>
+    <div class="menu">
+      <a href="/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
+      <a href="/newgame" class="menu_link new_g" id="new_g">New game</a>
+      <div class="menu_line desktop_only"></div>
+      <div class="menu_link new_acc" id="new_account">New account</div>
+      <div class="menu_link" id="login">Log in</div>
+      <div class="menu_link" id="signed_in">username</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="size1 semibold" style="max-width: 769px">
+      Modules are components that add specific features and enhancements to yare.
+      <div class="gray">
+        This can be anything from UI controls, monitoring widgets, game rendering adjustments, camera controls, ...
+      </div>
+    </div>
+    <div style="height: 4rem"></div>
+    <h1 class="semibold">Creating a module</h1>
+    <div style="height: 2rem"></div>
+    <div class="size2 gray" style="max-width: 706px">
+      After clicking on ‘Create module’, you will be presented with the module-editing mode
+    </div>
+    <div style="height: 2rem"></div>
+    <img id="window" src="/modules-documentation/assets/window.svg" alt="Unable to load window">
+    <div style="height: 4rem"></div>
+    <div class="size1">
+      Communication between client script and your game-playing code (server) is done via the <div class="monospace" style="color: #BBBBFF">client</div> object
+    </div>
+    <div style="height: 4rem"></div>
+    <div class="valueExamples">
+      <img src="/modules-documentation/assets/storeval.svg" style="width: 377px" alt="Unable to load svg">
+      <img src="/modules-documentation/assets/getval.svg" style="width: 432px" alt="Unable to load svg">
+    </div>
+    <div style="height: 2rem"></div>
+    <!-- Add a proper link here maybe? -->
+    <div class="size2">See <a href="#">examples</a> for a better idea on how to wire things up</div>
+    <div style="height: 6rem"></div>
+    <h1>Game-state information</h1>
+    <div style="height: 2rem"></div>
+    <div class="size2" style="max-width: 857px;">
+      The server sends data about the state of the game each tick via a websocket connection.
+      The client then consumes this data with a rendering engine that draws it onto the html canvas.
+    </div>
+    <div style="height: 2rem"></div>
+    <div class="wsinfo">
+      <div class="left">
+        <div class="size1">Websocket steam</div>
+        <div style="color:#A9E28E">~1-2 ticks behind 'real-time'</div>
+      </div>
+      <div style="margin-right:4rem"></div>
+      <div class="right size2 gray">
+        Pre-processed data directly from the server
+      </div>
+    </div>
+    <div style="height: 2rem"></div>
+    <div class="size2 monospace">incoming = {</div>
+    <div style="height: 1rem"></div>
+    <div class="table_doc">
+      <div class="row_in_doc_head">
+        <span class="table_doc_type">Type</span>
+        <span class="table_doc_property">Key</span>
+        <span class="table_doc_value">Description</span>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">number</span>
+          <span class="table_doc_property">t</span>
+          <span class="table_doc_value">current tick - e.g. ‘7’</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">p1</span>
+          <span class="table_doc_value">[ [ id, position, size, energy, hp ], [...], ... ] – arrays of player 1 spirits data</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">p2</span>
+          <span class="table_doc_value">arrays of array of player 2 spirits (same structure as p1)</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">b1</span>
+          <span class="table_doc_value">base_zxq data – [ energy, current_spirit_cost, sight.enemies.length, control ]</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">b2</span>
+          <span class="table_doc_value">base_a2c data (same structure as b1)</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">b3</span>
+          <span class="table_doc_value">base_p89 data (same structure as b1)</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">b4</span>
+          <span class="table_doc_value">base_nua data (same structure as b1)</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">st</span>
+          <span class="table_doc_value">[ star_zxq.energy, star_a2c.energy, star_p89.energy, star_nua.energy ]</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">ou</span>
+          <span class="table_doc_value">[ outpost.energy, outpost.control ]</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">py</span>
+          <span class="table_doc_value">[ pylon.energy, pylon.control ]</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">ef</span>
+          <span class="table_doc_value">[ [ fragment position, energy ], [ fragment position, energy ], ... ] – arrays of fragments data</span>
+        </div>
+      </div>
+      <div class="row_doc">
+        <div class="row_in_doc">
+          <span class="table_doc_type">array</span>
+          <span class="table_doc_property">e</span>
+          <span class="table_doc_value">energize data – [ [ origin id, target id, beam strength ], [ ... ], ... ]</span>
+        </div>
+      </div>
+    </div>
+    <div style="height: 1rem"></div>
+    <div class="size2 monospace">}</div>
+  </div>
+</body>
+</html>
