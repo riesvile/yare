@@ -317,7 +317,7 @@
 					 var oldEnergy = 0;
 					 var oldSize = 0;
 					 
-					 if (spirit_lookup[spir_id] == undefined && pla1 != undefined){
+					 if (spirits[spir_id] == undefined && pla1 != undefined){
 					 	 create_spirit_p1(spir_id);
 					 }
 					 
@@ -369,7 +369,7 @@
 					 var oldEnergy = 0;
 					 var oldSize = 0;
 					 
-					 if (spirit_lookup[spir_id] == undefined && pla2 != undefined){
+					 if (spirits[spir_id] == undefined && pla2 != undefined){
 					 	 create_spirit_p2(spir_id);
 					 	 //console.log('spirit created ' + spir_id);
 					 }
@@ -860,7 +860,7 @@
 									pylons = [];
 									all_spirits = [];
 									living_spirits = [];
-									spirit_lookup = {};
+									spirits = {};
 									game_active = 0;
 									world_initiated = 0;
 									game_file = str;
@@ -972,7 +972,7 @@
 							 var oldEnergy = 0;
 							 var oldSize = 0;
 							 
-							 if (spirit_lookup[spir_id] == undefined && pla1 != undefined){
+							 if (spirits[spir_id] == undefined && pla1 != undefined){
 								 create_spirit_p1(spir_id);
 							 }
 							 
@@ -1017,7 +1017,7 @@
 							 var oldEnergy = 0;
 							 var oldSize = 0;
 							 
-							 if (spirit_lookup[spir_id] == undefined && pla2 != undefined){
+							 if (spirits[spir_id] == undefined && pla2 != undefined){
 								 create_spirit_p2(spir_id);
 								 //console.log('spirit created ' + spir_id);
 							 }

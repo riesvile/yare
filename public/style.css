@@ -420,6 +420,7 @@ h1#logo {
 	pointer-events: none;
 	height: 100%;
 	overflow: scroll;
+	width: 100%;
 }
 
 .profile_link {
@@ -613,7 +614,7 @@ h1#logo {
 		transition: 0.4s ease-out;
 	}
 	
-	#bg_mdl_code_editor {
+	#bg_mdl_code-editor {
 		background: rgb(59,19,20);
 		background: linear-gradient(222deg, rgba(75,35,35,1) 0%, rgba(36,36,49,1) 86%);
 	}
@@ -623,7 +624,7 @@ h1#logo {
 		background: linear-gradient(222deg, rgba(3,24,86,1) 0%, rgba(34,24,50,1) 100%);
 	}
 	
-	#bg_mdl_basic_info_graphs {
+	#bg_mdl_basic-info-graphs {
 		background: rgb(28,44,42);
 		background: linear-gradient(222deg, rgba(28,44,42,1) 0%, rgba(26,26,39,1) 86%);
 	}
@@ -663,6 +664,45 @@ h1#logo {
 		left: 28px;
 		width: 180px;
 		pointer-events: none;
+		transition: 0.2s ease-out;
+	}
+	
+	.module_ilu {
+		width: 224px;
+		height: 112px;
+		position: absolute;
+		bottom: 28px;
+		right: 0;
+	}
+	
+	.module_desc {
+		position: absolute;
+		top: 68px;
+		left: 28px;
+		color: rgba(242, 246, 250, 0.96);
+		opacity: 0;
+		transition: 0.2s ease-out;
+		padding-right: 26px;
+	}
+	
+	.desc_l {
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 24px;
+	}
+	
+	.desc_s {
+		font-size: 13px;
+		font-weight: 500;
+		line-height: 19px;
+	}
+	
+	.module_card:hover .module_desc {
+		opacity: 1;
+	}
+	
+	.module_card:hover .module_name, .module_card:hover .module_ilu {
+		opacity: 0;
 	}
 	
 	.module_card_mine .module_name {
@@ -738,6 +778,7 @@ h1#logo {
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
+		pointer-events: none;
 	}
 	
 	.new_module_label {
@@ -748,6 +789,7 @@ h1#logo {
 		position: absolute;
 		bottom: 20px;
 		color: rgba(246, 250, 255, 1);
+		pointer-events: none;
 	}
 	
 	#modules_section_mine {
@@ -933,7 +975,7 @@ h1#logo {
 	
 	#update_module_btn {
 		background-color: rgba(175, 196, 226, 0.5);
-		visibility: hidden;
+		display: none;
 	}
 	
 	#create_module_btn:hover {
@@ -963,6 +1005,20 @@ h1#logo {
 		font-size: 13px;
 		font-weight: 500;
 		opacity: 0;
+	}
+	
+	#modules_server_message_loader {
+		position: fixed;
+		top: 76px;
+		right: 94px;
+		opacity: 0;
+		width: 24px;
+		height: 24px;
+		background: url('./asset/loader.gif');
+		background-size: cover;
+		display: block;
+		pointer-events: none;
+		transition: 0.3s ease-out;
 	}
 	
 	.srv_ok {

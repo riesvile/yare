@@ -390,6 +390,34 @@ function getBase64(file) {
   });
 }
 
+var module_draw = {};
+var currently_editing = 0;
+
+var pub_modules = {};
+pub_modules['mod_basic-info-graphs'] = {
+	active: 0,
+	name: 'Basic info & energy graphs',
+	module_id: 'basic-info-graphs',
+	author: 'yare.io',
+	description: "Graph showing the difference between players' current energy and total energy levels. Clicking on the graph minimizes it.",
+	type: 'data viz',
+	client_script_location: 'local',
+	server_script_location: 0, 
+	public: 1
+}
+pub_modules['mod_manual-controls'] = {
+	active: 0,
+	name: 'Manual controls interface',
+	module_id: 'manual-controls',
+	author: 'yare.io',
+	description: "Play yare with your mouse like a traditional Real-Time Strategy.",
+	type: 'UI controls',
+	client_script_location: 'local',
+	server_script_location: 'local',
+	public: 1
+}
+modules_local['mod_basic-info-graphs'] = pub_modules['mod_basic-info-graphs'];
+modules_local['mod_manual-controls'] = pub_modules['mod_manual-controls'];
 
 
 function expand_card(m_id){
@@ -426,9 +454,6 @@ function create_module(){
 	}
 	
 	console.log('module name = ' + module_name_input.value);
-	
-	
-	
 
 	fetch('/new-module', {
 	        method: "POST",
@@ -451,14 +476,13 @@ function create_module(){
 			  	  name: module_name_input.value,
 				  author: user_name,
 				  module_id: response.module_id,
+				  public: 0,
 				  active: 1
 			  };
 			  sessionStorage.setItem('populated', 'no');
 			  if (has_client) upload_script(response.module_id, "client");
 			  if (has_server) upload_script(response.module_id, "server");
-			  
-	  		  document.getElementById("modules_server_message").style.opacity = 1;
-	  		  document.getElementById("modules_server_message").innerHTML = "Module updated. Check browser console for client script errors.";
+			  document.getElementById("modules_server_message_loader").style.opacity = 1;
 		  } 
 	  })
       .catch(err => {
@@ -493,6 +517,8 @@ function integrate_new_module(mod_id){
 }
 
 function update_module_info(module_id, delete_module = 0){
+	if (currently_editing != 0) module_id = currently_editing;
+	console.log('updating mommmmoodule ' + module_id);
 	
 	let user_name = getCookie('user_id');
 	let module_name = document.getElementById("module_name_input").value;
@@ -502,6 +528,16 @@ function update_module_info(module_id, delete_module = 0){
 	
 	//if (modules_local['mod_' + module_id] == undefined || module_name == modules_local['mod_' + module_id]['name']) module_name = '';
 	if (retreived_parsed == undefined || module_name == retreived_parsed['name']) module_name = '';
+	
+	let client_uploader = document.getElementById("file_script_client");
+	let server_uploader = document.getElementById("file_script_server");
+	let module_name_input = document.getElementById("module_name_input");
+	
+	let has_client = 0;
+	let has_server = 0;
+	
+	if (client_uploader.value != "") has_client = 1;
+	if (server_uploader.value != "") has_server = 1;
 	
 	fetch('/update-module-info', {
 	        method: "POST",
@@ -521,6 +557,19 @@ function update_module_info(module_id, delete_module = 0){
 		  //console.log(response);
 		  if (response.data == "module updated"){
 			  console.log('all good');
+			  modules_local['mod_' + module_id]['name'] = module_name_input.value;
+			  modules_local['mod_' + module_id]['active'] = 1;
+	
+			  sessionStorage.setItem('populated', 'no');
+			  if (has_client) upload_script(module_id, "client", "refresh");
+			  if (has_server) upload_script(module_id, "server");
+			  if (has_client || has_server){
+				  document.getElementById("modules_server_message_loader").style.opacity = 1;
+			  } else {
+		  		  document.getElementById("modules_server_message").style.opacity = 1;
+		  		  document.getElementById("modules_server_message").innerHTML = "Module updated.";
+			  }
+			  
 		  } else {
 			  console.log(response);
 		  }
@@ -543,7 +592,9 @@ function update_module_info(module_id, delete_module = 0){
 }
 
 
-function upload_script(module_id, script_type){
+function upload_script(module_id, script_type, meta = ""){
+	let user_name = getCookie('user_id');
+	let session_id = getCookie('session_id');
 	
 	console.log('uploading ' + script_type + ' script');
 	
@@ -560,7 +611,10 @@ function upload_script(module_id, script_type){
 			        body: JSON.stringify({
 				        module_id: module_id,
 						script_type: script_type,
-						script_file: file_client
+						script_file: file_client,
+						user_id: user_name,
+						session_id: session_id
+						
 				    })
 
 		    }).then(response => response.json())
@@ -570,6 +624,15 @@ function upload_script(module_id, script_type){
 					  console.log('all good');
 					  console.log(script_type);
 					  if (script_type == 'client') integrate_new_module(module_id);
+					  
+					  document.getElementById("modules_server_message_loader").style.opacity = 0;
+			  		  document.getElementById("modules_server_message").style.opacity = 1;
+					  if (meta == ""){
+					  	 document.getElementById("modules_server_message").innerHTML = "Module updated. Check browser console for client script errors.";
+					  } else {
+					  	 document.getElementById("modules_server_message").innerHTML = "Module updated. Refresh the page to clear browser context";
+					  }
+			  		  
 				  } 
 			  })
 		      .catch(err => {
@@ -597,18 +660,54 @@ function download_module_script(module_id, client = 1){
 
     }).then(response => response.json())
       .then(response => {
-		  console.log('receiving script file');
-		  console.log(response.data.toString());
-		  //if (response.data == "script downloaded"){
-		  //	  console.log('all good');
-		  //	  console.log('module_id = ' + response.module_id);
-		  //} 
+		  if (response.meta == 'script retreived'){
+			  console.log('receiving script file');
+			  let temp_user_code = editor.getValue();
+			  temp_user_code += "\n" + response.data;
+			  editor.setValue(temp_user_code);
+			  return 'script appended';
+		  } else {
+			  return 'nope';
+		  }
+		  
 	  })
       .catch(err => {
 		  console.log(err);
 	  });
-	
 }
+
+function local_server_script(module_id){
+	let load_helper = 1;
+	let data_helper = '';
+	if (modules_local['mod_' + module_id]['server_script_location'] == 0) return;
+	let temp_user_code = editor.getValue();
+	if (temp_user_code.includes('// loaded module: ' + module_id)) return;
+	
+	try {
+		fetch("a/public-modules/server/" + module_id + ".js")
+			.then(function(response) {
+    			return response.text().then(function(text) {
+					temp_user_code = editor.getValue();
+					temp_user_code += "\n\n" + "// loaded module: " + module_id + "\n// Do not remove this comment ----" + text;
+					editor.setValue(temp_user_code);
+					console.log('script appended');
+					//return 'script appended';
+   				});
+  		    });
+	} catch (e){
+		console.log(e);
+	}
+	
+	
+	//console.log();
+}
+
+//function insert_server_script(str){
+//	let temp_user_code = editor.getValue();
+//    temp_user_code += "\n\n" + "// loaded module: " + module_id + "\n\n" + data;
+//    editor.setValue(temp_user_code);
+//    return 'script appended';
+//}
 
 
 function get_all_modules(){
@@ -649,7 +748,11 @@ function get_all_modules(){
 			  sessionStorage.setItem('populated', 'yes');
 			  get_active_modules();
 			  //console.log(modules_local);
-		  } 
+		  } else {
+			  //TODO: clean this up to also receive public modules from the server and drop this 'else' branch
+			  sessionStorage.setItem('populated', 'yes');
+			  get_active_modules();
+		  }
 	  })
       .catch(err => {
 		  console.log(err);
@@ -677,6 +780,7 @@ function toggle_toggle(e){
 		el_parent.classList.remove('module_off');
 		
 		//TODO: modules_local with a module id from el_id (make active)
+		console.log('m_id = ' + m_id);
 		try {
 			modules_local['mod_' + m_id]['active'] = 1;
 			sessionStorage.setItem('mod_' + m_id, JSON.stringify(modules_local['mod_' + m_id]))
@@ -726,6 +830,7 @@ function mod_options_cross(e){
 		break;
 	case "edit":
 		console.log('editing');
+		module_edit_mode_on(2, el_mod_id);
 		break;
 	case "cancel":
 		module_cancel_delete(el_mod_id);
@@ -786,6 +891,7 @@ function set_active_modules(){
 	for (const mod_id of Object.keys(modules_local)) {
 	    //console.log(key, modules_local[mod_id]);
 		if (modules_local[mod_id]['active'] == 1) active_array.push(modules_local[mod_id]['module_id']);
+		sessionStorage.setItem(mod_id, JSON.stringify(modules_local[mod_id]));
 	}
 	
 	console.log('new active modules = ' + active_array);
@@ -842,46 +948,78 @@ function get_module_info(module_id){
 
 function integrate_modules(){
 	let user_name = getCookie('user_id');
+	
+	let server_scripts_combined = '';
+	
 	// get active modules from modules_local and populate <head> with scripts (get url from the module_id);
 	
 	//first populating module cards
 	let card_insertion = Object.values(modules_local);
 	console.log(card_insertion);
 	
-	for (let i=0; i < card_insertion.length; i++){
-		let m_id = card_insertion[i].module_id;
-		let script_name = card_insertion[i].name;
-		let m_author = card_insertion[i].author;
-		let mod_state = 'module_off';
-		if (card_insertion[i].active == 1) mod_state = 'module_on';
+	try {
+		for (let i=0; i < card_insertion.length; i++){
+			let m_id = card_insertion[i].module_id;
+			let script_name = card_insertion[i].name;
+			//script_name = script_name.split("\n").join("<br />");
+			let m_author = card_insertion[i].author;
+			let mod_state = 'module_off';
+			if (card_insertion[i].active == 1) mod_state = 'module_on';
+			let mod_desc = card_insertion[i].description;
+			let desc_type = 'desc_l';
+			if (mod_desc.length > 138) desc_type = 'desc_s';
 		
-		//user modules
-		if (m_author == user_name){
-			let user_module_html_string = "<div class='module_card_mine " + mod_state + "' id='mdl_" + m_id + "'><div class='module_card_bg' id='bg_mdl_mine'></div><div class='module_options'><a href='#' class='module_options_btn btn_edit' id='edit_" + m_id + "'>Edit</a><a href='#' class='module_options_btn btn_pre_delete_module' id='predel_" + m_id + "'>Delete</a><div class='delete_confirm' id='confirm_" + m_id + "'><a href='#' class='module_options_btn delete_module' id='del_" + m_id + "'>Yes, delete</a><a href='#' class='module_options_btn cancel_delete' id='cancel_" + m_id + "'>Cancel</a></div></div><div class='module_toggle' id='toggle_" + m_id + "'><div class='the_toggle' id='thetog'></div></div><h3 class='module_name'>" + script_name + "</h3></div>";
 		
-			document.getElementById('modules_section_mine').insertAdjacentHTML('beforeend', user_module_html_string);
+			//user modules
+			if (m_author == user_name){
+				let user_module_html_string = "<div class='module_card_mine " + mod_state + "' id='mdl_" + m_id + "'><div class='module_card_bg' id='bg_mdl_mine'></div><div class='module_options'><a href='#' class='module_options_btn btn_edit' id='edit_" + m_id + "'>Edit</a><a href='#' class='module_options_btn btn_pre_delete_module' id='predel_" + m_id + "'>Delete</a><div class='delete_confirm' id='confirm_" + m_id + "'><a href='#' class='module_options_btn delete_module' id='del_" + m_id + "'>Yes, delete</a><a href='#' class='module_options_btn cancel_delete' id='cancel_" + m_id + "'>Cancel</a></div></div><div class='module_toggle' id='toggle_" + m_id + "'><div class='the_toggle' id='thetog'></div></div><h3 class='module_name'>" + script_name + "</h3></div>";
+		
+				document.getElementById('modules_section_mine').insertAdjacentHTML('beforeend', user_module_html_string);
+			} else if (card_insertion[i].public == 1) {
+			//public modules
+				let public_module_html_string = "<div class='module_card " + mod_state + "' id='mdl_" + m_id + "'> <div class='module_card_bg' id='bg_mdl_" + m_id + "'></div> <span class='module_main_tag'>" + card_insertion[i].type + "</span> <div class='module_toggle' id='toggle_" + m_id + "'> <div class='the_toggle' id='thetog'></div> </div> <h3 class='module_name'>" + script_name + "</h3> <div class='module_ilu ilu_" + m_id + "' style='background:url(a/public-modules/ilu/" + m_id + ".png); background-size: cover;'></div> <p class='module_desc " + desc_type + "'>" + mod_desc + "</p> </div>";	
+				document.getElementById('modules_section').insertAdjacentHTML('beforeend', public_module_html_string);
+			}
+		
 		}
-		
-		//TODO: 'official modules'
-		
+	} catch (e){
+		console.log(e);
+		sessionStorage.setItem('populated', 'no');
+		//location.reload();
 	}
+	
+	
 	
 	
 	
 	let ready_insertion = Object.values(modules_local).filter(item => item.active == 1);
 	console.log(ready_insertion);
 	
-	for (let i = 0; i < ready_insertion.length; i++){
-		let m_id = ready_insertion[i].module_id;
-		let script_name = ready_insertion[i].name;
-		let script_insert = document.createElement('script');
-		let m_author = ready_insertion[i].author;
-		script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/" + ready_insertion[i].module_id + ".js";
-		document.head.appendChild(script_insert);
-		console.log(ready_insertion[i].module_id + ' should be appended');
-		console.log('module author: ' + m_author);
-				
-	}
+	setTimeout(function(){
+		for (let i = 0; i < ready_insertion.length; i++){
+			let m_id = ready_insertion[i].module_id;
+			let script_name = ready_insertion[i].name;
+			let script_insert = document.createElement('script');
+			let m_author = ready_insertion[i].author;
+			if (ready_insertion[i].public == 1){
+				script_insert.src = "a/public-modules/client/" + ready_insertion[i].module_id + ".js";
+				local_server_script(ready_insertion[i].module_id);
+			} else {
+				script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/" + ready_insertion[i].module_id + ".js";
+				download_module_script(ready_insertion[i].module_id, 0);
+			}
+			document.head.appendChild(script_insert);
+			console.log(ready_insertion[i].module_id + ' should be appended');
+			console.log('module author: ' + m_author);	
+			
+			//try for server script
+					
+		}
+	}, 500)
+	
+	//fetch("https://yare.sfo3.digitaloceanspaces.com/modules/client/aNg1a2d2oh17.js").then(r => r.text()).then(t => console.log(t));
+	
+	
 	
 	
 	
@@ -1005,6 +1143,7 @@ try {
 	document.getElementById('create_new_module').addEventListener('click', module_edit_mode_on, false);
 	document.getElementById('close_module_edit').addEventListener('click', module_edit_mode_off, false);
 	document.getElementById('create_module_btn').addEventListener('click', create_module, false);
+	document.getElementById('update_module_btn').addEventListener('click', update_module_info, false);
 	
 	document.getElementById('language_settings').addEventListener('click', lang_toggle, false);
 } catch (e){
@@ -1013,5 +1152,31 @@ try {
 
 get_lang();
 get_all_modules();
+
+
+
+
+
+
+
+
+//TODO: Edit module and loading animation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -73,6 +73,7 @@
 	</div>
 	
 	<span id="modules_server_message" class="srv_ok">Module updated. Check browser console for errors.</span>
+	<span id="modules_server_message_loader"></span>
 	
 	<div id="create_module_btn">Create module</div>
 	<div id="update_module_btn">Update module</div>
@@ -109,6 +110,7 @@
 		
 		<div class="sep_medium"></div>
 		
+		<!--
 		<div id="module_expanded">
 			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
 			<span class='module_main_tag'>Data visualization</span>
@@ -124,6 +126,7 @@
 			<div class="sep_medium"></div>
 			<div class="sep_medium"></div>
 		</div>
+		-->
 		
 		<span class="pref_section_label">MODULES</span>
 		<div id="modules_section">
@@ -133,37 +136,24 @@
 				<span class="new_module_label">Create Module</span>
 			</div>
 			
-			<div class="module_card module_off" id="mdl_code_editor">
-				<div class="module_card_bg" id="bg_mdl_code_editor"></div>
+			<!--
+			<div class="module_card module_off" id="mdl_code-editor">
+				<div class="module_card_bg" id="bg_mdl_code-editor"></div>
 				<span class="module_main_tag">Essentials</span>
-				<div class="module_toggle" id="toggle_code_editor">
+				<div class="module_toggle" id="toggle_code-editor">
 					<div class="the_toggle" id="thetog"></div>
 				</div>
 				<h3 class="module_name">Code editor <br>& Console</h3>
 				<div class="module_ilu"></div>
 			</div>
-			<div class="module_card module_off" id="mdl_manual1">
-				<div class="module_card_bg" id="bg_mdl_manual1"></div>
-				<span class="module_main_tag">UI controls</span>
-				<div class="module_toggle" id="toggle_code_editor">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Manual controls interface</h3>
-				<div class="module_ilu"></div>
-			</div>
-			<div class="module_card module_off" id="mdl_basic_info_graphs">
-				<div class="module_card_bg" id="bg_mdl_basic_info_graphs"></div>
-				<span class="module_main_tag">Data vis</span>
-				<div class="module_toggle" id="toggle_code_editor">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Basic info <br>& energy graphs</h3>
-				<div class="module_ilu"></div>
-			</div>
+				
+				-->
+			
 			
 		</div>
 		
 		<div id="modules_section_mine">
+			<!--
 			<div class="module_card_mine module_off" id="mdl_code_editor">
 				<div class="module_card_bg" id="bg_mdl_mine"></div>
 				<div class="module_options">
@@ -179,22 +169,7 @@
 				</div>
 				<h3 class="module_name">Module name</h3>
 			</div>
-			
-			<div class="module_card_mine module_off" id="mdl_code_editor">
-				<div class="module_card_bg" id="bg_mdl_mine"></div>
-				<div class="module_options">
-					<a href="#" class="module_options_btn btn_edit" id="edit_9876">Edit</a>
-					<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_9876">Delete</a>
-					<div class="delete_confirm" id="confirm_9876">
-						<a href="#" class="module_options_btn delete_module" id="del_9876">Yes, delete</a>
-						<a href="#" class="module_options_btn cancel_delete" id="cancel_9876">Cancel</a>
-					</div>
-				</div>
-				<div class="module_toggle" id="toggle_9876">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Module bla</h3>
-			</div>
+			-->
 		</div>
 		
 		
@@ -541,9 +516,7 @@
 		 }
 	  }
 	  
-	  var client = {
-		  temp: 'test'
-	  };
+	  var client = {};
 	  
 	  var dragging_timeline = 0;
 	  
@@ -694,7 +667,7 @@
 							 var oldEnergy = 0;
 							 var oldSize = 0;
 							 
-							 if (spirit_lookup[spir_id] == undefined && pla1 != undefined){
+							 if (spirits[spir_id] == undefined && pla1 != undefined){
 								 create_spirit_p1(spir_id);
 							 }
 							 
@@ -739,7 +712,7 @@
 							 var oldEnergy = 0;
 							 var oldSize = 0;
 							 
-							 if (spirit_lookup[spir_id] == undefined && pla2 != undefined){
+							 if (spirits[spir_id] == undefined && pla2 != undefined){
 								 create_spirit_p2(spir_id);
 								 //console.log('spirit created ' + spir_id);
 							 }
@@ -1155,7 +1128,7 @@
 		  //console.log('clicked');
 		  user_code = editor.getValue();
 		  localStorage.setItem("code_code", user_code);
-		  socket.send(JSON.stringify({u_code: "client[tick] = " + JSON.stringify(client) + "\n" + user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
+		  socket.send(JSON.stringify({u_code: "client['t' + tick] = " + JSON.stringify(client) + "\n" + user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  }
 	  
 	  function resign_game(){

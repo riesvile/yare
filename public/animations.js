@@ -1,8 +1,28 @@
-function module_edit_mode_on(){
+function module_edit_mode_on(m, mod_id = 0){
+    //e = e || window.event;
+    //let el = (e.target || e.srcElement);
+	//console.log('edit div id = ' + el.id);
+	
+	
 	document.getElementById('module_edit_mode').style.top = '0vh';
 	document.getElementById('profile_links').style.pointerEvents = 'none';
 	document.getElementById('overlay').style.pointerEvents = 'none';
 	document.getElementById('hector').style.pointerEvents = 'none';
+	document.getElementById('module_name_input').value = "";
+	document.getElementById('file_script_client').value = "";
+	document.getElementById('file_script_server').value = "";
+	document.getElementById('client_file_name').value = "";
+	document.getElementById('server_file_name').value = "";
+	document.getElementById('create_module_btn').style.display = 'block';
+	document.getElementById('update_module_btn').style.display = 'none';
+	if (m == 2){
+		document.getElementById('create_module_btn').style.display = 'none';
+		document.getElementById('update_module_btn').style.display = 'block';
+		document.getElementById('module_name_input').value = modules_local['mod_' + mod_id].name;
+		currently_editing = mod_id;
+		console.log('editing module ' + mod_id);
+	}
+	
 	anime({
 		targets: '#module_edit_mode',
 		opacity: 1,
@@ -49,6 +69,7 @@ function module_edit_mode_off(){
   		document.getElementById('module_edit_mode').style.top = '-101vh';
 		document.getElementById('hector').style.pointerEvents = 'auto';
 	}, 300);
+	currently_editing = 0;
 }
 
 function module_pre_delete(mod_id){

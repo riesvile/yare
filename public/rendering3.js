@@ -47,7 +47,7 @@ function offsetUpdate(){
 	
 	//world_spirits = living_spirits.length;
 	//for (i = 0; i < world_spirits; i++){
-	//	spirit_lookup[living_spirits[i].id].draw();
+	//	spirits[living_spirits[i].id].draw();
 	//}
 	
 	draw_bg_grad();
@@ -82,7 +82,7 @@ function zoomUpdate(){
 	//draw_bg_grad();
 	//world_spirits = living_spirits.length;
 	//for (i = 0; i < world_spirits; i++){
-	//	spirit_lookup[living_spirits[i].id].draw();
+	//	spirits[living_spirits[i].id].draw();
 	//}
 	
 	world_stars = stars.length;
@@ -237,8 +237,8 @@ function onPointerDown(e){
 		}
 	
 		if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
-		    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
-		    var touch = evt.touches[0] || evt.changedTouches[0];
+		    let evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+		    let touch = evt.touches[0] || evt.changedTouches[0];
 		    x = touch.pageX;
 		    y = touch.pageY;
 			mousey = 1;
@@ -270,8 +270,8 @@ function onPointerMove(e){
 	    pinchMove(e);
 	} else {
 		if (e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
-		    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
-		    var touch = evt.touches[0] || evt.changedTouches[0];
+		    let evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+		    let touch = evt.touches[0] || evt.changedTouches[0];
 		    x = touch.pageX;
 		    y = touch.pageY;
 		} else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
@@ -299,8 +299,8 @@ function onPointerMove(e){
 			if (panel_dragging == 1){
 				//console.log('dragging panel');
 				//console.log('x delta = ' + (x - pointer_originX));
-				var panel_width_delta = x - pointer_originX;
-				var new_panel_width = panel_el_widtho + panel_width_delta;
+				let panel_width_delta = x - pointer_originX;
+				let new_panel_width = panel_el_widtho + panel_width_delta;
 				
 				if (new_panel_width < 100){
 					new_panel_width = 100;
@@ -647,7 +647,7 @@ var bases = [];
 var outposts = [];
 var pylons = [];
 var fragments = [];
-var spirit_lookup = {};
+var spirits = {};
 var star_lookup = {};
 var base_lookup = {};
 var outpost_lookup = {};
@@ -894,7 +894,7 @@ function resolve_energy_point(energy_point){
 	} else if (energy_point.startsWith('pylon')){
 		return pylon_lookup[energy_point];
 	} else {
-		return spirit_lookup[energy_point];
+		return spirits[energy_point];
 	}
 }
 
@@ -932,8 +932,8 @@ function create_spirit_p1(spir_id){
 	*/
 
 	//console.log('creating spirit ' + spir_id);
-	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
-	//console.log(spirit_lookup[spir_id]);
+	spirits[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
+	//console.log(spirits[spir_id]);
 }
 
 function create_spirit_p2(spir_id){
@@ -971,7 +971,7 @@ function create_spirit_p2(spir_id){
 	*/
 
 	//console.log('creating spirit ' + spir_id);
-	spirit_lookup[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
+	spirits[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
 	
 }
 
@@ -1984,7 +1984,7 @@ function draw_energize(origin, target, energy_strength, color){
 function initiate_world(){
 	//console.log('rendering3');
 	offsetUpdate();
-	//spirit_lookup = {};
+	//spirits = {};
 	//star_lookup = {};
 	//base_lookup = {};
 	//living_spirits = [];
@@ -2034,11 +2034,11 @@ function initiate_world(){
 
 function handle_shout(spir_id, shout_msg){
 	//console.log(spir_id + ' is saying ' + shout_msg);
-	spirit_lookup[spir_id].shout = shout_msg;
+	spirits[spir_id].shout = shout_msg;
 	
 	setTimeout(function(){
 		shouting[spir_id] = 0;
-		spirit_lookup[spir_id].shout = '';
+		spirits[spir_id].shout = '';
 	}, 3000);
 	
 }
@@ -2125,32 +2125,32 @@ function render_state(timestamp){
 	}
 	
 	for (i = 0; i < all_spirits.length; i++){
-		if (spirit_lookup[all_spirits[i]].player_id == pla1){
+		if (spirits[all_spirits[i]].player_id == pla1){
 			try {
-				spirit_lookup[all_spirits[i]].move([game_blocks[active_block].p1[all_spirits[i]][0][4], game_blocks[active_block].p1[all_spirits[i]][0][5]], [game_blocks[active_block].p1[all_spirits[i]][0][2], game_blocks[active_block].p1[all_spirits[i]][0][3]]);
-				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2], game_blocks[active_block].p1[all_spirits[i]][3]);
-				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p1[all_spirits[i]][4], game_blocks[active_block].p1[all_spirits[i]][1]);
+				spirits[all_spirits[i]].move([game_blocks[active_block].p1[all_spirits[i]][0][4], game_blocks[active_block].p1[all_spirits[i]][0][5]], [game_blocks[active_block].p1[all_spirits[i]][0][2], game_blocks[active_block].p1[all_spirits[i]][0][3]]);
+				spirits[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2], game_blocks[active_block].p1[all_spirits[i]][3]);
+				spirits[all_spirits[i]].size_change(game_blocks[active_block].p1[all_spirits[i]][4], game_blocks[active_block].p1[all_spirits[i]][1]);
 			} catch (e) {
 				console.log(e)
 			}
 			
-		} else if (spirit_lookup[all_spirits[i]].player_id == pla2){
+		} else if (spirits[all_spirits[i]].player_id == pla2){
 			try {
-				spirit_lookup[all_spirits[i]].move([game_blocks[active_block].p2[all_spirits[i]][0][4], game_blocks[active_block].p2[all_spirits[i]][0][5]], [game_blocks[active_block].p2[all_spirits[i]][0][2], game_blocks[active_block].p2[all_spirits[i]][0][3]]);
-				spirit_lookup[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2], game_blocks[active_block].p2[all_spirits[i]][3]);
-				spirit_lookup[all_spirits[i]].size_change(game_blocks[active_block].p2[all_spirits[i]][4], game_blocks[active_block].p2[all_spirits[i]][1]);
+				spirits[all_spirits[i]].move([game_blocks[active_block].p2[all_spirits[i]][0][4], game_blocks[active_block].p2[all_spirits[i]][0][5]], [game_blocks[active_block].p2[all_spirits[i]][0][2], game_blocks[active_block].p2[all_spirits[i]][0][3]]);
+				spirits[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2], game_blocks[active_block].p2[all_spirits[i]][3]);
+				spirits[all_spirits[i]].size_change(game_blocks[active_block].p2[all_spirits[i]][4], game_blocks[active_block].p2[all_spirits[i]][1]);
 			} catch (e) {
 				console.log(e)
 			}
 			
 		}
-		spirit_lookup[all_spirits[i]].draw();
+		spirits[all_spirits[i]].draw();
 	}
 	
 	
 	//p1_spirs = game_blocks[active_block].p1;
 	//for (i = 0; i < p1_spirs.length; i++){
-	//	spirit_lookup[p1_spirs[i][0]]
+	//	spirits[p1_spirs[i][0]]
 	//}
 	//
 	
@@ -2212,7 +2212,7 @@ function render_state(timestamp){
 	
 	var specials = game_blocks[active_block].s;
 	for (i = 0; i < specials.length; i++){
-		if (specials[i][0] == 'sh' && spirit_lookup[specials[i][1]].player_id == pla1 && shouting_count_p1 < 100){
+		if (specials[i][0] == 'sh' && spirits[specials[i][1]].player_id == pla1 && shouting_count_p1 < 100){
 			//console.log(specials[i][2]);
 			
 			if (shouting[specials[i][1]] == null || shouting[specials[i][1]] == 0){
@@ -2220,7 +2220,7 @@ function render_state(timestamp){
 				handle_shout(specials[i][1], specials[i][2]);
 			}
 			shouting_count_p1++;
-		} else if (specials[i][0] == 'sh' && spirit_lookup[specials[i][1]].player_id == pla2 && shouting_count_p2 < 100){
+		} else if (specials[i][0] == 'sh' && spirits[specials[i][1]].player_id == pla2 && shouting_count_p2 < 100){
 			
 			if (shouting[specials[i][1]] == null || shouting[specials[i][1]] == 0){
 				shouting[specials[i][1]] = 3;
@@ -2229,7 +2229,7 @@ function render_state(timestamp){
 			shouting_count_p2++;
 			
 		} else if (specials[i][0] == 'ex'){
-			spirit_lookup[specials[i][1]].explode();
+			spirits[specials[i][1]].explode();
 			//console.log('exploding');
 		}
 	}
@@ -2349,11 +2349,19 @@ function render_state(timestamp){
 	*/
 	
 	
-	//objects energize
 	try {
 		drawgqueue(game_blocks[active_block].graphics);
 	} catch (e) {
 		//console.log(e);
+	}
+	
+	//draw stuff from modules
+	try {
+		for (draw_func in module_draw){
+			module_draw[draw_func]();
+		}
+	} catch (e) {
+		console.log(e);
 	}
 
 	try {
@@ -2365,7 +2373,7 @@ function render_state(timestamp){
 	
 	
 	
-	//console.log(spirit_lookup);
+	//console.log(spirits);
 	setTimeout(() => {
 	    requestAnimationFrame(render_state);
 	}); //game_tick?
@@ -2435,7 +2443,7 @@ Spirit.prototype.move = function() {
 	this.position[1] += lerp(this.noiseB[1], this.noiseA[1], tSmooth);
 }
 
-for (const spirit of Object.values(spirit_lookup))
+for (const spirit of Object.values(spirits))
 	spirit.move = Spirit.prototype.move;
 
 })();

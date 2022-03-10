@@ -1050,6 +1050,9 @@ app.post('/upload-script', async (req, res) => {
 	
 	store_script(req.body.script_file, req.body.module_id, file_type);
 	
+	
+	//TODO: IMPORTANT!!!! CHECK FOR SESSION_ID!!! (possibility of malicious code replacing a user's own module)
+	//TODO: change to when the file is actually uploaded
 	setTimeout(function(){
 		res.status(200).send({
 			data: 'script uploaded'
@@ -1071,8 +1074,8 @@ app.post('/download-script', async (req, res) => {
 		}).promise();
 		console.log(data);
 		res.status(200).send({
-			data: data.Body,
-			meta: 'script_retreived'
+			data: data.Body.toString('utf8'),
+			meta: 'script retreived'
 		});
 		return;
 	} catch (err) {
@@ -1096,7 +1099,7 @@ app.post('/update-module-info', async (req, res) => {
 				res.status(200).send({
 		        	data: "no module found"
 		        });
-			} else if (result[0]['author'] == req.body.user_name){
+			} else if (result[0]['author'] == req.body.user_name && result[0]['public'] != 1){
 				//this is so stupid, rewrite later! Lev! Wtf!
 				let new_name = result[0]['name'];
 				if (req.body.module_name != '') new_name = req.body.module_name
@@ -1177,6 +1180,44 @@ app.post('/new-module', async (req, res) => {
 		});
 });
 
+app.post('/edit-module', async (req, res) => {
+	console.log(req.body);
+	
+	let module_id = req.body.module_id;
+	
+	//store_script(req.body.module_content_client, module_id);
+
+	Module.find({module_id: req.body.user_name})
+		.then((result) => {
+			//res.send(result);
+			console.log('updating module');
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no module found"
+		        });
+			} else if (result[0]['author'] != req.body.user_name){
+				res.status(200).send({
+		        	data: "not an author"
+		        });
+			} else if (result[0]['public'] == 1){
+				res.status(200).send({
+		        	data: "cannot edit"
+		        });
+			} else {
+				Module.updateOne({module_id: req.body.module_id}, {name: req.body.module_name}, {upsert: true})
+				.then((qq) => {
+					console.log('module renamed: ' + req.body.module_name);
+					res.status(200).send({
+			        	data: "updated"
+			        });
+				});
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+});
+
 app.post('/get-available-modules', async (req, res) => {
 	console.log(req.body);
 	
@@ -1205,6 +1246,7 @@ app.post('/get-available-modules', async (req, res) => {
 						name: result[i].name,
 						subscribers: result[i].subscribers,
 						type: result[i].type,
+						public: result[i].public,
 						client_script_location: result[i].client_script_location,
 						server_script_location: result[i].server_script_location
 					}
