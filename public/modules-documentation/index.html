@@ -6,9 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/modules-documentation/style.css">
   <link rel="stylesheet" href="/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/prism.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism-themes@1.9.0/themes/prism-atom-dark.min.css">
   <script src="/anime.min.js"></script>
   <script src="/animations.js"></script>
   <script src="/basics.js"></script>
+  <script src="/modules-documentation/script.js" defer></script>
   <title>yare.io</title>
 </head>
 <body>
@@ -57,7 +60,7 @@
     <!-- Add a proper link here maybe? -->
     <div class="size2">See <a href="#">examples</a> for a better idea on how to wire things up</div>
     <div style="height: 6rem"></div>
-    <h1>Game-state information</h1>
+    <h1 class="semibold">Game-state information</h1>
     <div style="height: 2rem"></div>
     <div class="size2" style="max-width: 857px;">
       The server sends data about the state of the game each tick via a websocket connection.
@@ -66,7 +69,7 @@
     <div style="height: 2rem"></div>
     <div class="wsinfo">
       <div class="left">
-        <div class="size1">Websocket steam</div>
+        <div class="size1">Websocket stream</div>
         <div style="color:#A9E28E">~1-2 ticks behind 'real-time'</div>
       </div>
       <div style="margin-right:4rem"></div>
@@ -170,6 +173,36 @@
     </div>
     <div style="height: 1rem"></div>
     <div class="size2 monospace">}</div>
+    <div style="height: 4rem"></div>
+    <!-- TODO (swz): Missing lots of stuff here! -->
+    <h1 class="semibold">Examples</h1>
+    <div style="height: 2rem"></div>
+    <div class="size1">1. Explode spirit on click (triangles only)</div>
+    <div style="height: 2rem"></div>
+    <div class="codeExampleContainer">
+      <div class="codeExample">
+        <div class="size2">client_script.js</div>
+        <pre src="/modules-documentation/code-examples/1/client_script.js" class="language-js"></pre>
+      </div>
+      <div class="codeExample">
+        <div class="size2">server_script.js</div>
+        <pre src="/modules-documentation/code-examples/1/server_script.js" class="language-js"></pre>
+      </div>
+    </div>
+    <div style="height: 2rem"></div>
+    <div class="size1">2. Show direction line in front of your spirits</div>
+    <div style="height: 2rem"></div>
+    <div class="codeExampleContainer">
+      <div class="codeExample">
+        <div class="size2">client_script.js</div>
+        <pre src="/modules-documentation/code-examples/2/client_script.js" class="language-js"></pre>
+      </div>
+      <div class="codeExample">
+        <div class="size2">server_script.js</div>
+        <pre src="/modules-documentation/code-examples/2/server_script.js" class="language-js"></pre>
+      </div>
+    </div>
+    <div style="height: 2rem"></div>
   </div>
 </body>
 </html>

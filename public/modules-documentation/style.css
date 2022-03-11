@@ -53,6 +53,17 @@ img {
   width: 100%;
   height: auto;
 }
+.codeExampleContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.codeExample {
+  flex: 1;
+}
+code, pre {
+  overflow: scroll !important;
+}
 
 
 /* Tables from documentation.css */
