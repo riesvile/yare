@@ -371,7 +371,7 @@
 		  'toored': ['rgba(240, 70, 60, 1)', 'rgba(250, 90, 80, 1)']
 		  
 	  };
-		const socket = new WebSocket('ws://' + window.location.host + '/');
+		const socket = new WebSocket(location.origin.replace(/^http/, 'ws') + '/');
 	  
 	  function getCookie(name) {
 	      var nameEQ = name + "=";
