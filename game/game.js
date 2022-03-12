@@ -51,6 +51,7 @@ s3client = new AWS.S3({
 });
 
 async function end_game(was_p1 = 0, was_p2 = 0){
+	console.log('END OF GAME INITIALIZED ------- STEP 1')
 	game_finished = 1;
 	//console.log(game_file);
 	var game_data = JSON.stringify(game_file);
@@ -70,12 +71,28 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 	var gameLoser = '';
 	var loserRating = 0;
 	var newLoserRating = 0;
+	
+	if (p2won == 1){
+		gameWinner = players['p2'];
+	} else if (p1won == 1) {
+		gameWinner = players['p1'];
+	} else {
+		end_winner = 'No one';
+		cancel_game();
+		return;
+	}
+	
+	console.log('END OF GAME INITIALIZED ------- STEP 3')
+	
+	//to handle client
+	end_winner = gameWinner
 
 	await s3client.putObject({
 		Body: game_data,
 		Bucket: config.s3.bucket,
 		Key: workerData[0] + '.json',
 	}).promise()
+	
 
 	s3client.putObject({
 		Body: compressed,
@@ -83,21 +100,9 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		Key: 'replays/' + workerData[0] + '.json.comp',
 	}).promise().catch(err => console.error(err)).finally(() => {
 
-		if (p2won == 1){
-			gameWinner = players['p2'];
-		} else if (p1won == 1) {
-			gameWinner = players['p1'];
-		} else {
-			end_winner = 'No one';
-			cancel_game();
-			return;
-		}
-		
-		//to handle client
-		end_winner = gameWinner
-
 		Game.find({game_id: workerData[0]})
 			.then(async (result) => {
+				console.log('END OF GAME INITIALIZED ------- STEP 4')
 				var winnerShape;
 				if (p2won == 1){
 					gameWinner = players['p2'];
@@ -815,6 +820,7 @@ class Sandbox {
 		this.jail.setSync("global", this.jail.derefInto());
 		this.jail.setSync("memory", {}, {copy: true});
 		this.jail.setSync("client", {}, {copy: true});
+		this.jail.setSync("server", {}, {copy: true});
 
 		this.yd = this.context.evalClosureSync(sandboxCode, [], {result: {reference: true}});
 
@@ -858,7 +864,6 @@ class Sandbox {
 	}
 
 
-	//TODO: don't forget to add pylon here (and neutral bases?)
 	async loadData() {
 		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], spirits: rawSpirits, fragments: fragments, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), pylons: JSON.parse(JSON.stringify(pylon_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
 	}
@@ -1802,6 +1807,7 @@ if (!isMainThread){
 					for (let f = 0; f < from_obj.sight.fragments.length; f++){
 						let fragment = from_obj.sight.fragments[f];
 						let fragment_close = fast_dist_leq(from_obj.position, fragment.position, min_beam);
+						if (!fragment_close) continue;
 						
 						from_obj.last_energized = to_id;
 						energize_apply_fragment.push([from_obj, energy_value * from_obj.size, fragment]);
@@ -1874,7 +1880,7 @@ if (!isMainThread){
 					render_data3.e.push([from_id, to_id, beam_strength]);
 				} 
 				else if (to_obj.id.startsWith('base') && base_lookup[to_id]){
-					console.log('energizing base---------------------------');
+					//console.log('energizing base---------------------------');
 					energize_apply.push([from_obj, -beam_strength]);
 					energize_apply_base.push([from_obj, beam_strength, to_obj]);
 					render_data3.e.push([from_id, to_id, beam_strength]);
@@ -2203,12 +2209,42 @@ if (!isMainThread){
 				base.control = '';
 				base.shape = 'neutral';
 				console.log('find out whether player controls any other structures - otherwise end the game');
+				check_structure_control();
 			}
 			base.energy = Math.max(0, Math.min(base.energy, base.energy_capacity));
 			
 		}
 		
 		
+	}
+	
+	function check_structure_control(){
+		
+		let p1_ok = 0;
+		let p2_ok = 0;
+		
+		//bases
+		for (let b = 0; b < bases.length; b++){
+			if (bases[b].control == players['p1']) p1_ok = 1;
+			if (bases[b].control == players['p2']) p2_ok = 1;
+		}
+		if (p1_ok && p2_ok) return;
+		
+		//outpost
+		for (let ou = 0; ou < outposts.length; ou++){
+			if (outposts[ou].control == players['p1']) p1_ok = 1;
+			if (outposts[ou].control == players['p2']) p2_ok = 1;
+		}
+		if (p1_ok && p2_ok) return;
+		
+		//pylon
+		for (let py = 0; py < pylons.length; py++){
+			if (pylons[py].control == players['p1']) p1_ok = 1;
+			if (pylons[py].control == players['p2']) p2_ok = 1;
+		}
+		
+		if (!p1_ok) end_game(0, 1);
+		if (!p2_ok) end_game(1, 0);
 	}
 
 	function process_stuff(){

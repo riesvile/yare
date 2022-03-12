@@ -1642,7 +1642,6 @@ app.post('/playerinfo', (req, res) => {
 			//res.send(result);
 			console.log('getting player info');
 			console.log(result);
-			console.log(result[0]['active']);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no user found"

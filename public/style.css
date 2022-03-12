@@ -280,7 +280,7 @@ input:focus {
 }
 
 .cancel_lbl {
-	width: auto;
+	width: 58px;
 	display: block;
 	text-align: center;
 	position: absolute;
@@ -379,7 +379,7 @@ h1#logo {
 	float: left;
 	margin-left: 36px;
 	position: relative;
-	width: 70px;
+	width: 60px;
 	height: 44px;
 }
 
@@ -1244,7 +1244,7 @@ input[type=submit] {
 	line-height: 43px;
 	position: relative;
 	top: 1px;
-	margin-left: 12px;
+	margin-left: 22px;
 }
 
 #signed_in:hover {

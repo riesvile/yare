@@ -392,6 +392,10 @@ function getBase64(file) {
 
 var module_draw = {};
 var currently_editing = 0;
+if (window.from_gameserver == null) {
+	var from_gameserver = '';
+}
+
 
 var pub_modules = {};
 pub_modules['mod_basic-info-graphs'] = {
@@ -422,6 +426,26 @@ modules_local['mod_manual-controls'] = pub_modules['mod_manual-controls'];
 
 function expand_card(m_id){
   console.log('expanding ' + m_id);
+}
+
+function settings_crossroad(e){
+  e = e || window.event;
+  var el_id = (e.target || e.srcElement).id;
+  console.log('over id= ' + el_id);
+  
+  switch (el_id){
+  	case 'profile_links':
+  	  dismissals();
+	  break;
+    case 'dismiss':
+	  dismissals();
+	  break;
+    case 'bg_mdl_basic_info_graphs':
+	  expand_card('basic_info_graphs');	
+	  break;
+    default:
+		console.log('defaulted');
+  }
 }
 
 
@@ -684,11 +708,11 @@ function local_server_script(module_id){
 	if (temp_user_code.includes('// loaded module: ' + module_id)) return;
 	
 	try {
-		fetch("a/public-modules/server/" + module_id + ".js")
+		fetch(from_gameserver + "public-modules/server/" + module_id + ".js")
 			.then(function(response) {
     			return response.text().then(function(text) {
 					temp_user_code = editor.getValue();
-					temp_user_code += "\n\n" + "// loaded module: " + module_id + "\n// Do not remove this comment ----" + text;
+					temp_user_code += "\n\n// ----------------------------------------\n" + "// loaded module: " + module_id + "\n// ------ Do not remove this comment ------\n" + text + "\n// ----------------------------------------";
 					editor.setValue(temp_user_code);
 					console.log('script appended');
 					//return 'script appended';
@@ -947,6 +971,7 @@ function get_module_info(module_id){
 }
 
 function integrate_modules(){
+	
 	let user_name = getCookie('user_id');
 	
 	let server_scripts_combined = '';
@@ -977,7 +1002,7 @@ function integrate_modules(){
 				document.getElementById('modules_section_mine').insertAdjacentHTML('beforeend', user_module_html_string);
 			} else if (card_insertion[i].public == 1) {
 			//public modules
-				let public_module_html_string = "<div class='module_card " + mod_state + "' id='mdl_" + m_id + "'> <div class='module_card_bg' id='bg_mdl_" + m_id + "'></div> <span class='module_main_tag'>" + card_insertion[i].type + "</span> <div class='module_toggle' id='toggle_" + m_id + "'> <div class='the_toggle' id='thetog'></div> </div> <h3 class='module_name'>" + script_name + "</h3> <div class='module_ilu ilu_" + m_id + "' style='background:url(a/public-modules/ilu/" + m_id + ".png); background-size: cover;'></div> <p class='module_desc " + desc_type + "'>" + mod_desc + "</p> </div>";	
+				let public_module_html_string = "<div class='module_card " + mod_state + "' id='mdl_" + m_id + "'> <div class='module_card_bg' id='bg_mdl_" + m_id + "'></div> <span class='module_main_tag'>" + card_insertion[i].type + "</span> <div class='module_toggle' id='toggle_" + m_id + "'> <div class='the_toggle' id='thetog'></div> </div> <h3 class='module_name'>" + script_name + "</h3> <div class='module_ilu ilu_" + m_id + "' style='background:url(" + from_gameserver + "public-modules/ilu/" + m_id + ".png); background-size: cover;'></div> <p class='module_desc " + desc_type + "'>" + mod_desc + "</p> </div>";	
 				document.getElementById('modules_section').insertAdjacentHTML('beforeend', public_module_html_string);
 			}
 		
@@ -989,11 +1014,25 @@ function integrate_modules(){
 	}
 	
 	
+    let mod_toggles = document.getElementsByClassName("module_toggle");
+    let mod_options = document.getElementsByClassName("module_options");
+  
+    for (let i=0; i<mod_toggles.length; i++) {
+        mod_toggles[i].addEventListener('click', toggle_toggle, false);
+    }
+  
+    for (let i=0; i<mod_options.length; i++) {
+        mod_options[i].addEventListener('click', mod_options_cross, false);
+    }
+	
 	
 	
 	
 	let ready_insertion = Object.values(modules_local).filter(item => item.active == 1);
 	console.log(ready_insertion);
+	
+	//skip insertion if not in a game
+	if (from_gameserver == '') return;
 	
 	setTimeout(function(){
 		for (let i = 0; i < ready_insertion.length; i++){
@@ -1002,7 +1041,7 @@ function integrate_modules(){
 			let script_insert = document.createElement('script');
 			let m_author = ready_insertion[i].author;
 			if (ready_insertion[i].public == 1){
-				script_insert.src = "a/public-modules/client/" + ready_insertion[i].module_id + ".js";
+				script_insert.src = from_gameserver + "public-modules/client/" + ready_insertion[i].module_id + ".js";
 				local_server_script(ready_insertion[i].module_id);
 			} else {
 				script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/" + ready_insertion[i].module_id + ".js";
@@ -1019,22 +1058,8 @@ function integrate_modules(){
 	
 	//fetch("https://yare.sfo3.digitaloceanspaces.com/modules/client/aNg1a2d2oh17.js").then(r => r.text()).then(t => console.log(t));
 	
-	
-	
-	
-	
-  //TODO: populate module cards (use the loop above)
   
-  let mod_toggles = document.getElementsByClassName("module_toggle");
-  let mod_options = document.getElementsByClassName("module_options");
   
-  for (let i=0; i<mod_toggles.length; i++) {
-      mod_toggles[i].addEventListener('click', toggle_toggle, false);
-  }
-  
-  for (let i=0; i<mod_options.length; i++) {
-      mod_options[i].addEventListener('click', mod_options_cross, false);
-  }
 	
 	
 	
@@ -1136,6 +1161,20 @@ try {
   //console.error(error);
 }
 
+
+//module triggers
+
+document.getElementById('profile_links').addEventListener('click', settings_crossroad, false);
+
+document.getElementById("file_script_server").onchange = function(){
+  document.getElementById("server_file_name").textContent = this.files[0].name;
+document.getElementById("modules_server_message").style.opacity = 0;
+}
+
+document.getElementById("file_script_client").onchange = function(){
+  document.getElementById("client_file_name").textContent = this.files[0].name;
+document.getElementById("modules_server_message").style.opacity = 0;
+}
 
 
 //other module triggers

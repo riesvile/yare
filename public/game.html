@@ -111,7 +111,6 @@
 		<div class="sep_medium"></div>
 		
 		<!--
-			-
 		<div id="module_expanded">
 			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
 			<span class='module_main_tag'>Data visualization</span>
@@ -535,6 +534,7 @@
 	  var logs = [];
 	  var tempURLThing = new URL(document.URL).pathname;
 	  var [_, this_server, this_game_id] = /([^/]*)\/([^/]*)$/.exec(tempURLThing);
+	  var from_gameserver = 'a/';
 	  //console.log(this_game_id);
 	  
 	  var pla1 = '';
@@ -1135,9 +1135,12 @@
 	  function resign_game(){
 		  user_code = editor.getValue();
 		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id'), meta: 'resign'}));
-		  dont_resign();
+		  console.log('i am resigning');
+		  //dont_resign();
 		  //var temp_winner = '';
-		  //game_over()
+		  var temp_winner = players['player1'];
+		  if (getCookie('user_id') == players['player1']) temp_winner = players['player2'];
+		  game_over(temp_winner);
 	  }
 	  
 	  function update_client_object(){
@@ -1254,26 +1257,6 @@
 		  }
 	  }
 	  
-	  function settings_crossroad(e){
-		  e = e || window.event;
-		  var el_id = (e.target || e.srcElement).id;
-		  console.log('over id= ' + el_id);
-		  
-		  switch (el_id){
-		  	case 'profile_links':
-		  	  dismissals();
-			  break;
-		    case 'dismiss':
-			  dismissals();
-			  break;
-		    case 'bg_mdl_basic_info_graphs':
-			  expand_card('basic_info_graphs');	
-			  break;
-		    default:
-				console.log('defaulted');
-		  }
-	  }
-	  
 	  
 	  code_elements = document.querySelectorAll('.tutorial_text code');
 	  for (ce = 0; ce < code_elements.length; ce++){
@@ -1306,19 +1289,7 @@
 	  
 	  document.getElementById('watch_replay').href = "../replay/" + this_game_id;
 	  
-	  //module triggers
 	  
-	  document.getElementById('profile_links').addEventListener('click', settings_crossroad, false);
-	  
-	  document.getElementById("file_script_server").onchange = function(){
-	    document.getElementById("server_file_name").textContent = this.files[0].name;
-		document.getElementById("modules_server_message").style.opacity = 0;
-	  }
-	  
-	  document.getElementById("file_script_client").onchange = function(){
-	    document.getElementById("client_file_name").textContent = this.files[0].name;
-		document.getElementById("modules_server_message").style.opacity = 0;
-	  }
 	  
 	  
 	  document.onkeydown = function(evt) {
