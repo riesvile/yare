@@ -1129,7 +1129,10 @@
 		  //console.log('clicked');
 		  user_code = editor.getValue();
 		  localStorage.setItem("code_code", user_code);
-		  socket.send(JSON.stringify({u_code: "client['t' + tick] = " + JSON.stringify(client) + "\n" + user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
+		  //let tick_key = "'t' + tick";
+		  //if (window.codeLanguage == 'python') tick_key = "'t' + str(tick)";
+		  socket.send(JSON.stringify({u_code: "client[ttick] = " + JSON.stringify(client) + "\n" + user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
+		  //console.log("client[" + tick_key + "] = " + JSON.stringify(client) + "\n" + user_code);
 	  }
 	  
 	  function resign_game(){

@@ -865,7 +865,7 @@ class Sandbox {
 
 
 	async loadData() {
-		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], spirits: rawSpirits, fragments: fragments, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), pylons: JSON.parse(JSON.stringify(pylon_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
+		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], ttick: 't' + ticks['now'], spirits: rawSpirits, fragments: fragments, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), pylons: JSON.parse(JSON.stringify(pylon_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
 	}
 
 	async run() {

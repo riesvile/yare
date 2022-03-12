@@ -362,6 +362,7 @@ yd.loadData = function(data) {
     }
     global.players = data.players;
     global.tick = data.tick;
+	global.ttick = 't' + data.tick;
 };
 
 yd.getOutput = function() {
