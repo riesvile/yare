@@ -615,7 +615,7 @@ function resume_client(){
 function logout() {
 	eraseCookie('user_id');
 	eraseCookie('user_session');
-	window.location = 'https://yare.io';
+	window.location = '/';
 }
 
 function user_links(){
