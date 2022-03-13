@@ -1,0 +1,183 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;1,700;1,400;1,500;1,600;1,700&display=swap");
+
+#doc_sections {
+  width: 68%;
+  margin-top: 44px;
+  margin-left: 16%;
+  position: absolute;
+  top: 0;
+}
+
+.doc_sec_link {
+  display: inline-block;
+  margin-right: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(242, 246, 250, 0.55);
+}
+
+.doc_sec_active {
+  color: rgba(242, 246, 250, 0.89);
+}
+
+.content {
+  margin-top: 179px;
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0px 2rem;
+  color: #F2F6FA;
+  font-family: 'Montserrat', sans-serif;
+}
+.semibold {
+  font-weight: 600;
+}
+.size1 {
+  font-size: 24px;
+}
+.size2 {
+  font-size: 20px;
+}
+.monospace {
+  font-family: 'Courier New', monospace;
+  display: inline;
+}
+.gray {
+  color: rgba(242, 246, 250, 55%);
+}
+.size1 .gray,
+.size2 .gray {
+  display: inline;
+}
+img {
+  width: 100%;
+  height: auto;
+}
+.codeExampleContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 80vw;
+}
+.codeExample {
+  flex: 1;
+}
+code, pre {
+  overflow: scroll !important;
+}
+.inline {
+  display: inline;
+}
+.purple {
+  color: rgba(187, 187, 255, 84%);
+}
+.blue {
+  color: #BBE7FF;
+}
+.green {
+  color: #A9E28E;
+}
+.spacedLines {
+  line-height: 40px;
+}
+.dots {
+  height: 20px;
+}
+
+
+/* Tables from documentation.css */
+/* ---- Tables ---- */
+
+.table_doc {
+	width: 100%;
+}
+
+.row_in_doc {
+	width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 1.5rem 0px;
+  border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.row_in_doc span {
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.row_in_doc_head {
+	width: 100%;
+  display: flex;
+	padding-bottom: 12px;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.12);
+}
+
+.row_in_doc_head span {
+	font-size: 12px;
+	font-family: Montserrat, sans-serif;
+	text-transform: uppercase;
+	color: rgba(242, 246, 250, 0.48);
+	letter-spacing: 1px;
+}
+
+.table_doc_property {
+  width: 15%;
+}
+.table_doc_value {
+  flex: 1;
+}
+.table_doc_type {
+	font-family: Lucida Sans Typewriter, Lucida Console, monaco, Bitstream Vera Sans Mono, monospace;
+  font-weight: normal !important;
+  width: 10%;
+  text-align: right;
+}
+
+/* Special cases */
+.valueExamples {
+  display: flex;
+  justify-content: left;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.valueExamples img {
+  margin-bottom: 1rem;
+}
+.wsinfo {
+  display: flex;
+  align-items: center;
+}
+.snowflake1 {
+  counter-reset: line;
+  counter-increment: line -1;
+}
+.snowflake1 p {
+  margin-left: -1.5ch;
+}
+.snowflake1 p::before {
+  counter-increment: line;
+  content: counter(line);
+  margin-right: 0.5ch;
+  color: rgba(242, 246, 250, 32%);
+  font-family: 'Courier New', Courier, monospace;
+}
+img#renderstate {
+  width: 356px;
+  height: auto;
+}
+.snowflake2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: center;
+  position: relative;
+  left: 15ch;
+  width: fit-content;
+}
+
+/* Mobile stuff */
+@media (orientation: portrait) {
+  #window {
+    content:url("/modules-documentation/assets/window_mobile.svg")
+  }
+}
