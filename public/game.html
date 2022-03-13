@@ -289,7 +289,10 @@
 </div>
   </div>  
   
+  <div id="console2"></div>
+  
   </div>
+  
   
   <div id="update_switch_wrapper">
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
@@ -393,7 +396,7 @@
 	      getCompletions: function(editor, session, pos, prefix, callback) {
 	          var completions = [];
 	          // we can use session and pos here to decide what we are going to show
-	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "enemy_base", "base", "star_zxq", "star_p89", "star_nua", "star_a1c", "outpost", "pylon", "fragments", "my_spirits", "spirits", "tick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable", ].forEach(function(w) {
+	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "base_zxq", "base_a2c", "base_p89", "base_nua", "star_zxq", "star_p89", "star_nua", "star_a2c", "outpost", "pylon", "fragments", "my_spirits", "spirits", "tick", "ttick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable"].forEach(function(w) {
 	              completions.push({
 	                  value: w,
 	                  meta: "keyword",
@@ -411,15 +414,9 @@
 	  
 	  function run_it(){
 		  
-		  if (game_running == 0){
-		  	 //if (localStorage.getItem("code_code") != null) update_code();
-		  }
-		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
 			  game_running = 1;
 			  tick_local = tick_counter;
-			  //console.log('GAME IS RUNNING');
-			  
 			  active_block = 't' + (tick_local);
 			  //console.log('active block = ' + active_block);
 			  setInterval(function(){ 
@@ -434,10 +431,7 @@
 				  tick_local++;
 				  if (tick_local > incoming.t) tick_local--;
 				  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
-				  
-				  
-				  
-			  }, 600);
+			  }, tick_rate);
 			  
 			  render_state();
 			  
@@ -519,6 +513,8 @@
 	  var client = {};
 	  
 	  var dragging_timeline = 0;
+	  
+	  var tick_rate = 600;
 	  
 	  var x = 0;
 	  var y = 0;
@@ -997,11 +993,7 @@
 		  //world_initiation
 		try {
 			
-			if (data.bases.length > 0){
-				bases_queue = data.bases;
-				//console.log('bases_queue');
-				//console.log(bases_queue);
-			}
+			if (data.bases.length > 0) bases_queue = data.bases;
 					
 			if (data.tut == 1){
 				game_type = 'tutorial';
@@ -1018,7 +1010,7 @@
 				document.getElementById('overlay_start').style.display = 'none';
 				document.getElementById('tutorial').style.display = 'none';
 				document.getElementById('editor_container').style.position = 'fixed';
-				document.getElementById('editor_container').style.top = '60px';
+				document.getElementById('editor_container').style.top = '20px';
 				document.getElementById('console').style.display = 'block';
 			
 				document.getElementById('panel').classList.remove("panel_start");
@@ -1035,9 +1027,6 @@
 			shapes['shape2'] = data.shapes[1];
 			players['player1'] = data.players[0];
 			players['player2'] = data.players[1];
-			
-			//console.log(game_type);
-			//console.log(tutorial_phase);
 			
 			taylor_UI();
 		
@@ -1089,36 +1078,6 @@
 	  	  });
 	  }
 	  
-	  function store_script() {
-		  let script_id = 'testscript';
-		  let script_name = 'Test Script';
-		  let script_content = {
-			  data: editor.getValue()
-		  }
-		  console.log('script content:');
-		  console.log(script_content);
-		  
-	  	  	//fetch('/store_script', {
-	  	  	//        method: "POST",
-	  	  	//        headers: {
-	  	  	//          Accept: "application/json",
-	  	  	//          "Content-Type": "application/json"
-	  	  	//        },
-    	  	//        body: JSON.stringify({
-    	  	//	        script_content: JSON.stringify(script_content),
-			//			script_id: script_id,
-			//			script_name: script_name
-    	  	//	    })
-            //
-	  	    //  }).then(response => {
-	  	  	//	  console.log(response);
-			//	  
-	  	  	//  })
-	  	    //    .catch(err => {
-	  	  	//	  console.log(err);
-	  	  	//  });
-	  }
-	  
 	  function update_code(){
 		  update_success();
 		  if (tutorial_started == 0){
@@ -1126,13 +1085,9 @@
 			  document.getElementById('update_code').innerHTML = "<span>UPDATE CODE</span>";
 			  tut_start();
 		  }
-		  //console.log('clicked');
 		  user_code = editor.getValue();
 		  localStorage.setItem("code_code", user_code);
-		  //let tick_key = "'t' + tick";
-		  //if (window.codeLanguage == 'python') tick_key = "'t' + str(tick)";
 		  socket.send(JSON.stringify({u_code: "client[ttick] = " + JSON.stringify(client) + "\n" + user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
-		  //console.log("client[" + tick_key + "] = " + JSON.stringify(client) + "\n" + user_code);
 	  }
 	  
 	  function resign_game(){
@@ -1155,10 +1110,6 @@
 	  document.getElementById('update_code').addEventListener("click",function(e){
 		  update_code();
 	  },false);
-	  
-	  //session_id = abc
-	  
-	  
 	  
 	  
 	  //tutorial
@@ -1218,28 +1169,8 @@
 			  
 			  infoboxo.innerHTML = infobox_msg[el_id];
 			  
-			  /*
-			  switch(el_id){
-				  case 'spirit_reference':
-					  infoboxo.innerHTML = "<p class='info_h'>Reference to your spirit (an object).</p><p class='info_p'>In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>"
-					  console.log('spirit reference box');
-					  break;
-				  case 'move_method':
-					  infoboxo.innerHTML = "<p class='info_h'>The move(<i>target</i>) method tells the spirit where to move to.</p><p class='info_p'><i>target</i> is an [x, y] array representing the x, y coordinates on the game board.</p>"
-					  console.log('spirit reference box');
-					  break;
-				  case 'star_property_position':
-					  infoboxo.innerHTML = "<p class='info_h'>star_zxq is a reference to the big circle thing</p><p class='info_p'>Stars are a source of <i>energy</i>. You need <i>energy</i> for everything in this game. Attacking, defending and building new spirits, but more on that later.</p><p class='info_h'>position is a property of all objects in yare.io</p><p class='info_p'><i>[any_object]</i>.position returns an [x, y] array where x and y are the object's coordinates.</p>"
-					  console.log('spirit reference box');
-					  break;
-				  default:
-					  console.log('tut box id defaulted');
-			  }*/
 		  }
 		  
-		  
-		  
-		  //document.getElementById(el_id).classList.add('bring_up');
 		  
 	  }
 	  

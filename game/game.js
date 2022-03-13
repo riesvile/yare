@@ -789,9 +789,11 @@ function jump_danger_zone(loc){
 	if (Math.abs(stars[0].position[0] - loc[0]) < 100 && Math.abs(stars[0].position[1] - loc[1]) < 100
  	 || Math.abs(stars[1].position[0] - loc[0]) < 100 && Math.abs(stars[1].position[1] - loc[1]) < 100
 	 || Math.abs(stars[2].position[0] - loc[0]) < 100 && Math.abs(stars[2].position[1] - loc[1]) < 100
+	 || Math.abs(stars[3].position[0] - loc[0]) < 100 && Math.abs(stars[3].position[1] - loc[1]) < 100
 	 || Math.abs(bases[0].position[0] - loc[0]) < 50 && Math.abs(bases[0].position[1] - loc[1]) < 50
 	 || Math.abs(bases[1].position[0] - loc[0]) < 50 && Math.abs(bases[1].position[1] - loc[1]) < 50
 	 || Math.abs(bases[2].position[0] - loc[0]) < 50 && Math.abs(bases[2].position[1] - loc[1]) < 50
+	 || Math.abs(bases[3].position[0] - loc[0]) < 50 && Math.abs(bases[3].position[1] - loc[1]) < 50
 	 || Math.abs(outposts[0].position[0] - loc[0]) < 50 && Math.abs(outposts[0].position[1] - loc[1]) < 50
 	 || Math.abs(pylons[0].position[0] - loc[0]) < 50 && Math.abs(pylons[0].position[1] - loc[1]) < 50){
 		return true;
@@ -1165,7 +1167,9 @@ if (!isMainThread){
 	function get_sight_fast(){
 		const beamable_sq = min_beam**2;
 		const visible_sq = (2*min_beam)**2;
+		const low_range_sq = (250)**2;
 		const high_range_sq = (600)**2;
+		const pylon_range_sq = (400)**2;
 		const living_length = living_spirits.length;
 
 		for (let h = 0; h < living_length; h++){
@@ -1308,8 +1312,9 @@ if (!isMainThread){
 			//pylons
 			for (let p = 0; p < pylons.length; p++){
 				let pylon = pylons[p];
-				let use_range = visible_sq;
+				let use_range = pylon_range_sq;
 				let dsq = dist_sq(spirit.position, pylon.position);
+				//let dsqq = is_in_sight(spirit, pylon)
 				
 				//if (outpost.energy >= 500) use_range = high_range_sq;
 				
@@ -1682,6 +1687,7 @@ if (!isMainThread){
 		let energize_apply_outpost = [];
 		let energize_apply_base = [];
 		let energize_apply_pylon = [];
+		let low_range_sq = (200)**2;
 		
 		for(let spirit of Object.values(spirit_lookup)){
 			spirit.last_energized = '';
@@ -1728,24 +1734,28 @@ if (!isMainThread){
 			let pylon = pylons[p];
 			let friends = pylons[p].sight.friends;
 			let friends_damaged = [];
+			let friends_final = [];
 			if (friends.length == 0 || pylon.control == '')
 				continue;
 			
 			for (let f = 0; f < friends.length; f++){
 				let friend_real = spirit_lookup[friends[f]];
-				if (friend_real.energy < Math.ceil(friend_real.energy_capacity / 2)) friends_damaged.push(friend_real);
+				if (friend_real.energy < (friend_real.energy_capacity)){
+					if (dist_sq(friend_real.position, pylon.position) > low_range_sq) friends_final.push(friend_real);
+				}
+				
 			}
 			
 			let beam_strength = 1;
 			let targets = pylon.energy;
-			if (friends_damaged.length < pylon.energy) targets = friends_damaged.length;
+			if (friends_final.length < pylon.energy) targets = friends_final.length;
 			
 			//TODO: order friends array by energy from lowest to highest
 			
 			for (let t = 0; t < targets; t++){
-				energize_apply.push([friends_damaged[t], 1 * beam_strength]);
+				energize_apply.push([friends_final[t], 1 * beam_strength]);
 				pylon.energy -= beam_strength;
-				render_data3.e.push([pylon.id, friends_damaged[t].id, 1 * beam_strength]);
+				render_data3.e.push([pylon.id, friends_final[t].id, 1 * beam_strength]);
 			}
 			 
 		}
@@ -2916,7 +2926,7 @@ if (!isMainThread){
 	
 		global['base_zxq'] = new Base('base_zxq', [-650, -480], players['p1'], colors['player1'], shapes['player1']);
 		global['base_a2c'] = new Base('base_a2c', [480, 650], players['p2'], colors['player2'], shapes['player2']);
-		global['base_p89'] = new Base('base_p89', [-780, 780], '', colors['neutral'], 'neutral');
+		global['base_p89'] = new Base('base_p89', [-800, 800], '', colors['neutral'], 'neutral');
 		global['base_nua'] = new Base('base_nua', [860, -860], '', colors['neutral'], 'neutral');
 
 	
@@ -2931,16 +2941,16 @@ if (!isMainThread){
 		star_a2c = new Star('star_a2c', [340, 1200], 100, 100, 0);
 		star_lookup['star_a2c'] = star_a2c;
 		
-		star_p89 = new Star('star_p89', [-520, 520], 0, 100, 100);
+		star_p89 = new Star('star_p89', [-540, 540], 0, 100, 100);
 		star_lookup['star_p89'] = star_p89;
 		
 		star_nua = new Star('star_nua', [420, -420], 0, 300, 0);
 		star_lookup['star_nua'] = star_nua;
 		
-		outpost_mdo = new Outpost('outpost_mdo', [-210, 210]);
+		outpost_mdo = new Outpost('outpost_mdo', [-230, 230]);
 		outpost_lookup['outpost_mdo'] = outpost_mdo;
 		
-		pylon_u3p = new Pylon('pylon_u3p', [278, -278]);
+		pylon_u3p = new Pylon('pylon_u3p', [228, -228]);
 		pylon_lookup['pylon_u3p'] = pylon_u3p;
 
 		structure_lookup['outpost_mdo'] = outpost_mdo;

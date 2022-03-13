@@ -554,16 +554,16 @@ var panel_el_widtho = 0;
 try {
 	document.getElementById("panel").addEventListener("mouseenter", function(e) {
 		if (mousey != 1){
-			document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
-			document.getElementById("panel").style.backdropFilter = "blur(12px)";
+			document.getElementById("panel").style.backgroundColor = "hsla(234, 20%, 12%, 0.95)";
+			//document.getElementById("panel").style.backdropFilter = "blur(12px)";
 		}
 
 	}, false);
 
 	document.getElementById("panel").addEventListener("mousedown", function(e) {
 		if (mousey != 1){
-			document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
-			document.getElementById("panel").style.backdropFilter = "blur(12px)";
+			document.getElementById("panel").style.backgroundColor = "hsla(234, 20%, 12%, 0.95)";
+			//document.getElementById("panel").style.backdropFilter = "blur(12px)";
 		}
 	    if (tutorial_started == 0){
 		//    tutorial_started = 1;
@@ -574,8 +574,8 @@ try {
 
 	document.getElementById("panel").addEventListener("mouseleave", function(e) {
 		if (mousey != 1){
-			document.getElementById("panel").style.backgroundColor = "rgba(24, 20, 30, 0.6)";
-			document.getElementById("panel").style.backdropFilter = "blur(12px)";
+			document.getElementById("panel").style.backgroundColor = "hsla(234, 20%, 12%, 0.95)";
+			//document.getElementById("panel").style.backdropFilter = "blur(12px)";
 		}
 
 	}, false);
@@ -1345,12 +1345,10 @@ class Star {
 		//c_base.fill();
 		c_base.strokeStyle = 'rgba(255,255,255,1)';
 		c_base.shadowColor='rgba(225, 250, 255, ' + this.size / 175 + ')';
-		c_base.shadowBlur= this.size / ((4 + (this.size / 130)) * (multiplier / 2.5));
+		c_base.shadowBlur = this.size / ((4 + (this.size / 130)) * (multiplier / 2.5));
 		c_base.lineWidth = 8;
 		c_base.stroke();
 		//c_base.stroke();
-		
-		
 		
 		c_base.shadowColor=null;
 		c_base.shadowBlur = null;
@@ -1832,11 +1830,39 @@ class Outpost {
 			
 			var color_parts = this.color.match(/[.?\d]+/g);
 			// outer circle
+			
+			//c.save();
+			//c.beginPath();
+			//c.arc(this.position[0], this.position[1], this.range, 0, Math.PI * 2, false);
+			//c.clip();
+			//c.beginPath();
+			//c.arc(this.position[0], this.position[1], 12 + this.range, 0, Math.PI * 2, false);
+			//c.fillStyle = "rgba(254, 15, 25, " + (this.range / 100) + 0.1 + ")";
+			////c_base.fill();
+			//c.strokeStyle = 'rgba(255,255,255,1)';
+			//c.shadowColor='rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.1 + ')';
+			//c.shadowBlur = this.range / ((4 + (this.range / 130)) * (multiplier / 2.5));
+			//c.lineWidth = 12;
+			//c.stroke();
+			////c_base.stroke();
+		    //
+			//c.shadowColor=null;
+			//c.shadowBlur = null;
+			//c.restore();
+			
+			let range_gradient = c.createRadialGradient(this.position[0],this.position[1],200, this.position[0],this.position[1],400);
+			range_gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.005 + (this.energy / 80000)) + ')');
+			range_gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.03 + (this.energy / 30000)) + ')');
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
+			c.fillStyle = range_gradient;
+			c.fill();
+			
 			c.beginPath();
 			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
 			c.closePath();
 			c.lineWidth = 2;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.06 + ')';
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.1 + ')';
 			c.stroke();
 		}
 		
@@ -1898,22 +1924,31 @@ class Pylon {
 		//c.strokeRect((this.position[0] - 12), (this.position[1] - 12), 24, 24);
 		var draw_angle = 45;
 		if (cntrl != ''){
-			if (this.energy < 500) {
-				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 135);
-				this.range = 400;
-			} else {
-				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 225);
-				this.range = 600;
-			}
-			
+			draw_angle = mapValues(dumb_cycler, 0, 60, 45, 135);
+			this.range = 400;
 			var color_parts = this.color.match(/[.?\d]+/g);
 			// outer circle
 			c.beginPath();
+			c.arc(this.position[0], this.position[1], this.range - 100, Math.PI * 0, Math.PI * 2, false);
+			c.closePath();
+			c.lineWidth = 200;
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.02 + (this.energy / 20000)) + ')';
+			c.stroke();
+			
+			
+			c.lineWidth = 1;
+			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.1 + ')';
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], 200, Math.PI * 0, Math.PI * 2, false);
+			c.closePath();
+			c.stroke();
+			c.beginPath();
 			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
 			c.closePath();
-			c.lineWidth = 2;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.06 + ')';
 			c.stroke();
+			
+			
+			
 		}
 		
 		// rotated square
@@ -2002,11 +2037,11 @@ function initiate_world(){
 	
 	star_lookup['star_zxq'] = new Star('star_zxq', [-1200, -340], 50, 140);
 	star_lookup['star_a2c'] = new Star('star_a2c', [340, 1200], 50, 140);	
-	star_lookup['star_p89'] = new Star('star_p89', [-520, 520], 50, 140);
-	star_lookup['star_nua'] = new Star('star_nua', [420, -420], 50, 680);
+	star_lookup['star_p89'] = new Star('star_p89', [-540, 540], 50, 140);
+	star_lookup['star_nua'] = new Star('star_nua', [420, -420], 50, 690);
 	
-	outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [-210, 210], 0);	
-	pylon_lookup['pylon_u3p'] = new Pylon('pylon_u3p', [278, -278], 0);	
+	outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [-230, 230], 0);	
+	pylon_lookup['pylon_u3p'] = new Pylon('pylon_u3p', [228, -228], 0);	
 	
 	//star_energy_lookup['star_zxq'] = new Star_energy('star_zxq', [1000, 1000], 50);
 	//star_energy_lookup['star_a1c'] = new Star_energy('star_a1c', [3200, 1400], 50);
