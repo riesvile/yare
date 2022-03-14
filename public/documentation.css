@@ -13,7 +13,7 @@ section {
 
 #doc_sections {
 	width: 68%;
-	margin-top: 44px;
+	margin-top: 16px;
 	margin-left: 16%;
 	position: absolute;
 	top: 0;
@@ -22,8 +22,10 @@ section {
 
 .doc_sec_link {
 	display: inline-block;
+	float: left;
 	margin-right: 20px;
 	font-size: 14px;
+	line-height: 44px;
 	font-weight: 500;
 	color: rgba(242, 246, 250, 0.55);
 }
@@ -568,7 +570,9 @@ table.info_table td {
 
 
 
-
+#mod_doc:hover {
+	color: rgba(242, 246, 250, 0.89);
+}
 
 
 

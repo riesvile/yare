@@ -325,11 +325,12 @@ input:focus {
 }
 
 h1#logo {
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: 500;
 	color: rgba(242, 246, 250, 1);
 	margin-left: 40px;
-	margin-top: 40px;
+	margin-top: 16px;
+	line-height: 44px;
 }
 
 #logo a {
@@ -368,6 +369,11 @@ h1#logo {
     height: 40px;
     background-color: rgba(242, 246, 250, 0.12);
     margin-left: 30px;
+}
+
+.line2 {
+	margin-left: 4px;
+    margin-right: 24px;
 }
 
 #resign_game_menu {

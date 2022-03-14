@@ -511,6 +511,7 @@ function login_success(user_name){
 	}
 	
 	document.getElementById('the_name').innerHTML = user_name;
+	document.getElementById('acc_info_name').innerHTML = user_name + ' · ';
 	document.getElementById('signed_in').style.display = 'block';
 	//console.log('iodsjfoidsjf');
 	

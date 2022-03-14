@@ -9,18 +9,167 @@
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/prism.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism-themes@1.9.0/themes/prism-atom-dark.min.css">
   <script src="/anime.min.js"></script>
-  <script src="/animations.js"></script>
-  <script src="/basics.js"></script>
   <script src="/modules-documentation/script.js" defer></script>
   <title>yare.io</title>
 </head>
 <body>
+	
+    <div id="new_account_wrap">
+  	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+  	  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+  		  <span id="user_err_message">Something's wrong</span>
+  	  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+  		  <span id="password_err_message">Something's wrong</span>
+  		  <br>
+  		   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
+  	  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+  	  </form>
+    </div>
+  
+    <div id="login_wrap">
+  	  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+  	  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
+  	  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
+  		  <span id="login_err_message">Something's wrong</span>
+  		  <br>
+  	  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+  	  </form>
+    </div>
+  
+    <div id="module_edit_mode">
+  	<input type="text" id="module_name_input" placeholder="Module name">
+	
+  	<div id="file_uploads_wrap">
+  		<label class="file_upload_label">
+  			<input type="file" id="file_script_client" class="file_upload" accept=".js">
+  			<span class="lbl_type">Client</span>
+  			<span class="lbl_name" id="client_file_name">Upload script</span>
+  		</label>
+	
+  		<label class="file_upload_label">
+  			<input type="file" id="file_script_server" class="file_upload" accept=".js">
+  			<span class="lbl_type">Server</span>
+  			<span class="lbl_name" id="server_file_name">Upload script</span>
+  		</label>
+  	</div>
+	
+  	<span id="modules_server_message" class="srv_ok">Module updated. Check browser console for errors.</span>
+  	<span id="modules_server_message_loader"></span>
+	
+  	<div id="create_module_btn">Create module</div>
+  	<div id="update_module_btn">Update module</div>
+  	<a id="close_module_edit" href="#">Close</a>
+    </div>
+  
+    <div id="profile_links"> 
+  	    <div id="acc_basics"> 
+  			<div class="basics_bg"></div>
+  	  		<span class="acc_info"><span id="acc_info_name">levmiseri · </span><span id="acc_info_elo">1954</span></span>
+  	  		<a href="/hub" class="profile_link" id="hub_link">Game history</a>
+  	  		<a href="#" class="profile_link" id="log_out">Log out</a>
+  	    </div>
+		
+  		<div id="audio_settings">
+  			<div id="music_slider_wrap" class="pref_slider_item">
+  				<div id="music_value" class="slider_value"></div>
+  				<span class="set_label" id="set_label_music">Music</span><span class="set_value" id="set_value_music">68%</span>
+  			</div>
+		
+  			<div id="sound_slider_wrap" class="pref_slider_item">
+  				<div id="sound_value" class="slider_value"></div>
+  				<span class="set_label" id="set_label_sound">Sound</span><span class="set_value" id="set_value_sound">32%</span>
+  			</div>
+  		</div>
+		
+  		<!--<span class="pref_section_label">LANGUAGE</span>-->
+		
+  		<div id="language_settings">
+  			<div class="lang_chip lang_on" id="lang_js">JavaScript</div>
+  			<div class="lang_chip" id="lang_ts">TypeScript</div>
+  			<div class="lang_chip" id="lang_py">Python</div>
+  		</div>
+		
+  		<div class="sep_medium"></div>
+		
+  		<!--
+  		<div id="module_expanded">
+  			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
+  			<span class='module_main_tag'>Data visualization</span>
+  			<div class="module_toggle" id="toggle_basic_info_graphs">
+  				<div class="the_toggle" id="thetog"></div>
+  			</div>
+  			<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
+  			<div class="module_expanded_buttons">
+  				<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
+  				<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
+  			</div>
+  			<div class="module_ilu"></div>
+  			<div class="sep_medium"></div>
+  			<div class="sep_medium"></div>
+  		</div>
+  		-->
+		
+  		<span class="pref_section_label">MODULES</span>
+  		<div id="modules_section">
+			
+  			<div id="create_new_module">
+  				<span class="ico_new_module"></span>
+  				<span class="new_module_label">Create Module</span>
+  			</div>
+			
+  			<!--
+  			<div class="module_card module_off" id="mdl_code-editor">
+  				<div class="module_card_bg" id="bg_mdl_code-editor"></div>
+  				<span class="module_main_tag">Essentials</span>
+  				<div class="module_toggle" id="toggle_code-editor">
+  					<div class="the_toggle" id="thetog"></div>
+  				</div>
+  				<h3 class="module_name">Code editor <br>& Console</h3>
+  				<div class="module_ilu"></div>
+  			</div>
+				
+  				-->
+			
+			
+  		</div>
+		
+  		<div id="modules_section_mine">
+  			<!--
+  			<div class="module_card_mine module_off" id="mdl_code_editor">
+  				<div class="module_card_bg" id="bg_mdl_mine"></div>
+  				<div class="module_options">
+  					<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
+  					<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
+  					<div class="delete_confirm" id="confirm_1234">
+  						<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
+  						<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
+  					</div>
+  				</div>
+  				<div class="module_toggle" id="toggle_1234">
+  					<div class="the_toggle" id="thetog"></div>
+  				</div>
+  				<h3 class="module_name">Module name</h3>
+  			</div>
+  			-->
+  		</div>
+		
+		
+		
+  		<div class="sep_medium" id="dismiss"></div>
+  		<div class="sep_medium" id="dismiss"></div>
+		
+		
+  		<!--
+		
+  			-->
+    </div>
+	
   <div id="hector">
     <h1 id="logo"><a href="/">yare<span class="logo_lowlight">.io</span></a></h1>
     <div id="doc_sections">
       <a href="/documentation" class="doc_sec_link">Documentation</a>
-      <!-- <div class="menu_line"></div> --> <!-- Yeah this should be fixed, couldn't get a separator working -->
-      <a class="doc_sec_link doc_sec_active">Modules</a>
+       <div class="menu_line"></div> <!-- Yeah this should be fixed, couldn't get a separator working -->
+      <a class="doc_sec_link doc_sec_active" id="doc_mod_link">Modules</a>
     </div>
     <div class="menu">
       <a href="/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
@@ -28,30 +177,39 @@
       <div class="menu_line desktop_only"></div>
       <div class="menu_link new_acc" id="new_account">New account</div>
       <div class="menu_link" id="login">Log in</div>
-      <div class="menu_link" id="signed_in">username</div>
+      <div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
     </div>
   </div>
+  
+  <div id="modules_plate"></div>
+  
+  <div id="overlay"></div>
+  <div id="grad_top2"></div>
+  
+  
+  
+  
+  
 
   <div class="content">
-    <div class="size1 semibold" style="max-width: 769px">
+    <div class="p_intro" style="max-width: 769px">
       Modules are components that add specific features and enhancements to yare.
-      <div class="gray">
+      <span class="lowlight">
         This can be anything from UI controls, monitoring widgets, game rendering adjustments, camera controls, ...
-      </div>
+      </span>
     </div>
     <div style="height: 4rem"></div>
-    <h1 class="semibold" id="creating-a-module">Creating a module</h1>
+    <h2 class="h_sec_head" id="creating-a-module">Creating a module</h2>
     <div style="height: 2rem"></div>
-    <div class="size2 gray" style="max-width: 706px">
+    <div class="p_somewhat_important" style="max-width: 706px">
       After clicking on ‘Create module’, you will be presented with the module-editing mode
     </div>
     <div style="height: 2rem"></div>
     <img id="window" src="/modules-documentation/assets/window.svg" alt="Unable to load window">
-    <div style="height: 4rem"></div>
-    <div class="size1">
+    <div style="height: 6rem"></div>
+    <div class="p_intro">
       Communication between client script and your game-playing code (server) is done via the <div class="monospace purple">client</div> object
     </div>
-    <div style="height: 4rem"></div>
     <div class="valueExamples">
       <img src="/modules-documentation/assets/storeval.svg" style="width: 377px" alt="Unable to load svg">
       <img src="/modules-documentation/assets/getval.svg" style="width: 432px" alt="Unable to load svg">
@@ -59,18 +217,18 @@
     <div style="height: 2rem"></div>
     <!-- Add a proper link here maybe? -->
     <div class="size2">See <a href="#examples">examples</a> for a better idea on how to wire things up</div>
-    <div style="height: 6rem"></div>
-    <h1 class="semibold" id="game-state-information">Game-state information</h1>
+    <div style="height: 10rem"></div>
+    <h2 class="h_sec_head" id="game-state-information">Game-state information</h2>
     <div style="height: 2rem"></div>
-    <div class="size2 gray" style="max-width: 857px;">
+    <div class="p_somewhat_important" style="max-width: 857px;">
       The server sends data about the state of the game each tick via a websocket connection.
       The client then consumes this data with a rendering engine that draws it onto the html canvas.
     </div>
     <div style="height: 2rem"></div>
     <div class="wsinfo">
       <div class="left">
-        <div class="size1">Websocket stream</div>
-        <div class="green">~1-2 ticks behind 'real-time'</div>
+        <div class="size2 semibold">Websocket stream</div>
+        <div class="green">~1–2 ticks behind 'real-time'</div>
       </div>
       <div style="margin-right:4rem"></div>
       <div class="right size2 gray">
@@ -152,8 +310,8 @@
     <div style="height: 4rem"></div>
     <div class="wsinfo">
       <div class="left">
-        <div class="size1">Processed data</div>
-        <div class="green">~2-3 ticks behind 'real-time'</div>
+        <div class="size2 semibold">Processed data</div>
+        <div class="green">~2–3 ticks behind 'real-time'</div>
       </div>
       <div style="margin-right:4rem"></div>
       <div class="right size2 gray">
@@ -217,9 +375,9 @@
         </div>
     </div>
     <div style="height: 4rem"></div>
-    <h1 class="semibold" id="game-objects">Game objects</h1>
+    <h2 class="h_sec_head" id="game-objects">Game objects</h2>
     <div style="height: 2rem"></div>
-    <div class="size2 gray" style="max-width: 857px;">
+    <div class="p_somewhat_important" style="max-width: 857px;">
       Client-side objects that are mirroring the actual game objects. Except that their values are render-time, not real-time.
     </div>
     <div style="height: 2rem"></div>
@@ -266,7 +424,7 @@
       </div>
     </div>
     <div style="height: 4rem"></div>
-    <h1 class="semibold" id="other-useful-variables">Other useful variables</h1>
+    <h2 class="h_sec_head" id="other-useful-variables">Other useful variables</h2>
     <div style="height: 2rem"></div>
     <div class="table_doc">
       <div class="row_in_doc_head">
@@ -307,9 +465,9 @@
     <div style="height: 4rem"></div>
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
       <div>
-        <h1 class="semibold" id="drawing on the canvas">Drawing on the canvas</h1>
+        <h2 class="h_sec_head" id="drawing on the canvas">Drawing on the canvas</h2>
         <div style="height: 2rem"></div>
-        <div class="size2 gray" style="max-width: 613px;">
+        <div class="p_somewhat_important" style="max-width: 613px;">
           Add a function into the <div class="monospace purple inline">module_draw</div> object to have it picked up by the rendering queue —
           see diagram and the <a href="#example-2">second example</a>
         </div>
@@ -325,43 +483,45 @@ offsetX, offsetY
 main_canvas
 base_canvas
       </pre>
-      <pre class="monospace spacedLines">
-store your drawing function here! See <a href="#example-2">example 2</a>
-current zoom level – value between 0.5–2
-1 / scale
-by how much are the canvas coordinates offset relative to the game board coordinates
-contains only static stars and bases (unfortunate name). Context for it is <div class="inline purple">c_base</div>
-all other game objects. Context for it is <div class="inline purple">c</div>
-      </pre>
+	  <div class="canv_vars">
+		  <p>store your drawing function here! See <a href="#example-2">example 2</a></p>
+		  <p>current zoom level – value between 0.5–2</p>
+		  <p>1 / scale</p>
+		  <p>by how much are the canvas coordinates offset relative to the game board coordinates</p>
+		  <p>contains only static stars and bases (unfortunate name). Context for it is <span class="inline purple">c_base</span></p>
+		  <p>all other game objects. Context for it is <span class="inline purple">c</span></p>
+	  </div>
     </div>
-    <h1 class="semibold" id="examples">Examples</h1>
+    <h2 class="h_sec_head" id="examples">Examples</h2>
     <div style="height: 2rem"></div>
-    <div class="size1">1. Explode spirit on click (triangles only)</div>
+    <h4 class="doc_h4">1. Explode spirit on click (triangles only)</h4>
     <div style="height: 2rem"></div>
     <div class="codeExampleContainer">
       <div class="codeExample">
-        <div class="size2">client_script.js</div>
+        <div class="size3 semibold">client_script.js</div>
         <pre src="/modules-documentation/code-examples/1/client_script.js" class="language-js"></pre>
       </div>
       <div class="codeExample">
-        <div class="size2">server_script.js</div>
+        <div class="size3 semibold">server_script.js</div>
         <pre src="/modules-documentation/code-examples/1/server_script.js" class="language-js"></pre>
       </div>
     </div>
     <div style="height: 2rem"></div>
-    <div class="size1">2. Show direction line in front of your spirits</div>
+    <h4 class="doc_h4">2. Show direction line in front of your spirits</h4>
     <div style="height: 2rem"></div>
     <div class="codeExampleContainer">
       <div class="codeExample" id="example-1">
-        <div class="size2">client_script.js</div>
+        <div class="size3 semibold">client_script.js</div>
         <pre src="/modules-documentation/code-examples/2/client_script.js" class="language-js"></pre>
       </div>
       <div class="codeExample" id="example-2">
-        <div class="size2">server_script.js</div>
+        <div class="size3 semibold">server_script.js</div>
         <pre src="/modules-documentation/code-examples/2/server_script.js" class="language-js"></pre>
       </div>
     </div>
     <div style="height: 2rem"></div>
   </div>
 </body>
+<script src="/animations.js"></script>
+<script src="/basics.js"></script>
 </html>

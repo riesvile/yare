@@ -1,8 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;1,700;1,400;1,500;1,600;1,700&display=swap");
 
+.lowlight {
+	color: rgba(242, 246, 250, 0.55);
+}
+
 #doc_sections {
   width: 68%;
-  margin-top: 44px;
+  margin-top: 16px;
   margin-left: 16%;
   position: absolute;
   top: 0;
@@ -10,10 +14,11 @@
 
 .doc_sec_link {
   display: inline-block;
-  margin-right: 20px;
   font-size: 14px;
   font-weight: 500;
   color: rgba(242, 246, 250, 0.55);
+  float: left;
+  line-height: 44px;
 }
 
 .doc_sec_active {
@@ -30,14 +35,96 @@
   font-family: 'Montserrat', sans-serif;
 }
 .semibold {
-  font-weight: 600;
+  font-weight: 500;
 }
 .size1 {
   font-size: 24px;
 }
 .size2 {
   font-size: 20px;
+  margin-bottom: 4px;
 }
+.size3 {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.p_intro {
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 36px;
+	max-width: 780px;
+	margin-bottom: 60px;
+}
+
+.h_sec_head {
+	font-size: 40px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	float: left;
+	margin-bottom: 32px;
+}
+
+.p_somewhat_important {
+	max-width: 68%;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 34px;
+	margin-bottom: 20px;
+	color: rgba(242, 246, 250, 0.89);
+	clear: both;
+}
+
+.doc_h4 {
+	font-size: 20px;
+	font-weight: 500;
+	margin-bottom: 26px;
+	color: rgba(242, 246, 250, 1);
+	clear: both;
+}
+
+#doc_mod_link {
+	margin-left: 28px;
+}
+
+#overlay, #overlay_start, #overlay_pre_start, #game_over_overlay, #overlay_trailer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0);
+	z-index: 10000;
+	backdrop-filter: blur(0px);
+	-webkit-backdrop-filter: blur(0px);
+	pointer-events: none;
+}
+
+.canv_vars {
+	
+}
+
+.canv_vars p {
+	line-height: 40px;
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+}
+
+.menu_line {
+	display: block;
+    float: left;
+    width: 1px;
+    height: 40px;
+    background-color: rgba(242, 246, 250, 0.12);
+    margin-left: 30px;
+}
+
+.line2 {
+	margin-left: 4px;
+    margin-right: 24px;
+}
+
 .monospace {
   font-family: 'Courier New', monospace;
   display: inline;
@@ -93,10 +180,10 @@ code, pre {
 }
 
 .row_in_doc {
-	width: 100%;
+  width: 100%;
   display: flex;
   flex-wrap: nowrap;
-  padding: 1.5rem 0px;
+  padding: 1rem 0px;
   border-bottom: 1px solid rgba(242, 246, 250, 0.12);
 }
 
@@ -122,15 +209,18 @@ code, pre {
 
 .table_doc_property {
   width: 15%;
+  font-weight: 500;
 }
 .table_doc_value {
   flex: 1;
+  font-weight: 500;
 }
 .table_doc_type {
-	font-family: Lucida Sans Typewriter, Lucida Console, monaco, Bitstream Vera Sans Mono, monospace;
-  font-weight: normal !important;
+  font-family: Lucida Sans Typewriter, Lucida Console, monaco, Bitstream Vera Sans Mono, monospace;
+  font-weight: 500;
   width: 10%;
   text-align: right;
+  color: rgba(242, 246, 250, 0.69);
 }
 
 /* Special cases */
