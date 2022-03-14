@@ -11,7 +11,7 @@ function select_spirit(x_point, y_point){
     let s_id = living_spirits[i].id;
     let s_pos = living_spirits[i].position;
     if (Math.abs(s_pos[0] - x_point) <= 8
-          && Math.abs(s_pos[1] - y_point) <= 8){
+     && Math.abs(s_pos[1] - y_point) <= 8){
         client['expl'] = s_id;
         update_code();
     }
