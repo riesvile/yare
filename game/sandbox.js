@@ -194,6 +194,9 @@ class Spirit {
         } else if (target.length != 2){
             soft_error('.jump() argument must be an array of length 2. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
             return;
+        } else if (isNaN(target[0]) || isNaN(target[1])){
+            soft_error('.jump() argument array contains NaN. Received: ' + target);
+            return;
         }
 
         if (this.hp != 0){

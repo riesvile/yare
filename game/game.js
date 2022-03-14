@@ -903,7 +903,7 @@ if (!isMainThread){
 			this.color = color;
 			this.mark = '';
 			this.locked = false;
-			this.beam_range = min_beam;
+			this.range = min_beam;
 		
 			this.sight = {
 				friends: [],
@@ -1816,7 +1816,7 @@ if (!isMainThread){
 					
 					for (let f = 0; f < from_obj.sight.fragments.length; f++){
 						let fragment = from_obj.sight.fragments[f];
-						let fragment_close = fast_dist_leq(from_obj.position, fragment.position, from_obj.beam_range);
+						let fragment_close = fast_dist_leq(from_obj.position, fragment.position, from_obj.range);
 						if (!fragment_close) continue;
 						
 						from_obj.last_energized = to_id;
@@ -1835,7 +1835,7 @@ if (!isMainThread){
 							continue;
 
 						let star = structure_lookup[struc_name];
-						let star_close = fast_dist_leq(from_obj.position, star.position, from_obj.beam_range);
+						let star_close = fast_dist_leq(from_obj.position, star.position, from_obj.range);
 						if (!star_close)
 							continue;
 
@@ -1859,7 +1859,7 @@ if (!isMainThread){
 				let to_check = to_obj.position;
 				if (Array.isArray(to_obj)) to_check = to_obj;
 
-				let target_close = fast_dist_leq(from_obj.position, to_check, from_obj.beam_range);
+				let target_close = fast_dist_leq(from_obj.position, to_check, from_obj.range);
 				if(! target_close){
 					//console.log('target not close enough');
 					return;
@@ -2537,6 +2537,7 @@ if (!isMainThread){
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(!commands[spirit].jump) continue;
 				if(spirit_lookup[spirit].locked) continue;
+				if(spirit_lookup[spirit].energy == 0) continue;
 
 				let s = spirit_lookup[spirit];
 
@@ -2581,13 +2582,13 @@ if (!isMainThread){
 			}
 		}
 
-		// update locked spirit beam_ranges
+		// update locked spirit ranges
 		for(let sid in spirit_lookup) {
 			let spirit = spirit_lookup[sid];
 			if(!spirit.locked) continue;
-			spirit.beam_range += 25;
-			if(spirit.beam_range > 300) {
-				spirit.beam_range = 300;
+			spirit.range += 25;
+			if(spirit.range > 300) {
+				spirit.range = 300;
 			}
 		}
 
@@ -2626,7 +2627,7 @@ if (!isMainThread){
 				if(!s.locked) continue;
 
 				s.locked = false;
-				s.beam_range = min_beam;
+				s.range = min_beam;
 			}
 		}
 
