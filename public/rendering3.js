@@ -590,24 +590,24 @@ try {
 
 // Console 
 
-function console_toggle(){
-	var console_content_height = document.getElementById("console_in").clientHeight;
-	if (document.getElementById("console").classList.contains("collapsed")){
-		console_expanding(console_content_height);
-		cnsl_expanded = 1;
-	} else {
-		console_collapsing(console_content_height);
-		cnsl_expanded = 0;
-	}
-	
-	
-	document.getElementById("console").classList.toggle("collapsed");
-	
-	
-	
-}
-
-document.getElementById("console_head").addEventListener("click", console_toggle, false);
+//function console_toggle(){
+//	var console_content_height = document.getElementById("console_in").clientHeight;
+//	if (document.getElementById("console").classList.contains("collapsed")){
+//		console_expanding(console_content_height);
+//		cnsl_expanded = 1;
+//	} else {
+//		console_collapsing(console_content_height);
+//		cnsl_expanded = 0;
+//	}
+//	
+//	
+//	document.getElementById("console").classList.toggle("collapsed");
+//	
+//	
+//	
+//}
+//
+//document.getElementById("console_head").addEventListener("click", console_toggle, false);
 
 
 

@@ -102,7 +102,8 @@ div.tutorial_editor {
 	position: fixed;
 	bottom: 28px;
 	left: 28px;
-	z-index: 9991;
+	z-index: 9998;
+	pointer-events: none;
 }
 
 .update_switch_wrapper_real {
@@ -120,6 +121,7 @@ div.tutorial_editor {
 	display: block;
 	z-index: 2000;
 	float: left;
+	pointer-events: auto;
 	/*transform-origin: top left;
 	transform: translate(10vw, -20vh);*/
 }
@@ -153,7 +155,7 @@ div.tutorial_editor {
 }
 
 .shortcut_info_real {
-	width: 200px !important;
+	width: 80px !important;
 	height: 44px !important;
 	line-height: 44px !important;
 }
@@ -1287,9 +1289,11 @@ input[type=submit] {
 	top: 12px;
 	left: 12px;
 	/* background-color: #436; */
-	overflow-y: scroll;
-    z-index: 9990;
+	overflow-y: visible;
+    z-index: 9998;
     border-radius: 12px;
+	border: 1px solid hsla(234, 40%, 60%, 0.2);
+	box-sizing: border-box;
 }
 
 #panel_dragger {
@@ -1419,18 +1423,6 @@ input[type=submit] {
 		opacity: 0;
 	}
 	
-	.console_item {
-		font-family: 'Monaco', monospace;
-		font-size: 14px;
-		line-height: 24px;
-		color: rgba(242, 246, 250, 0.69);
-		margin-bottom: 8px;
-	}
-	
-	.console_error {
-		color: rgba(255, 190, 194, 1);
-	}
-	
 	#console_open {
 		position: absolute;
 		left: 788px;
@@ -1486,13 +1478,174 @@ input[type=submit] {
 		position: absolute;
 		bottom: 8px;
 		right: 8px;
-		background-color: #e2aead;
-		width: 84px;
-		height: 36px;
-		border-radius: 20px;
+		z-index: 9998;
 	}
 	
+	#console2_window {
+		width: 480px;
+		height: 480px;
+		position: absolute;
+		bottom: -8px;
+		right: -492px;
+		background-color: hsla(234, 14%, 8%, 0.96);
+		border: 1px solid hsla(234, 40%, 60%, 0.2);
+		box-sizing: border-box;
+		border-radius: 12px;
+		display: none;
+	}
+	
+	.c2_window_open {
+		display: block !important;
+	}
+	
+	#console2_lbl {
+	}
+	
+	#console2_arr {
+		display: block;
+		width: 20px;
+		height: 20px;
+		background: url(asset/ico_chev.png);
+		background-size: cover;
+		position: absolute;
+		top: 8px;
+		right: 12px;
+		opacity: 0.69;
+		display: none;
+	}
+	
+	.c2_lbl_error {
+		color: rgba(124, 0, 0, 1) !important;
+	}
+	
+	.console2_error {
+		background-color: hsla(0, 32%, 16%, 0.96);
+		border: 1px solid hsla(0, 40%, 60%, 0.2);
+	}
+	
+	#console2_view_toggle {
+		cursor: pointer;
+		z-index: 9998;
+		padding: 0 16px;
+		background-color: rgba(242, 246, 250, 0.08);
+		border-radius: 20px;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 1px;
+		line-height: 36px;
+		height: 36px;
+		min-width: 24px;
+		text-transform: uppercase;
+		color: rgba(242, 246, 250, 0.69);
+	}
+	
+	.c2_view_open {
+		border-radius: 20px 0 0 20px !important;
+		margin-right: -8px;
+		background-color: rgba(242, 246, 250, 0.2) !important;
+	}
+	
+	.c2_view_open #console2_lbl {
+		display: none;
+	}
+	
+	.c2_view_open #console2_arr {
+		display: block;
+	}
+	
+	.c2_view_error {
+		background-color: #e2aead !important;
+	}
+	
+	#c2_header {
+		width: 100%;
+		height: 48px;
+		position: absolute;
+		top: 0px;
+		left: 0;
+		background-color: hsla(234, 14%, 8%, 0.96);
+		border-bottom: 1px solid hsla(234, 40%, 60%, 0.16);
+		border-radius: 20px 20px 0 0;
+	}
+	
+	.c2_option {
+		display: inline-block;
+		line-height: 48px;
+		margin-left: 16px;
+		padding: 0 4px;
+		font-size: 12px;
+		font-weight: 500;
+		color: rgba(242, 246, 250, 0.55);
+		float: left;
+		cursor: pointer;
+	}
+	
+	.c2_option_active {
+		color: rgba(242, 246, 250, 0.94);
+	}
+	
+	.c2_option:hover {
+		color: rgba(252, 253, 255, 1) !important;
+	}
+	
+	#c2_close {
+		line-height: 48px;
+		position: absolute;
+		right: 20px;
+		font-size: 12px;
+		font-weight: 500;
+		color: rgba(242, 246, 250, 0.69);
+		cursor: pointer;
+	}
+	
+	#c2_close:hover {
+		color: rgba(242, 246, 250, 0.8);
+	}
+	
+	#console2_all_in, #console2_tick_in {
+		width: 100%;
+		height: calc(100% - 60px);
+		position: absolute;
+		top: 48px;
+		padding-top: 12px;
+		background-color: rgba(255, 255, 255, 0.02);
+		overflow-y: scroll;
+	}
+	
+	#console2_all_in {
+		display: none;
+	}
 
+	.console_item {
+		font-family: 'Monaco', monospace;
+		font-size: 12px;
+		line-height: 24px;
+		color: rgba(242, 246, 250, 0.69);
+		margin-bottom: 8px;
+		margin-left: 12px;
+	}
+	
+	.console_item_group {
+		clear: both;
+		border-bottom: 1px solid rgba(242, 246, 250, 0.1);
+	}
+	
+	.console_item_tick {
+		font-size: 10px;
+		color: rgba(242, 246, 250, 0.55);
+		margin-left: 12px;
+	}
+	
+	.tick_error {
+		color: rgba(255, 153, 153, 0.69);
+	}
+	
+	.console_error {
+		color: rgba(255, 190, 194, 1) !important;
+	}
+	
+	
+	
 
 	/* ----- */
 
@@ -3176,7 +3329,7 @@ a.index_link:hover {
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 9999;
+	z-index: 9997;
 	pointer-events: none;
 }
 

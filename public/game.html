@@ -243,6 +243,7 @@
   <div id="grad_top"></div>
   <div id="grad_bottom"></div>
   
+  <!--
   <div id="console" class="collapsed">
 	  <div id="console_head">
 	  	<span id="console_lbl">CONSOLE</span>
@@ -255,6 +256,7 @@
 		  <p class="console_item">50</p>
   	  </div>
   </div>
+	  -->
   
   <!--
   <div id="console_open">
@@ -289,7 +291,31 @@
 </div>
   </div>  
   
-  <div id="console2"></div>
+  <div id="console2">
+	<div id="console2_view_toggle">
+		<span id="console2_lbl" style="">CONSOLE</span>
+		<span id="console2_arr"></span>
+	</div>
+  	<div id="console2_window">
+		<div id="c2_header">
+			<span class="c2_option c2_option_active" id="c2_option_current">Current tick</span>
+			<span class="c2_option" id="c2_option_all">All ticks</span>
+			<span id="c2_close">Close</span>
+		</div>
+		<div id="console2_tick_in">
+			<p class="console_item console_error">ReferenceError:&nbsp;meow&nbsp;is&nbsp;not&nbsp;defined<br>&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;~sandbox/user.js:48:1</p>
+			<p class="console_item">{"friends":[]}</p>
+			<p class="console_item">-230,230</p>
+			<p class="console_item">-800,800</p>
+		</div>
+		<div id="console2_all_in">
+			<div class="console_item_group">
+				<span class="console_item_tick tick_error">145</span>
+				<p class="console_item">itemmmm</p>
+			</div>
+		</div>
+	</div>
+  </div>
   
   </div>
   
@@ -598,7 +624,7 @@
 		  
 			  elapsed = 0;
 			  
-			  document.getElementById('console_in').innerHTML = '';
+			  document.getElementById('console2_tick_in').innerHTML = '';
 		  
 			  try {
 				 let message = JSON.parse(event.data);
@@ -797,37 +823,54 @@
 				 //	birth_queue.push(incoming.birth[i]);
 				 //}
 			 
-				let cnsl_in = document.getElementById('console_in');
+				//let cnsl_open = 0;
+				let cnsl_in = document.getElementById('console2_tick_in');
+				let cnsl_all_in = document.getElementById('console2_all_in');
+				let temp_group = document.createElement("div");
+				temp_group.classList.add('console_item_group');
+				temp_group.innerHTML = "<span class='console_item_tick'>" + incoming.t + "</span>"
 			 
 				if(chan.err){
 					has_error = 1;
-					error_console();
-					var err_lbl = "ERRORS";
-					if (chan.err.length == 1) err_lbl = "ERROR";
-					document.getElementById('console_lbl').innerHTML = "CONSOLE (" + chan.err.length + " " + err_lbl + ")"; 
+					//error_console();
+					var err_lbl = "Errors";
+					if (chan.err.length == 1) err_lbl = "Error";
+					document.getElementById('console2_lbl').innerHTML = chan.err.length + " " + err_lbl;
+					document.getElementById('console2_lbl').classList.add('c2_lbl_error');
+					document.getElementById('console2_view_toggle').classList.add('c2_view_error');
+					
+					 
 					
 					for (let err of chan.err){
 						cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + err + "</p>";
+						temp_group.innerHTML += "<p class='console_item console_error'>" + err + "</p>";
+						//cnsl_all_in.insertAdjacentHTML("afterbegin", "<div class='console_item_group'><span class='console_item_tick tick_error'>" + incoming.t + "</span><p class='console_item console_error'>" + err + "</p></div>");
 						//console.error(incoming.err1[cns]);
 					}
 				} else {
 					has_error = 0;
-					clean_console();
-					document.getElementById('console_lbl').innerHTML = "CONSOLE"; 
+					//clean_console();
+					document.getElementById('console2_lbl').innerHTML = "Console"; 
+					document.getElementById('console2_lbl').classList.remove('c2_lbl_error');
+					document.getElementById('console2_view_toggle').classList.remove('c2_view_error');
 				}
 
 				if(chan.log){
 					for (let log of chan.log){
 						cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + log + "</p>";
+						temp_group.innerHTML += "<p class='console_item'>" + log + "</p>";
+						//cnsl_all_in.insertAdjacentHTML("afterbegin", "<div class='console_item_group'><span class='console_item_tick'>" + incoming.t + "</span><p class='console_item'>" + log + "</p></div>");
 						//console.log(incoming.console1[cns]);
 					}
 				}
 				
+				cnsl_all_in.prepend(temp_group);
+				
 				 
-				 if (cnsl_expanded == 1){
-					 var console_content_height = document.getElementById("console_in").clientHeight;
-					 update_console_height(console_content_height);	
-				 }
+				 //if (cnsl_expanded == 1){
+				 //	 var console_content_height = document.getElementById("console_in").clientHeight;
+				 //	 update_console_height(console_content_height);	
+				 //}
 				 
 				 //console.log('incoming.end');
 				 //console.log(incoming.end);
@@ -1011,7 +1054,7 @@
 				document.getElementById('tutorial').style.display = 'none';
 				document.getElementById('editor_container').style.position = 'fixed';
 				document.getElementById('editor_container').style.top = '20px';
-				document.getElementById('console').style.display = 'block';
+				//document.getElementById('console').style.display = 'block';
 			
 				document.getElementById('panel').classList.remove("panel_start");
 			}
@@ -1209,6 +1252,31 @@
 	    }, false);
 	  }
 	  
+	  function console_window_toggle(){
+		  document.getElementById("console2_view_toggle").classList.toggle("c2_view_open");
+		  document.getElementById("console2_window").classList.toggle("c2_window_open");
+	  }
+	  
+	  function console_window_close(){
+		  document.getElementById("console2_view_toggle").classList.remove("c2_view_open");
+		  document.getElementById("console2_window").classList.remove("c2_window_open");
+	  }
+	  
+	  function console_view_current(){
+		  document.getElementById('c2_option_current').classList.add('c2_option_active');
+		  document.getElementById('c2_option_all').classList.remove('c2_option_active');
+		  
+		  document.getElementById('console2_tick_in').style.display = "block";
+		  document.getElementById('console2_all_in').style.display = "none";
+	  }
+	  
+	  function console_view_all(){
+		  document.getElementById('c2_option_current').classList.remove('c2_option_active');
+		  document.getElementById('c2_option_all').classList.add('c2_option_active');
+		  
+		  document.getElementById('console2_tick_in').style.display = "none";
+		  document.getElementById('console2_all_in').style.display = "block";
+	  }
 	  
 	  document.getElementById('send_intro').addEventListener('mouseenter', highlight_update_btn, false);
 	  document.getElementById('send_intro').addEventListener('mouseleave', nolight_update_btn, false);
@@ -1222,6 +1290,13 @@
 	  document.getElementById('switch_view').addEventListener('click', game_switch_view, false);
 	  
 	  document.getElementById('watch_replay').href = "../replay/" + this_game_id;
+	  
+	  document.getElementById('console2_view_toggle').addEventListener('click', console_window_toggle, false);
+	  document.getElementById('c2_close').addEventListener('click', console_window_close, false);
+	  
+	  document.getElementById('c2_option_current').addEventListener('click', console_view_current, false);
+	  document.getElementById('c2_option_all').addEventListener('click', console_view_all, false);
+	  
 	  
 	  
 	  
