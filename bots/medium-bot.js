@@ -40,11 +40,19 @@ function round_to(number, places){
 var min_beam = 200;
 var min_beam_sq = min_beam**2;
 
-var my_star = star_zxq;
-var e_star = star_a1c;
+var my_base = base_zxq;
+var e_base = base_a2c;
 
-if(dist_sq(star_a1c.position, base.position) < dist_sq(star_zxq.position, base.position)){
-    my_star = star_a1c;
+if (base_a2c.control == this_player_id){
+	my_base = base_a2c;
+	e_base = base_zxq;
+}
+
+var my_star = star_zxq;
+var e_star = star_a2c;
+
+if(dist_sq(star_a2c.position, my_base.position) < dist_sq(star_zxq.position, my_base.position)){
+    my_star = star_a2c;
     e_star = star_zxq;
 }
 
@@ -93,9 +101,9 @@ function beam_from_to(from, to, shorten=1){
     return mult(shorten/dist(from.position, to.position), add(mult(-1, from.position), to.position));
 }
 
-var base_to_star_beam = beam_from_to(base, my_star, 0.99*min_beam);
-var h_pos = add(base.position, mult(2.6, base_to_star_beam));
-var h0_pos = add(my_star.position, beam_from_to(my_star, base, 0.99*min_beam));
+var base_to_star_beam = beam_from_to(my_base, my_star, 0.99*min_beam);
+var h_pos = add(my_base.position, mult(2.6, base_to_star_beam));
+var h0_pos = add(my_star.position, beam_from_to(my_star, my_base, 0.99*min_beam));
 
 var l = [-100, 0];
 var r = [100, 0];
@@ -146,9 +154,9 @@ var moves = [];
 var a_min_life = 0.2;
 var h_min_life = 0.0;
 var gather_prop = 0.5;
-var gather_pos = linc(base.position, enemy_base.position, gather_prop);
+var gather_pos = linc(my_base.position, e_base.position, gather_prop);
 // enemy
-var supply_pos = linc(enemy_base.position, e_star.position, 0.4);
+var supply_pos = linc(e_base.position, e_star.position, 0.4);
 // our - for defense
 //var supply_pos = linc(base.position, my_star.position, 0.2);
 
@@ -156,7 +164,7 @@ var supply_pos = linc(enemy_base.position, e_star.position, 0.4);
 
 
 if(bot_code){
-    supply_pos = linc(enemy_base.position, e_star.position, 0.4);
+    supply_pos = linc(e_base.position, e_star.position, 0.4);
 }
 
 var plans = memory['plans'];
@@ -270,19 +278,19 @@ for (var i = 0; i < my_alive.length;i++){
     }
 
     var plan = plans[t];
-    var d2base = dist_sq(s.position, base.position);
+    var d2base = dist_sq(s.position, my_base.position);
     var d2star = dist_sq(s.position, my_star.position);
     var d2estar = dist_sq(s.position, e_star.position);
     var near_base = d2base < min_beam_sq;
     var near_star = d2star < min_beam_sq;
     var near_estar = d2estar < min_beam_sq;
-    var base_in_trouble = base.sight.enemies.length > 0;
+    var base_in_trouble = my_base.sight.enemies.length > 0;
     // charge by default
     if(near_star || near_estar){
         s.energize(s);
     }
 
-    if(plan == 'H' || (plan == 'B' && base.sight.enemies.length == 0)){
+    if(plan == 'H' || (plan == 'B' && my_base.sight.enemies.length == 0)){
         // state
         if (memory[s.id] != 'charged' && memory[s.id] != 'harvestor') {
             if(d2base > d2star)
@@ -321,13 +329,13 @@ for (var i = 0; i < my_alive.length;i++){
             if(d2star > min_beam_sq)
                 s.move(my_star.position);
             if(d2star < 0.8 * min_beam_sq)
-                s.move(base.position);
+                s.move(my_base.position);
         } else if (memory[s.id] == 'charged'){
             if(d2base < 0.8 * min_beam_sq)
                 s.move(my_star.position);
             if(d2base > min_beam_sq)
-                s.move(base.position);
-            s.energize(base);
+                s.move(my_base.position);
+            s.energize(my_base);
         }
     } else {
         // state transitions
@@ -347,7 +355,7 @@ for (var i = 0; i < my_alive.length;i++){
             if(d2star > min_beam_sq)
                 s.move(my_star.position);
             if(d2star < 0.8 * min_beam_sq)
-                s.move(base.position);
+                s.move(my_base.position);
         }
         if ( memory[s.id] == 'recharging' ){
             if(d2star < d2estar)
@@ -362,11 +370,11 @@ for (var i = 0; i < my_alive.length;i++){
             }
 
             if(plan == 'a'){
-                var near_enemy = dist_sq(s.position, enemy_base.position) < min_beam_sq;
+                var near_enemy = dist_sq(s.position, e_base.position) < min_beam_sq;
                 if(!near_enemy)
-                    s.move(enemy_base.position);
+                    s.move(e_base.position);
                 else
-                    s.energize(enemy_base);
+                    s.energize(e_base);
             }
 
             if(plan == 'A'){
@@ -379,7 +387,7 @@ for (var i = 0; i < my_alive.length;i++){
             }
 
             if(plan == 'b' || plan == 'B'){
-                s.move(base.position);
+                s.move(my_base.position);
                 /*
                 var min = 0;
                 if(plan =='b')

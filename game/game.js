@@ -936,7 +936,7 @@ if (!isMainThread){
 			this.size = size;
 			this.structure_type = 'star';
 			this.energy = energy;
-			this.energy_capacity = 1000;
+			this.energy_capacity = this.size * 10;
 			this.last_energized = '';
 			this.active_in = 0;
 			this.active_at = active_at;
@@ -2381,10 +2381,14 @@ if (!isMainThread){
 		for (let i = 0; i < stars.length; i++){
 			stars[i].active_in = stars[i].active_at - game_duration;
 			if(game_duration >= stars[i].active_at) {
-				stars[i].energy += Math.round(2 + (stars[i].energy * 0.02));
-				stars[i].active_in = 0;
+				if (stars[i].id == 'star_nua'){
+					stars[i].energy += Math.round(3 + (stars[i].energy * 0.03));
+				} else {
+					stars[i].energy += Math.round(2 + (stars[i].energy * 0.02));
+					stars[i].active_in = 0;
+				}
 			}
-			if (stars[i].energy >= 1000) stars[i].energy = 1000;
+			if (stars[i].energy >= stars[i].energy_capacity) stars[i].energy = stars[i].energy_capacity;
 
 			render_data3.st[i] = stars[i].energy;
 		}
@@ -2941,7 +2945,7 @@ if (!isMainThread){
 		star_a2c = new Star('star_a2c', [340, 1200], 100, 100, 0);
 		star_lookup['star_a2c'] = star_a2c;
 		
-		star_p89 = new Star('star_p89', [-540, 540], 0, 100, 100);
+		star_p89 = new Star('star_p89', [-540, 540], 0, 100, 0);
 		star_lookup['star_p89'] = star_p89;
 		
 		star_nua = new Star('star_nua', [420, -420], 0, 300, 0);

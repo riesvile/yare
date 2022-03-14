@@ -1365,7 +1365,7 @@ class Star {
 	
 	draw_energy() {
 		c.beginPath();
-		c.arc(this.position[0], this.position[1], 1 + this.energy / 100, 0, Math.PI * 2, false);
+		c.arc(this.position[0], this.position[1], 1 + Math.min(this.energy / 100, 20), 0, Math.PI * 2, false);
 		c.fillStyle = "rgba(248, 247, 255, 1)";
 		c.fill();
 	}
