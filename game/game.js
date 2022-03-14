@@ -1816,7 +1816,7 @@ if (!isMainThread){
 					
 					for (let f = 0; f < from_obj.sight.fragments.length; f++){
 						let fragment = from_obj.sight.fragments[f];
-						let fragment_close = fast_dist_leq(from_obj.position, fragment.position, min_beam);
+						let fragment_close = fast_dist_leq(from_obj.position, fragment.position, from_obj.beam_range);
 						if (!fragment_close) continue;
 						
 						from_obj.last_energized = to_id;
@@ -1835,7 +1835,7 @@ if (!isMainThread){
 							continue;
 
 						let star = structure_lookup[struc_name];
-						let star_close = fast_dist_leq(from_obj.position, star.position, min_beam);
+						let star_close = fast_dist_leq(from_obj.position, star.position, from_obj.beam_range);
 						if (!star_close)
 							continue;
 
