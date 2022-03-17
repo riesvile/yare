@@ -863,6 +863,12 @@ app.post('/session', (req, res) => {
     console.log(req.body.user_name);
     console.log(req.body.password);
 	
+	if (typeof req.body.session_id !== 'string'){
+		res.status(200).send({
+			data: 'invalid request'
+		});
+	}
+	
 	console.log('session was called !!!!!!!');
 	
 	Session.find({session_id: req.body.session_id})

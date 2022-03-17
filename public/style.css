@@ -3348,6 +3348,111 @@ a.index_link:hover {
 
 
 
+/* ----- boxsand ----- */
+
+#boxsand_build_ui {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.bs_player_selection {
+	position: absolute;
+	left: 32px;
+	width: 246px;
+	height: 48px;
+	background-color: rgba(242, 246, 250, 0.12);
+	border-radius: 12px;
+	cursor: pointer;
+}
+
+.bs_player_selection:hover {
+	background-color: rgba(248, 242, 252, 0.14);
+}
+
+#boxsand_p1 {
+	top: 120px;
+}
+
+#boxsand_p2 {
+	top: 176px;
+}
+
+.bs_player_ico {
+	width: 12px;
+	height: 12px;
+	display: block;
+	background-color: #500;
+	position: absolute;
+	top: 50%;
+	left: 20px;
+	transform: translateY(-50%);
+}
+
+.bs_player_name {
+	position: absolute;
+	top: 0;
+	left: 44px;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 47px;
+}
+
+.bs_player_dropdown {
+	position: absolute;
+	top: 50%;
+	right: 9px;
+	transform: translateY(-50%);
+	display: block;
+	width: 32px;
+	height: 32px;
+	background: url(./asset/dropdown2.png);
+	background-size: cover;
+}
+
+#bs_element_placer {
+	position: absolute;
+	top: 280px;
+	left: 32px;
+}
+
+h3.bs_heading {
+	font-size: 12px;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: rgba(242, 246, 250, 0.55);
+}
+
+
+
+
+
+
+/* ----- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

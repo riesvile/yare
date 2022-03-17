@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare.io</title>
+	<style>
+	</style>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./colors.css">
+	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./style-mobile.css">
+	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./anime.min.js"></script>
+  </head>
+  <body>
+	  
+  <div id="new_account_wrap">
+	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+		  <span id="user_err_message">Something's wrong</span>
+	  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+		  <span id="password_err_message">Something's wrong</span>
+		  <br>
+		   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
+	  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+	  </form>
+  </div>
+
+  <div id="login_wrap">
+	  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
+	  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
+		  <span id="login_err_message">Something's wrong</span>
+		  <br>
+	  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+	  </form>
+  </div>
+  
+  <div id="module_edit_mode">
+	<input type="text" id="module_name_input" placeholder="Module name">
+	
+	<div id="file_uploads_wrap">
+		<label class="file_upload_label">
+			<input type="file" id="file_script_client" class="file_upload" accept=".js">
+			<span class="lbl_type">Client</span>
+			<span class="lbl_name" id="client_file_name">Upload script</span>
+		</label>
+	
+		<label class="file_upload_label">
+			<input type="file" id="file_script_server" class="file_upload" accept=".js">
+			<span class="lbl_type">Server</span>
+			<span class="lbl_name" id="server_file_name">Upload script</span>
+		</label>
+	</div>
+	
+	<span id="modules_server_message" class="srv_ok">Module updated. Check browser console for errors.</span>
+	<span id="modules_server_message_loader"></span>
+	
+	<div id="create_module_btn">Create module</div>
+	<div id="update_module_btn">Update module</div>
+	<a id="close_module_edit" href="#">Close</a>
+  </div>
+  
+  <div id="profile_links"> 
+	    <div id="acc_basics"> 
+			<div class="basics_bg"></div>
+	  		<span class="acc_info"><span id="acc_info_name">levmiseri · </span><span id="acc_info_elo">1954</span></span>
+	  		<a href="/hub" class="profile_link" id="hub_link">Game history</a>
+	  		<a href="#" class="profile_link" id="log_out">Log out</a>
+	    </div>
+		
+		<div id="audio_settings">
+			<div id="music_slider_wrap" class="pref_slider_item">
+				<div id="music_value" class="slider_value"></div>
+				<span class="set_label" id="set_label_music">Music</span><span class="set_value" id="set_value_music">68%</span>
+			</div>
+		
+			<div id="sound_slider_wrap" class="pref_slider_item">
+				<div id="sound_value" class="slider_value"></div>
+				<span class="set_label" id="set_label_sound">Sound</span><span class="set_value" id="set_value_sound">32%</span>
+			</div>
+		</div>
+		
+		<!--<span class="pref_section_label">LANGUAGE</span>-->
+		
+		<div id="language_settings">
+			<div class="lang_chip lang_on" id="lang_js">JavaScript</div>
+			<div class="lang_chip" id="lang_ts">TypeScript</div>
+			<div class="lang_chip" id="lang_py">Python</div>
+		</div>
+		
+		<div class="sep_medium"></div>
+		
+		<!--
+		<div id="module_expanded">
+			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
+			<span class='module_main_tag'>Data visualization</span>
+			<div class="module_toggle" id="toggle_basic_info_graphs">
+				<div class="the_toggle" id="thetog"></div>
+			</div>
+			<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
+			<div class="module_expanded_buttons">
+				<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
+				<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
+			</div>
+			<div class="module_ilu"></div>
+			<div class="sep_medium"></div>
+			<div class="sep_medium"></div>
+		</div>
+		-->
+		
+		<span class="pref_section_label">MODULES</span>
+		<div id="modules_section">
+			
+			<div id="create_new_module">
+				<span class="ico_new_module"></span>
+				<span class="new_module_label">Create Module</span>
+			</div>
+			
+			<!--
+			<div class="module_card module_off" id="mdl_code-editor">
+				<div class="module_card_bg" id="bg_mdl_code-editor"></div>
+				<span class="module_main_tag">Essentials</span>
+				<div class="module_toggle" id="toggle_code-editor">
+					<div class="the_toggle" id="thetog"></div>
+				</div>
+				<h3 class="module_name">Code editor <br>& Console</h3>
+				<div class="module_ilu"></div>
+			</div>
+				
+				-->
+			
+			
+		</div>
+		
+		<div id="modules_section_mine">
+			<!--
+			<div class="module_card_mine module_off" id="mdl_code_editor">
+				<div class="module_card_bg" id="bg_mdl_mine"></div>
+				<div class="module_options">
+					<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
+					<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
+					<div class="delete_confirm" id="confirm_1234">
+						<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
+						<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
+					</div>
+				</div>
+				<div class="module_toggle" id="toggle_1234">
+					<div class="the_toggle" id="thetog"></div>
+				</div>
+				<h3 class="module_name">Module name</h3>
+			</div>
+			-->
+		</div>
+		
+		
+		
+		<div class="sep_medium" id="dismiss"></div>
+		<div class="sep_medium" id="dismiss"></div>
+		
+		
+		<!--
+		
+			-->
+  </div>
+  
+  
+  <div id="hector">
+	  <h1 id="logo"><a href="/">yare<span class="logo_lowlight">.io</span></a></h1>
+	  <div class="menu">
+		  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
+		  <div class="menu_line desktop_only"></div>
+		  <a href="/newgame" class="menu_link new_g" id="new_g">New game</a>
+		  <div class="menu_link new_acc" id="new_account">New account</div>
+		  <div class="menu_link" id="login">Log in</div>
+		  <div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
+	  </div>
+  </div>
+	  
+  <div id="modules_plate"></div>
+  
+  <div id="trailer_box"><iframe width="1120" height="630" src="https://www.youtube.com/embed/fJvHsV32Yms" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  <div id="overlay"></div>
+  <!--
+  <div id="grad_top2"></div>
+	  -->
+	  
+	 
+  <canvas id='sandbox_canvas'></canvas>
+  <canvas id='base_canvas'></canvas>
+	  
+	  
+  <div id="boxsand_build_ui">
+	  
+	  <div id="boxsand_p1" class="bs_player_selection">
+		  <span id="bs_ico_p1" class="bs_player_ico"></span>
+		  <span id="bs_p1_name" class="bs_player_name"><span class='lowlight'>Player 1 · </span>You</span>
+		  <span class="bs_player_dropdown"></span>
+	  </div>
+	  <div id="boxsand_p2" class="bs_player_selection">
+		  <span id="bs_ico_p1" class="bs_player_ico"></span>
+		  <span id="bs_p1_name" class="bs_player_name"><span class='lowlight'>Player 2 · </span>You</span>
+		  <span class="bs_player_dropdown"></span>
+	  </div>
+	  
+	  <div id="bs_element_placer">
+	  	<h3 class="bs_heading">Select element to place</h3>
+	  
+  	  </div>
+	  
+	  
+	  
+	  
+  </div>  
+	  
+	  
+	  
+	  
+  
+  
+  </body>
+  <script src="../animations.js"></script>
+  <script src="../basics.js"></script>
+  
+  <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
+  </html>

@@ -2750,7 +2750,7 @@ if (!isMainThread){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 3000){
+				} else if (game_duration == 4000){
 					end_game(0, 0);
 					tutorial_phase[0] = 'end';
 				}
