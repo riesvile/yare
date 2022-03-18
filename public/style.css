@@ -3507,6 +3507,7 @@ h3.bs_heading {
 
 .bs_tick_sec_block #tick_sec_desc {
 	font-size: 13px;
+	color: rgba(242, 246, 250, 0.49);
 }
 
 /* ----- */

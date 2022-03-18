@@ -217,7 +217,7 @@
 	  
 	  
 	  <div id="tick_sec_block" class="bs_tick_sec_block">
-		  <div id="tick_sec_desc">1 tick = 500ms</div>
+		  <div id="tick_sec_desc">1 tick = <span class='highlight'>500ms</span></div>
 		  <div id="tick_05" class="tick_rate_select">1000</div>
 		  <div id="tick_1" class="tick_rate_select tick_rate_active">500</div>
 		  <div id="tick_2" class="tick_rate_select">250</div>
@@ -235,6 +235,17 @@
   </body>
   <script src="../animations.js"></script>
   <script>
+	  
+	  var dragging_timeline = 0;
+	  
+	  
+	  function reset_tick_ui(){
+		  document.getElementById('tick_05').classList.remove('tick_rate_active');
+		  document.getElementById('tick_1').classList.remove('tick_rate_active');
+		  document.getElementById('tick_2').classList.remove('tick_rate_active');
+		  document.getElementById('tick_3').classList.remove('tick_rate_active');
+	  }
+	  
 	  function tick_rate_select(e){
 	  	  	e = e || window.event;
 	  		var el_id = (e.target || e.srcElement).id;
@@ -242,52 +253,32 @@
 		
 	  		switch (el_id){
 	  			case 'tick_05':
-	  				//console.log('clicked rate 1');
-	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 1000ms';
-	  				document.getElementById('tick_05').classList.add('tick_rate_active');
-	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
-	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
-	  				game_tick = '1200';
+					reset_tick_ui();
+	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>1000ms</span>";
+	  				document.getElementById("tick_05").classList.add("tick_rate_active");
+	  				game_tick = "1200";
 	  				break;
-	  			case 'tick_1':
-	  				//console.log('clicked rate 1');
-	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 500ms';
-	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_1').classList.add('tick_rate_active');
-	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
-	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
-	  				game_tick = '600';
+	  			case "tick_1":
+	  				reset_tick_ui();
+	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>500ms</span>";
+	  				document.getElementById("tick_1").classList.add("tick_rate_active");
+	  				game_tick = "600";
 	  				break;
-	  			case 'tick_2':
-	  				//console.log('clicked rate 2');
-	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 250ms';
-	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_2').classList.add('tick_rate_active');
-	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
-	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
-	  				game_tick = '300';
+	  			case "tick_2":
+	  				reset_tick_ui();
+	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>250ms</span>";
+	  				document.getElementById("tick_2").classList.add("tick_rate_active");
+	  				game_tick = "300";
 	  				break;
-	  			case 'tick_3':
-	  				//console.log('clicked rate 2');
-	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 100ms';
-	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_3').classList.add('tick_rate_active');
-	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
-	  				game_tick = '200';
+	  			case "tick_3":
+	  				reset_tick_ui();
+	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>100ms</span>";
+	  				document.getElementById("tick_3").classList.add("tick_rate_active");
+	  				game_tick = "200";
 	  				break;
-	  			case 'tick_6':
-	  				//console.log('clicked rate 2');
-	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 100ms';
-	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
-	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
+	  			case "tick_6":
+	  				reset_tick_ui();
+	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>50ms</span>";
 	  				//document.getElementById('tick_6').classList.add('tick_rate_active');
 	  				game_tick = '100';
 	  				break;
@@ -304,6 +295,7 @@
 		  
   </script>
   <script src="../basics.js"></script>
+  <script src="../rendering3.js"></script>
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>

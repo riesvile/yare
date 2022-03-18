@@ -438,6 +438,17 @@
 		  editor.setValue(code_code, 1);
 	  }
 	  
+	  function tick_loop(){
+	 	  setTimeout(function(){
+			  total_time = 0;
+			  //let tick_loc = 't' + tick_counter;
+			  tick_helper++;
+	 		  active_block = 't' + tick_helper;
+			  console.log('calling next in ' + game_tick + 'ms');
+			  tick_loop();
+	 	  }, game_tick);
+	  }
+	  
 	  function run_it(){
 		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
@@ -462,13 +473,15 @@
 			  //
 			  console.log('tick_counter = ' + tick_counter);
 			  console.log('incoming.t = ' + incoming.t);
+			  tick_helper = tick_counter;
 			  active_block = 't' + tick_counter;
 			  render_state();
+			  
+			  
+		 	  tick_loop();
 		  }
 		  
-		  total_time = 0;
-		  let tick_loc = 't' + tick_counter;
-		  active_block = tick_loc;
+
 		  //console.log('tick_loc = ' + tick_loc);
 		  //console.log('incoming.t = ' + incoming.t);
 		  
@@ -551,8 +564,9 @@
 	  
 	  var dragging_timeline = 0;
 	  
-	  var tick_rate = 600;
-	  var game_tick = 300; // 1s
+	  var tick_rate = 500;
+	  var game_tick = 500; // 1s
+	  var game_tick_target = 500;
 	  
 	  var x = 0;
 	  var y = 0;
@@ -594,11 +608,14 @@
 	  var game_running = 0;
 	  var tick_counter = 0;
 	  var tick_local = 0;
+	  var tick_helper = 0;
+	  var tick_buffer = 0;
 	  var total_time = 0;
 	  var elapsed = 0;
 	  var data_timestamp = 0;
 	  var message_time = 0;
 	  var temp_tick_time = 0;
+	  var incoming_diff = 0;
 	  var prev = 0;
 	  
 	  var cnsl = [];
@@ -637,10 +654,36 @@
 			  energy_processed = {};
 			  base_drawn = {};
 			  
+		 	  
+			  
 			  
 			  message_time = performance.now();
 			  if (temp_tick_time != 0){
-				  game_tick = Math.round(message_time - temp_tick_time);
+				  incoming_diff = Math.round(message_time - temp_tick_time);
+				  if (incoming_diff < game_tick_target){
+					  game_tick = game_tick_target;
+					  if (incoming_diff > 100) tick_buffer += (game_tick_target - incoming_diff);
+				  } else if (incoming_diff > (game_tick_target + 50)){
+					  let temp_game_tick = incoming_diff - tick_buffer;
+					  if (temp_game_tick >= game_tick_target) {
+						  if (temp_game_tick >= incoming_diff){
+							  temp_game_tick = incoming_diff;
+							  tick_buffer += (game_tick_target - incoming_diff);
+						  } else {
+							  game_tick = temp_game_tick;
+							  tick_buffer = 0;
+						  }
+					  } else {
+						  game_tick = game_tick_target;
+						  tick_buffer -= (incoming_diff - game_tick_target);
+					  }
+				  } else {
+					  game_tick = incoming_diff;
+					  //tick_buffer += (game_tick_target - incoming_diff);
+				  }
+				  
+				  console.log('diff = ' + incoming_diff);
+				  console.log('buff = ' + tick_buffer);
 			  }
 			  temp_tick_time = message_time;
 			  
@@ -651,7 +694,12 @@
 			  document.getElementById('console2_tick_in').innerHTML = '';
 		  
 			  try {
-				 let message = JSON.parse(event.data);
+				  
+			 	  //setTimeout(function(){
+			 	  //	  run_next_tick = 1;
+			 	  //}, game_tick_target);
+				  
+				let message = JSON.parse(event.data);
 				if(message.meta == 'initiate'){
 					initiate(message.data);
 					return;
