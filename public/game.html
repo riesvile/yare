@@ -444,7 +444,8 @@
 			  //let tick_loc = 't' + tick_counter;
 			  tick_helper++;
 	 		  active_block = 't' + tick_helper;
-			  console.log('calling next in ' + game_tick + 'ms');
+			  console.log('incoming.t = ' + incoming.t);
+			  console.log('calling ' + (tick_helper + 1) + ' in ' + game_tick + 'ms');
 			  tick_loop();
 	 	  }, game_tick);
 	  }
@@ -680,6 +681,11 @@
 				  } else {
 					  game_tick = incoming_diff;
 					  //tick_buffer += (game_tick_target - incoming_diff);
+				  }
+				  
+				  if (tick_buffer > 200){
+					  game_tick -= 10;
+					  tick_buffer -= 10;
 				  }
 				  
 				  console.log('diff = ' + incoming_diff);
