@@ -442,26 +442,37 @@
 		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
 			  game_running = 1;
-			  tick_local = tick_counter;
-			  active_block = 't' + (tick_local);
-			  //console.log('active block = ' + active_block);
-			  setInterval(function(){ 
-				  // change to tick_counter (not - 1)
-				  //console.log('local tick = ' + tick_local);
-				  //console.log('incoming.t = ' + incoming.t);
-				  
-				  
-				  active_block = 't' + (tick_local);
-				  //console.log('active block = ' + active_block);
-				  total_time = 0;
-				  tick_local++;
-				  if (tick_local > incoming.t) tick_local--;
-				  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
-			  }, tick_rate);
-			  
+			  //tick_local = tick_counter;
+			  //active_block = 't' + (tick_local);
+			  ////console.log('active block = ' + active_block);
+			  //setInterval(function(){ 
+			  //	  // change to tick_counter (not - 1)
+			  //	  //console.log('local tick = ' + tick_local);
+			  //	  //console.log('incoming.t = ' + incoming.t);
+			  //	  
+			  //	  
+			  //	  active_block = 't' + (tick_local);
+			  //	  console.log('active block = ' + active_block);
+			  //	  console.log('incoming.t =   ' + incoming.t);
+			  //	  total_time = 0;
+			  //	  tick_local++;
+			  //	  if (tick_local > incoming.t) tick_local--;
+			  //	  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
+			  //}, tick_rate);
+			  //
+			  console.log('tick_counter = ' + tick_counter);
+			  console.log('incoming.t = ' + incoming.t);
+			  active_block = 't' + tick_counter;
 			  render_state();
-			  
 		  }
+		  
+		  total_time = 0;
+		  let tick_loc = 't' + tick_counter;
+		  active_block = tick_loc;
+		  //console.log('tick_loc = ' + tick_loc);
+		  //console.log('incoming.t = ' + incoming.t);
+		  
+		  
 	  }
 	  
 	  function taylor_UI(){
@@ -541,6 +552,7 @@
 	  var dragging_timeline = 0;
 	  
 	  var tick_rate = 600;
+	  var game_tick = 300; // 1s
 	  
 	  var x = 0;
 	  var y = 0;
@@ -584,6 +596,9 @@
 	  var tick_local = 0;
 	  var total_time = 0;
 	  var elapsed = 0;
+	  var data_timestamp = 0;
+	  var message_time = 0;
+	  var temp_tick_time = 0;
 	  var prev = 0;
 	  
 	  var cnsl = [];
@@ -621,8 +636,17 @@
 		  
 			  energy_processed = {};
 			  base_drawn = {};
+			  
+			  
+			  message_time = performance.now();
+			  if (temp_tick_time != 0){
+				  game_tick = Math.round(message_time - temp_tick_time);
+			  }
+			  temp_tick_time = message_time;
+			  
 		  
 			  elapsed = 0;
+			  data_timestamp = 0;
 			  
 			  document.getElementById('console2_tick_in').innerHTML = '';
 		  
@@ -793,7 +817,6 @@
 					 //console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
 					 run_it();
-					 
 				 }
 				 
 				 

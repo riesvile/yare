@@ -3380,7 +3380,7 @@ a.index_link:hover {
 	top: 176px;
 }
 
-.bs_player_ico {
+.bs_player_ico, .bs_fragment_ico {
 	width: 12px;
 	height: 12px;
 	display: block;
@@ -3389,6 +3389,13 @@ a.index_link:hover {
 	top: 50%;
 	left: 20px;
 	transform: translateY(-50%);
+}
+
+.bs_fragment_ico {
+	width: 20px;
+	height: 20px;
+	background: url(./asset/ico_fragment.png);
+	background-size: cover;
 }
 
 .bs_player_name {
@@ -3426,10 +3433,81 @@ h3.bs_heading {
 	color: rgba(242, 246, 250, 0.55);
 }
 
+.bs_select_element {
+	width: 56px;
+	height: 56px;
+	background-color: rgba(242, 246, 250, 0.08);
+	float: left;
+	margin: 16px 8px 16px 0;
+	position: relative;
+	box-sizing: border-box;
+	border-radius: 12px;
+	cursor: pointer;
+}
 
+.bs_select_element:hover {
+	background-color: rgba(248, 242, 252, 0.14);
+}
 
+.ele_active {
+	background-color: rgba(242, 246, 250, 0.14);
+	border: 2px solid rgba(242, 246, 250, 0.4);
+}
 
+#bs_ele_p1, #bs_ele_p2, #bs_ele_frag {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateY(-50%) translateX(-50%);
+}
 
+.bs_lbl {
+	clear: both;
+	display: block;
+	font-size: 12px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.45);
+	margin-top: 16px;
+}
+
+#bs_start_boxsand {
+	position: fixed;
+	bottom: 32px;
+	left: 32px;
+	width: 160px;
+	height: 48px;
+	border: 2px solid rgba(181, 210, 255, 1);
+	border-radius: 16px;
+	background-color: rgba(181, 210, 255, 0.1);
+	color: rgba(181, 210, 255, 1);
+	line-height: 48px;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: 0.2s ease-out;
+}
+
+#bs_start_boxsand:hover {
+	background-color: rgba(104, 140, 194, 1);
+	color: rgba(255, 255, 255, 1);
+	border: 2px solid rgba(104, 140, 194, 1);
+	transition: 0.2s ease-out;
+}
+
+.bs_tick_sec_block {
+	bottom: 92px !important;
+	left: 32px !important;
+}
+
+.bs_tick_sec_block .tick_rate_select {
+	width: 52px;
+	font-size: 13px;
+}
+
+.bs_tick_sec_block #tick_sec_desc {
+	font-size: 13px;
+}
 
 /* ----- */
 

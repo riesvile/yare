@@ -184,7 +184,6 @@
 	  
   <div id="modules_plate"></div>
   
-  <div id="trailer_box"><iframe width="1120" height="630" src="https://www.youtube.com/embed/fJvHsV32Yms" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
   <div id="overlay"></div>
   <!--
   <div id="grad_top2"></div>
@@ -210,11 +209,21 @@
 	  
 	  <div id="bs_element_placer">
 	  	<h3 class="bs_heading">Select element to place</h3>
-	  
+		<div class="bs_select_element ele_active"><span id="bs_ele_p1" class="bs_player_ico"></span></div>
+		<div class="bs_select_element"><span id="bs_ele_p2" class="bs_player_ico"></span></div>
+		<div class="bs_select_element"><span id="bs_ele_frag" class="bs_fragment_ico"></span></div>
+		<span class="bs_lbl">CTRL + click to delete</span>
   	  </div>
 	  
 	  
-	  
+	  <div id="tick_sec_block" class="bs_tick_sec_block">
+		  <div id="tick_sec_desc">1 tick = 500ms</div>
+		  <div id="tick_05" class="tick_rate_select">1000</div>
+		  <div id="tick_1" class="tick_rate_select tick_rate_active">500</div>
+		  <div id="tick_2" class="tick_rate_select">250</div>
+		  <div id="tick_3" class="tick_rate_select">100</div>
+	  </div>
+	  <div id="bs_start_boxsand">Start</div>
 	  
   </div>  
 	  
@@ -225,6 +234,75 @@
   
   </body>
   <script src="../animations.js"></script>
+  <script>
+	  function tick_rate_select(e){
+	  	  	e = e || window.event;
+	  		var el_id = (e.target || e.srcElement).id;
+	  		//console.log(el_id);
+		
+	  		switch (el_id){
+	  			case 'tick_05':
+	  				//console.log('clicked rate 1');
+	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 1000ms';
+	  				document.getElementById('tick_05').classList.add('tick_rate_active');
+	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
+	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
+	  				game_tick = '1200';
+	  				break;
+	  			case 'tick_1':
+	  				//console.log('clicked rate 1');
+	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 500ms';
+	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_1').classList.add('tick_rate_active');
+	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
+	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
+	  				game_tick = '600';
+	  				break;
+	  			case 'tick_2':
+	  				//console.log('clicked rate 2');
+	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 250ms';
+	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_2').classList.add('tick_rate_active');
+	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
+	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
+	  				game_tick = '300';
+	  				break;
+	  			case 'tick_3':
+	  				//console.log('clicked rate 2');
+	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 100ms';
+	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_3').classList.add('tick_rate_active');
+	  				//document.getElementById('tick_6').classList.remove('tick_rate_active');
+	  				game_tick = '200';
+	  				break;
+	  			case 'tick_6':
+	  				//console.log('clicked rate 2');
+	  				document.getElementById('tick_sec_desc').innerHTML = '1 tick = 100ms';
+	  				document.getElementById('tick_05').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_1').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_2').classList.remove('tick_rate_active');
+	  				document.getElementById('tick_3').classList.remove('tick_rate_active');
+	  				//document.getElementById('tick_6').classList.add('tick_rate_active');
+	  				game_tick = '100';
+	  				break;
+	  			default:
+	  				console.log('defaulted');
+	  				break;
+	  		}
+	  	  }
+		  
+		  document.getElementById('tick_sec_desc').addEventListener('mouseenter', tick_options_expand, false);
+		  document.getElementById('tick_sec_block').addEventListener('mouseleave', tick_options_collapse, false);
+	  
+		  document.getElementById('tick_sec_block').addEventListener('click', tick_rate_select, false);
+		  
+  </script>
   <script src="../basics.js"></script>
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

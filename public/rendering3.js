@@ -638,7 +638,7 @@ var prev_scale = 1;
 var z_level = 1;
 var multiplier = 1;
 
-var game_tick = 600; // 1s
+
 var fps = 60;
 
 var living_spirits = [];

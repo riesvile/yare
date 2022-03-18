@@ -545,7 +545,7 @@ async function user_code(){
 
 //global
 var started = 0;
-var game_tick = 600; //
+var game_tick = 500; //
 var base_speed = 20;
 var stars = [];
 var bases = [];
@@ -873,7 +873,7 @@ class Sandbox {
 	async run() {
 		await this.loadData();
 		let pre = this.isolate.cpuTime;
-		await this.script.run(this.context, {timeout: 250});
+		await this.script.run(this.context, {timeout: 220});
 		let post = this.isolate.cpuTime;
 		console.log("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 	}
