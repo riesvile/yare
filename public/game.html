@@ -441,6 +441,7 @@
 	  function tick_loop(){
 	 	  setTimeout(function(){
 			  total_time = 0;
+			  if (incoming.t > (tick_helper + 1)) tick_helper = incoming.t;
 			  //let tick_loc = 't' + tick_counter;
 			  tick_helper++;
 	 		  active_block = 't' + tick_helper;
