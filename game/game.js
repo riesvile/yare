@@ -245,29 +245,29 @@ parentPort.on("message", message => {
 			}
 	    }
 		var all_spirits = living_spirits.length;
-		for (i = 0; i < all_spirits; i++){
-			init_data.units.push(living_spirits[i]);
-		}
+		//for (i = 0; i < all_spirits; i++){
+		//	init_data.units.push(living_spirits[i]);
+		//}
 
-		for (i = 0; i < stars.length; i++){
-			init_data.stars.push(stars[i]);
-		}
+		//for (i = 0; i < stars.length; i++){
+		//	init_data.stars.push(stars[i]);
+		//}
 		
 		for (i = 0; i < bases.length; i++){
 			init_data.bases.push(bases[i]);
 		}
 		
-		for (i = 0; i < outposts.length; i++){
-			init_data.outposts.push(outposts[i]);
-		}
-		
-		for (i = 0; i < pylons.length; i++){
-			init_data.pylons.push(pylons[i]);
-		}
-		
-		for (i = 0; i < fragments.length; i++){
-			init_data.fragments.push(fragments[i]);
-		}
+		//for (i = 0; i < outposts.length; i++){
+		//	init_data.outposts.push(outposts[i]);
+		//}
+		//
+		//for (i = 0; i < pylons.length; i++){
+		//	init_data.pylons.push(pylons[i]);
+		//}
+		//
+		//for (i = 0; i < fragments.length; i++){
+		//	init_data.fragments.push(fragments[i]);
+		//}
 		
 		init_data.players[0] = players['p1'];
 		init_data.players[1] = players['p2'];

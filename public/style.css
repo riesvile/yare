@@ -3356,6 +3356,29 @@ a.index_link:hover {
 	left: 0;
 	width: 100%;
 	height: 100%;
+	pointer-events: none;
+}
+
+#boxsand_build_ui * {
+	pointer-events: auto;
+}
+
+#bs_load_prev {
+	position: absolute;
+	top: 76px;
+	left: 32px;
+	background-color: rgba(242, 246, 250, 0.08);
+	color: rgba(242, 246, 250, 0.55);
+	cursor: pointer;
+	line-height: 35px;
+	padding: 0px 16px 1px 16px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+#bs_load_prev:hover {
+	background-color: rgba(242, 246, 250, 0.14);
+	color: rgba(242, 246, 250, 0.69);
 }
 
 .bs_player_selection {

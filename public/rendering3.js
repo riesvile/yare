@@ -50,7 +50,8 @@ function offsetUpdate(){
 	//	spirits[living_spirits[i].id].draw();
 	//}
 	
-	draw_bg_grad();
+	if (live_render == 0) draw_boxsand_bg;
+	if (live_render == 1) draw_bg_grad();
 	
 	world_stars = stars.length;
 	for (i = 0; i < world_stars; i++){
@@ -63,21 +64,25 @@ function offsetUpdate(){
 	//}
 	
 	//draw_grid();
+	//if (live_render == 0) render_state();
 	
 }
 
 function zoomUpdate(){
 	
-	
+	console.log('zooming');
 	
 	
 	//c.setTransform(1, 0, 0, 1, 0, 0);
 	c_base.setTransform(scale, 0, 0, scale, 0, 0);
 	c_base.translate(offsetX, offsetY);
-	//c.translate(offsetX, offsetY);
-	
-	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
 	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
+	
+	//if (live_render == 0){
+	//	c.setTransform(scale, 0, 0, scale, 0, 0);
+	//	c.translate(offsetX, offsetY);
+	//	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
+	//}
 	
 	//draw_bg_grad();
 	//world_spirits = living_spirits.length;
@@ -96,6 +101,8 @@ function zoomUpdate(){
 	//}
 	
 	//draw_grid();
+	
+	//if (live_render == 0) render_state();
 	
 }
 
@@ -146,10 +153,12 @@ function rgb_to_hsl(r,g,b) {
   return [h, s, l];
 }
 
+function draw_boxsand_bg(){
+	c.fillStyle = 'black';
+	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
+}
+
 function draw_bg_grad(){
-	
-	
-	
 	
 	//let corner1_parts
 	//console.log(corner1_parts);
@@ -193,7 +202,6 @@ function pinchMove(e){
     offsetX = prev_offsetX + (xxx * 1/scale) - (xxx * 1/prevScale);
     offsetY = prev_offsetY + (yyy * 1/scale) - (yyy * 1/prevScale);
 	
-	
 	zoomUpdate();
 }
 
@@ -207,7 +215,7 @@ function onPointerDown(e){
 		    pinchStart(e);
 		}
 	} catch (e) {
-		//console.log(e);
+		console.log(e);
 	}
 	
 	//console.log(e);
@@ -362,6 +370,11 @@ function getMousePos(e) {
 }
 
 function fill_hover_thing(xx, yy, board_xx, board_yy){
+	if (live_render == 0){
+		//console.log('xx, yy = ' + xx + ', ' + yy);
+		//console.log('board_xx, board_yy = ' + board_xx + ', ' + board_yy);
+		//return;
+	}
 	
 	try {
 		var hoveroid = document.getElementById('game_hover');
@@ -661,6 +674,11 @@ var shapes = {};
 var players = {};
 colors['color1'] = 'rgba(128,140,255,1)';
 colors['color2'] = 'rgba(232,97,97,1)';
+colors['neutral'] = 'rgba(160, 168, 180, 1)';
+shapes['shape1'] = 'circles';
+shapes['shape2'] = 'circles';
+players['player1'] = 'pl1';
+players['player2'] = 'pl2';
 
 var corner1_parts = colors['color1'].match(/[.?\d]+/g);
 var corner2_parts = colors['color2'].match(/[.?\d]+/g);
@@ -827,7 +845,7 @@ function game_over(winner){
   			  	  document.getElementById('player2_rating').innerHTML = p222_rating + p222_delta_string;
   	    	  })
   	          .catch(err => {
-  	    		  //console.log(err);
+  	    		  console.log(err);
   	    	  });
 			
 		  }, 1000);
@@ -835,7 +853,7 @@ function game_over(winner){
 	    	
   	  })
         .catch(err => {
-  		  //console.log(err);
+  		  console.log(err);
   	  });
 	
 	if (tutorial_phase > 1){
@@ -1479,15 +1497,16 @@ class Base {
 		if (this.shape == 'triangles') this.energy_capacity = 600;
 		this.control = player;
 		//this.color = color;
-		if (this.control == pla1) this.color = colors['color1'];
-		if (this.control == pla2) this.color = colors['color2'];
+		if (this.control == players['player1']) this.color = colors['color1'];
+		if (this.control == players['player2']) this.color = colors['color2'];
 		if (this.control == '') this.color = "rgba('155, 155, 155, 0.5')";
+		console.log(this.color);
 		this.color_parts = color.match(/[.?\d]+/g);
 		this.color_hsl = rgb_to_hsl(this.color_parts[0], this.color_parts[1], this.color_parts[2]);
 		this.current_spirit_cost = 100;
 		
-		if (this.control == pla1) this.shape = shapes['shape1'];
-		if (this.control == pla2) this.shape = shapes['shape2'];
+		if (this.control == players['player1']) this.shape = shapes['shape1'];
+		if (this.control == players['player2']) this.shape = shapes['shape2'];
 		if (this.control == '') this.shape = 'neutral';
 		
 		
@@ -1500,11 +1519,11 @@ class Base {
 	
 	draw(cntrl = '') {
 		//console.log(this.control);
-		if (cntrl == pla1){
+		if (cntrl == players['player1']){
 			this.color = colors['color1'];
 			this.shape = shapes['shape1'];
 		}
-		if (cntrl == pla2){
+		if (cntrl == players['player2']){
 			this.color = colors['color2'];
 			this.shape = shapes['shape2'];
 		} 
@@ -1793,8 +1812,8 @@ class Outpost {
 		this.range = 400;
 		this.control = control;
 		
-		if (this.control == pla1) this.color = colors['color1'];
-		if (this.control == pla2) this.color = colors['color2'];
+		if (this.control == players['player1']) this.color = colors['color1'];
+		if (this.control == players['player2']) this.color = colors['color2'];
 		if (this.control == '') this.color = "rgba(89, 82, 108, 1)";
 		
 		
@@ -1802,8 +1821,8 @@ class Outpost {
 	}
 	
 	draw(enrg, cntrl = '') {
-		if (cntrl == pla1) this.color = colors['color1'];
-		if (cntrl == pla2) this.color = colors['color2'];
+		if (cntrl == players['player1']) this.color = colors['color1'];
+		if (cntrl == players['player2']) this.color = colors['color2'];
 		if (cntrl == '') this.color = "rgba(89, 82, 108, 1)";
 		
 		this.energy = enrg;
@@ -1897,8 +1916,8 @@ class Pylon {
 		this.energy_capacity = 1000;
 		this.control = control;
 		
-		if (this.control == pla1) this.color = colors['color1'];
-		if (this.control == pla2) this.color = colors['color2'];
+		if (this.control == players['player1']) this.color = colors['color1'];
+		if (this.control == players['player2']) this.color = colors['color2'];
 		if (this.control == '') this.color = "rgba(89, 82, 108, 1)";
 		
 		
@@ -1906,8 +1925,8 @@ class Pylon {
 	}
 	
 	draw(enrg, cntrl = '') {
-		if (cntrl == pla1) this.color = colors['color1'];
-		if (cntrl == pla2) this.color = colors['color2'];
+		if (cntrl == players['player1']) this.color = colors['color1'];
+		if (cntrl == players['player2']) this.color = colors['color2'];
 		if (cntrl == '') this.color = "rgba(89, 82, 108, 1)";
 		
 		this.energy = enrg;
@@ -2140,7 +2159,8 @@ function render_state(timestamp){
 	c.setTransform(scale, 0, 0, scale, 0, 0);
 	c.translate(offsetX, offsetY);
 	
-	draw_bg_grad();
+	if (live_render == 0) draw_boxsand_bg;
+	if (live_render == 1) draw_bg_grad();
 	
 	if (panning == 1){
 		offsetUpdate();
@@ -2158,6 +2178,8 @@ function render_state(timestamp){
 	} catch (e) {
 		console.log(e);
 	}
+	
+	try {
 	
 	for (i = 0; i < all_spirits.length; i++){
 		if (spirits[all_spirits[i]].player_id == pla1){
@@ -2180,6 +2202,10 @@ function render_state(timestamp){
 			
 		}
 		spirits[all_spirits[i]].draw();
+	}
+	
+	} catch(e){
+		console.log(e);
 	}
 	
 	
@@ -2213,11 +2239,13 @@ function render_state(timestamp){
 					}
 				    // the variable is defined
 				} else {
-					location.reload();
+					//location.reload();
 				}
 				
 		}
 	}
+	
+try{
 	var energy_blocks = game_blocks[active_block].e;
 	for (i = 0; i < energy_blocks.length; i++){
 		//console.log(energy_blocks[i]);
@@ -2271,8 +2299,9 @@ function render_state(timestamp){
 	
 	shouting_count_p1 = 0;
 	shouting_count_p2 = 0;
-	
-	let bases_def_status = [];
+} catch (e){
+	console.log(e);
+}
 	
 	//let b1_def_status = 0
 	//let b2_def_status = 0
@@ -2281,6 +2310,8 @@ function render_state(timestamp){
 	//if (game_blocks[active_block].b1[2] > 0) b1_def_status = 1;
 	//if (game_blocks[active_block].b2[2] > 0) b2_def_status = 1;
 	//if (game_blocks[active_block].b3[2] > 0) b3_def_status = 1;
+	
+	let bases_def_status = [];
 	
 	for (let b = 0; b < bases.length; b++){
 		bases_def_status[b] = 0;
@@ -2407,11 +2438,12 @@ function render_state(timestamp){
 	}
 	
 	
+	//if (live_render == 1){
+		setTimeout(() => {
+		    requestAnimationFrame(render_state);
+		}); //game_tick?
+	//}
 	
-	//console.log(spirits);
-	setTimeout(() => {
-	    requestAnimationFrame(render_state);
-	}); //game_tick?
 }
 
 

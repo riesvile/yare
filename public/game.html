@@ -458,7 +458,7 @@
 				  tick_local++;
 				  if (tick_local > incoming.t) tick_local--;
 				  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
-			  }, tick_rate);
+			  }, game_tick);
 			  
 			  render_state();
 			  
@@ -541,7 +541,7 @@
 	  
 	  var dragging_timeline = 0;
 	  
-	  var tick_rate = 500;
+	  //var tick_rate = 500;
 	  
 	  var x = 0;
 	  var y = 0;
@@ -596,6 +596,8 @@
 	  var view_set = 0;
 	  var offsetX_adjust = 0;
 	  var offsetY_adjust = 0;
+	  
+	  var live_render = 1;
 	  
 	  var osys = getOS();
 	  
