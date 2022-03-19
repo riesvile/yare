@@ -438,56 +438,31 @@
 		  editor.setValue(code_code, 1);
 	  }
 	  
-	  function tick_loop(){
-	 	  setTimeout(function(){
-			  total_time = 0;
-			  if (incoming.t > (tick_helper + 1)) tick_helper = incoming.t;
-			  //let tick_loc = 't' + tick_counter;
-			  tick_helper++;
-	 		  active_block = 't' + tick_helper;
-			  console.log('incoming.t = ' + incoming.t);
-			  console.log('calling ' + (tick_helper + 1) + ' in ' + game_tick + 'ms');
-			  tick_loop();
-	 	  }, game_tick);
-	  }
-	  
 	  function run_it(){
 		  
 		  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
 			  game_running = 1;
-			  //tick_local = tick_counter;
-			  //active_block = 't' + (tick_local);
-			  ////console.log('active block = ' + active_block);
-			  //setInterval(function(){ 
-			  //	  // change to tick_counter (not - 1)
-			  //	  //console.log('local tick = ' + tick_local);
-			  //	  //console.log('incoming.t = ' + incoming.t);
-			  //	  
-			  //	  
-			  //	  active_block = 't' + (tick_local);
-			  //	  console.log('active block = ' + active_block);
-			  //	  console.log('incoming.t =   ' + incoming.t);
-			  //	  total_time = 0;
-			  //	  tick_local++;
-			  //	  if (tick_local > incoming.t) tick_local--;
-			  //	  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
-			  //}, tick_rate);
-			  //
-			  console.log('tick_counter = ' + tick_counter);
-			  console.log('incoming.t = ' + incoming.t);
-			  tick_helper = tick_counter;
-			  active_block = 't' + tick_counter;
+			  tick_local = tick_counter;
+			  active_block = 't' + (tick_local);
+			  //console.log('active block = ' + active_block);
+			  setInterval(function(){ 
+				  // change to tick_counter (not - 1)
+				  //console.log('local tick = ' + tick_local);
+				  //console.log('incoming.t = ' + incoming.t);
+				  
+				  
+				  active_block = 't' + (tick_local);
+				  console.log('active block = ' + active_block);
+				  console.log('incoming.t =   ' + incoming.t);
+				  total_time = 0;
+				  tick_local++;
+				  if (tick_local > incoming.t) tick_local--;
+				  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
+			  }, tick_rate);
+			  
 			  render_state();
 			  
-			  
-		 	  tick_loop();
 		  }
-		  
-
-		  //console.log('tick_loc = ' + tick_loc);
-		  //console.log('incoming.t = ' + incoming.t);
-		  
-		  
 	  }
 	  
 	  function taylor_UI(){
@@ -567,8 +542,6 @@
 	  var dragging_timeline = 0;
 	  
 	  var tick_rate = 500;
-	  var game_tick = 500; // 1s
-	  var game_tick_target = 500;
 	  
 	  var x = 0;
 	  var y = 0;
@@ -610,14 +583,9 @@
 	  var game_running = 0;
 	  var tick_counter = 0;
 	  var tick_local = 0;
-	  var tick_helper = 0;
-	  var tick_buffer = 0;
+	  var game_tick = 500;
 	  var total_time = 0;
 	  var elapsed = 0;
-	  var data_timestamp = 0;
-	  var message_time = 0;
-	  var temp_tick_time = 0;
-	  var incoming_diff = 0;
 	  var prev = 0;
 	  
 	  var cnsl = [];
@@ -655,58 +623,13 @@
 		  
 			  energy_processed = {};
 			  base_drawn = {};
-			  
-		 	  
-			  
-			  
-			  message_time = performance.now();
-			  if (temp_tick_time != 0){
-				  incoming_diff = Math.round(message_time - temp_tick_time);
-				  if (incoming_diff < game_tick_target){
-					  game_tick = game_tick_target;
-					  if (incoming_diff > 100) tick_buffer += (game_tick_target - incoming_diff);
-				  } else if (incoming_diff > (game_tick_target + 50)){
-					  let temp_game_tick = incoming_diff - tick_buffer;
-					  if (temp_game_tick >= game_tick_target) {
-						  if (temp_game_tick >= incoming_diff){
-							  temp_game_tick = incoming_diff;
-							  tick_buffer += (game_tick_target - incoming_diff);
-						  } else {
-							  game_tick = temp_game_tick;
-							  tick_buffer = 0;
-						  }
-					  } else {
-						  game_tick = game_tick_target;
-						  tick_buffer -= (incoming_diff - game_tick_target);
-					  }
-				  } else {
-					  game_tick = incoming_diff;
-					  //tick_buffer += (game_tick_target - incoming_diff);
-				  }
-				  
-				  if (tick_buffer > 200){
-					  game_tick -= 10;
-					  tick_buffer -= 10;
-				  }
-				  
-				  console.log('diff = ' + incoming_diff);
-				  console.log('buff = ' + tick_buffer);
-			  }
-			  temp_tick_time = message_time;
-			  
 		  
 			  elapsed = 0;
-			  data_timestamp = 0;
 			  
 			  document.getElementById('console2_tick_in').innerHTML = '';
 		  
 			  try {
-				  
-			 	  //setTimeout(function(){
-			 	  //	  run_next_tick = 1;
-			 	  //}, game_tick_target);
-				  
-				let message = JSON.parse(event.data);
+				 let message = JSON.parse(event.data);
 				if(message.meta == 'initiate'){
 					initiate(message.data);
 					return;
@@ -872,6 +795,7 @@
 					 //console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
 					 run_it();
+					 
 				 }
 				 
 				 
