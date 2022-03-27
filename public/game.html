@@ -658,7 +658,6 @@
 				 
 				 if (tick_counter > 1){
 					 //game_blocks['t' + tick_counter] = incoming;
-					 //console.log(game_blocks);
 					 
 					 game_blocks['t' + tick_counter] = {
 						 'p1': {},
@@ -682,9 +681,9 @@
 					 
 					 
 					 for (i = 0; i < incoming.p1.length; i++){
-						 var spir_id = incoming.p1[i][0];
+						 var spir_id = incoming.pl1 + '_' + incoming.p1[i][0];
 						 game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3], incoming.p1[i][4]];
-						 game_blocks['t' + tick_counter].units.push(incoming.p1[i][0]);
+						 game_blocks['t' + tick_counter].units.push(incoming.pl1 + '_' + incoming.p1[i][0]);
 						 //console.log('previous tick');
 						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
 							 //console.log('location');
@@ -727,9 +726,9 @@
 					 }
 					 
 					 for (j = 0; j < incoming.p2.length; j++){
-						 var spir_id = incoming.p2[j][0];
+						 var spir_id = incoming.pl2 + '_' + incoming.p2[j][0];
 						 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3], incoming.p2[j][4]];
-						 game_blocks['t' + tick_counter].units.push(incoming.p2[j][0]);
+						 game_blocks['t' + tick_counter].units.push(incoming.pl2 + '_' + incoming.p2[j][0]);
 						 
 						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
 							 //console.log('location');

@@ -194,27 +194,89 @@
   <canvas id='base_canvas'></canvas>
 	  
 	  
+  <div id="player_selection_wrap">
+	  
+	  <span id="ps_pl_lbl" class="ps_p_lbl">Player 1</span>
+	  
+	  <div id="ps_main_options">
+		  <div id="ps_live-input" class="ps_card ps_main_card card_active">
+			  <div class="ps_shape_in_card_wrap">
+				  <div class="ps_shape_option ps_shape_circles ps_shape_active"><span id="live_shape_circles" class="ico_sh_circles"></span></div>
+				  <div class="ps_shape_option ps_shape_squares"><span id="live_shape_squares" class="ico_sh_squares"></span></div>
+				  <div class="ps_shape_option ps_shape_triangles"><span id="live_shape_triangles" class="ico_sh_triangles"></span></div>
+			  </div>
+			  <h3 class="ps_p_name">You · Live input</h3>
+		  </div>
+		  <div id="ps_upload-bot" class="ps_card ps_main_card">
+			  <div class="ps_shape_in_card_wrap">
+				  <div class="ps_shape_option ps_shape_circles ps_shape_active"><span id="upload_shape_circles" class="ico_sh_circles"></span></div>
+				  <div class="ps_shape_option ps_shape_squares"><span id="upload_shape_squares" class="ico_sh_squares"></span></div>
+				  <div class="ps_shape_option ps_shape_triangles"><span id="upload_shape_triangles" class="ico_sh_triangles"></span></div>
+			  </div>
+	  		  <label id="upload_bot_box" class="upload_bot_label">
+	  			  <input type="file" id="bot_script" class="upload_bot" accept=".js">
+	  			  <span id="abcdefg" class="bot_upload_btn">Upload file</span>
+	  		  </label>
+			  <h3 id="bot_file_name" class="ps_p_name">Upload your bot</h3>
+		  </div>
+	  </div>
+	  
+	  <div id="ps_bot_options">
+		  <div id="ps_dumb-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_circles"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">dumb-bot</h3>
+			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
+		  </div>
+		  <div id="ps_medium-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_circles"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">medium-bot</h3>
+			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
+		  </div>
+		  <div id="ps_hard-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">hard-bot</h3>
+			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
+		  </div>
+		  <div id="ps_lego-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_squares"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">lego-bot</h3>
+			  <p class="ps_p_desc">Rush bot. Goes after your throat right away.</p>
+		  </div>
+		  
+		  
+	  </div>
+	  
+  </div>
+	  
   <div id="boxsand_build_ui">
 	  
 	  <div id="bs_load_prev">Load previous state</div>
 	  
 	  <div id="boxsand_p1" class="bs_player_selection">
-		  <span id="bs_ico_p1" class="bs_player_ico"></span>
-		  <span id="bs_p1_name" class="bs_player_name"><span class='lowlight'>Player 1 · </span>You</span>
+		  <span id="bs_ico_pl1" class="bs_player_ico ico_circles" style="background-color: rgba(128,140,255,1)"></span>
+		  <span id="bs_pl1_name" class="bs_player_name"><span class='lowlight'>Player 1 · </span>You</span>
 		  <span class="bs_player_dropdown"></span>
 	  </div>
 	  <div id="boxsand_p2" class="bs_player_selection">
-		  <span id="bs_ico_p1" class="bs_player_ico"></span>
-		  <span id="bs_p1_name" class="bs_player_name"><span class='lowlight'>Player 2 · </span>You</span>
+		  <span id="bs_ico_pl2" class="bs_player_ico ico_triangles" style="background-color: rgba(232,97,97,1)"></span>
+		  <span id="bs_pl2_name" class="bs_player_name"><span class='lowlight'>Player 2 · </span>You</span>
 		  <span class="bs_player_dropdown"></span>
 	  </div>
 	  
 	  <div id="bs_element_placer">
 	  	<h3 class="bs_heading">Select element to place</h3>
-		<div class="bs_select_element ele_active"><span id="bs_ele_p1" class="bs_player_ico"></span></div>
-		<div class="bs_select_element"><span id="bs_ele_p2" class="bs_player_ico"></span></div>
-		<div class="bs_select_element"><span id="bs_ele_frag" class="bs_fragment_ico"></span></div>
-		<span class="bs_lbl">CTRL + click to delete</span>
+		<div id="bs_placing_pl1" class="bs_select_element ele_active"><span id="bs_ele_pl1" class="bs_player_ico ico_circles" style="background-color: rgba(128,140,255,1)"></span></div>
+		<div id="bs_placing_pl2" class="bs_select_element"><span id="bs_ele_pl2" class="bs_player_ico ico_triangles" style="background-color: rgba(232,97,97,1)"></span></div>
+		<div id="bs_placing_frag" class="bs_select_element"><span id="bs_ele_frag" class="bs_fragment_ico"></span></div>
+		<span class="bs_lbl">SHIFT + click to delete</span>
   	  </div>
 	  
 	  
@@ -236,14 +298,22 @@
   
   </body>
   <script src="../animations.js"></script>
+  <script src="../boxsand.js"></script>
   <script>
+	  
+	  var shape_match = {
+		  'dumb-bot': 'circles',
+		  'medium-bot': 'circles',
+		  'hard-bot': 'triangles',
+		  'lego-bot': 'squares'
+	  }
 	  
 	  var dragging_timeline = 0;
 	  var live_render = 0;
 	  
-	  var col1 = "rgba('128,140,255,1')";
-	  var col2 = "rgba('232,97,97,1')";
-	  var col_neut = "rgba('160,168,180,1')";
+	  var col1 = "rgba(128,140,255,1)";
+	  var col2 = "rgba(232,97,97,1)";
+	  var col_neut = "rgba(160,168,180,1)";
 	  
 	  var x = 0;
 	  var y = 0;
@@ -264,17 +334,41 @@
 	  var total_time = 0;
 	  var prev = 0;
 	  var game_tick = 500;
+	  var start_tick = 0;
 	  
 	  var view_set = 0;
 	  var offsetX_adjust = 0;
 	  var offsetY_adjust = 0;
 	  
+	  var currently_picking = 'pl1';
+	  var currently_placing = 'pl1';
+	  
+	  var upload_bot_file = {
+		  pl1: '',
+		  pl2: ''
+	  };
+	  var upload_bot_shape = {
+		  pl1: 'circles',
+		  pl2: 'circles'
+	  };
+	  var live_bot_shape = {
+		  pl1: 'circles',
+		  pl2: 'circles'
+	  };
+	  var selected_player = {
+		  pl1: 'live-input',
+		  pl2: 'dumb-bot'
+	  };
+	  
+	  
 	  
 	  var boxsanded = {
-		  pl1: 'pl1',
-		  pl2: 'pl2',
+		  pl1: 'live-input',
+		  pl2: 'dumb-bot',
+		  pl1_sh: 'squares',
+		  pl2_sh: 'circles',
 		  bases: [
-			  ['base_zxq', [-650, -480], 0, 'pl1', col1, 'circles'],
+			  ['base_zxq', [-650, -480], 0, 'pl1', col1, 'squares'],
 			  ['base_a2c', [480, 650], 0, 'pl2', col2, 'circles'],
 			  ['base_p89', [-800, 800], 0, '', col_neut, 'neutral'],
 			  ['base_nua', [860, -860], 0, '', col_neut, 'neutral']
@@ -287,153 +381,46 @@
 		  ],
 		  outposts: [['outpost_mdo', [-230, 230], 0]],
 		  pylons: [['pylon_u3p', [228, -228], 0]],
-		  p1_units: [[]],
-		  p2_units: [[]]
+		  fragments: [],
+		  p1_units: [],
+		  p2_units: [],
+		  pl1_uploaded_code: '',
+		  pl1_uploaded_name: '',
+		  pl2_uploaded_code: '',
+		  pl2_uploaded_name: '',
+		  p1_def: 1,
+		  p2_def: 1,
+		  start_tick: start_tick
 	  }
 	  
 	  
-	  function set_stage(){
-		  scale = 0.5;
-		  prevScale = scale;
-		  multiplier = 1 / scale;
-		  
-		  let brow_width = window.innerWidth || document.documentElement.clientWidth || 
-document.body.clientWidth;
-		  let brow_height = window.innerHeight || document.documentElement.clientHeight || 
-document.body.clientHeight;
-		
-
-		  offsetX = brow_width;
-		  offsetY = brow_height;
-		  
-		  game_blocks[active_block] = {
-			 'p1': {},
-			 'p2': {},
-			 'b1': [0, 50, 0, 'pl1'],
-			 'b2': [0, 50, 0, 'pl2'],
-			 'b3': [0, 0, 0, ''],
-			 'b4': [0, 0, 0, ''],
-			 'e': [],
-			 's': [],
-			 'st': [0, 0, 0, 0],
-			 'ou': [0, ''],
-			 'py': [0, ''],
-			 'ef': [],
-			 'units': [],
-			 'g1': [],
-			 'g2': []
-		  }
-		  
-		  
-		  let bas = boxsanded['bases'];
-		  let sta = boxsanded['stars'];
-		  let out = boxsanded['outposts'];
-		  let pyl = boxsanded['pylons'];
-		  
-		  for (let b of bas){
-			  console.log(b);
-			  base_lookup[b[0]] = new Base(b[0], b[1], b[2], b[3], b[4], b[5]);
-			  base_lookup[b[0]].draw();
-		  }
-		  
-		  for (let s of sta){
-			  star_lookup[s[0]] = new Star(s[0], s[1], s[2], s[3]);
-			  star_lookup[s[0]].draw();
-		  }
-		  
-		  for (let o of out){
-			  outpost_lookup[o[0]] = new Outpost(o[0], o[1], o[2]);
-			  outpost_lookup[o[0]].draw();
-		  }
-		  
-		  for (let p of pyl){
-			  pylon_lookup[p[0]] = new Pylon(p[0], p[1], p[2]);
-			  pylon_lookup[p[0]].draw();
-		  }
-		  
-		  render_state();
-		  offsetUpdate();
-		  
-		  //base_lookup['base_zxq'] = new Base('base_zxq', [-650, -480], 10, 'pl1', colors['color1'], shapes['shape1']);
-		  //base_lookup['base_a2c'] = new Base('base_a2c', [480, 650], 10, 'pl2', colors['color2'], shapes['shape2']);
-		  //base_lookup['base_p89'] = new Base('base_p89', [-800, 800], 10, '', colors['neutral'], 'neutral');
-		  //base_lookup['base_nua'] = new Base('base_nua', [860, -860], 10, '', colors['neutral'], 'neutral');
-	  	  //star_lookup['star_zxq'] = new Star('star_zxq', [-1200, -340], 50, 140);
-	  	  //star_lookup['star_a2c'] = new Star('star_a2c', [340, 1200], 50, 140);	
-	  	  //star_lookup['star_p89'] = new Star('star_p89', [-540, 540], 50, 140);
-	  	  //star_lookup['star_nua'] = new Star('star_nua', [420, -420], 50, 690);
-	  	  //outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [-230, 230], 0);	
-	  	  //pylon_lookup['pylon_u3p'] = new Pylon('pylon_u3p', [228, -228], 0);
-		  //
-		  //base_lookup['base_zxq'].draw();
-		  //base_lookup['base_a2c'].draw();
-		  //star_lookup['star_zxq'].draw();
-		  //star_lookup['star_a2c'].draw();
-		  //star_lookup['star_p89'].draw();
-		  //star_lookup['star_nua'].draw();
-		  //star_lookup['star_zxq'].draw_energy();
-		  //star_lookup['star_a2c'].draw_energy();
-		  //star_lookup['star_p89'].draw_energy();
-		  //star_lookup['star_nua'].draw_energy();
-		  //outpost_lookup['outpost_mdo'].draw();
-		  //pylon_lookup['pylon_u3p'].draw();
-		  
-		  
-	  }
-	  
-	  function reset_tick_ui(){
-		  document.getElementById('tick_05').classList.remove('tick_rate_active');
-		  document.getElementById('tick_1').classList.remove('tick_rate_active');
-		  document.getElementById('tick_2').classList.remove('tick_rate_active');
-		  document.getElementById('tick_3').classList.remove('tick_rate_active');
-	  }
-	  
-	  function tick_rate_select(e){
-	  	  	e = e || window.event;
-	  		var el_id = (e.target || e.srcElement).id;
-	  		//console.log(el_id);
-		
-	  		switch (el_id){
-	  			case 'tick_05':
-					reset_tick_ui();
-	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>1000ms</span>";
-	  				document.getElementById("tick_05").classList.add("tick_rate_active");
-	  				game_tick = "1200";
-	  				break;
-	  			case "tick_1":
-	  				reset_tick_ui();
-	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>500ms</span>";
-	  				document.getElementById("tick_1").classList.add("tick_rate_active");
-	  				game_tick = "600";
-	  				break;
-	  			case "tick_2":
-	  				reset_tick_ui();
-	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>250ms</span>";
-	  				document.getElementById("tick_2").classList.add("tick_rate_active");
-	  				game_tick = "300";
-	  				break;
-	  			case "tick_3":
-	  				reset_tick_ui();
-	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>100ms</span>";
-	  				document.getElementById("tick_3").classList.add("tick_rate_active");
-	  				game_tick = "200";
-	  				break;
-	  			case "tick_6":
-	  				reset_tick_ui();
-	  				document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>50ms</span>";
-	  				//document.getElementById('tick_6').classList.add('tick_rate_active');
-	  				game_tick = '100';
-	  				break;
-	  			default:
-	  				console.log('defaulted');
-	  				break;
-	  		}
-	  	  }
 		  
 		  document.getElementById('tick_sec_desc').addEventListener('mouseenter', tick_options_expand, false);
 		  document.getElementById('tick_sec_block').addEventListener('mouseleave', tick_options_collapse, false);
-	  
 		  document.getElementById('tick_sec_block').addEventListener('click', tick_rate_select, false);
+		  
+		  document.getElementById('player_selection_wrap').addEventListener('click', player_selection_crossroad, false);
+		  document.getElementById('bs_element_placer').addEventListener('click', element_selection_crossroad, false);
+		  
+		  document.getElementById('boxsand_p1').addEventListener('click', pick_pl1, false);
+		  document.getElementById('boxsand_p2').addEventListener('click', pick_pl2, false);
+		  
+		  document.getElementById("bot_script").onchange = function(){
+		    document.getElementById("bot_file_name").textContent = this.files[0].name;
+			boxsanded[currently_picking + "_uploaded_name"] = this.files[0].name;
+			getBase64(this.files[0]).then(
+				data => {
+					console.log(data);
+					boxsanded[currently_picking + "_uploaded_code"] = atob(data.split(',')[1]);
+				})
+  		        .catch(err => {
+  				    console.log(err);
+  			    });
+			set_sel(currently_picking, 'ps_upload-bot');
+		  }
+		  
+		  
+		  
 		  
 		  
 		  window.onresize = function()
@@ -450,6 +437,14 @@ document.body.clientHeight;
 		      canvas2.style.height = window.innerHeight;
 			  offsetUpdate();
 		  }
+		  
+		  
+		  
+		  
+		  
+		  get_pick_state('pl1');
+		  get_pick_state('pl2');
+		  
 		  
   </script>
   <script src="../basics.js"></script>

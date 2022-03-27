@@ -70,7 +70,7 @@ function offsetUpdate(){
 
 function zoomUpdate(){
 	
-	console.log('zooming');
+	//console.log('zooming');
 	
 	
 	//c.setTransform(1, 0, 0, 1, 0, 0);
@@ -899,7 +899,6 @@ function draw_grid(){
 }
 
 function resolve_energy_point(energy_point){
-	//console.log(energy_point);
 	if (Array.isArray(energy_point)){
 		//console.log('energy_point is array');
 		return energy_point;
@@ -913,6 +912,7 @@ function resolve_energy_point(energy_point){
 		return pylon_lookup[energy_point];
 	} else {
 		return spirits[energy_point];
+		console.log(spirits[energy_point]);
 	}
 }
 
@@ -1019,8 +1019,7 @@ class Spirit {
 	}
 
 	move(origin, incr) {
-	//incr is array [incrX, incrY]
-		//console.log('move_called');
+		if (live_render == 0) return;
 		
 		if (Math.abs(incr[0]) >= 50 && Math.abs(incr[1]) >= 50){
 			//console.log('spirit jumping');
@@ -1043,6 +1042,7 @@ class Spirit {
 	}
 	
 	energize(prev_energy, new_energy, hp){
+		if (live_render == 0) return;
 		if (this.exploding == 1){
 			setTimeout(function(){
 				this.hp = 0;
@@ -1242,6 +1242,10 @@ class Spirit {
 			} else {
 				drawing_size = 8 + ((this.size - 11) / 4);
 			}
+			
+			//console.log('this e = ' + this.energy);
+			//console.log('this e_c = ' + this.energy_capacity);
+			//console.log('spirit_%_en = ' + spirit_percent_energy);
 			
 			try {
 				gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 5);
@@ -1499,7 +1503,7 @@ class Base {
 		//this.color = color;
 		if (this.control == players['player1']) this.color = colors['color1'];
 		if (this.control == players['player2']) this.color = colors['color2'];
-		if (this.control == '') this.color = "rgba('155, 155, 155, 0.5')";
+		if (this.control == '') this.color = "rgba(155, 155, 155, 0.5)";
 		console.log(this.color);
 		this.color_parts = color.match(/[.?\d]+/g);
 		this.color_hsl = rgb_to_hsl(this.color_parts[0], this.color_parts[1], this.color_parts[2]);
@@ -1529,7 +1533,7 @@ class Base {
 		} 
 		if (cntrl == ''){
 			this.shape = 'neutral';
-			this.color = "rgba('155, 155, 155, 0.5')";
+			this.color = "rgba(155, 155, 155, 0.5)";
 		} 
 		
 		var color_parts = this.color.match(/[.?\d]+/g);
@@ -1542,6 +1546,7 @@ class Base {
 		var production_percent = this.energy / this.current_spirit_cost;
 		var true_ratio = production_percent;
 		if (production_percent > 1) production_percent = 1;
+		if (production_percent < 0) production_percent = 0;
 		if (this.energy <= 0) this.energy = 0.1;
 		
 		if (this.shape == 'circles'){
@@ -2138,7 +2143,7 @@ function render_state(timestamp){
 		dumb_cycler++;
 		//console.log(total_time);
 	
-		total_time += elapsed;
+		if (live_render == 1) total_time += elapsed;
 	}
 	
 	//console.log('total_time = ' + total_time);
@@ -2182,7 +2187,7 @@ function render_state(timestamp){
 	try {
 	
 	for (i = 0; i < all_spirits.length; i++){
-		if (spirits[all_spirits[i]].player_id == pla1){
+		if (spirits[all_spirits[i]].player_id == players['player1']){
 			try {
 				spirits[all_spirits[i]].move([game_blocks[active_block].p1[all_spirits[i]][0][4], game_blocks[active_block].p1[all_spirits[i]][0][5]], [game_blocks[active_block].p1[all_spirits[i]][0][2], game_blocks[active_block].p1[all_spirits[i]][0][3]]);
 				spirits[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2], game_blocks[active_block].p1[all_spirits[i]][3]);
@@ -2191,7 +2196,7 @@ function render_state(timestamp){
 				console.log(e)
 			}
 			
-		} else if (spirits[all_spirits[i]].player_id == pla2){
+		} else if (spirits[all_spirits[i]].player_id == players['player2']){
 			try {
 				spirits[all_spirits[i]].move([game_blocks[active_block].p2[all_spirits[i]][0][4], game_blocks[active_block].p2[all_spirits[i]][0][5]], [game_blocks[active_block].p2[all_spirits[i]][0][2], game_blocks[active_block].p2[all_spirits[i]][0][3]]);
 				spirits[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2], game_blocks[active_block].p2[all_spirits[i]][3]);
@@ -2473,6 +2478,7 @@ function lerp(a, b, t) {
 
 
 Spirit.prototype.move = function() {
+	if (live_render == 0) return;
 	window._move.apply(this, arguments);
 	
 	const NOISESPEED = 10000; // minimum time

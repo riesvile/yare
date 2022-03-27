@@ -2642,11 +2642,13 @@ if (!isMainThread){
 			var p2_living = 0;
 			for (i = 0; i < living_spirits.length; i++){
 				spt = living_spirits[i];
+				let cutoff_parts = spt.id.split('_');
+				let cutoff_id = cutoff_parts.pop();
 				//console.log(spt);	
 				if (spt.player_id == players['p2']){
 					
 					//render3 part
-					render_data3.p2.push([spt.id, spt.position, spt.size, spt.energy, spt.hp]);
+					render_data3.p2.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.size, spt.energy, spt.hp]);
 
 					if (spt.hp == 1){
 						p2_living++;
@@ -2656,7 +2658,7 @@ if (!isMainThread){
 				} else if (spt.player_id == players['p1']) {
 					
 					//render3 part
-					render_data3.p1.push([spt.id, spt.position, spt.size, spt.energy, spt.hp]);
+					render_data3.p1.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.size, spt.energy, spt.hp]);
 
 					if (spt.hp == 1){
 						p1_living++;
@@ -2757,6 +2759,8 @@ if (!isMainThread){
 			} else {
 				render_data3 = {
 					't': 0,
+					'pl1': players['p1'],
+					'pl2': players['p2'],
 					'p1': [],
 					'p2': [],
 					'b1': [],

@@ -1173,12 +1173,12 @@ document.getElementById('profile_links').addEventListener('click', settings_cros
 
 document.getElementById("file_script_server").onchange = function(){
   document.getElementById("server_file_name").textContent = this.files[0].name;
-document.getElementById("modules_server_message").style.opacity = 0;
+  document.getElementById("modules_server_message").style.opacity = 0;
 }
 
 document.getElementById("file_script_client").onchange = function(){
   document.getElementById("client_file_name").textContent = this.files[0].name;
-document.getElementById("modules_server_message").style.opacity = 0;
+  document.getElementById("modules_server_message").style.opacity = 0;
 }
 
 
