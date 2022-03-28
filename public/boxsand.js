@@ -3,6 +3,9 @@
 function start_engine(){
 	boxsand_engine = new Worker("../boxsand-engine.js");
 	
+	pla1 = players['player1'];
+	pla2 = players['player2'];
+	
 	let cunt = 3;
 	if (boxsanded['pl1'] == 'live-input' || boxsanded['pl2'] == 'live-input') cunt = 2;
 	
@@ -18,8 +21,186 @@ function start_engine(){
 	//consume incoming data the same way as game.html?
 	boxsand_engine.onmessage = function(e) {
 		console.log('engine data');
-		console.log(e.data)
+		//console.log(e.data)
+		if (e.data.meta == 'rendering'){
+			live_render = 1;
+			render_world(e.data.incoming);
+		}
 	}
+}
+
+function render_world(dat){
+	elapsed = 0;
+	incoming = dat;
+	tick_counter = incoming.t;
+	console.log(incoming);
+	console.log('tick_counter = ' + tick_counter);
+	
+	if (tick_counter == 0){
+		game_blocks['t0'] = game_blocks[active_block];
+	}
+	
+    if (tick_counter > 1){
+	 //game_blocks['t' + tick_counter] = incoming;
+	 
+	 game_blocks['t' + tick_counter] = {
+		 'p1': {},
+		 'p2': {},
+		 'b1': [],
+		 'b2': [],
+		 'b3': [],
+		 'b4': [],
+		 'e': [],
+		 's': [],
+		 'units': [],
+		 'g1': [],
+		 'g2': []
+	 }
+	 
+	 //
+	 // Populating game_blocks
+	 //
+	 
+	 for (i = 0; i < incoming.p1.length; i++){
+		 var spir_id = incoming.pl1 + '_' + incoming.p1[i][0];
+		 game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3], incoming.p1[i][4]];
+		 game_blocks['t' + tick_counter].units.push(incoming.pl1 + '_' + incoming.p1[i][0]);
+		 //console.log('previous tick');
+		 if (game_blocks['t' + (tick_counter - 1)] != undefined){
+			 //console.log('location');
+			 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
+			 var oldLoc = [0, 0];
+			 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
+			 var oldEnergy = 0;
+			 var oldSize = 0;
+			 
+			 if (spirits[spir_id] == undefined && players['player1'] != undefined){
+				 create_spirit_p1(spir_id);
+			 }
+			 
+			 if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
+			 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
+				oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
+				oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
+				
+				game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
+				game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
+				game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
+				game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
+			 
+				game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+				game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+			 } else {
+				// new spirit instance
+				//console.log('spirit born (probably)');
+				 
+				game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
+				game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
+				game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
+				game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
+			 
+				game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+				game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+			 }
+			 
+		 }
+	 }
+	 
+	 for (j = 0; j < incoming.p2.length; j++){
+		 var spir_id = incoming.pl2 + '_' + incoming.p2[j][0];
+		 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3], incoming.p2[j][4]];
+		 game_blocks['t' + tick_counter].units.push(incoming.pl2 + '_' + incoming.p2[j][0]);
+		 
+		 if (game_blocks['t' + (tick_counter - 1)] != undefined){
+			 //console.log('location');
+			 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
+			 var oldLoc = [0, 0];
+			 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
+			 var oldEnergy = 0;
+			 var oldSize = 0;
+			 
+			 if (spirits[spir_id] == undefined && players['player2'] != undefined){
+				 create_spirit_p2(spir_id);
+				 //console.log('spirit created ' + spir_id);
+			 }
+			 
+			 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
+			 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
+				oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
+				oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
+				
+				game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
+				game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
+				game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
+				game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
+			 
+				game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+				game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+			 } else {
+				// new spirit instance
+				 //console.log('spirit born (probably)');
+				 
+				 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
+				 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
+				 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
+				 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
+			 
+				 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+				 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+			 }
+		 }
+	 }
+	 
+	 game_blocks['t' + tick_counter]['e'] = incoming.e;
+	 game_blocks['t' + tick_counter]['s'] = incoming.s;
+	 game_blocks['t' + tick_counter]['b1'] = incoming.b1;
+	 game_blocks['t' + tick_counter]['b2'] = incoming.b2;
+	 game_blocks['t' + tick_counter]['b3'] = incoming.b3;
+	 game_blocks['t' + tick_counter]['b4'] = incoming.b4;
+	 
+	 //previous energy for animation purposes
+	 game_blocks['t' + tick_counter]['b1'][4] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
+	 game_blocks['t' + tick_counter]['b2'][4] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
+	 game_blocks['t' + tick_counter]['b3'][4] = game_blocks['t' + (tick_counter - 1)]['b3'][0];
+	 game_blocks['t' + tick_counter]['b4'][4] = game_blocks['t' + (tick_counter - 1)]['b4'][0];
+	 
+	 game_blocks['t' + tick_counter]['st'] = incoming.st;
+	 game_blocks['t' + tick_counter]['ef'] = incoming.ef;
+	 
+	 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
+	 game_blocks['t' + tick_counter]['py'] = incoming.py;
+	 //console.log(incoming.py);
+	 
+	 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
+	 //console.log(game_blocks);
+	 //console.log('t' + tick_counter + ' processed');
+	 run_it();
+	 
+     }
+}
+
+function run_it(){  
+  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
+	  game_running = 1;
+	  tick_local = tick_counter;
+	  active_block = 't' + (tick_local);
+	  //console.log('active block = ' + active_block);
+	  setInterval(function(){ 
+		  // change to tick_counter (not - 1)
+		  //console.log('local tick = ' + tick_local);
+		  //console.log('incoming.t = ' + incoming.t);
+		  
+		  
+		  active_block = 't' + (tick_local);
+		  //console.log('active block = ' + active_block);
+		  //console.log('incoming.t =   ' + incoming.t);
+		  total_time = 0;
+		  tick_local++;
+		  if (tick_local > incoming.t) tick_local--;
+		  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
+	  }, game_tick);
+	  render_state();
+  }
 }
 
 	  
@@ -144,6 +325,8 @@ function update_stage(){
   
   game_blocks[active_block]['b1'][3] = players['player1'];
   game_blocks[active_block]['b2'][3] = players['player2'];
+  boxsanded['bases'][0][3] = players['player1'];
+  boxsanded['bases'][1][3] = players['player2'];
   
   if (boxsanded['p1_def']){
 	  fill_defaults(0);
@@ -538,7 +721,7 @@ function tick_rate_select(e){
 			reset_tick_ui();
 			document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>1000ms</span>";
 			document.getElementById("tick_05").classList.add("tick_rate_active");
-			game_tick = "1200";
+			game_tick = "1000";
 			break;
 		case "tick_1":
 			reset_tick_ui();
@@ -561,8 +744,8 @@ function tick_rate_select(e){
 		case "tick_6":
 			reset_tick_ui();
 			document.getElementById("tick_sec_desc").innerHTML = "1 tick = <span class='highlight'>50ms</span>";
-			//document.getElementById('tick_6').classList.add('tick_rate_active');
-			game_tick = '100';
+			document.getElementById('tick_6').classList.add('tick_rate_active');
+			game_tick = '50';
 			break;
 		default:
 			console.log('defaulted');

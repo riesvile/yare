@@ -713,9 +713,6 @@ var game_finished = 0;
 var user_error1 = [];
 var user_error2 = [];
 
-var test_s1 = {};
-var test_s2 = {};
-
 //var console1 = console;
 //var console2 = console;
 

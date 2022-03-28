@@ -286,6 +286,7 @@
 		  <div id="tick_1" class="tick_rate_select tick_rate_active">500</div>
 		  <div id="tick_2" class="tick_rate_select">250</div>
 		  <div id="tick_3" class="tick_rate_select">100</div>
+		  <div id="tick_6" class="tick_rate_select">50</div>
 	  </div>
 	  <div id="bs_start_boxsand">Start</div>
 	  
@@ -328,8 +329,15 @@
 	  var bases_queue = [];
 	  var logs = [];
 	  
+	  var pla1 = '';
+	  var pla2 = '';
+	  var game_type = '';
+	  
 	  var game_blocks = {};
 	  var active_block = 0;
+	  var game_running = 0;
+	  var tick_counter = 0;
+	  var tick_local = 0;
 	  
 	  var total_time = 0;
 	  var prev = 0;
@@ -374,10 +382,10 @@
 			  ['base_nua', [860, -860], 0, '', col_neut, 'neutral']
 		  ],
 		  stars: [
-			  ['star_zxq', [-1200, -340], 50, 140],
-			  ['star_a2c', [340, 1200], 50, 140],
-			  ['star_p89', [-540, 540], 50, 140],
-			  ['star_nua', [420, -420], 50, 690]
+			  ['star_zxq', [-1200, -340], 100, 100],
+			  ['star_a2c', [340, 1200], 100, 100],
+			  ['star_p89', [-540, 540], 0, 100],
+			  ['star_nua', [420, -420], 0, 300]
 		  ],
 		  outposts: [['outpost_mdo', [-230, 230], 0]],
 		  pylons: [['pylon_u3p', [228, -228], 0]],
@@ -388,6 +396,8 @@
 		  pl1_uploaded_name: '',
 		  pl2_uploaded_code: '',
 		  pl2_uploaded_name: '',
+		  pl1_color: "rgba(128,140,255,1)",
+		  pl2_color: "rgba(232,97,97,1)",
 		  p1_def: 1,
 		  p2_def: 1,
 		  start_tick: start_tick
