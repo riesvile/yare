@@ -14,22 +14,16 @@ const ejs = require('ejs');
 const os = require('os');
 const bcrypt = require('bcrypt');
 const pino = require('pino')
+const fs = require('fs');
 var hashRounds = 10;
 
-function pinoTransport(options) {
-	console.log(options)
-}
-
-const pinoPrettyTransport = {
-	target: 'pino-pretty',
-	options: {
-		colorize: true,
+const logger = pino({
+  transport: {
+		targets: [
+			{ target: "pino-pretty", levels: ["error", "warn", "info", "debug"]},
+			{ target: "pino/file", options: {destination: "/tmp/logs"}, levels: ["error", "warn", "info", "debug"]},
+		]
 	}
-}
-
-const logger  = pino({
-  transport: pinoTransport,
-	level: "main"
 })
 
 logger.info("Main server booting up!")
@@ -2112,6 +2106,9 @@ app.get("/admin-panel/dash", async (req,res,next) => {
 			gameServers: servers,
 			games: active_games,
 			usersInQueue: matchmaking_queue
+		},
+		serverinfo: {
+			logs: fs.readFileSync("/tmp/logs", "utf8").split("\n").reverse().slice(0, 100).reverse().join("\n")
 		}
 	})
 	res.status(200).send(rendered)

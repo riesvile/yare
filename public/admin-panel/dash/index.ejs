@@ -8,6 +8,15 @@
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="/admin-panel/dash/script.js" defer></script>
   <title>Yare - Admin panel</title>
+  <%
+    const logstringarray = serverinfo.logs.split('\n').filter(l=>l.trim().length>0);
+    const logarray = logstringarray.map(log=>JSON.parse(log))
+    const logarraystring = JSON.stringify(JSON.stringify(logarray))
+  %>
+  <script>
+    let logs = JSON.parse("<%- logarraystring.slice(1,-1) %>");
+    console.log(logs)
+  </script>
 </head>
 <body>
   <header>
@@ -72,6 +81,15 @@ Users in queue: <%= gameinfo.usersInQueue.length %>
         <h1>Queue</h1>
         <pre><% for (let user of gameinfo.usersInQueue){ %><%= [user.id, user.rating + "mmr", user.time_in_queue/1000 + "s"].join(" - ") + "\n" %><% } %></pre>
       </div>
+    </div>
+    <div class="box">
+      <h1>Logs</h1>
+<% let loglevels = {'10': 'trace','20': 'debug','30': 'info','40': 'warn','50': 'error','60': 'fatal'} %> 
+<pre>
+<% for (let log of logarray){ %>
+<%= log.time %> - <%= loglevels[log.level] %> - <%= log.msg %>
+<% } %> 
+</pre>
     </div>
   </div>
 </body>
