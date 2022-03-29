@@ -3452,6 +3452,7 @@ a.index_link:hover {
 	font-size: 12px;
 	font-weight: 500;
 	border-radius: 12px;
+	display: none;
 }
 
 #bs_load_prev:hover {
@@ -3626,6 +3627,11 @@ h3.bs_heading {
 .bs_tick_sec_block #tick_sec_desc {
 	font-size: 13px;
 	color: rgba(242, 246, 250, 0.49);
+}
+
+#stop_bs {
+	color: rgba(254, 183, 183, 1);
+	display: none;
 }
 
 /* - */

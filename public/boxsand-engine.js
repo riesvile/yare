@@ -2,6 +2,8 @@
 
 //globals
 
+var client = {};
+
 const min_beam = 200;
 const h_square = min_beam / Math.sqrt(2);
 var started = 0;
@@ -53,6 +55,8 @@ var memory1 = {};
 var memory2 = {};
 
 var game_file = [];
+
+var stop_engine = 1;
 
 
 var yd = {};
@@ -2021,11 +2025,10 @@ function run_code(){
 	all_commands = {};
 	
 	try {
-		Function(player_codes['pl1_code'] + "memory1 = memory;")(memory = memory1, spirits = rawSpirits1, my_spirits = my_spirits1, this_player_id = players['p1']);
-		//console.log('memory1');
-		//console.log(memory1);
+		Function(player_codes['pl1_code'] + "memory1 = memory;")(
+			memory = memory1, spirits = rawSpirits1, my_spirits = my_spirits1, this_player_id = players['p1'], ttick = 't' + tick
+		);
 		all_commands[players['p1']] = yd.commands;
-		//Function(player_codes['pl1_code'])();
 	} catch (e){
 		console.log(e);
 	}
@@ -2033,11 +2036,10 @@ function run_code(){
 	
 	
 	try {
-		Function(player_codes['pl2_code'] + "memory2 = memory;")(memory = memory2, spirits = rawSpirits2, my_spirits = my_spirits2, this_player_id = players['p2']);
-		console.log('memory2');
-		console.log(memory2);
+		Function(player_codes['pl2_code'] + "memory2 = memory;")(
+			memory = memory2, spirits = rawSpirits2, my_spirits = my_spirits2, this_player_id = players['p2'], ttick = 't' + tick
+		);
 		all_commands[players['p2']] = yd.commands;
-		console.log('players[p2] = ' + players['p2']);
 	} catch (e){
 		console.log(e);
 	}
@@ -2045,7 +2047,7 @@ function run_code(){
 }
 
 function update_state(){
-	console.log('update_state called');
+	//console.log('update_state called');
 	game_duration++;
 	ticks['now'] = game_duration;
 	tick = game_duration;
@@ -2102,8 +2104,9 @@ function update_state(){
 
 async function main_loop() {
 	const t1 = (+new Date());
-	console.log("tick ");
+	//console.log("tick ");
 	await update_state();
+	if (stop_engine == 1) return;
 	setTimeout(main_loop, Math.max(0, game_tick - (+new Date()) + t1));
 }
 
@@ -2127,7 +2130,7 @@ function start_engine(){
 	console.log('played_codes');
 	//console.log(player_codes);
 	
-	game_duration = 0;
+	game_duration = -1;
 	main_loop();
 }
 
@@ -2142,7 +2145,7 @@ function get_bot_code(botname, sour = 'local', pl = 'pl1'){
 					}
 	    			return response.text().then(function(text) {
 						let b_code = text;
-						console.log(b_code);
+						//console.log(b_code);
 						player_codes[pl + '_code'] = b_code;
 						
 	   				});
@@ -2210,10 +2213,13 @@ onmessage = function(message){
 		initiate_world();
 		
 		countdown(msg.meta2);
+		stop_engine = 0;
 		
-	} else if (msg.meta == 'code_update'){
+	} else if (msg.meta == 'live-input'){
 		player_codes[live_input + '_code'] = msg.code_string;
 		live_code_update();
+	} else if (msg.meta == 'stop'){
+		stop_engine = 1;
 	}
 	
 	

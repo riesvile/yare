@@ -15,6 +15,7 @@
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./style-mobile.css">
 	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./anime.min.js"></script>
   </head>
   <body>
@@ -158,8 +159,6 @@
 			-->
 		</div>
 		
-		
-		
 		<div class="sep_medium" id="dismiss"></div>
 		<div class="sep_medium" id="dismiss"></div>
 		
@@ -176,6 +175,7 @@
 		  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
 		  <div class="menu_line desktop_only"></div>
 		  <a href="/newgame" class="menu_link new_g" id="new_g">New game</a>
+		  <a href="/boxsand" class="menu_link stop_bs" id="stop_bs">Stop sandbox</a>
 		  <div class="menu_link new_acc" id="new_account">New account</div>
 		  <div class="menu_link" id="login">Log in</div>
 		  <div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
@@ -189,9 +189,62 @@
   <div id="grad_top2"></div>
 	  -->
 	  
+  <div id="panel" class="" style="display: none;">
+  	<div id="panel_dragger"><div id="drag_line1"></div><div id="drag_line2"></div></div>
+	  
+    <div id="editor_container" class="tutorial_editor">
+  <div id="editor">// Your code goes here
+
+  </div>
+    </div>  
+  
+    <div id="console2">
+  	<div id="console2_view_toggle">
+  		<span id="console2_lbl" style="">CONSOLE</span>
+  		<span id="console2_arr"></span>
+  	</div>
+    	<div id="console2_window">
+  		<div id="c2_header">
+  			<span class="c2_option c2_option_active" id="c2_option_current">Current tick</span>
+  			<span class="c2_option" id="c2_option_all">All ticks</span>
+  			<span id="c2_close">Close</span>
+  		</div>
+  		<div id="console2_tick_in">
+  			<p class="console_item console_error">ReferenceError:&nbsp;meow&nbsp;is&nbsp;not&nbsp;defined<br>&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;~sandbox/user.js:48:1</p>
+  			<p class="console_item">{"friends":[]}</p>
+  			<p class="console_item">-230,230</p>
+  			<p class="console_item">-800,800</p>
+  		</div>
+  		<div id="console2_all_in">
+  			<div class="console_item_group">
+  				<span class="console_item_tick tick_error">145</span>
+  				<p class="console_item">itemmmm</p>
+  			</div>
+  		</div>
+  	</div>
+    </div>
+  
+    </div>
+  
+  
+    <div id="update_switch_wrapper" style="display: none;">
+    <a href="#" id="update_code"><span>UPDATE CODE</span></a>
+    <div id="shortcut_info">SHIFT + ENTER</div>
+    <div id="switch_view" class="mobile_only"><span class="switch_ico">{ }</span></div>
+    </div>
+	  
 	 
   <canvas id='main_canvas'></canvas>
   <canvas id='base_canvas'></canvas>
+  
+  <div id="game_info_panel">
+	 <div id="game_info_panel_in">
+	  <div id="info_player1_shape"><span class="ico_circle"></span></div>
+	  <p id="info_player1_name">levmiseri</p>
+	  <div id="info_player2_shape"><span class="ico_circle"></span></div>
+	  <p id="info_player2_name">levmiseri</p>
+     </div>
+  </div>
 	  
 	  
   <div id="player_selection_wrap">
@@ -258,7 +311,7 @@
 	  
   <div id="boxsand_build_ui">
 	  
-	  <div id="bs_load_prev">Load previous state</div>
+	  <div id="bs_load_prev">Set to starting positions</div>
 	  
 	  <div id="boxsand_p1" class="bs_player_selection">
 		  <span id="bs_ico_pl1" class="bs_player_ico ico_circles" style="background-color: rgba(128,140,255,1)"></span>
@@ -300,7 +353,73 @@
   </body>
   <script src="../animations.js"></script>
   <script src="../boxsand.js"></script>
+  <script src="../rendering3.js"></script>
   <script>
+	  
+	  function getOS() {
+	    var userAgent = window.navigator.userAgent,
+	        platform = window.navigator.platform,
+	        macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+	        windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+	        iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+	        os = null;
+
+	    if (macosPlatforms.indexOf(platform) !== -1) {
+	      os = 'Mac';
+	    } else if (iosPlatforms.indexOf(platform) !== -1) {
+	      os = 'iOS';
+	    } else if (windowsPlatforms.indexOf(platform) !== -1) {
+	      os = 'Windows';
+	    } else if (/Android/.test(userAgent)) {
+	      os = 'Android';
+	    } else if (!os && /Linux/.test(platform)) {
+	      os = 'Linux';
+	    }
+
+	    return os;
+	  }
+	  
+	  var editor = ace.edit("editor");
+	  editor.setTheme("ace/theme/clouds_midnight");
+	  editor.session.setMode("ace/mode/javascript");
+	  editor.session.setOption("useWorker", false);
+	  editor.setFontSize(14);
+	  editor.setShowPrintMargin(false);
+	  editor.focus(); //To focus the ace editor
+	  var nqq = editor.getSession().getValue().split("\n").length; // To count total no. of lines
+	  //editor.gotoLine(nqq); //Go to end
+	  
+	  editor.setOptions({
+	      enableBasicAutocompletion: true,
+		  enableSnippets: true,
+   	   	  enableLiveAutocompletion: true,
+		  firstLineNumber: 2
+	  });
+	  editor.commands.addCommand({
+	      name: "update_live_code",
+	      exec: function() {update_live_code();},
+	      bindKey: {mac: "cmd-s", win: "ctrl-s"}
+	  });
+	  editor.completers.push({
+	      getCompletions: function(editor, session, pos, prefix, callback) {
+	          var completions = [];
+	          // we can use session and pos here to decide what we are going to show
+	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "base_zxq", "base_a2c", "base_p89", "base_nua", "star_zxq", "star_p89", "star_nua", "star_a2c", "outpost", "pylon", "fragments", "my_spirits", "spirits", "tick", "ttick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable"].forEach(function(w) {
+	              completions.push({
+	                  value: w,
+	                  meta: "keyword",
+
+	              });
+	          });
+	          callback(null, completions);
+	      }
+	  });
+	  
+	  if (localStorage.getItem("code_code") != null){
+		  var code_code = localStorage.getItem("code_code");
+		  editor.setValue(code_code, 1);
+	  }
+	  
 	  
 	  var shape_match = {
 		  'dumb-bot': 'circles',
@@ -309,6 +428,14 @@
 		  'lego-bot': 'squares'
 	  }
 	  
+	  var client = {};
+	  var incoming = {
+		  t: 0,
+		  p1: [],
+		  p2: []
+	  };
+	  module_draw = {};
+	  
 	  var dragging_timeline = 0;
 	  var live_render = 0;
 	  
@@ -316,6 +443,10 @@
 	  var col2 = "rgba(232,97,97,1)";
 	  var col_neut = "rgba(160,168,180,1)";
 	  
+	  var user_code = '';
+	  
+	  var mmmx = 0;
+	  var mmmy = 0;
 	  var x = 0;
 	  var y = 0;
 	  var move_queue = [];
@@ -328,6 +459,7 @@
 	  var stars_queue = [];
 	  var bases_queue = [];
 	  var logs = [];
+	  var from_gameserver = './';
 	  
 	  var pla1 = '';
 	  var pla2 = '';
@@ -382,10 +514,10 @@
 			  ['base_nua', [860, -860], 0, '', col_neut, 'neutral']
 		  ],
 		  stars: [
-			  ['star_zxq', [-1200, -340], 100, 100],
-			  ['star_a2c', [340, 1200], 100, 100],
-			  ['star_p89', [-540, 540], 0, 100],
-			  ['star_nua', [420, -420], 0, 300]
+			  ['star_zxq', [-1200, -340], 100, 140],
+			  ['star_a2c', [340, 1200], 100, 140],
+			  ['star_p89', [-540, 540], 0, 140],
+			  ['star_nua', [420, -420], 0, 690]
 		  ],
 		  outposts: [['outpost_mdo', [-230, 230], 0]],
 		  pylons: [['pylon_u3p', [228, -228], 0]],
@@ -404,6 +536,8 @@
 	  }
 	  
 	  
+		  document.getElementById('bs_start_boxsand').addEventListener('click', start_engine, false);
+		  document.getElementById('stop_bs').addEventListener('click', stop_engine, false);
 		  
 		  document.getElementById('tick_sec_desc').addEventListener('mouseenter', tick_options_expand, false);
 		  document.getElementById('tick_sec_block').addEventListener('mouseleave', tick_options_collapse, false);
@@ -429,7 +563,19 @@
 			set_sel(currently_picking, 'ps_upload-bot');
 		  }
 		  
+		  document.getElementById('console2_view_toggle').addEventListener('click', console_window_toggle, false);
+		  document.getElementById('c2_close').addEventListener('click', console_window_close, false);
+	  
+		  document.getElementById('c2_option_current').addEventListener('click', console_view_current, false);
+		  document.getElementById('c2_option_all').addEventListener('click', console_view_all, false);
 		  
+		  document.getElementById('update_code').addEventListener("click", update_live_code, false);
+		  
+		  //placing elements
+		  document.getElementById('base_canvas').addEventListener("mousedown", canvas_down, false);
+		  document.getElementById('base_canvas').addEventListener("mouseup", canvas_up, false);
+		  
+		  document.getElementById('bs_load_prev').addEventListener("click", reset_to_def, false);
 		  
 		  
 		  
@@ -448,7 +594,13 @@
 			  offsetUpdate();
 		  }
 		  
-		  
+		  var osys = getOS();
+	  
+		  if (osys == "Mac"){
+			  document.getElementById('shortcut_info').innerHTML = "CMD + S";
+		  } else {
+			  document.getElementById('shortcut_info').innerHTML = "CTRL + S";
+		  }
 		  
 		  
 		  
@@ -456,9 +608,19 @@
 		  get_pick_state('pl2');
 		  
 		  
+		  if (sessionStorage.getItem("boxsand_state") != null){
+			  boxsanded = JSON.parse(sessionStorage.getItem("boxsand_state"));
+			  //console.log('boxsand loaded?');
+			  //console.log(boxsanded);
+			  get_pick_state('pl1');
+			  get_pick_state('pl2');
+			  if (!boxsanded['p1_def'] || !boxsanded['p2_def']) document.getElementById('bs_load_prev').style.display = 'block';
+		  }
+		  set_stage();
+		  
   </script>
   <script src="../basics.js"></script>
-  <script src="../rendering3.js"></script>
+  
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>

@@ -1,13 +1,27 @@
 
-
 function start_engine(){
+	store_state();
 	boxsand_engine = new Worker("../boxsand-engine.js");
 	
 	pla1 = players['player1'];
 	pla2 = players['player2'];
 	
+	//animations.js
+	start_boxsand()
+	
+	//rendering3.js
+	initiate_from_sandbox();
+	
 	let cunt = 3;
-	if (boxsanded['pl1'] == 'live-input' || boxsanded['pl2'] == 'live-input') cunt = 2;
+	if (boxsanded['pl1'] == 'live-input' || boxsanded['pl2'] == 'live-input'){
+		cunt = 2;
+		document.getElementById('panel').style.display = 'block';
+		document.getElementById('update_switch_wrapper').style.display = 'block'
+	    document.getElementById('update_switch_wrapper').classList.add('update_switch_wrapper_real');
+	    document.getElementById('update_code').classList.add('update_code_real');
+	    document.getElementById('shortcut_info').classList.add('shortcut_info_real');
+	}
+	document.getElementById('stop_bs').style.display = 'block';
 	
 	boxsand_engine.postMessage({
 		meta: 'initiate',
@@ -20,7 +34,7 @@ function start_engine(){
 	
 	//consume incoming data the same way as game.html?
 	boxsand_engine.onmessage = function(e) {
-		console.log('engine data');
+		//console.log('engine data');
 		//console.log(e.data)
 		if (e.data.meta == 'rendering'){
 			live_render = 1;
@@ -29,12 +43,33 @@ function start_engine(){
 	}
 }
 
+function stop_engine(){
+	stop_boxsand();
+	live_render = 0;
+	document.getElementById('panel').style.display = 'none';
+	document.getElementById('update_switch_wrapper').style.display = 'none';
+	
+	boxsand_engine.postMessage({
+		meta: 'stop'
+	})
+}
+
+function update_live_code(){
+  update_success();
+  user_code = editor.getValue();
+  localStorage.setItem("code_code", user_code);
+  boxsand_engine.postMessage({
+	  meta: 'live-input',
+	  code_string: "client[ttick] = " + JSON.stringify(client) + "\n" + user_code
+  });
+}
+
 function render_world(dat){
 	elapsed = 0;
 	incoming = dat;
 	tick_counter = incoming.t;
-	console.log(incoming);
-	console.log('tick_counter = ' + tick_counter);
+	//console.log(incoming);
+	//console.log('tick_counter = ' + tick_counter);
 	
 	if (tick_counter == 0){
 		game_blocks['t0'] = game_blocks[active_block];
@@ -258,10 +293,22 @@ document.body.clientHeight;
   
   if (boxsanded['p1_def']){
 	  fill_defaults(0);
+  } else {
+	  game_blocks[active_block]['p1'] = {};
+	  for (let s = 0; s<boxsanded['p1_units'].length; s++){
+		  let spi = boxsanded['p1_units'][s]; 
+		  game_blocks[active_block]['p1'][players['player1'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
+	  }
   }
   
   if (boxsanded['p2_def']){
 	  fill_defaults(1);
+  } else {
+  	  game_blocks[active_block]['p2'] = {};
+	  for (let q = 0; q<boxsanded['p2_units'].length; q++){
+		  let spi = boxsanded['p2_units'][q]; 
+		  game_blocks[active_block]['p2'][players['player2'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
+	  }
   }
   
   
@@ -278,7 +325,7 @@ document.body.clientHeight;
 	  } else if (b[3] == 'pl2'){
 		  b[3] = players['player2'];
 	  }
-	  console.log(b);
+	  //console.log(b);
 	  base_lookup[b[0]] = new Base(b[0], b[1], b[2], b[3], b[4], b[5]);
 	  base_lookup[b[0]].draw(b[3]);
   }
@@ -332,18 +379,18 @@ function update_stage(){
 	  fill_defaults(0);
   } else {
 	  game_blocks[active_block]['p1'] = {};
-	  for (let s = 1; s<=boxsanded['p1_units'].length; s++){
+	  for (let s = 0; s<boxsanded['p1_units'].length; s++){
 		  let spi = boxsanded['p1_units'][s]; 
-		  game_blocks[active_block]['p1'][players['player1'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, 1, 1];
+		  game_blocks[active_block]['p1'][players['player1'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
 	  }
   }
   if (boxsanded['p2_def']){
 	  fill_defaults(1);
   } else {
   	  game_blocks[active_block]['p2'] = {};
-	  for (let q = 1; q<=boxsanded['p2_units'].length; q++){
+	  for (let q = 0; q<boxsanded['p2_units'].length; q++){
 		  let spi = boxsanded['p2_units'][q]; 
-		  game_blocks[active_block]['p2'][players['player2'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, 1, 1];
+		  game_blocks[active_block]['p2'][players['player2'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
 	  }
   }
   
@@ -402,6 +449,10 @@ function update_game_shapes(pl2 = 1){
 		  sp.final_size = get_def_size(boxsanded['pl1_sh']);
 		  sp.temp_size = get_def_size(boxsanded['pl1_sh']);
 	  }
+	  for (let i = 0; i < boxsanded['p1_units'].length; i++){
+	  	boxsanded['p1_units'][i][2] = get_def_size(boxsanded['pl1_sh']);
+		boxsanded['p1_units'][i][3] = get_def_size(boxsanded['pl1_sh']) * 10;
+	  }
 	  shapes['shape1'] = boxsanded['pl1_sh'];
 	  bases[0].shape = boxsanded['pl1_sh'];
 	  game_blocks[active_block]['b1'][1] = get_def_cost(boxsanded['pl1_sh']);
@@ -419,6 +470,10 @@ function update_game_shapes(pl2 = 1){
 		  sp.size = get_def_size(boxsanded['pl2_sh']);
 		  sp.final_size = get_def_size(boxsanded['pl2_sh']);
 		  sp.temp_size = get_def_size(boxsanded['pl2_sh']);
+	  }
+	  for (let i = 0; i < boxsanded['p2_units'].length; i++){
+	  	boxsanded['p2_units'][i][2] = get_def_size(boxsanded['pl2_sh']);
+		boxsanded['p2_units'][i][3] = get_def_size(boxsanded['pl2_sh']) * 10;
 	  }
 	  shapes['shape2'] = boxsanded['pl2_sh'];
 	  bases[1].shape = boxsanded['pl2_sh'];
@@ -489,6 +544,13 @@ function fill_defaults(pl2 = 1){
 
 function store_state(){
   sessionStorage.setItem('boxsand_state', JSON.stringify(boxsanded));
+}
+
+function reset_to_def(){
+	boxsanded['p1_def'] = 1;
+	boxsanded['p2_def'] = 1;
+	update_stage();
+	document.getElementById('bs_load_prev').style.display = 'none';
 }
 
 function pick_pl1(){
@@ -568,19 +630,19 @@ function set_sel(pl, elname){
   if (!elname.includes("_")) return;
 
   el_option = elname.split("_")[1];
-  console.log('elopt ' + el_option);
+  //console.log('elopt ' + el_option);
   boxsanded[pl] = el_option;
   
   let plshape = '';
   if (el_option == 'live-input'){
-	  console.log('gothere')
+	  //console.log('gothere')
 	  plshape = live_bot_shape[pl];
   } else if (el_option == 'upload-bot'){
 	  plshape = upload_bot_shape[pl];
   } else {
 	  plshape = shape_match[el_option];
   }
-  console.log('plshape = ' + plshape)
+  //console.log('plshape = ' + plshape)
   insert_shape(pl, plshape);
   boxsanded[pl + '_sh'] = plshape;
   
@@ -704,6 +766,74 @@ function element_selection_crossroad(e){
   }
 }
 
+function canvas_down(e){
+	let mouse_x = e.clientX;
+    let mouse_y = e.clientY;
+    let gameboard_x = mouse_x*multiplier - offsetX;
+	let gameboard_y = mouse_y*multiplier - offsetY;
+	
+	mmmx = mouse_x;
+	mmmy = mouse_y;
+	console.log(gameboard_x + ', ' + gameboard_y);
+}
+
+function canvas_up(e){
+	let mouse_x = e.clientX;
+    let mouse_y = e.clientY;
+    let gameboard_x = mouse_x*multiplier - offsetX;
+	let gameboard_y = mouse_y*multiplier - offsetY;
+	
+	if (Math.abs(mouse_x - mmmx) <= 2 && Math.abs(mouse_y - mmmy) <= 2){
+		place_element([gameboard_x, gameboard_y]);
+	}
+	
+	mmmx = 0;
+	mmmy = 0;
+}
+
+function place_element(loc){
+	if (live_render == 1) return;
+	console.log("placing at " + loc);
+	
+	let pla_num = '1';
+	if (currently_placing == 'pl2') pla_num = '2';
+	if (currently_placing == 'frag'){
+		place_fragment(loc);
+		return;
+	}
+	
+	boxsanded['p' + pla_num + '_def'] = 0;
+	document.getElementById('bs_load_prev').style.display = 'block';
+	
+	let highest = 0;
+	highest = get_highest_spirit('p' + pla_num);
+	console.log('highest = ' + highest);
+	
+	let spnum = highest + 1;
+	let sp_id = players['player' + pla_num] + '_' + spnum;
+	
+    game_blocks[active_block]['p' + pla_num][sp_id] = [loc, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh']) * 10, 1, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh'])*10];
+    boxsanded['p' + pla_num + '_units'].push([spnum, loc, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh'])*10, 1]);
+	
+	spirits[sp_id] = new Spirit(sp_id, loc, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh']) * 10, players['player' + pla_num], colors['color' + pla_num], boxsanded['pl' + pla_num + '_sh'], 1);
+	spirits[sp_id].position = [loc[0], loc[1], 0, 0, loc[0], loc[1]];
+	game_blocks[active_block].units.push(sp_id);
+	
+	console.log(get_def_size(boxsanded['pl' + pla_num + '_sh']));
+	console.log(spirits[sp_id]);
+	console.log(spirits[players['player' + pla_num] + '_12']);
+	
+}
+
+function place_fragment(loc){
+	console.log('placing fragment');
+}
+
+function get_highest_spirit(pl_short){
+	let arr = boxsanded[pl_short + '_units'];
+	return arr[arr.length - 1][0];
+}
+
 function reset_tick_ui(){
   document.getElementById('tick_05').classList.remove('tick_rate_active');
   document.getElementById('tick_1').classList.remove('tick_rate_active');
@@ -751,7 +881,33 @@ function tick_rate_select(e){
 			console.log('defaulted');
 			break;
 	}
-  }
+}
+
+function console_window_toggle(){
+  document.getElementById("console2_view_toggle").classList.toggle("c2_view_open");
+  document.getElementById("console2_window").classList.toggle("c2_window_open");
+}
+
+function console_window_close(){
+  document.getElementById("console2_view_toggle").classList.remove("c2_view_open");
+  document.getElementById("console2_window").classList.remove("c2_window_open");
+}
+
+function console_view_current(){
+  document.getElementById('c2_option_current').classList.add('c2_option_active');
+  document.getElementById('c2_option_all').classList.remove('c2_option_active');
+  
+  document.getElementById('console2_tick_in').style.display = "block";
+  document.getElementById('console2_all_in').style.display = "none";
+}
+
+function console_view_all(){
+  document.getElementById('c2_option_current').classList.remove('c2_option_active');
+  document.getElementById('c2_option_all').classList.add('c2_option_active');
+  
+  document.getElementById('console2_tick_in').style.display = "none";
+  document.getElementById('console2_all_in').style.display = "block";
+}
   
 function bs_error(emsg){
   //TODO: create actual error handling

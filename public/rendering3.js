@@ -215,7 +215,7 @@ function onPointerDown(e){
 		    pinchStart(e);
 		}
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 	
 	//console.log(e);
@@ -578,10 +578,6 @@ try {
 			document.getElementById("panel").style.backgroundColor = "hsla(234, 20%, 12%, 0.95)";
 			//document.getElementById("panel").style.backdropFilter = "blur(12px)";
 		}
-	    if (tutorial_started == 0){
-		//    tutorial_started = 1;
-		//    tut_start();
-	    }
 
 	}, false);
 
@@ -2089,6 +2085,14 @@ function initiate_world(){
 	
 	
 	world_initiated = 1;
+}
+
+function initiate_from_sandbox(){
+	corner1_parts = colors['color1'].match(/[.?\d]+/g);
+	corner2_parts = colors['color2'].match(/[.?\d]+/g);
+
+	corner1_parts_hsl = rgb_to_hsl(corner1_parts[0], corner1_parts[1], corner1_parts[2]);
+	corner2_parts_hsl = rgb_to_hsl(corner2_parts[0], corner2_parts[1], corner2_parts[2]);
 }
 
 function handle_shout(spir_id, shout_msg){

@@ -297,6 +297,28 @@ function bs_player_selection(){
 	document.getElementById('player_selection_wrap').style.pointerEvents = 'auto';
 }
 
+function start_boxsand(){
+	anime({
+		targets: '#boxsand_build_ui',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	})
+	
+	document.getElementById('boxsand_build_ui').style.pointerEvents = 'none';
+}
+
+function stop_boxsand(){
+	anime({
+		targets: '#boxsand_build_ui',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 300
+	})
+	
+	document.getElementById('boxsand_build_ui').style.pointerEvents = 'auto';
+}
+
 function game_over_box(){
 	document.getElementById('game_over_block').style.display = 'block';
 	
