@@ -1956,7 +1956,7 @@ function update_vm_sandbox(){
 			spirit_cost(1, p1_living);
 			spirit_cost(2, p2_living);
 	} 
-	console.log(bases[2].id + " control = " + bases[2].control)
+	//console.log(bases[2].id + " control = " + bases[2].control)
 }
 
 

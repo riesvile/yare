@@ -3453,6 +3453,8 @@ a.index_link:hover {
 	font-weight: 500;
 	border-radius: 12px;
 	display: none;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
 }
 
 #bs_load_prev:hover {
@@ -3468,6 +3470,8 @@ a.index_link:hover {
 	background-color: rgba(242, 246, 250, 0.12);
 	border-radius: 12px;
 	cursor: pointer;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
 }
 
 .bs_player_selection:hover {
@@ -3562,6 +3566,8 @@ h3.bs_heading {
 	box-sizing: border-box;
 	border-radius: 12px;
 	cursor: pointer;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
 }
 
 .bs_select_element:hover {
@@ -3605,6 +3611,8 @@ h3.bs_heading {
 	font-weight: 500;
 	cursor: pointer;
 	transition: 0.2s ease-out;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
 }
 
 #bs_start_boxsand:hover {

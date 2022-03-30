@@ -482,6 +482,7 @@
 	  
 	  var currently_picking = 'pl1';
 	  var currently_placing = 'pl1';
+	  var shift_active = 0;
 	  
 	  var upload_bot_file = {
 		  pl1: '',
@@ -574,6 +575,8 @@
 		  //placing elements
 		  document.getElementById('base_canvas').addEventListener("mousedown", canvas_down, false);
 		  document.getElementById('base_canvas').addEventListener("mouseup", canvas_up, false);
+		  document.addEventListener('keydown', check_shift, false);
+		  document.addEventListener('keyup', function(){shift_active = 0;}, false);
 		  
 		  document.getElementById('bs_load_prev').addEventListener("click", reset_to_def, false);
 		  

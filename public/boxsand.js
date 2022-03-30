@@ -316,6 +316,8 @@ document.body.clientHeight;
   let sta = boxsanded['stars'];
   let out = boxsanded['outposts'];
   let pyl = boxsanded['pylons'];
+  let frag = boxsanded['fragments'];
+  game_blocks[active_block]['ef'] = [];
   let all_sp1 = game_blocks[active_block]['p1'];
   let all_sp2 = game_blocks[active_block]['p2'];
   
@@ -346,6 +348,10 @@ document.body.clientHeight;
   for (let py of pyl){
 	  pylon_lookup[py[0]] = new Pylon(py[0], py[1], py[2]);
 	  pylon_lookup[py[0]].draw();
+  }
+  
+  for (let ef of frag){
+	  game_blocks[active_block]['ef'].push([ef[0], ef[1]]);
   }
   
   for (let sp_id of Object.keys(all_sp1)) {
@@ -409,6 +415,12 @@ function update_stage(){
   	  game_blocks[active_block].units.push(sp_id);
   }
   
+  //fragments
+  let frag = boxsanded['fragments'];
+  game_blocks[active_block]['ef'] = [];
+  for (let ef of frag){
+	  game_blocks[active_block]['ef'].push([ef[0], ef[1]]);
+  }
   
   
   update_game_shapes(0)
@@ -549,6 +561,8 @@ function store_state(){
 function reset_to_def(){
 	boxsanded['p1_def'] = 1;
 	boxsanded['p2_def'] = 1;
+	game_blocks[active_block]['ef'] = [];
+	boxsanded['fragments'] = [];
 	update_stage();
 	document.getElementById('bs_load_prev').style.display = 'none';
 }
@@ -793,6 +807,10 @@ function canvas_up(e){
 
 function place_element(loc){
 	if (live_render == 1) return;
+	if (shift_active){
+		delete_element(loc);
+		return;
+	}
 	console.log("placing at " + loc);
 	
 	let pla_num = '1';
@@ -827,6 +845,46 @@ function place_element(loc){
 
 function place_fragment(loc){
 	console.log('placing fragment');
+	boxsanded['fragments'].push([loc, 100]);
+	game_blocks[active_block].ef.push([loc, 100]);
+}
+
+function delete_element(loc){
+	boxsanded['p1_def'] = 0;
+	boxsanded['p2_def'] = 0;
+    let frag = boxsanded['fragments'];
+    let all_sp1 = game_blocks[active_block]['p1'];
+    let all_sp2 = game_blocks[active_block]['p2'];
+	
+	for (let sp_id of Object.keys(all_sp1)){
+		let sp = spirits[sp_id];
+		if (max_abs_dist(sp.position, loc) <= 10) {
+			game_blocks[active_block]['units'] = game_blocks[active_block]['units'].filter(e => e != sp_id);
+			boxsanded['p1_units'] = boxsanded['p1_units'].filter(e => max_abs_dist(e[1], loc) > 10);
+			living_spirits = living_spirits.filter(e => max_abs_dist(e.position, loc) > 10);
+			delete game_blocks[active_block]['p1'][sp_id];
+			delete spirits[sp_id];
+		}
+	}
+	
+	for (let sp_id of Object.keys(all_sp2)){
+		let sp = spirits[sp_id];
+		if (max_abs_dist(sp.position, loc) <= 10) {
+			game_blocks[active_block]['units'] = game_blocks[active_block]['units'].filter(e => e != sp_id);
+			boxsanded['p2_units'] = boxsanded['p2_units'].filter(e => max_abs_dist(e[1], loc) > 10);
+			living_spirits = living_spirits.filter(e => max_abs_dist(e.position, loc) > 10);
+			delete game_blocks[active_block]['p2'][sp_id];
+			delete spirits[sp_id];
+		}
+	}
+}
+
+function check_shift(e){
+	if (e.shiftKey) shift_active = 1;
+}
+
+function max_abs_dist(loc1, loc2){
+	return Math.max(Math.abs(loc2[0] - loc1[0]), Math.abs(loc2[1] - loc1[1]));
 }
 
 function get_highest_spirit(pl_short){
