@@ -461,76 +461,6 @@
 		  }
 	  }
 	  
-	  function draw_it2(){
-		  let last_ready = ready_blocks[ready_blocks.length - 1];
-  		  if (last_ready >= last_rendered + 1){
-  		  	  active_block = 't' + last_ready;
-		  	  last_rendered = last_ready;
-			  total_time = 0;
-			  tick_adjust = 100;
-			  tickering_block = 0;
-		  } else {
-  		  	  setTimeout(function(){
-				  console.log('buffering');
-		  		  buffer += 40;
-				  tick_adjust += 40;
-  		  		  draw_it2();
-				  tickering_block = 1;
-  		  	  }, 40)
-		  }
-	  }
-	  
-	  function draw_it(){
-		  //console.log('hooked');
-		  let last_ready = ready_blocks[ready_blocks.length - 1];
-  		  if (last_ready >= last_rendered + 1){
-  		  	  active_block = 't' + last_ready;
-		  	  last_rendered = last_ready;
-			  total_time = 0;
-			  ask_temp = performance.now();
-			  ask_diff = ask_temp - socket_log[active_block][0];
-			  if (monitor_flag) console.log('ask diff = ' + ask_diff);
-			  tick_adjust = 0;
-			  if (ask_diff < 100 + avg_diff) tick_adjust = 10;
-			  if (ask_diff < 50 + avg_diff) tick_adjust = 20;
-			  if (ask_diff < 10 + avg_diff) tick_adjust = 50;
-			  if (ask_diff > 200 + avg_diff) tick_adjust = 0;
-			  if (ask_diff > 250 + avg_diff) tick_adjust = -5;
-			  tickering_block = 0;
-  		  } else {
-  		  	  setTimeout(function(){
-				  console.log('buffering');
-		  		  buffer += 40;
-				  tick_adjust += 40;
-  		  		  draw_it2();
-				  tickering_block = 1;
-  		  	  }, 40)
-  		  }
-	  }
-	  
-	  function tickering_loop(){
-  	  	  setTimeout(function(){
-  	  		  draw_it();
-			  tickering_loop();
-  	  	  }, game_tick + tick_adjust);
-	  }
-	  
-	  function tickering(){
-		active_block = 't' + ready_blocks[ready_blocks.length - 1];
-		last_rendered = ready_blocks[ready_blocks.length - 1];
-	  	tickering_loop();
-		render_state();
-	  }
-	  
-	  function run_tick(){
-		  if (buffer == 0){
-			  buffer = 200;
-			  setTimeout(function(){
-				  tickering();
-			  }, buffer);
-		  }
-	  }
-	  
 	  function taylor_UI(){
 		  //console.log('pla1 = ' + pla1);
 		  var cookie_user = getCookie('user_id');
@@ -650,24 +580,9 @@
 	  var tick_counter = 0;
 	  var tick_local = 0;
 	  var game_tick = 500;
-	  var tick_adjust = 0;
 	  var total_time = 0;
 	  var elapsed = 0;
 	  var prev = 0;
-	  
-	  var ready_blocks = [];
-	  var buffer = 0;
-	  var socket_log = {};
-	  var avg_delay = 0;
-	  var avg_diff = 0;
-	  var diff_log = [];
-	  var socket_time = 0;
-	  var temp_tick_time = 0;
-	  var incoming_diff = 0;
-	  var ask_temp = 0;
-	  var ask_diff = 0;
-	  var tickering_block = 0;
-	  var monitor_flag = 0;
 	  
 	  var cnsl = [];
 	  var has_error = 0;
@@ -738,38 +653,7 @@
 				 }
 				 
 				 if (tick_counter > 1){
-					 if (monitor_flag) console.log(ready_blocks[ready_blocks.length - 1]);
-					 if (monitor_flag) console.log(active_block);
 					 //game_blocks['t' + tick_counter] = incoming;
-					 
-					 socket_time = performance.now();
-					 if (monitor_flag) console.log('socket_time = ' + socket_time);
-					 if (temp_tick_time == 0){
-						 temp_tick_time = socket_time;
-					 } else {
-						 incoming_diff = socket_time - temp_tick_time;
-						 diff_log.push(Math.abs(game_tick - incoming_diff));
-						 socket_log['t' + incoming.t] = [socket_time, incoming_diff]
-					 	 temp_tick_time = socket_time;
-						 //console.log('incoming_diff = ' + incoming_diff);
-					 }
-					 
-					 let diff_temp_total = 0;
-					 let ccc = 0;
-					 if (diff_log.length > 20){
-					 	 for (let i = diff_log.length - 1; i >= diff_log.length - 20; i--){
-					 		 diff_temp_total += diff_log[i];
-					 		 ccc++;
-					 	 }
-					 
-					 	 avg_diff = diff_temp_total / 20;
-					 	 if (monitor_flag) console.log('avg_diff = ' + avg_diff);
-					 	 //console.log('ccc = ' + ccc);
-					 }
-					 
-					 
-					 
-					 
 					 
 					 game_blocks['t' + tick_counter] = {
 						 'p1': {},
@@ -905,8 +789,7 @@
 					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
 					 //console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
-					 run_tick();
-					 ready_blocks.push(tick_counter);
+					 run_it();
 					 
 				 }
 				 

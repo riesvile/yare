@@ -1500,7 +1500,7 @@ class Base {
 		if (this.control == players['player1']) this.color = colors['color1'];
 		if (this.control == players['player2']) this.color = colors['color2'];
 		if (this.control == '') this.color = "rgba(155, 155, 155, 0.5)";
-		console.log(this.color);
+		//console.log(this.color);
 		this.color_parts = color.match(/[.?\d]+/g);
 		this.color_hsl = rgb_to_hsl(this.color_parts[0], this.color_parts[1], this.color_parts[2]);
 		this.current_spirit_cost = 100;
