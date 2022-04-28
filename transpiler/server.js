@@ -6,10 +6,11 @@ const app = express()
 const logger = pino({
   transport: {
 		targets: [
-			{ target: "pino-pretty", levels: ["error", "warn", "info", "debug"]},
-			{ target: "pino/file", options: {destination: "/var/log/transpiler.log"}, levels: ["error", "warn", "info", "debug", "trace"]},
+			{ target: "pino-pretty", level: "debug"},
+			{ target: "pino/file", options: {destination: "/var/log/transpiler.log"}, level: "trace"},
 		]
-	}
+	},
+	level: "trace",
 })
 
 logger.info("Starting transpiler server")

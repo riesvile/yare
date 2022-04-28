@@ -50,14 +50,8 @@ s3client = new AWS.S3({
 	s3BucketEndpoint: config.s3.bucketEndpoint
 });
 
-const logger = pino({
-  transport: {
-		targets: [
-			{ target: "pino-pretty", levels: ["error", "warn", "info", "debug"]},
-			{ target: "pino/file", options: {destination: `/var/log/game-${workerData[0]}.log`}, levels: ["error", "warn", "info", "debug", "trace"]},
-		]
-	}
-})
+const pino = require('pino')
+let logger; // this is pretty bad but idk any other way 🤷
 
 async function end_game(was_p1 = 0, was_p2 = 0){
 	logger.debug('END OF GAME INITIALIZED ------- STEP 1')
@@ -225,6 +219,15 @@ function setBotCode(name, sand) {
 
 //initiate_world
 parentPort.on("message", message => {
+	logger = pino({
+		transport: {
+			targets: [
+				{ target: "pino-pretty", level: "debug"},
+				{ target: "pino/file", options: {destination: `/var/log/game-${workerData[0]}.log`}, level: "trace"},
+			]
+		},
+		level: "trace",
+	})
   if (message.data == "initiate world") {
 	    if (workerData[1] == 'tutorial'){
 			game_duration = 0;

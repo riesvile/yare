@@ -20,10 +20,11 @@ var hashRounds = 10;
 const logger = pino({
   transport: {
 		targets: [
-			{ target: "pino-pretty", levels: ["error", "warn", "info", "debug"]},
-			{ target: "pino/file", options: {destination: "/var/log/main.log"}, levels: ["error", "warn", "info", "debug", "trace"]},
+			{ target: "pino-pretty", level: "debug"},
+			{ target: "pino/file", options: {destination: "/var/log/main.log"}, level: "trace"},
 		]
-	}
+	},
+	level: "trace",
 })
 
 logger.info("Main server booting up!")

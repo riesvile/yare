@@ -32,10 +32,11 @@ var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
 const logger = pino({
   transport: {
 		targets: [
-			{ target: "pino-pretty", levels: ["error", "warn", "info", "debug"]},
-			{ target: "pino/file", options: {destination: `/var/log/game-server-${this_server}.log`}, levels: ["error", "warn", "info", "debug", "trace"]},
+			{ target: "pino-pretty", level: "debug"},
+			{ target: "pino/file", options: {destination: `/var/log/game-server-${this_server}.log`}, level: "trace"},
 		]
-	}
+	},
+	level: "trace",
 })
 
 logger.info(`Starting ${this_server} (${this_server_type})`);
