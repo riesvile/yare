@@ -1,5 +1,6 @@
 const fs = require('fs');
 const express = require('express')
+const pino = require('pino')
 const app = express()
 
 const logger = pino({
@@ -10,6 +11,8 @@ const logger = pino({
 		]
 	}
 })
+
+logger.info("Starting transpiler server")
 
 const router = new express.Router()
 
@@ -60,3 +63,4 @@ app.use((err,req,res,next)=>{
 
 // listen to 5000
 app.listen(5000)
+logger.info("Listening...")

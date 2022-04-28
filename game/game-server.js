@@ -23,6 +23,7 @@ const {Worker} = require('worker_threads');
 const config = require('../config');
 const path = require('path');
 const fetch = require('node-fetch');
+const pino = require('pino')
 require('isolated-vm'); // require to avoid glitch locally
 
 var this_server = process.env.SERVER || 'd1';
