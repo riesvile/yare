@@ -21,7 +21,7 @@ const logger = pino({
   transport: {
 		targets: [
 			{ target: "pino-pretty", levels: ["error", "warn", "info", "debug"]},
-			{ target: "pino/file", options: {destination: "/tmp/logs"}, levels: ["error", "warn", "info", "debug"]},
+			{ target: "pino/file", options: {destination: "/var/log/main.log"}, levels: ["error", "warn", "info", "debug", "trace"]},
 		]
 	}
 })
@@ -489,7 +489,7 @@ function tutorial_game(req, res, pl_id){
 	
 	game.save()
 		.then((result) => {
-			logger.debug('Game saved to db');
+			logger.info('Game saved to db');
 			requestGameServerUpdate(chosen_server, g_id);
 		})
 		.catch((error) => {
@@ -2255,6 +2255,17 @@ wss.on("connection", (ws)=>{
 			break;
 		}
 	})
+})
+
+// Route not found (404)
+app.use((req,res,next)=>{
+  return res.status(404).send("404: Not Found");
+});
+
+// Internal server error (500)
+app.use((err,req,res,next)=>{
+	logger.error(err)
+	res.status(500).send("Something blew up, sorry!")
 })
 
 server.listen(5000, () => logger.info('Listening on port :5000'))
