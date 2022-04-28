@@ -452,6 +452,7 @@ function settings_crossroad(e){
 function create_module(){
 	
 	let user_name = getCookie('user_id');
+	let session_id = getCookie('session_id');
 	
 	let client_uploader = document.getElementById("file_script_client");
 	let server_uploader = document.getElementById("file_script_server");
@@ -487,6 +488,7 @@ function create_module(){
 	        },
 	        body: JSON.stringify({
 		        user_name: user_name,
+				session_id: session_id,
 		        module_name: module_name_input.value
 		    })
 
@@ -545,6 +547,7 @@ function update_module_info(module_id, delete_module = 0){
 	console.log('updating mommmmoodule ' + module_id);
 	
 	let user_name = getCookie('user_id');
+	let session_id = getCookie('session_id');
 	let module_name = document.getElementById("module_name_input").value;
 	
 	let retreived = sessionStorage.getItem('mod_' + module_id);
@@ -571,6 +574,7 @@ function update_module_info(module_id, delete_module = 0){
 	        },
 	        body: JSON.stringify({
 		        user_name: user_name,
+				session_id: session_id,
 				module_id: module_id,
 		        module_name: module_name,
 				delete_module: delete_module
@@ -735,7 +739,7 @@ function local_server_script(module_id){
 
 
 function get_all_modules(){
-	
+	let session_id = getCookie('session_id');
 	//console.log(allSessionStorage());
 	
 	if (sessionStorage.getItem('populated') == 'yes'){
@@ -754,7 +758,8 @@ function get_all_modules(){
 	          "Content-Type": "application/json"
 	        },
 	        body: JSON.stringify({
-		        user_name: user_name
+		        user_name: user_name,
+				session_id: session_id
 		    })
 
     }).then(response => response.json())
@@ -1168,12 +1173,12 @@ document.getElementById('profile_links').addEventListener('click', settings_cros
 
 document.getElementById("file_script_server").onchange = function(){
   document.getElementById("server_file_name").textContent = this.files[0].name;
-document.getElementById("modules_server_message").style.opacity = 0;
+  document.getElementById("modules_server_message").style.opacity = 0;
 }
 
 document.getElementById("file_script_client").onchange = function(){
   document.getElementById("client_file_name").textContent = this.files[0].name;
-document.getElementById("modules_server_message").style.opacity = 0;
+  document.getElementById("modules_server_message").style.opacity = 0;
 }
 
 

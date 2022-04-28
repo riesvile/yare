@@ -255,10 +255,68 @@ function dismissals(){
 		set_active_modules();
 	}
 	
+	
+	try {
+		anime({
+			targets: '#player_selection_wrap',
+			opacity: 0,
+			top: [0, -10],
+			easing: 'easeOutQuad',
+			duration: 300
+		});
+		document.getElementById('player_selection_wrap').style.pointerEvents = 'none';
+	} catch (e) {
+		
+	}
+	
 }
 
 function dismiss_helper(){
 	dismiss_intent = 0;
+}
+
+function bs_player_selection(){
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0.59)',
+		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	
+	anime({
+		targets: '#player_selection_wrap',
+		opacity: 1,
+		top: [-10, 0],
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	
+	document.getElementById('overlay').style.pointerEvents = 'auto';
+	document.getElementById('player_selection_wrap').style.pointerEvents = 'auto';
+}
+
+function start_boxsand(){
+	anime({
+		targets: '#boxsand_build_ui',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	})
+	
+	document.getElementById('boxsand_build_ui').style.pointerEvents = 'none';
+}
+
+function stop_boxsand(){
+	anime({
+		targets: '#boxsand_build_ui',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 300
+	})
+	
+	document.getElementById('boxsand_build_ui').style.pointerEvents = 'auto';
 }
 
 function game_over_box(){

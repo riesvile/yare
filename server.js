@@ -815,7 +815,13 @@ app.post('/session', (req, res) => {
 	// logger.debug(req.body.user_name);
 	// logger.debug(req.body.password);
 	
-	// logger.debug('session was called !!!!!!!');
+	if (typeof req.body.session_id !== 'string'){
+		res.status(200).send({
+			data: 'invalid request'
+		});
+	}
+	
+	logger.debug('session was called !!!!!!!');
 	
 	Session.find({session_id: req.body.session_id})
 		.then((result) => {
@@ -997,13 +1003,36 @@ app.post('/upload-script', async (req, res) => {
 	
 	let file_type = req.body.script_type == "client";
 	
-	// logger.debug('module_id = ' + req.body.module_id);
-	// logger.debug('fold = ' + req.body.script_type);
+	if (typeof req.body.module_id !== 'string' || req.body.module_id.length > 20 || typeof req.body.session_id !== 'string'){
+		res.status(200).send({
+			data: 'invalid request'
+		});
+		return;
+	}
 	
-	store_script(req.body.script_file, req.body.module_id, file_type);
+	logger.debug('module_id = ' + req.body.module_id);
+	logger.debug('fold = ' + req.body.script_type);
+	
+	Session.find({session_id: req.body.session_id})
+		.then((result) => {
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+					data: "no such session"
+				});
+			} else {
+				if (result[0]['user_id'] == req.body.user_id){
+					store_script(req.body.script_file, req.body.module_id, file_type);
+				} else {
+					console.log('something went wrong with session check in /upload-script');
+				}
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
 	
 	
-	//TODO: IMPORTANT!!!! CHECK FOR SESSION_ID!!! (possibility of malicious code replacing a user's own module)
 	//TODO: change to when the file is actually uploaded
 	setTimeout(function(){
 		res.status(200).send({
@@ -1041,8 +1070,35 @@ app.post('/update-module-info', async (req, res) => {
 	//later on description and other stuff
 	logger.debug('updating a module');
 	
+	if (typeof req.body.session_id !== 'string'){
+		res.status(200).send({
+			data: 'invalid request'
+		});
+		return;
+	}
+	
 	let isalive = 1;
 	if (req.body.delete_module == 1) isalive = 0;
+	
+	Session.find({session_id: req.body.session_id})
+		.then((result) => {
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+					data: "no such session"
+				});
+			} else {
+				if (result[0]['user_id'] != req.body.user_name){
+					res.status(404).send({
+						data: "session mismatch"
+					});
+					return;
+				}
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
 	
 	Module.find({module_id: req.body.module_id})
 		.then((result) => {
@@ -1099,6 +1155,13 @@ function store_script(script_file, module_id, client = 1){
 app.post('/new-module', async (req, res) => {
 	// logger.debug(req.body);
 	
+	if (req.body.module_name.length > 30){
+		res.status(200).send({
+			data: 'module name too long'
+		});
+		return;
+	}
+	
 	let module_id = generateUniqueString("mod");
 	
 	//store_script(req.body.module_content_client, module_id);
@@ -1139,7 +1202,7 @@ app.post('/edit-module', async (req, res) => {
 	
 	//store_script(req.body.module_content_client, module_id);
 
-	Module.find({module_id: req.body.user_name})
+	Module.find({module_id: module_id})
 		.then((result) => {
 			//res.send(result);
 			logger.debug('updating module');
@@ -1172,6 +1235,33 @@ app.post('/edit-module', async (req, res) => {
 
 app.post('/get-available-modules', async (req, res) => {
 	// logger.debug(req.body);
+	
+	if (typeof req.body.session_id !== 'string'){
+		res.status(200).send({
+			data: 'invalid request'
+		});
+		return;
+	}
+	
+	Session.find({session_id: req.body.session_id})
+		.then((result) => {
+			console.log('db result');
+			if (result.length == 0){
+				res.status(404).send({
+					data: "no such session"
+				});
+			} else {
+				if (result[0]['user_id'] != req.body.user_name){
+					res.status(404).send({
+						data: "session mismatch"
+					});
+					return;
+				}
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		})
 	
 	Module.find({
 		//TODO: change public to 1

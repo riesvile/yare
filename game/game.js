@@ -257,29 +257,29 @@ parentPort.on("message", message => {
 			}
 	    }
 		var all_spirits = living_spirits.length;
-		for (i = 0; i < all_spirits; i++){
-			init_data.units.push(living_spirits[i]);
-		}
+		//for (i = 0; i < all_spirits; i++){
+		//	init_data.units.push(living_spirits[i]);
+		//}
 
-		for (i = 0; i < stars.length; i++){
-			init_data.stars.push(stars[i]);
-		}
+		//for (i = 0; i < stars.length; i++){
+		//	init_data.stars.push(stars[i]);
+		//}
 		
 		for (i = 0; i < bases.length; i++){
 			init_data.bases.push(bases[i]);
 		}
 		
-		for (i = 0; i < outposts.length; i++){
-			init_data.outposts.push(outposts[i]);
-		}
-		
-		for (i = 0; i < pylons.length; i++){
-			init_data.pylons.push(pylons[i]);
-		}
-		
-		for (i = 0; i < fragments.length; i++){
-			init_data.fragments.push(fragments[i]);
-		}
+		//for (i = 0; i < outposts.length; i++){
+		//	init_data.outposts.push(outposts[i]);
+		//}
+		//
+		//for (i = 0; i < pylons.length; i++){
+		//	init_data.pylons.push(pylons[i]);
+		//}
+		//
+		//for (i = 0; i < fragments.length; i++){
+		//	init_data.fragments.push(fragments[i]);
+		//}
 		
 		init_data.players[0] = players['p1'];
 		init_data.players[1] = players['p2'];
@@ -557,7 +557,7 @@ async function user_code(){
 
 //global
 var started = 0;
-var game_tick = 600; //
+var game_tick = 500; //
 var base_speed = 20;
 var stars = [];
 var bases = [];
@@ -725,9 +725,6 @@ var game_finished = 0;
 var user_error1 = [];
 var user_error2 = [];
 
-var test_s1 = {};
-var test_s2 = {};
-
 //var console1 = console;
 //var console2 = console;
 
@@ -885,7 +882,7 @@ class Sandbox {
 	async run() {
 		await this.loadData();
 		let pre = this.isolate.cpuTime;
-		await this.script.run(this.context, {timeout: 250});
+		await this.script.run(this.context, {timeout: 220});
 		let post = this.isolate.cpuTime;
 		logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 	}
@@ -2654,11 +2651,13 @@ if (!isMainThread){
 			var p2_living = 0;
 			for (i = 0; i < living_spirits.length; i++){
 				spt = living_spirits[i];
+				let cutoff_parts = spt.id.split('_');
+				let cutoff_id = cutoff_parts.pop();
 				//logger.debug(spt);	
 				if (spt.player_id == players['p2']){
 					
 					//render3 part
-					render_data3.p2.push([spt.id, spt.position, spt.size, spt.energy, spt.hp]);
+					render_data3.p2.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.size, spt.energy, spt.hp]);
 
 					if (spt.hp == 1){
 						p2_living++;
@@ -2668,7 +2667,7 @@ if (!isMainThread){
 				} else if (spt.player_id == players['p1']) {
 					
 					//render3 part
-					render_data3.p1.push([spt.id, spt.position, spt.size, spt.energy, spt.hp]);
+					render_data3.p1.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.size, spt.energy, spt.hp]);
 
 					if (spt.hp == 1){
 						p1_living++;
@@ -2762,13 +2761,15 @@ if (!isMainThread){
 						end_game(0, 0);
 						tutorial_phase[0] = 'end';
 					}
-				} else if (game_duration == 3000){
+				} else if (game_duration == 4000){
 					end_game(0, 0);
 					tutorial_phase[0] = 'end';
 				}
 			} else {
 				render_data3 = {
 					't': 0,
+					'pl1': players['p1'],
+					'pl2': players['p2'],
 					'p1': [],
 					'p2': [],
 					'b1': [],
