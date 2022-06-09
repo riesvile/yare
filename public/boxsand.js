@@ -781,6 +781,8 @@ function element_selection_crossroad(e){
 }
 
 function canvas_down(e){
+	e = e || window.event;
+	if (e.which === 3) return;
 	let mouse_x = e.clientX;
     let mouse_y = e.clientY;
     let gameboard_x = mouse_x*multiplier - offsetX;

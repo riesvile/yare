@@ -1989,12 +1989,14 @@ function initiate_world(){
 		globalThis[outs[ou][0]] = new Outpost(outs[ou][0], outs[ou][1]);
 		outpost_lookup[outs[ou][0]] = globalThis[outs[ou][0]];
 		structure_lookup[outs[ou][0]] = globalThis[outs[ou][0]];
+		globalThis['outpost'] = globalThis[outs[ou][0]];
 	}
 	
 	for (let py = 0; py < pyl.length; py++){
 		globalThis[pyl[py][0]] = new Pylon(pyl[py][0], pyl[py][1]);
 		pylon_lookup[pyl[py][0]] = globalThis[pyl[py][0]];
 		structure_lookup[pyl[py][0]] = globalThis[pyl[py][0]];
+		globalThis['pylon'] = globalThis[pyl[py][0]]
 	}
 	
 	for (let sp = 0; sp < p1sp.length; sp++){

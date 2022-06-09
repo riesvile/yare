@@ -2542,12 +2542,16 @@ if (!isMainThread){
 				let incr = sub(tpos, s.position);
 
 				let dist = Math.sqrt(norm_sq(incr));
-				let cost = dist/5 + (s.size^2) / 5;
+				console.log('jump distanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceE = ' + dist);
+				let cost = dist/4 + (s.size**2) / 4;
+				console.log('cost distanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceE = ' + cost);
 				if(cost > s.energy) {
-					let remainder = s.energy - (s.size^2)/5;
+					let remainder = s.energy - (s.size**2)/4;
+					if (remainder <= 0) remainder = 20;
 					incr = mult((remainder * 5) / dist, incr);
 					tpos = add(s.position, incr);
 					dist = remainder * 5;
+					if (dist <= 0 && s.energy > 0) dist = 20;
 					cost = s.energy;
 				}
 

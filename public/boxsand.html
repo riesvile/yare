@@ -12,13 +12,14 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./colors.css">
+	<link rel="stylesheet" href="./man-control.css">
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./style-mobile.css">
 	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./anime.min.js"></script>
   </head>
-  <body>
+  <body style="overflow:hidden;">
 	  
   <div id="new_account_wrap">
 	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
@@ -182,7 +183,81 @@
 	  </div>
   </div>
 	  
-  <div id="modules_plate"></div>
+  <div id="modules_plate">
+  <div id='man_ui_module'>
+	<div id='man_protection_gradient_soft'></div>
+  	<div id='man_ui_wrap'>
+		<div id='man_select_count' class='man_square_btn'>
+			<div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div>
+			<span id='man_f1'>9</span>
+			<div id='man_select_slider_expand'><div id='man_select_slider_expand_val'></div></div>
+			<div id='man_select_slider_val'><span id='man_count_current'>8</span></div>
+			<div id='man_select_slider_lbls'>
+				<span id='man_count_max'>9</span>
+				<span id='man_count_half'>5</span>
+				<span id='man_count_one'>1</span>
+			</div>
+		</div>
+		<div id='man_action_group1'>
+			<div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p></div>
+			<div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div>
+			<div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div>
+			<div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div>
+			<div id='man_action_special_unlock' class='man_square_btn'><span class='ico_man_unlock'></span><p class='btn_label'>unlock</p></div>
+			<div id='man_action_special_explode' class='man_square_btn'><span class='ico_man_explode'></span><p class='btn_label'>explode</p></div>
+			<div id='man_action_special_jump' class='man_square_btn'><span class='ico_man_jump'></span><p class='btn_label'>jump</p></div>
+		</div>
+		<div id='man_action_group2'>
+			<div id='man_action_group_behaviour' class='man_square_btn'><span class='ico_man_chip'></span><p class='btn_label'>behaviour</p></div>
+		</div>
+		<div id='man_action_done' class='man_square_btn'><span class='ico_man_done'></span></div>
+	</div>
+	<div id='man_protection_full_sliding'></div>
+	<div id='man_protection_full'><div id='man_protection_gradient'></div></div>
+	<div id='man_layer2'>
+		<h3 class='man_head3'>Attitude towards enemies</h3>
+		<div class='man_layer_section' id='man_attitude'>
+			<div id='man_attitude_chase' class='man_layer_option man_option_right'>Chase</div>
+			<div id='man_attitude_keepdist' class='man_layer_option man_option_mid man_option_active'>Keep distance</div>
+			<div id='man_attitude_nothing' class='man_layer_option man_option_left'>Nothing</div>
+		</div>
+		<div id='man_attitude_jump' class='man_layer_option man_option_secondary'>Use jump to stay out of range</div>
+		
+		<div class='sep_medium'></div>
+		
+		<h3 class='man_head3'>Energize enemy targets</h3>
+		<div class='man_layer_section' id='man_targets'>
+			<div id='man_targetting_lowest' class='man_layer_option man_option_right'>Lowest energy</div>
+			<div id='man_targetting_nearest' class='man_layer_option man_option_mid'>Nearest</div>
+			<div id='man_targetting_nothing' class='man_layer_option man_option_left man_option_active'>Nothing</div>
+		</div>
+		
+		<div class='sep_medium'></div>
+		
+		<h3 class='man_head3'>Move priority</h3>
+		<div class='man_layer_section' id='man_priority'>
+			<div id='man_priority_attitude' class='man_layer_option man_option_right'>Attitude setting</div>
+			<div id='man_priority_manual' class='man_layer_option man_option_left man_option_active'>Touch/Mouse</div>
+		</div>
+		<p class='man_layer_section_desc'>Manual actions overwrite 'Keep distance' attitude</p>
+	</div>
+	<div id='man_layer2_base'>
+		<h3 class='man_head3'>Newborn's behaviour</h3>
+		<div class='man_layer_section' id='man_newborn'>
+			<div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest star</div>
+			<div id='man_newborn_goto' class='man_layer_option man_option_left'>Go to position</div>
+		</div>
+		<div id='man_newborn_where' class='man_layer_option man_option_secondary'>Choose point on board</div>
+	</div>
+	<h2 class='man_head2' id='man_newborn_point'>Choose point for newborn spirits</h2>
+	<div id='man_layer3'>
+		<div id='man_energize_pairing'>
+			<h2 class='man_head2'>Select a <span id='e_pair_star'>star</span> and <span id='e_pair_structure'>structure</span></h2>
+			<div id='man_action_ui_close' class='man_square_btn'><span class='ico_man_close'></span></div>
+		</div>
+	</div>
+  </div>
+  </div>
   
   <div id="overlay"></div>
   <!--
@@ -623,6 +698,7 @@
 		  
   </script>
   <script src="../basics.js"></script>
+  <script src="./public-modules/client/manual-ui.js"></script>
   
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

@@ -661,6 +661,7 @@ var star_lookup = {};
 var base_lookup = {};
 var outpost_lookup = {};
 var pylon_lookup = {};
+var structure_lookup = {};
 
 var player1_color;
 var player2_color;
@@ -1249,7 +1250,7 @@ class Spirit {
 				gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
 			} catch (e) {
 				//console.log(this.position[0])
-				console.log(e);
+				//console.log(e);
 			}
 			
 			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
@@ -1334,6 +1335,7 @@ class Star {
 		this.structure_type = 'star';
 		this.energy = energy;
 		stars.push(this);
+		structure_lookup[this.id] = this;
 	}
 	
 	draw() {
@@ -1514,6 +1516,7 @@ class Base {
 		this.def_status = def_status;
 		
 		bases.push(this);
+		structure_lookup[this.id] = this;
 		if (this.shape == 'triangles') this.base_points = get_triangle(this.position[0], this.position[1], 30);
 	}
 	
@@ -1819,6 +1822,7 @@ class Outpost {
 		
 		
 		outposts.push(this);
+		structure_lookup[this.id] = this;
 	}
 	
 	draw(enrg, cntrl = '') {
@@ -1923,6 +1927,7 @@ class Pylon {
 		
 		
 		pylons.push(this);
+		structure_lookup[this.id] = this;
 	}
 	
 	draw(enrg, cntrl = '') {

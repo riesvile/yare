@@ -62,12 +62,28 @@ var man_selected_spirits = [];
 
 
 
-let attack_btn = document.createElement('div');
-attack_btn.innerHTML = "<span id='man_attack_base' style='display: block; width: 100%; height: 100%; background-color: #f00;'></span>";
-attack_btn.style.cssText = 'position:absolute; top: 50%; right: 28px; width:52px; height:52px; opacity:1; z-index:100;';
-document.getElementById('modules_plate').appendChild(attack_btn);
+// UI
 
 
-//event handlers
-document.getElementById('base_canvas').addEventListener("click", man_canvas_click, false);
-document.getElementById('modules_plate').addEventListener("click", man_plate_click, false);
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//let attack_btn = document.createElement('div');
+//attack_btn.innerHTML = "<span id='man_attack_base' style='display: block; width: 100%; height: 100%; background-color: #f00;'></span>";
+//attack_btn.style.cssText = 'position:absolute; top: 50%; right: 28px; width:52px; height:52px; opacity:1; z-index:100;';
+//document.getElementById('modules_plate').appendChild(attack_btn);
+//
+//
+////event handlers
+//document.getElementById('base_canvas').addEventListener("click", man_canvas_click, false);
+//document.getElementById('modules_plate').addEventListener("click", man_plate_click, false);
