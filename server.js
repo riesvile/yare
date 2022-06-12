@@ -2155,7 +2155,7 @@ function findAgain(req, res, g_id){
 }
 
 // This is a pretty bad way of doing it, should be changed
-const adminpassword = "swordfish"
+const adminpassword = process.env.ADMINPANEL_PASSWORD | "yareyareyareyare4444"
 
 app.get('/server-weight/:server_id/:weight', (req, res) => {
 	if(req.query.password != adminpassword) {
