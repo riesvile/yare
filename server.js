@@ -13,7 +13,21 @@ const zlib = require('zlib');
 const ejs = require('ejs');
 const os = require('os');
 const bcrypt = require('bcrypt');
+const pino = require('pino')
+const fs = require('fs');
 var hashRounds = 10;
+
+const logger = pino({
+  transport: {
+		targets: [
+			{ target: "pino-pretty", level: "debug"},
+			{ target: "pino/file", options: {destination: "/var/log/main.log"}, level: "trace"},
+		]
+	},
+	level: "trace",
+})
+
+logger.info("Main server booting up!")
 
 function randomString(length) {
 	return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
@@ -49,14 +63,14 @@ function requestGameServerUpdate(srvr, gid){
 			}).then(response => response.json())
 					.then(response => {
 					active_games[gid][0] = 1;
-					console.log(active_games[gid]);
-					console.log(response);
+					// logger.debug(active_games[gid]);
+					// logger.debug(response);
 				})
 					.catch(err => {
-					console.log(err);
+						logger.error(err);
 				});
 		} catch (error) {
-			console.log(error);
+			logger.error(error);
 		}
 }
 
@@ -85,12 +99,12 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 
 	game.save()
 		.then((result)=>{
-			console.log('am game saved to db');
-			console.log(result);
+			logger.debug('Saved game to database');
+			// logger.debug(result);
 			return requestGameServerUpdate(srvr, gid);
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 }
 
@@ -121,7 +135,7 @@ setInterval(()=>{
 function matchmake(){
 	// if theres 1 or fewer users in the queue, you can't pair them up...
 	if (matchmaking_queue.length < 2) return;
-	console.log("Matchmaking...");
+	logger.debug("Matchmaking...");
 
 	// people that has been in the queue for the longest time should be prioritized
 	let prioritized_queue = matchmaking_queue.sort((a,b)=>
@@ -150,7 +164,7 @@ function matchmake(){
 			matched_pairs.push([user, closest_rated_user]);
 	}
 
-	console.log("Matchmaking matched pairs:", matched_pairs);
+	logger.info("Matchmaking matched pairs:", matched_pairs);
 
 	// Start games with the matched pairs
 	for (let pair of matched_pairs) {
@@ -172,7 +186,7 @@ function matchmake(){
 		let userid = x[0];
 		let game = x[1];
 		let user = matched_pairs.flat().find(u => u.id == userid);
-		if (game == null || user.socket == null) {console.log(user);continue};
+		if (game == null || user.socket == null) {continue};
 		user.socket.send(JSON.stringify({
 			type: "match-found",
 			data: {
@@ -234,8 +248,8 @@ const Module = require('./models/modules.js');
 const dbURI = config.mongo;
 mongoose.set('useCreateIndex', true);
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-	.then((result) => console.log('connected to dbb'))
-	.catch((error) => console.log(error));
+	.then((result) => logger.info('Connected to MongoDB'))
+	.catch((error) => logger.error(error));
 
 function updateServers() {
 	Server.find({}).then((db_servers) => {
@@ -250,15 +264,14 @@ function updateServers() {
 			};
 		} else {
 			servers = {};
-			console.log(db_servers);
 			for(let db_server of db_servers) {
 				servers[db_server.type] = servers[db_server.type] || {};
 				servers[db_server.type][db_server.server] = db_server.weight;
 			}
 		}
-		console.log(servers);
+		logger.debug("Updated servers");
 	})
-	.catch((error) => console.error(error));
+	.catch((error) => logger.error(error));
 }
 
 updateServers();
@@ -275,48 +288,6 @@ function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd4', pla1_shape 
 	active_games[g_id][4] = pla1_shape;
 	active_games[g_id][5] = pla2_shape;
 	return g_id;
-}
-
-/*
-function create_worker (game_id, game_type) {
-  const worker = new Worker('./game.js', { workerData: [game_id, game_type] })
-  worker.on('error', (err) => { throw err })
-  worker.on('message', (render_data) => {
-	  if (render_data.meta == 'initiate'){
-		  console.log('initiate world');
-		  try {
-			  connections[render_data.client].send(render_data.data);
-			  delete connections[render_data.client];
-		  } catch (e){
-			  console.log(e);
-		  }
-	  } else if (render_data.meta == 'test'){
-		  console.log('testing');
-		  console.log(render_data.data);
-	  } else if (render_data.meta == 'monitoring'){
-		  console.log('monitoring!!!!!!!!!');
-		  trigger_monitoring(render_data.game_id, render_data.data);
-	  } else {
-		  console.log('processing render data');
-		  console.log(render_data.game_id);
-		  wss.broadcast(render_data.data, render_data.game_id);
-	  }
-	  
-  })
-  worker.on('exit', (code) => {
-	  trigger_deactivation(game_id);
-	  delete active_games[game_id];
-  });
-  
-  
-  workers[game_id] = worker;
-}
-*/
-//create_worker('aatest');
-//createWorker('bbbtrs');
-
-function load_balancer(){
-	//logic for redirects to the right server????
 }
 
 function get_color(color_name){
@@ -412,12 +383,12 @@ function get_color_num(color_name){
 }
 
 function handleCheckout(checkout){
-	console.log('checkout reference id');
-	console.log(checkout.client_reference_id);
+	logger.debug('checkout reference id');
+	logger.debug(checkout.client_reference_id);
 	
 	let arr = checkout.client_reference_id.split(',');
-	console.log(arr[0]);
-	console.log(arr[1]);
+	logger.debug(arr[0]);
+	logger.debug(arr[1]);
 	
 	let c_code = get_color_num(arr[0]);
 	
@@ -425,61 +396,43 @@ function handleCheckout(checkout){
 }
 
 function add_color_to_user(userid, color_code){
-	//User.find({user_id: userid})
-	//	.then((result) => {
-	//		//res.send(result);
-	//		if (result.length == 0){
-	//			console.log('user does not exist')
-	//		} else {
-	//			console.log('updating color ' + color_code);
-	//			User.updateOne({user_id: userid}, { $push: { colors: color_code } }, {upsert: true});
-	//		}
-	//	})
-	//	.catch((error) => {
-	//		console.log(error);
-	//	})
-	//	
-		
-		
-		User.findOneAndUpdate({user_id: userid},{"$push": {"colors": color_code}},{new: true, safe: true, upsert: true }).then((result) => {
-					console.log('updating color ' + color_code);
-		        }).catch((error) => {
-					console.log('some error');
-		        });
-		
-		
+	User.findOneAndUpdate({user_id: userid},{"$push": {"colors": color_code}},{new: true, safe: true, upsert: true }).then((result) => {
+		logger.debug('updating color ' + color_code);
+	}).catch((error) => {
+		logger.debug('some error');
+	});
 }
 
 
 
 app.post('/stripe', express.json({type: 'application/json'}), (request, response) => {
-	console.log('stripe pay works');
+	logger.info('Stripe pay works');
 	const event = request.body;
 	
   // Handle the event
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-		console.log('payment intent succeeded');
-		console.log(paymentIntent);
+				logger.debug('payment intent succeeded');
+				logger.debug(paymentIntent);
         // Then define and call a method to handle the successful payment intent.
         // handlePaymentIntentSucceeded(paymentIntent);
         break;
       case 'checkout.session.completed':
         const checkoutSession = event.data.object;
-	    console.log('checkout done');
-	    console.log(checkoutSession);
+				logger.debug('checkout done');
+				logger.debug(checkoutSession);
 		handleCheckout(checkoutSession);
         // Then define and call a method to handle the successful payment intent.
         // handlePaymentIntentSucceeded(paymentIntent);
         break;
       case 'payment_method.attached':
         const paymentMethod = event.data.object;
-        console.log('payment method')
+        logger.debug('payment method')
         break;
       // ... handle other event types
       default:
-        console.log(`Unhandled event type ${event.type}`);
+        logger.debug(`Unhandled event type ${event.type}`);
     }
 	
 	response.json({received: true});
@@ -537,12 +490,11 @@ function tutorial_game(req, res, pl_id){
 	
 	game.save()
 		.then((result) => {
-			console.log('game saved to db');
-			console.log(result);
+			logger.info('Game saved to db');
 			requestGameServerUpdate(chosen_server, g_id);
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 }
 
@@ -605,11 +557,11 @@ function bot_game(data, botinfo){
 		}
 		game.save()
 			.then((result) => {
-				console.log('game saved to db');
+				logger.debug('Game saved to db');
 				requestGameServerUpdate(chosen_server, g_id);
 			})
 			.catch((error) => {
-				console.log(error);
+				logger.error(error);
 			});
 	}) 
 	return {
@@ -692,10 +644,10 @@ function friend_challenge(data){
 
 	game.save()
 		.then((result) => {
-			console.log('game saved to db');
+			logger.debug('Game saved to db');
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		});
 
 	return {
@@ -723,13 +675,13 @@ function discord_postmessage(hook, msg){
 		    })
 		}).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
+			  // logger.debug(response);
 		  })
 	      .catch(err => {
-			  console.log(err);
+			  logger.error(err);
 		  });
 	} catch (e) {
-		console.log(e);
+		logger.error(e);
 	}
 	
 }
@@ -803,12 +755,12 @@ app.get('/active-games/:user_id', (req, res) => {
 
 
 app.post('/validate', (req, res) => {
-    console.log(req.body.user_name);
+	// logger.debug(req.body.user_name);
 	
 	User.find({user_id: req.body.user_name})
 		.then((result) => {
 			//res.send(result);
-			console.log('db result');
+			// logger.debug('db result');
 			if (result.length == 0){
 				res.status(404).send({
 		        	data: "no such user"
@@ -822,7 +774,7 @@ app.post('/validate', (req, res) => {
 					//all good, update session id and prolong expiration date
 					good = true;
 					newHash = bcrypt.hashSync(req.body.password, hashRounds);
-					console.log("Upgrading sha256 to bcrypt");
+					logger.debug("Upgrading sha256 to bcrypt");
 				}
 
 				if(good) {
@@ -830,8 +782,8 @@ app.post('/validate', (req, res) => {
 					var session_id = generateSecureString(64);
 					var session_expire = new Date();
 					session_expire = (session_expire.getTime() + (7*24*60*60*1000));
-					console.log('date');
-					console.log(session_expire);
+					// logger.debug('date');
+					// logger.debug(session_expire);
 					var updatePromise = Promise.resolve(true);
 					if(newHash) {
 						updatePromise = User.updateOne({user_id: req.body.user_name}, {passwrd: newHash}, {upsert: true});
@@ -854,14 +806,14 @@ app.post('/validate', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
 app.post('/session', (req, res) => {
-	console.log(req.body);
-    console.log(req.body.user_name);
-    console.log(req.body.password);
+	// logger.debug(req.body);
+	// logger.debug(req.body.user_name);
+	// logger.debug(req.body.password);
 	
 	if (typeof req.body.session_id !== 'string'){
 		res.status(200).send({
@@ -869,11 +821,11 @@ app.post('/session', (req, res) => {
 		});
 	}
 	
-	console.log('session was called !!!!!!!');
+	logger.debug('session was called !!!!!!!');
 	
 	Session.find({session_id: req.body.session_id})
 		.then((result) => {
-			console.log('db result');
+			// logger.debug('db result');
 			if (result.length == 0){
 				res.status(404).send({
 					data: "no such session"
@@ -888,7 +840,7 @@ app.post('/session', (req, res) => {
 					// update session_expire
 					session_id = generateSecureString(64);
 					session_expire = ((new Date()).getTime() + (7*24*60*60*1000));
-					console.log('creating new session');
+					logger.debug('creating new session');
 					Session.create({user_id: user_id, session_id: session_id, session_expire: session_expire})
 						.then((qq) => {
 							res.status(200).send({
@@ -905,7 +857,7 @@ app.post('/session', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
@@ -914,10 +866,10 @@ function isValid(str) {
 }
 
 app.post('/add-user', async (req, res) => {
-	console.log(req.body);
-    console.log(req.body.user_name);
-    console.log(req.body.password);
-	console.log(req.body.password.length);
+	// logger.debug(req.body);
+	// logger.debug(req.body.user_name);
+	// logger.debug(req.body.password);
+	// logger.debug(req.body.password.length);
 	
 	if (req.body.user_name.length > 20){
 		res.status(200).send({
@@ -933,12 +885,12 @@ app.post('/add-user', async (req, res) => {
         	data: "special"
         });
 	} else if (req.body.password.length < 1){
-		console.log('password too short');
+		logger.debug('password too short');
 		res.status(200).send({
         	data: "pass_empty"
         });
 	} else if ((await User.find({user_id: req.body.user_name})).length !== 0){
-		console.log('user with name already exists');
+		logger.debug('user with name already exists');
 		res.status(200).send({
         	data: "exists"
         });
@@ -978,7 +930,7 @@ app.post('/add-user', async (req, res) => {
 				});
 			})
 			.catch((error) => {
-				console.log(error);
+				logger.error(error);
 				res.status(200).send({
 					data: "exists"
 				});
@@ -990,7 +942,7 @@ app.post('/add-user', async (req, res) => {
 app.post('/get-pref-lang', async (req, res) => {
 	
 	//later on description and other stuff
-	console.log('getting preferred language');
+	// logger.debug('getting preferred language');
 	
 	User.find({user_id: req.body.user_name})
 		.then((result) => {
@@ -1000,7 +952,7 @@ app.post('/get-pref-lang', async (req, res) => {
 		        	data: "no user found"
 		        });
 			} else if (result[0]['lang_preference'] != undefined){
-				console.log('getting language ' + result[0]['lang_preference']);
+				// logger.debug('getting language ' + result[0]['lang_preference']);
 				res.status(200).send({
 		        	data: "lang incoming",
 					lang: result[0]['lang_preference']
@@ -1012,14 +964,14 @@ app.post('/get-pref-lang', async (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
 app.post('/set-pref-lang', async (req, res) => {
 	
 	//TODO: protect with session_id check of the incoming request
-	console.log('setting preferred language');
+	// logger.debug('setting preferred language');
 	
 	User.find({user_id: req.body.user_name})
 		.then((result) => {
@@ -1031,7 +983,7 @@ app.post('/set-pref-lang', async (req, res) => {
 			} else if (result[0]['lang_preference'] != undefined){
 				User.updateOne({user_id: req.body.user_name}, {lang_preference: req.body.pref_lang})
 					.then((qq) => {
-						console.log('language preference updated to ' + req.body.pref_lang);
+						// logger.debug('language preference updated to ' + req.body.pref_lang);
 						res.status(200).send({
 				        	data: "lang updated"
 				        });
@@ -1043,7 +995,7 @@ app.post('/set-pref-lang', async (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
@@ -1058,9 +1010,8 @@ app.post('/upload-script', async (req, res) => {
 		return;
 	}
 	
-	console.log('module_id = ' + req.body.module_id);
-	console.log('fold = ' + req.body.script_type);
-	
+	logger.debug('module_id = ' + req.body.module_id);
+	logger.debug('fold = ' + req.body.script_type);
 	
 	Session.find({session_id: req.body.session_id})
 		.then((result) => {
@@ -1095,21 +1046,21 @@ app.post('/download-script', async (req, res) => {
 	
 	let module_id = req.body.module_id;
 	let script_type = req.body.script_type + '/';
-	console.log("downloading " + script_type + " script of module " + module_id);
+	logger.debug("downloading " + script_type + " script of module " + module_id);
 	
 	try {
 		let data = await s3client.getObject({
 			Bucket: config.s3.bucket,
 			Key: 'modules/' + script_type + module_id + '.js',
 		}).promise();
-		console.log(data);
+		// logger.debug(data);
 		res.status(200).send({
 			data: data.Body.toString('utf8'),
 			meta: 'script retreived'
 		});
 		return;
 	} catch (err) {
-		console.log(err);
+		logger.error(err);
 	}
 	
 });
@@ -1117,7 +1068,7 @@ app.post('/download-script', async (req, res) => {
 app.post('/update-module-info', async (req, res) => {
 	
 	//later on description and other stuff
-	console.log('updating a module');
+	logger.debug('updating a module');
 	
 	if (typeof req.body.session_id !== 'string'){
 		res.status(200).send({
@@ -1162,7 +1113,7 @@ app.post('/update-module-info', async (req, res) => {
 				if (req.body.module_name != '') new_name = req.body.module_name
 				Module.updateOne({module_id: req.body.module_id}, {name: new_name, alive: isalive})
 					.then((qq) => {
-						console.log('name changed to ' + req.body.module_name);
+						// logger.debug('name changed to ' + req.body.module_name);
 						res.status(200).send({
 				        	data: "module updated"
 				        });
@@ -1174,7 +1125,7 @@ app.post('/update-module-info', async (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
@@ -1186,11 +1137,11 @@ function store_script(script_file, module_id, client = 1){
 	
 	let deco = Buffer.from(temp_help, 'base64');
 
-	console.log('script_file = ');
-	console.log(script_file);
+	// logger.debug('script_file = ');
+	// logger.debug(script_file);
 	
-	console.log('decoded.toString() = ');
-	console.log(deco.toString());
+	// logger.debug('decoded.toString() = ');
+	// logger.debug(deco.toString());
 	
 	s3client.putObject({
 		Body: deco.toString(),
@@ -1202,7 +1153,7 @@ function store_script(script_file, module_id, client = 1){
 
 
 app.post('/new-module', async (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 	
 	if (req.body.module_name.length > 30){
 		res.status(200).send({
@@ -1237,7 +1188,7 @@ app.post('/new-module', async (req, res) => {
 			});
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 			res.status(400).send({
 				data: "something went wrong :/"
 			});
@@ -1245,7 +1196,7 @@ app.post('/new-module', async (req, res) => {
 });
 
 app.post('/edit-module', async (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 	
 	let module_id = req.body.module_id;
 	
@@ -1254,7 +1205,7 @@ app.post('/edit-module', async (req, res) => {
 	Module.find({module_id: module_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('updating module');
+			logger.debug('updating module');
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no module found"
@@ -1270,7 +1221,7 @@ app.post('/edit-module', async (req, res) => {
 			} else {
 				Module.updateOne({module_id: req.body.module_id}, {name: req.body.module_name}, {upsert: true})
 				.then((qq) => {
-					console.log('module renamed: ' + req.body.module_name);
+					// logger.debug('module renamed: ' + req.body.module_name);
 					res.status(200).send({
 			        	data: "updated"
 			        });
@@ -1278,12 +1229,12 @@ app.post('/edit-module', async (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
 app.post('/get-available-modules', async (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 	
 	if (typeof req.body.session_id !== 'string'){
 		res.status(200).send({
@@ -1322,7 +1273,7 @@ app.post('/get-available-modules', async (req, res) => {
 		})
 		.then((result) => {
 			//res.send(result);
-			console.log('getting available modules');
+			logger.debug('getting available modules');
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no module found"
@@ -1350,54 +1301,24 @@ app.post('/get-available-modules', async (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
-
-   //
-   //User.find({user_id: req.body.user_name})
-   //	.then((result) => {
-   //		//res.send(result);
-   //		console.log('getting available modules');
-   //		if (result.length == 0){
-   //			res.status(200).send({
-   //	        	data: "no module found"
-   //	        });
-   //		} else if (result[0]['rating'] != undefined){
-   //			
-   //			let module_locations = [];
-   //			//loop through active modules and put source (url?) into active_locations? sounds stupid :/
-   //			
-   //			res.status(200).send({
-   //	        	data: "modules retreived",
-   //				visible_modules: result[0]['visible_modules'],
-   //				active_modules: result[0]['active_modules'],
-   //				active_locations: "" // can this be inferred from the active_modules id?
-   //	        });
-   //		} else {
-   //			res.status(200).send({
-   //	        	data: "something went wrong"
-   //	        });
-   //		}
-   //	})
-   //	.catch((error) => {
-   //		console.log(error);
-   //	})
 });
 
 app.post('/get-active-modules', async (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 	
     User.find({user_id: req.body.user_name})
     	.then((result) => {
     		//res.send(result);
-    		console.log('getting active modules');
+    		logger.debug('getting active modules');
     		if (result.length == 0){
     			res.status(200).send({
     	        	data: "no module found"
     	        });
     		} else if (result[0]['rating'] != undefined){
-				console.log('rrrr');
-				console.log(result[0]);    			
+					// logger.debug('rrrr');
+					// logger.debug(result[0]);    			
     			res.status(200).send({
     	        	data: "modules retreived",
     				visible_modules: result[0]['visible_modules'],
@@ -1410,17 +1331,17 @@ app.post('/get-active-modules', async (req, res) => {
     		}
     	})
     	.catch((error) => {
-    		console.log(error);
+    		logger.error(error);
     	})
 });
 
 app.post('/set-active-modules', async (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 	
     User.find({user_id: req.body.user_name})
     	.then((result) => {
     		//res.send(result);
-    		console.log('setting active modules');
+    		logger.debug('setting active modules');
     		if (result.length == 0){
     			res.status(200).send({
     	        	data: "no module found"
@@ -1428,7 +1349,7 @@ app.post('/set-active-modules', async (req, res) => {
     		} else if (result[0]['rating'] != undefined){
 				User.updateOne({user_id: req.body.user_name}, {active_modules: req.body.active_modules}, {upsert: true})
 				.then((qq) => {
-					console.log('activated modules: ' + req.body.active_modules);
+					// logger.debug('activated modules: ' + req.body.active_modules);
 					res.status(200).send({
 			        	data: "updated"
 			        });
@@ -1440,17 +1361,17 @@ app.post('/set-active-modules', async (req, res) => {
     		}
     	})
     	.catch((error) => {
-    		console.log(error);
+    		logger.error(error);
     	})
 });
 
 app.post('/get-module-info', async (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 
 	Module.find({module_id: req.body.module_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('getting modules info');
+			logger.debug('getting modules info');
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no module found"
@@ -1469,7 +1390,7 @@ app.post('/get-module-info', async (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
@@ -1481,8 +1402,8 @@ app.post('/' + this_server + '/tutorial-signup', (req, res) => {
 	Game.find({game_id: req.body.game_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('dbdb result');
-			console.log(result);
+			// logger.debug('dbdb result');
+			// logger.debug(result);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no game found"
@@ -1490,7 +1411,7 @@ app.post('/' + this_server + '/tutorial-signup', (req, res) => {
 			} else if (result[0]['active'] == 1 && result[0]['player1'] == 'anonymous'){
 				Game.updateOne({game_id: req.body.game_id}, {player1: req.body.user_id}, {upsert: true})
 					.then((qq) => {
-						console.log('anonymous changed to ' + req.body.user_id);
+						logger.debug('anonymous changed to ' + req.body.user_id);
 						res.status(200).send({
 				        	data: "updated"
 				        });
@@ -1503,25 +1424,10 @@ app.post('/' + this_server + '/tutorial-signup', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 
 });
-
-/*
-uhhh... what?
-
-app.get('/all', (req, res) => {
-	User.find({session_expire: {"$gte": 2}})
-		.then((result) => {
-			res.send(result);
-			console.log('db result');
-			console.log(result);
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-})*/
 
 app.get('/game/:game_id', (req, res) => {
 	game_id_url = req.params.game_id;
@@ -1543,13 +1449,13 @@ function trigger_deactivation(game_id){
 		    })
 		}).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
+					// logger.debug(response);
 		  })
 	      .catch(err => {
-			  console.log(err);
+					logger.error(err);
 		  });
 	} catch (error) {
-		console.log(error);
+		logger.error(error);
 	}
 	
 }
@@ -1568,18 +1474,18 @@ function trigger_monitoring(gid, val){
 		    })
 		}).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
+					// logger.debug(response);
 		  })
 	      .catch(err => {
-			  console.log(err);
+					logger.error(err);
 		  });
 	} catch (error) {
-		console.log(error);
+		logger.error(error);
 	}
 }
 
 function deactivate_game(game_id){
-	console.log('here is deactivating happening');
+	// logger.debug('here is deactivating happening');
 	try {
 		if(game_id in active_games){
 			var serv_id = active_games[game_id][3];
@@ -1587,7 +1493,7 @@ function deactivate_game(game_id){
 			delete active_games[game_id];
 		}
 	} catch (error) {
-	  console.error(error);
+	  logger.error(error);
 	}
 }
 
@@ -1599,22 +1505,22 @@ setInterval(function(){
 		return;
 	}
 	Game.find({game_id: {$in: game_ids}}).then((games) => {
-		console.log("active games: " + games.map(g => g.game_id).join(','));
+		// logger.debug("active games: " + games.map(g => g.game_id).join(','));
 		for(let game of games) {
-			console.log(game.last_update);
+			// logger.debug(game.last_update);
 			if(!game.last_update || game.last_update < (+new Date()) - (1000 * 60)) {
-				console.log("Deactivating game " + game.game_id);
+				logger.debug("Deactivating game " + game.game_id);
 				deactivate_game(game.game_id);
 				updates.push(game.game_id);
 			}
 		}
 		if(updates.length > 0) {
 			Game.updateMany({game_id: {$in: updates}}, {active: 0}).catch(err => {
-				console.log(err)
+				logger.error(err)
 			});
 		}
 	}).catch((error) => {
-		console.log(error);
+		logger.error(error);
 	});
 
 }, 60000);
@@ -1624,9 +1530,9 @@ app.post('/gameinfo', (req, res) => {
 	Game.find({game_id: req.body.game_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('getting game info');
-			//console.log(result);
-			//console.log(result[0]['active']);
+			// logger.debug('getting game info');
+			//logger.debug(result);
+			//logger.debug(result[0]['active']);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no game found"
@@ -1669,7 +1575,7 @@ app.post('/gameinfo', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 
 });
@@ -1690,7 +1596,7 @@ if(!config.s3.bucketEndpoint) {
 	s3client.createBucket({
 		ACL: 'public-read',
 		Bucket: config.s3.bucket,
-	}).promise().catch(err => console.log(err));
+	}).promise().catch(err => logger.error(err));
 }
 
 app.post('/get_replay', async (req, res) => {
@@ -1700,11 +1606,11 @@ app.post('/get_replay', async (req, res) => {
 			Bucket: config.s3.bucket,
 			Key: 'replays/' + req.body.game_id + '.json.comp',
 		}).promise();
-		console.log(data);
+		// logger.debug(data);
 		res.status(200).send(compress.decompress(data.Body));
 		return;
 	} catch (err) {
-		console.log(err);
+		logger.error(err);
 	}
 
 	try {
@@ -1712,7 +1618,7 @@ app.post('/get_replay', async (req, res) => {
 			Bucket: config.s3.bucket,
 			Key: req.body.game_id + '.json',
 		}).promise();
-		console.log(data);
+		// logger.debug(data);
 		res.status(200).send(data.Body);
 		return;
 	} catch (err) {
@@ -1731,8 +1637,8 @@ app.post('/playerinfo', (req, res) => {
 	User.find({user_id: req.body.pla1})
 		.then((result) => {
 			//res.send(result);
-			console.log('getting player info');
-			console.log(result);
+			// logger.debug('getting player info');
+			// logger.debug(result);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no user found"
@@ -1743,8 +1649,8 @@ app.post('/playerinfo', (req, res) => {
 					User.find({user_id: req.body.pla2})
 						.then((result2) => {
 							//res.send(result);
-							console.log('getting player info');
-							console.log(result2);
+							// logger.debug('getting player info');
+							// logger.debug(result2);
 							if (result2.length == 0){
 								res.status(200).send({
 						        	data: "no user found"
@@ -1765,7 +1671,7 @@ app.post('/playerinfo', (req, res) => {
 							}
 						})
 						.catch((error) => {
-							console.log(error);
+							logger.error(error);
 						})
 				} else {
 					res.status(200).send({
@@ -1779,7 +1685,7 @@ app.post('/playerinfo', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 
 });
@@ -1789,8 +1695,8 @@ app.post('/get_colors', (req, res) => {
 	User.find({user_id: req.body.user_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('getting user colors');
-			console.log(result);
+			// logger.debug('getting user colors');
+			// logger.debug(result);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no user found"
@@ -1806,7 +1712,7 @@ app.post('/get_colors', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
@@ -1817,9 +1723,9 @@ app.post('/populate-hub', (req, res) => {
 		.exec()
 		.then((result) => {
 			//res.send(result);
-			console.log('dbdbdb result');
-			//console.log(result);
-			//console.log(result[0]);
+			// logger.debug('dbdbdb result');
+			//logger.debug(result);
+			//logger.debug(result[0]);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no results"
@@ -1839,7 +1745,7 @@ app.post('/populate-hub', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 app.post('/populate-leaderboard', (req, res) => {
@@ -1849,9 +1755,9 @@ app.post('/populate-leaderboard', (req, res) => {
 		.exec()
 		.then((result) => {
 			//res.send(result);
-			console.log('dbdbdb result');
-			console.log(result);
-			console.log(result[0]);
+			// logger.debug('dbdbdb result');
+			// logger.debug(result);
+			// logger.debug(result[0]);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no results"
@@ -1870,63 +1776,15 @@ app.post('/populate-leaderboard', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
-//app.get('/reset-ratings', (req, res) => {
-//	User.updateMany({}, {"$set":{"rating": 1500}})
-//		.then((result) => {
-//			//res.send(result);
-//			console.log('ratings maybe updated?');
-//			
-//			res.status(200).send({
-//	        	data: "done?"
-//	        });
-//			
-//		})
-//		.catch((error) => {
-//			console.log(error);
-//		})
-//});
-//app.get('/set-color', (req, res) => {
-//	User.updateMany({}, {"$set":{"colors": [1, 2, 3, 4, 5]}}, {upsert: true})
-//		.then((result) => {
-//			//res.send(result);
-//			console.log('colors maybe updated?');
-//			
-//			res.status(200).send({
-//	        	data: "done colors?"
-//	        });
-//			
-//		})
-//		.catch((error) => {
-//			console.log(error);
-//		})
-//});
-
-
-
-//app.get('/set-qual', (req, res) => {
-//	User.updateMany({}, {"$set":{"qualified": "", "qualified_shape": ""}}, {upsert: true})
-//		.then((result) => {
-//			//res.send(result);
-//			console.log('qual maybe updated?');
-//			
-//			res.status(200).send({
-//	        	data: "done qual?"
-//	        });
-//			
-//		})
-//		.catch((error) => {
-//			console.log(error);
-//		})
-//});
 
 app.get('/set-dumb', (req, res) => {
 	User.updateMany({}, {"$set":{"goodenough": 0}}, {upsert: true})
 		.then((result) => {
 			//res.send(result);
-			console.log('set dumb bot beaten?');
+			logger.debug('set dumb bot beaten?');
 			
 			res.status(200).send({
 	        	data: "done dumb?"
@@ -1934,7 +1792,7 @@ app.get('/set-dumb', (req, res) => {
 			
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
@@ -1942,7 +1800,7 @@ app.get('/set-email', (req, res) => {
 	User.updateMany({}, {"$set":{"email": ""}}, {upsert: true})
 		.then((result) => {
 			//res.send(result);
-			console.log('set email?');
+			logger.debug('set email?');
 			
 			res.status(200).send({
 	        	data: "done email?"
@@ -1950,15 +1808,15 @@ app.get('/set-email', (req, res) => {
 			
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 
 
 
 app.post('/stripe-payment', (req, res) => {
-	console.log('stripe pay');
-	console.log(req.body);
+	logger.debug('stripe pay');
+	logger.debug(req.body);
 	
 	res.status(200).send({
 		data: 'done'
@@ -1968,8 +1826,8 @@ app.post('/stripe-payment', (req, res) => {
 
 
 app.post('/deactivate', (req, res) => {
-	console.log('deactivating');
-	console.log(req.body.game_id);
+	// logger.debug('deactivating');
+	// logger.debug(req.body.game_id);
 	deactivate_game(req.body.game_id);
 	
 	res.status(200).send({
@@ -1980,24 +1838,24 @@ app.post('/deactivate', (req, res) => {
 
 
 app.post('/get-qualified', (req, res) => {
-	console.log('retreiving qualified players');
+	// logger.debug('retreiving qualified players');
 	
 	User.find({qualified: {$ne: "", $exists: true}})
 		.then((result) => {
 			//res.send(result);
-			console.log('getting qualified players');
-			console.log(result);
+			logger.debug('getting qualified players');
+			// logger.debug(result);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no players"
 		        });
 			} else {
-				console.log(result);
+				// logger.debug(result);
 				let qual_arr = [];
 				for (let i = 0; i < result.length; i++){
 					qual_arr.push([result[i].user_id, result[i].qualified_shape]);
 				}
-				console.log(qual_arr);
+				// logger.debug(qual_arr);
 				res.status(200).send({
 		        	data: "all good",
 					players: qual_arr
@@ -2005,14 +1863,14 @@ app.post('/get-qualified', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 	
 });
 
 
 app.get('/t2f/est', (req, res) => {
-	console.log('triggerring');
+	// logger.debug('triggerring');
 	trigger_deactivation();	
 });
 // ------
@@ -2038,11 +1896,11 @@ app.get('/challenge/:game_id', (req, res) => {
 app.post('/validate-challenge/:game_id', (req, res) => {
 	let g_id = req.params.game_id;
 	//find via mongoose, check if player1 != player2
-	console.log('finding game via mongoooooooooooooooooooose');
+	// logger.debug('finding game via mongoooooooooooooooooooose');
 	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('db result');
+			// logger.debug('db result');
 			if (result.length == 0){
 				res.status(404).send({
 		        	data: "no game found"
@@ -2059,10 +1917,10 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 						let active_game = active_games[g_id];
 						if(active_game != undefined){
 							active_game[2] = req.body.user_id;
-							console.log('p2_session_id updated');
+							// logger.debug('p2_session_id updated');
 							//start_world(g_id);
 						} else{
-							console.log('WTF game ' + g_id + ' probably canceled in the meantime? race condition?');
+							logger.debug('WTF game ' + g_id + ' probably canceled in the meantime? race condition?');
 						}
 					});
 				
@@ -2074,7 +1932,7 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 			res.status(404).send({
 				data: "no game found"
 			});
@@ -2100,7 +1958,7 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 		Game.find({game_id: g_id})
 			.then((result) => {
 				//res.send(result);
-				console.log('updating p2 in db');
+				// logger.debug('updating p2 in db');
 				if (result.length == 0){
 					res.status(404).send({
 			        	data: "no game found"
@@ -2111,9 +1969,9 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 							let active_game = active_games[g_id];
 							if(active_game != undefined){
 								active_game[2] = req.body.user_id;
-								console.log('p2_details updated');
+								// logger.debug('p2_details updated');
 							} else
-								console.log('WTF 2 game ' + g_id + ' probably canceled in the meantime? race condition?');
+							logger.debug('WTF 2 game ' + g_id + ' probably canceled in the meantime? race condition?');
 							//start_world(g_id);
 						});
 					Game.findOne({game_id: g_id}).then(result=>{
@@ -2136,7 +1994,7 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 				}
 			})
 			.catch((error) => {
-				console.log(error);
+				logger.error(error);
 			})
 		
 	} else if (active_game[0] == 1){
@@ -2144,7 +2002,7 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 		Game.find({game_id: g_id})
 			.then((result) => {
 				//res.send(result);
-				console.log('db result');
+				// logger.debug('db result');
 				if (result.length == 0){
 					res.status(404).send({
 			        	data: "no game found"
@@ -2163,22 +2021,22 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 				}
 			})
 			.catch((error) => {
-				console.log(error);
+				logger.error(error);
 			})
 	} else {
-		console.log('something went wrong here');
+		logger.error('something went wrong here');
 	}
 	
 })
 app.post('/resume-game', (req, res) => {
-	console.log(req.body);
-    console.log(req.body.user_name);
-    console.log(req.body.password);
+	// logger.debug(req.body);
+	// logger.debug(req.body.user_name);
+  //   logger.debug(req.body.password);
 	
 	Game.find({game_id: req.body.game_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('db result');
+			// logger.debug('db result');
 			if (result.length == 0){
 				res.status(404).send({
 		        	data: "game not found"
@@ -2203,11 +2061,11 @@ app.post('/resume-game', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 });
 app.post('/monitor', (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 	tutorial_finishings[req.body.game_id] = req.body.phase;
 	
 	res.status(200).send({
@@ -2215,7 +2073,7 @@ app.post('/monitor', (req, res) => {
     });
 });
 app.post('/qqmonitoring', (req, res) => {
-	console.log(req.body);
+	// logger.debug(req.body);
 	
 	res.status(200).send({
 		data: 'basic',
@@ -2263,8 +2121,8 @@ function findAgain(req, res, g_id){
 	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
-			console.log('db result');
-			//console.log(result);
+			// logger.debug('db result');
+			//logger.debug(result);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no game found"
@@ -2273,14 +2131,14 @@ function findAgain(req, res, g_id){
 				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
 				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
-						console.log('game is ready');
+						// logger.debug('game is ready');
 						res.status(200).send({
 				        	data: "game ready",
 							server: 'd1'
 				        });
 					});			
 			} else if (result[0]['active'] == 1 && result[0]['server'] == 'd1'){
-				console.log('game already active, redirect');
+				// logger.debug('game already active, redirect');
 				res.status(200).send({
 		        	data: "game already active",
 					server: 'd1'
@@ -2292,7 +2150,7 @@ function findAgain(req, res, g_id){
 			}
 		})
 		.catch((error) => {
-			console.log(error);
+			logger.error(error);
 		})
 }
 
@@ -2309,7 +2167,7 @@ app.get('/server-weight/:server_id/:weight', (req, res) => {
 		res.send(200)
 	})
 	.catch((error) => {
-		console.log(error)
+		logger.error(error)
 	});
 });
 
@@ -2339,6 +2197,9 @@ app.get("/admin-panel/dash", async (req,res,next) => {
 			gameServers: servers,
 			games: active_games,
 			usersInQueue: matchmaking_queue
+		},
+		serverinfo: {
+			logs: fs.readFileSync("/tmp/logs", "utf8").split("\n").reverse().slice(0, 100).reverse().join("\n")
 		}
 	})
 	res.status(200).send(rendered)
@@ -2424,7 +2285,7 @@ async function newGame(data, socket){
 		case "automatch":
 			const user = await User.findOne({user_id: data.user_id})
 			if (user == null) {
-				console.error("User not found")
+				logger.error("User not found")
 				return;
 			}
 			if (matchmaking_queue.findIndex(x => x.user_id == user.user_id) != -1) {
@@ -2487,5 +2348,16 @@ wss.on("connection", (ws)=>{
 	})
 })
 
-server.listen(5000, () => console.log('Listening on port :5000'))
+// Route not found (404)
+app.use((req,res,next)=>{
+  return res.status(404).send("404: Not Found");
+});
+
+// Internal server error (500)
+app.use((err,req,res,next)=>{
+	logger.error(err)
+	res.status(500).send("Something blew up, sorry!")
+})
+
+server.listen(5000, () => logger.info('Listening on port :5000'))
 automatch();

@@ -11,6 +11,8 @@
     "isolated-vm": "^4.3.2",
     "mongoose": "^5.11.4",
     "node-fetch": "^2.6.1",
+    "pino": "^7.8.1",
+    "pino-pretty": "^7.5.3",
     "source-map": "^0.7.3",
     "vm2": "^3.9.2",
     "ws": "^7.5.7"
