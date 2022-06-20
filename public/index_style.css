@@ -1,0 +1,586 @@
+
+
+#game_window {
+	position: relative;
+	height: 90vh;
+	background-color: #000;
+}
+
+#game_selections {
+	position: absolute;
+	width: 1056px;
+	top: 46%;
+	left: 49%;
+	transform: translate(-50%, -50%);
+	/*background-color: #222;*/
+}
+
+.shape_block {
+	width: 348px;
+	height: 348px;
+	border-radius: 12px;
+	position: relative;
+	float: left;
+	margin-left: 2px;
+	margin-right: 2px;
+	cursor: pointer;
+	box-sizing: border-box;
+	border: 4px transparent solid;
+}
+
+span.shape_name {
+	font-size: 24px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	position: absolute;
+	left: 24px;
+	bottom: 20px;
+}
+
+img.big_shape {
+	width: 60px;
+	height: 60px;
+	position: absolute;
+	pointer-events: none;
+	top: 50%;
+	left: 50%;
+	transform-origin: center center;
+	transform: translate(-50%, -50%);
+	filter: invert(85%) sepia(16%) saturate(939%) hue-rotate(196deg) brightness(103%) contrast(104%) drop-shadow(0px 0px 0px rgb(222 225 255 / 0.1));
+	opacity: 0.69;
+	transition: all 0.25s;
+}
+
+.shape_block:hover img {
+	opacity: 1;
+	transform: translate(-50%, -50%) scale(1.1);
+	filter: invert(86%) sepia(2%) saturate(1510%) hue-rotate(198deg) brightness(109%) contrast(105%) drop-shadow(0px 0px 40px rgb(222 225 255 / 0.4));
+}
+
+.big_shape:hover {
+	
+}
+
+.big_shape.shape_active {
+	opacity: 1;
+	transform: translate(-50%, -50%) scale(1.1);
+}
+
+
+
+#main_button, #button_prompt {
+	position: absolute;
+	height: 60px;
+	line-height: 57px;
+	padding: 0px 38px 0px 38px;
+	bottom: 14%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 12px;
+	border: 1px solid rgba(148, 158, 255, 1);
+	box-sizing: border-box;
+	cursor: pointer;
+	transition: all 0.3s;
+	opacity: 0;
+	overflow: visible;
+	white-space: nowrap;
+}
+
+#button_prompt {
+	border: none;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 1.5px;
+	background: linear-gradient(133deg, rgba(246,242,250,0.59) 0%, rgba(246,242,250,0.22) 100%);
+	opacity: 1;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	cursor: auto;
+}
+
+#main_button:hover {
+	
+}
+
+#main_button.normal_ready {
+	background-color: rgba(148, 158, 255, 0.1);
+}
+
+#main_button.normal_ready:hover {
+	background-color: rgba(128, 138, 255, 0.2);
+}
+
+#main_button_lbl {
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: rgba(181, 188, 255, 0.96);
+	display: inline-block;
+	pointer-events: none;
+}
+
+#main_button_versus {
+	position: relative;
+	font-size: 13px;
+	font-weight: 500;
+	color: rgba(220, 225, 252, 0.86);
+	background-color: rgba(148, 158, 255, 0.12);
+	line-height: 39px;
+	display: inline-block;
+	margin-right: -29px;
+	margin-left: 35px;
+	padding: 1px 36px 0px 16px;
+	border-radius: 6px;
+	transition: all 0.3s;
+	display: none;
+}
+
+#main_button_versus:hover {
+	background-color: rgba(128, 138, 245, 0.4);
+}
+
+#main_button_versus:hover .versus_dropdown {
+	opacity: 1;
+}
+
+.versus_dropdown {
+	right: 4px;
+	opacity: 0.69;
+	transition: opacity 0.3s;
+}
+
+#cncl_button {
+	position: absolute;
+	height: 60px;
+	line-height: 57px;
+	padding: 0px 38px 0px 38px;
+	bottom: 14%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 12px;
+	border: 1px solid rgba(148, 158, 255, 0.12);
+	color: rgba(242, 246, 250, 0.69);
+	box-sizing: border-box;
+	cursor: pointer;
+	transition: all 0.3s;
+	opacity: 0;
+	pointer-events: none;
+}
+
+#cncl_button:hover {
+	color: rgba(248, 220, 216, 0.69);
+	border: 1px solid rgba(188, 138, 145, 0.32);
+}
+
+
+#create_acc_prompt {
+	position: absolute;
+	bottom: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 12px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.4);
+	opacity: 0;
+}
+
+#new_acc_link {
+	color: rgba(181, 188, 255, 0.69);
+	padding: 4px;
+}
+
+#new_acc_link:hover {
+	color: rgba(181, 188, 255, 0.89);
+}
+
+
+
+#shape_circles {
+	/*border: 4px rgba(128, 140, 255, 1) solid;*/
+}
+
+
+#choose_playstyle_block {
+	position: absolute;
+	bottom: 28%;
+	left: 50%;
+	transform: translateX(-50%);
+	cursor: pointer;
+	opacity: 0;
+}
+
+.playstyle_option {
+	padding: 16px 20px;
+	background-color: rgba(148, 158, 255, 0.18);
+	font-size: 12px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	float: left;
+	margin-right: 4px;
+	border-radius: 12px;
+}
+
+.playstyle_option:hover {
+	background-color: rgba(148, 158, 255, 0.24);
+}
+
+.playstyle_option.playstyle_active {
+	background-color: rgba(148, 158, 255, 0.32);
+	color: rgba(212, 217, 255, 0.96);
+}
+
+#ch_link {
+    display: inline-block;
+    font-size: 14px;
+	color: rgba(242, 246, 250, 0.69);
+	font-weight: 500;
+	position: absolute;
+	bottom: 28%;
+	left: 50%;
+	transform: translateX(-50%);
+	opacity: 0;
+	pointer-events: none;
+}
+
+
+
+
+
+#choose_color_block {
+	clear: both;
+	padding-top: 48px;
+	position: absolute;
+	bottom: 28%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: none;
+}
+
+#choose_color_block h2 {
+	margin-bottom: 24px;
+}
+
+.color_option {
+	width: 34px;
+	height: 34px;
+	border-radius: 32px;
+	border: 1px rgba(242, 246, 250, 0.32) solid;
+	float: left;
+	box-sizing: border-box;
+	position: relative;
+	margin-right: 16px;
+	cursor: pointer;
+	transition: border-color 0.3s;
+}
+
+.color_option:hover {
+	border: 1px rgba(242, 246, 250, 0.49) solid;
+}
+
+.color_option_active {
+	border-width: 2px;
+}
+
+.color_option div {
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 16px;
+}
+
+.color_price {
+	width: 100%;
+	text-align: center;
+	display: block;
+	position: absolute;
+	bottom: -24px;
+	font-size: 13px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.86);
+}
+
+#buy_more_colors {
+	position: absolute;
+	line-height: 31px;
+	border: 1px solid rgba(242, 246, 250, 0.32);
+	border-radius: 34px;
+	display: inline-block;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	padding: 0px 16px 1px 16px;
+	cursor: pointer;
+	box-sizing: border-box;
+	opacity: 0.4;
+	transition: opacity 0.3s;
+}
+
+#buy_more_colors span {
+	pointer-events: none;
+}
+
+
+#buy_more_colors:hover {
+	border: 1px solid rgba(242, 246, 250, 0.49);
+	color: rgba(242, 246, 250, 0.89);
+	opacity: 1;
+}
+
+#color_gblue {
+	background-color: rgba(28, 196, 240, 1);
+}
+
+#color_purply {
+	background-color: rgba(128, 140, 255, 1);
+}
+
+#color_redish {
+	background-color: rgba(235, 119, 103, 1);
+}
+
+#color_yerange {
+	background-color: rgba(218, 183, 96, 1);
+}
+
+#color_pistagre {
+	background-color: rgba(148, 176, 108, 1);
+}
+
+.color_insides {
+	pointer-events: none;
+}
+
+#paid_colors {
+	float: left;
+}
+
+
+#paid_colors a:first-of-type {
+	margin-left: 20px;
+}
+
+a.buy {
+	opacity: 0;
+	display: none;
+	pointer-events: none;
+}
+
+
+.extra_colors {
+	float: left;
+}
+
+
+
+
+
+
+
+/* ----- ----- */
+
+#index_container {
+	width: 86vw;
+	background: rgb(31,28,34);
+	background: linear-gradient(164deg, rgba(31,28,34,1) 0%, rgba(0,0,0,1) 39%);
+	position: absolute;
+	top: 90vh;
+	left: 7vw;
+}
+
+#index_container_in {
+	width: 80%;
+	margin-left: 10%;
+}
+
+#index_intro {
+	padding-top: calc(100px + 2vh);
+	width: 560px;
+	font-size: 34px;
+	font-weight: 600;
+	line-height: 44px;
+	color: rgba(242, 246, 250, 1);
+	background: linear-gradient(132deg, rgba(239,236,246,1) 0%, rgba(239,236,242,0.69) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+#index_intro .play_type_first {
+	opacity: 1;
+}
+
+
+
+.play_type {
+	color: rgba(242, 246, 250, 1);
+	background: linear-gradient(132deg, rgba(190,208,255,1) 0%, rgba(195,176,248,1) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	opacity: 0.4;
+	transition: opacity 0.3s;
+}
+
+#index_intro .play_type:hover{
+	opacity: 1;
+}
+
+#mechanics_button {
+	line-height: 60px;
+	padding: 0 28px;
+	border-radius: 60px;
+	background: rgb(61,58,66);
+	background: linear-gradient(132deg, rgba(61,58,66,0.96) 0%, rgba(25,23,27,0.59) 100%);
+	background-size: 100%;
+	background-position: 0% 50%;
+	display: inline-block;
+	cursor: pointer;
+	transition: all 0.3s;
+	position: relative;
+	opacity: 0.9;
+	margin-top: 68px;
+}
+
+#mechanics_button:hover {
+	background-size: 200%;
+	background-position: 50% 50%;
+	opacity: 1;
+	transition: all 0.3s;
+}
+
+#mechanics_button:hover .mechanics_button_lbl {
+	opacity: 1;
+	background-size: 200%;
+}
+
+#mechanics_button:hover .ico_mechplus {
+	opacity: 1;
+}
+
+/*#mechanics_button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(12deg, rgba(61,58,66,0.96) 0%, rgba(25,23,27,0.86) 100%);
+  transition: 0.5s;
+  opacity: 0;
+}
+
+#mechanics_button:hover::before {
+	opacity: 1;
+}*/
+
+.mechanics_button_lbl {
+	background: rgb(212,222,255);
+	background: linear-gradient(132deg, rgba(212,222,255,1) 0%, rgba(228,201,255,0.8) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.ico_mechplus {
+	width: 16px;
+	height: 16px;
+	margin-top: 22px;
+	margin-left: 28px;
+	background: url(asset/ico_mechplus.png);
+	background-size: cover;
+	display: inline-block;
+	float: right;
+	opacity: 0.69;
+	transition: opacity 0.3s;
+}
+
+#leaderboard_table {
+	margin-top: 120px;
+	width: 100%;
+}
+
+h3.head_norm {
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+}
+
+.tab_row {
+	width: 100%;
+	height: 92px;
+	padding-bottom: 2px;
+	border-bottom: 1px solid rgba(242, 246, 250, 0.1);
+}
+
+.tab_row_first {
+	margin-top: 40px;
+}
+
+.lb_item {
+	line-height: 92px;
+	font-size: 24px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+}
+
+span.lb_num {
+	float: left;
+	display: inline-block;
+	color: rgba(242, 246, 250, 0.49);
+}
+
+.lb_name {
+	float: left;
+	display: inline-block;
+	margin-left: 6vw;
+}
+
+.lb_rating {
+	float: right;
+	display: inline-block;
+	text-align: right;
+}
+
+.lb_showmore {
+	display: inline-block;
+	margin-top: 28px;
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.52);
+}
+
+.lb_showmore:hover {
+	color: rgba(232, 236, 255, 0.72);
+}
+
+.footer_link {
+	display: inline-block;
+	margin-right: 20px;
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.69);
+	float: left;
+	padding: 16px;
+	margin-left: -16px;
+}
+
+.footer_link:hover {
+	color: rgba(232, 236, 255, 0.92);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

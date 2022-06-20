@@ -325,6 +325,7 @@ function get_color(color_name){
 			return 'color3';
 			break;
 		case 'purply':
+		case 'default':
 			return 'color1';
 			break;
 		case 'redish':
@@ -359,6 +360,9 @@ function get_color(color_name){
 			break;
 		case 'rozblue':
 			return 'color13';
+			break;
+		case 'legorange':
+			return 'color14';
 			break;
 		default:
 			return 'color1';
@@ -405,6 +409,9 @@ function get_color_num(color_name){
 			break;
 		case 'rozblue':
 			return 13;
+			break;
+		case 'legorange':
+			return 14;
 			break;
 		default:
 			return 'color1';
@@ -554,7 +561,7 @@ function bot_game(data, botinfo){
 	
 	var chosen_server = pick_server('real');
 
-	if(data.force_server != undefined){
+	if (data.force_server != undefined){
 		chosen_server = data.force_server;
 	}
 
@@ -2421,7 +2428,7 @@ async function newGame(data, socket){
 				}
 			}))
 			break
-		case "automatch":
+		case "ranked":
 			const user = await User.findOne({user_id: data.user_id})
 			if (user == null) {
 				console.error("User not found")
@@ -2461,6 +2468,11 @@ async function newGame(data, socket){
 				sendAutomatchStatus()
 			})
 			break;
+		default:
+			response = {
+				meta: "something went wrong (df)",
+			}
+			break;
 	}
 }
 
@@ -2471,9 +2483,11 @@ wss.on("connection", (ws)=>{
 		let message = JSON.parse(msg);
 		switch(message.type){
 			case "join":
-				if (message.data.user_id == 'anonymous') return;
+				//if (message.data.user_id == 'anonymous') return;
+				let ushape = message.data.user_shape;
+				if (!(ushape == 'circles' || ushape == 'squares' || ushape == 'triangles')) break;
 				let session = await Session.find({session_id: message.data.session_id})
-				if (session == null) return;
+				if (session == null && message.data.user_id != 'anonymous') return;
 				userSocketMap[message.data.user_id] = ws;
 				newGame(message.data, ws)
 				ws.send(JSON.stringify({
@@ -2482,7 +2496,7 @@ wss.on("connection", (ws)=>{
 						message: "OK"
 					}
 				}))
-			break;
+				break;
 		}
 	})
 })

@@ -275,6 +275,41 @@ function dismiss_helper(){
 	dismiss_intent = 0;
 }
 
+function replace_button_prompt(){
+	anime({
+		targets: '#choose_playstyle_block',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		delay: 200,
+		duration: 300
+	});
+	
+	anime({
+		targets: '#main_button',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 100
+	});
+	
+	anime({
+		targets: '#create_acc_prompt',
+		opacity: 1,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	
+	anime({
+		targets: '#button_prompt',
+		opacity: 0,
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	
+	document.getElementById('choose_playstyle_block').style.pointerEvents = 'auto';
+	document.getElementById('main_button').style.pointerEvents = 'auto';
+	document.getElementById('button_prompt').style.pointerEvents = 'none';
+}
+
 function bs_player_selection(){
 	anime({
 		targets: '#overlay',
@@ -592,6 +627,11 @@ function login_success(user_name){
 	}
 	
 	try {
+		game_window_setup();
+		setTimeout(function(){
+	  		
+		}, 600);
+		
 		//if (temp_from_nongame) window.location = 'https://yare.io/hub';
 	} catch (e){
 		console.log(e);
@@ -714,84 +754,266 @@ function wait_start_view(){
 }
 
 function wait_challenge_view(){
+  	//anime({
+  	//	targets: '#user_selections',
+  	//	translateY: [0, -10],
+  	//	opacity: [1, 0],
+  	//	easing: 'easeOutQuad',
+  	//	duration: 300
+  	//});
+  	//anime({
+  	//	targets: '#pre_game',
+  	//	translateY: [0, -10],
+  	//	opacity: [1, 0],
+  	//	easing: 'easeOutQuad',
+  	//	duration: 300
+  	//});
+	//
+	//setTimeout(function(){
+  	//	document.getElementById('user_selections').style.display = 'none';
+	//	document.getElementById('pre_game').style.display = 'none';
+	//	document.getElementById('waiting_for_opponent').style.display = 'block';
+	//	document.getElementById('waiting_challenge').style.display = 'block';
+	//	
+	//	document.getElementById('waiting_head_text').innerHTML = 'Waiting for a friend...';
+	//	document.getElementById('waiting_secondary_text').style.display = 'none';
+	//  	anime({
+	//  		targets: '#waiting_for_opponent',
+	//  		translateY: [-10, 0],
+	//  		opacity: [0, 1],
+	//  		easing: 'easeOutQuad',
+	//  		duration: 300
+	//  	});
+	//  	anime({
+	//  		targets: '#waiting_challenge',
+	//  		translateY: [-10, 0],
+	//  		opacity: [0, 1],
+	//  		easing: 'easeOutQuad',
+	//  		duration: 300
+	//  	});
+	//}, 300);
   	anime({
-  		targets: '#user_selections',
-  		translateY: [0, -10],
-  		opacity: [1, 0],
+  		targets: '#game_selections',
+  		opacity: 0,
   		easing: 'easeOutQuad',
   		duration: 300
   	});
   	anime({
-  		targets: '#pre_game',
-  		translateY: [0, -10],
-  		opacity: [1, 0],
+  		targets: '#choose_color_block',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#wait_container',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#load_para',
+  		top: '50%',
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#ch_link',
+  		opacity: 1,
   		easing: 'easeOutQuad',
   		duration: 300
   	});
 	
-	setTimeout(function(){
-  		document.getElementById('user_selections').style.display = 'none';
-		document.getElementById('pre_game').style.display = 'none';
-		document.getElementById('waiting_for_opponent').style.display = 'block';
-		document.getElementById('waiting_challenge').style.display = 'block';
-		
-		document.getElementById('waiting_head_text').innerHTML = 'Waiting for a friend...';
-		document.getElementById('waiting_secondary_text').style.display = 'none';
-	  	anime({
-	  		targets: '#waiting_for_opponent',
-	  		translateY: [-10, 0],
-	  		opacity: [0, 1],
-	  		easing: 'easeOutQuad',
-	  		duration: 300
-	  	});
-	  	anime({
-	  		targets: '#waiting_challenge',
-	  		translateY: [-10, 0],
-	  		opacity: [0, 1],
-	  		easing: 'easeOutQuad',
-	  		duration: 300
-	  	});
-	}, 300);
+  	document.getElementById('tr_loader2').style.opacity = 0;
+	document.getElementById('load_para').innerHTML = 'Waiting for a friend...';
+	document.getElementById('main_button_lbl').innerHTML = 'Copy link';
+	document.getElementById('main_button').style.borderColor = 'transparent';
+	document.getElementById('ch_link').style.pointerEvents = 'auto';
+	document.getElementById('game_selections').style.pointerEvents = 'none';
   
 }
 
-function wait_opponent_view(){
+function restore_view(){
   	anime({
-  		targets: '#user_selections',
-  		translateY: [0, -10],
-  		opacity: [1, 0],
+  		targets: '#game_selections',
+  		opacity: 1,
   		easing: 'easeOutQuad',
   		duration: 300
   	});
   	anime({
-  		targets: '#pre_game',
-  		translateY: [0, -10],
-  		opacity: [1, 0],
+  		targets: '#choose_color_block',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#wait_container',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#load_para',
+  		top: '70%',
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#ch_link',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#main_button',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 0
+  	});
+  	anime({
+  		targets: '#cncl_button',
+  		opacity: 0,
   		easing: 'easeOutQuad',
   		duration: 300
   	});
 	
-	setTimeout(function(){
-  		document.getElementById('user_selections').style.display = 'none';
-		document.getElementById('pre_game').style.display = 'none';
-		document.getElementById('waiting_for_opponent').style.display = 'block';
-		document.getElementById('waiting_game').style.display = 'block';
-	  	anime({
-	  		targets: '#waiting_for_opponent',
-	  		translateY: [-10, 0],
-	  		opacity: [0, 1],
-	  		easing: 'easeOutQuad',
-	  		duration: 300
-	  	});
-	  	anime({
-	  		targets: '#waiting_game',
-	  		translateY: [-10, 0],
-	  		opacity: [0, 1],
-	  		easing: 'easeOutQuad',
-	  		duration: 300
-	  	});
-	}, 300);
+	document.getElementById('tr_loader2').style.opacity = 0;
+	document.getElementById('load_para').innerHTML = 'Preparing your game...';
+	document.getElementById('main_button_lbl').innerHTML = 'Start game';
+	document.getElementById('main_button').style.borderColor = 'rgba(148, 158, 255, 1)';
+	document.getElementById('ch_link').style.pointerEvents = 'none';
+	document.getElementById('cncl_button').style.pointerEvents = 'none';
+	document.getElementById('game_selections').style.pointerEvents = 'auto';
+	
+	friendly = 0;
+}
+
+function wait_opponent_view(){
+  	//anime({
+  	//	targets: '#user_selections',
+  	//	translateY: [0, -10],
+  	//	opacity: [1, 0],
+  	//	easing: 'easeOutQuad',
+  	//	duration: 300
+  	//});
+  	//anime({
+  	//	targets: '#pre_game',
+  	//	translateY: [0, -10],
+  	//	opacity: [1, 0],
+  	//	easing: 'easeOutQuad',
+  	//	duration: 300
+  	//});
+	//
+	//setTimeout(function(){
+  	//	document.getElementById('user_selections').style.display = 'none';
+	//	document.getElementById('pre_game').style.display = 'none';
+	//	document.getElementById('waiting_for_opponent').style.display = 'block';
+	//	document.getElementById('waiting_game').style.display = 'block';
+	//  	anime({
+	//  		targets: '#waiting_for_opponent',
+	//  		translateY: [-10, 0],
+	//  		opacity: [0, 1],
+	//  		easing: 'easeOutQuad',
+	//  		duration: 300
+	//  	});
+	//  	anime({
+	//  		targets: '#waiting_game',
+	//  		translateY: [-10, 0],
+	//  		opacity: [0, 1],
+	//  		easing: 'easeOutQuad',
+	//  		duration: 300
+	//  	});
+	//}, 300);
+	
+  	anime({
+  		targets: '#game_selections',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#choose_color_block',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#wait_container',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#load_para',
+  		top: '60%',
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#main_button',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 0
+  	});
+  	anime({
+  		targets: '#cncl_button',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+	
+	document.getElementById('tr_loader2').style.opacity = 1;
+	document.getElementById('load_para').innerHTML = 'Waiting for opponent...';
+	document.getElementById('game_selections').style.pointerEvents = 'none';
+	document.getElementById('cncl_button').style.pointerEvents = 'auto';
   
+}
+
+function get_ready_view(){
+  	anime({
+  		targets: '#game_selections',
+  		opacity: [1, 0],
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#choose_playstyle_block',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#choose_color_block',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#main_button',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#index_container',
+		translateY: [0, 60],
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+  	anime({
+  		targets: '#hector',
+		translateY: [0, -60],
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+	
+  	anime({
+  		targets: '#wait_container',
+  		opacity: 1,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
 }
 
 function pre_resign(){
@@ -1124,6 +1346,17 @@ function console_collapsing(hght){
 }
 
 function code_copy_success(target){
+  	anime({
+  		targets: target,
+		color: ['rgba(133, 234, 143, 0.89)', 'rgba(118, 127, 136, 0.92)'],
+  		backgroundColor: ['rgba(133, 234, 143, 1)', 'rgba(148, 158, 255, 0.1)'],
+		//borderColor: ['rgba(133, 234, 143, 0.55)', 'rgba(148, 158, 255, 1)'],
+  		easing: 'easeOutQuad',
+  		duration: 800
+  	});
+}
+
+function code_copy_success2(target){
   	anime({
   		targets: target,
 		color: ['rgba(133, 234, 143, 0.89)', 'rgba(118, 127, 136, 0.92)'],

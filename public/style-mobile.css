@@ -28,6 +28,20 @@
 
 
 @media (max-width: 1200px) {
+	
+	/* index */
+	
+	#game_selections {
+		width: 756px;
+	}
+	
+	.shape_block {
+		width: 248px;
+	}
+	
+	/* -- */
+	
+	
 	#doc_content {
 		width: 90%;
 		margin-left: 5%;
@@ -57,6 +71,18 @@
 
 
 @media (max-width: 880px) {
+	
+	/* index */
+	
+	#game_selections {
+		width: 456px;
+	}
+	
+	.shape_block {
+		width: 148px;
+	}
+	
+	/* -- */
 	
 	
 .mobile_only {
@@ -174,7 +200,7 @@ h1#logo {
 	font-weight: 500;
 	color: rgba(242, 246, 250, 1);
 	margin-left: 24px;
-	margin-top: 24px;
+	margin-top: 16px;
 }
 
 #logo a {
@@ -188,7 +214,7 @@ h1#logo {
 .menu {
 	text-align: right;
 	position: absolute;
-	right: 0px;
+	right: -16px;
 	top: 12px;
 }
 
@@ -738,17 +764,6 @@ span.game_or, span.cancel_or {
 	margin-top: 16px;
 }
 
-.shape_block {
-	float: none;
-	width: 100%;
-	height: 72px;
-	margin-bottom: 8px;
-}
-
-span.shape_name {
-	font-size: 20px;
-}
-
 
 /* ----- */
 
@@ -1213,9 +1228,36 @@ p.tour_intro1, p.tour_intro2 {
 }
 
 
-
-
-
-
-
 }
+
+
+@media (max-width: 520px) {
+	
+	/* index */
+	
+	#game_selections {
+		width: 372px;
+	}
+	
+	.shape_block {
+		width: 120px;
+	}
+	
+	/* -- */
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

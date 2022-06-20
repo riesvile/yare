@@ -13,6 +13,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./index_style.css">
 	<link rel="stylesheet" href="./style-mobile.css">
 	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./anime.min.js"></script>
@@ -96,24 +97,6 @@
 		
 		<div class="sep_medium"></div>
 		
-		<!--
-		<div id="module_expanded">
-			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
-			<span class='module_main_tag'>Data visualization</span>
-			<div class="module_toggle" id="toggle_basic_info_graphs">
-				<div class="the_toggle" id="thetog"></div>
-			</div>
-			<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
-			<div class="module_expanded_buttons">
-				<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
-				<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
-			</div>
-			<div class="module_ilu"></div>
-			<div class="sep_medium"></div>
-			<div class="sep_medium"></div>
-		</div>
-		-->
-		
 		<span class="pref_section_label">MODULES</span>
 		<div id="modules_section">
 			
@@ -184,115 +167,227 @@
 	  
   <div id="modules_plate"></div>
   
-  <div id="trailer_box"><iframe width="1120" height="630" src="https://www.youtube.com/embed/fJvHsV32Yms" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  
   <div id="overlay"></div>
-  <div id="overlay_trailer"></div>
   <div id="grad_top2"></div>
+  
+  <div id='game_window'>
+  	<div id="wait_container">
+		<p id="load_para">Preparing the game...</p>
+		<div id="tr_loader2"></div>
+	</div>
 	  
-	 
+  	<div id='game_selections'>
+		<div id='shape_selection'>
+		  <div class="shape_block" id="shape_circle">
+			  <img src="asset/big_circle.svg" id="big_circle" class="big_shape">
+		  </div>
+		  <div class="shape_block" id="shape_square">
+			  <img src="asset/big_square.svg" id="big_square" class="big_shape">
+		  </div>
+		  <div class="shape_block" id="shape_triangle">
+			  <img src="asset/big_triangle.svg" id="big_triangle" class="big_shape">
+		  </div>
+		</div>
+	</div>
+	
+
+  <div id='choose_playstyle_block'>
+	  <div class='playstyle_option playstyle_active' id='playstyle_manual'>Play with mouse & keyboard</span></div>
+	  <div class='playstyle_option' id='playstyle_code'>Play by writing code</div>
+  </div>
+	
+	
+  <div id="choose_color_block">
+		<div class="color_option" id="color_gblue_border">
+			<div id="color_gblue"  class='color_insides'></div>
+		</div>
+		<div class="color_option" id="color_purply_border">
+			<div id="color_purply"  class='color_insides'></div>
+		</div>
+		<div class="color_option" id="color_redish_border">
+			<div id="color_redish"  class='color_insides'></div>
+		</div>
+		<div class="color_option" id="color_yerange_border">
+			<div id="color_yerange"  class='color_insides'></div>
+		</div>
+		
+		<div class="extra_colors">
+			
+			<div class="color_option ex_c_1 no_sell" id="color_pistagre_border">
+				<div id="color_pistagre"  class='color_insides'></div>
+			</div>
+			
+			<div class="color_option ex_c_2 no_sell" id="color_wirple_border">
+				<div id="color_wirple"  class='color_insides'></div>
+			</div>
+			
+			<div class="color_option ex_c_3 no_sell" id="color_magion_border">
+				<div id="color_magion"  class='color_insides'></div>
+			</div>
+			
+			<div class="color_option ex_c_9 no_sell" id="color_rozblue_border">
+				<div id="color_rozblue"  class='color_insides'></div>
+			</div>
+			
+			<div class="color_option ex_c_10 no_sell" id="color_legorange_border">
+				<div id="color_legorange"  class='color_insides'></div>
+			</div>
+			
+			<div id="paid_colors">
+			
+				<a href="https://priceblocs.com/links/fdXKQbJvNu47jMgeikZZX?client_reference_id=brigenta," class="color_option ex_c_4 buy" id="color_brigenta_border">
+					<div id="color_brigenta" class='color_insides'></div>
+					<span class="color_price">€1</span>
+				</a>
+			
+				<a href="https://priceblocs.com/links/MwO4M8L-bUfh6XRi4Qf1J?client_reference_id=greson," class="color_option ex_c_5 buy" id="color_greson_border">
+					<div id="color_greson" class='color_insides'></div>
+					<span class="color_price">€2</span>
+				</a>
+			
+				<a href="https://priceblocs.com/links/zeHSXBTCLsVYgvIDjK3g9?client_reference_id=mmmsalmon," class="color_option ex_c_6 buy" id="color_mmmsalmon_border">
+					<div id="color_mmmsalmon" class='color_insides'></div>
+					<span class="color_price">€5</span>
+				</a>
+			
+				<a href="https://priceblocs.com/links/kZpt2mxFap0v41WhpaaT6?client_reference_id=skyblue," class="color_option ex_c_7 buy" id="color_skyblue_border">
+					<div id="color_skyblue" class='color_insides'></div>
+					<span class="color_price">€20</span>
+				</a>
+				<a href="https://priceblocs.com/links/oT-VSUaKH_bUVfCus-nhy?client_reference_id=toored," class="color_option ex_c_8 buy" id="color_toored_border">
+					<div id="color_toored" class='color_insides'></div>
+					<span class="color_price">€30</span>
+				</a>
+			
+			</div>
+			
+		</div>
+		
+		<div id="buy_more_colors"><span>$<span></div>
+  </div>
+	
+	
+	<div id='ch_link'>https:/blablabla.bla</div>
+	
+	<div id='button_prompt'><span id='choose_prompt'>CHOOSE A SHAPE</span></div>
+	
+	<div id='main_button' class='normal_ready'><span id='main_button_lbl'>Start game</span><span id='main_button_versus'><span id='vs_name' class='no_events'>medium-bot</span><span class='bs_player_dropdown versus_dropdown no_events'></span></span></div>
+	<div id='cncl_button'>Cancel</div>
+	<span id='create_acc_prompt'><a href='#' id='new_acc_link'>Create an account</a>to play against other humans</span>
+		
+  </div>
+  
+  <div id="player_selection_wrap">
+	  
+	  
+	    
+	  <div id="ps_human_options">
+		  <span id="ps_type_lbl" class="ps_type_lbl">Humans</span>
+		  <div id="ps_ranked" class="ps_card ps_main_card card_active">
+			  <h3 class="ps_p_name">Ranked match</h3>
+			  <p class="ps_p_desc">Automatch queue. Waiting time 1–2 minutes.</p>
+		  </div>
+		  <div id="ps_friend" class="ps_card ps_main_card">
+			  <h3 class="ps_p_name">Challenge friend</h3>
+			  <p class="ps_p_desc">Challenge a friend to an unranked match.</p>
+		  </div>
+	  </div>
+	  
+	  <div id="ps_bot_index_options">
+		  <span id="ps_type_lbl" class="ps_type_lbl">Bots</span>
+		  <div id="ps_dumb-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_circles"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">dumb-bot</h3>
+			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
+		  </div>
+		  <div id="ps_medium-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_circles"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">medium-bot</h3>
+			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
+		  </div>
+		  <div id="ps_hard-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">hard-bot</h3>
+			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
+		  </div>
+		  <div id="ps_lego-bot" class="ps_card ps_bot_card">
+			  <div class="ps_shape_in_card_wrap">
+			  	<div class="ps_bot_shape"><span class="ico_sh_squares"></span></div>
+		  	  </div>
+			  <h3 class="ps_p_name">lego-bot</h3>
+			  <p class="ps_p_desc">Rush bot. Goes after your throat right away.</p>
+		  </div>
+		  
+		  
+	  </div>
+	  
+  </div>
+
+
+  <div id='index_container'>
+	  <div id='index_container_in'>
+	  	<h1 id="index_intro">Real-Time Strategy game<br>where you control units<br>with <span class='play_type play_type_first type_hovering'>JavaScript</span>, <span class='play_type'>Python</span>,<br><span class='play_type'>Mouse & Keyboard</span>, <br><span class='play_type'>Touch</span>, <span class='play_type'>...</span></h1>
+		
+		<div id='mechanics_button'><span class='mechanics_button_lbl'>Game mechanics</span><span class='ico_mechplus'></span></div>
+		
+		
+		<div id='leaderboard_table'>
+			<h3 class='head_norm'>Leaderboard</h3>
+			
+			<div class='tab_row tab_row_first'>
+				<span class='lb_item lb_num'>1</span>
+				<span class='lb_item lb_name'>petergregory</span>
+				<span class='lb_item lb_rating'>1958</span>
+			</div>
+			<div class='tab_row'>
+				<span class='lb_item lb_num'>2</span>
+				<span class='lb_item lb_name'>lev</span>
+				<span class='lb_item lb_rating'>1948</span>
+			</div>
+			<div class='tab_row'>
+				<span class='lb_item lb_num'>3</span>
+				<span class='lb_item lb_name'>petergregory</span>
+				<span class='lb_item lb_rating'>1958</span>
+			</div>
+			<div class='tab_row'>
+				<span class='lb_item lb_num'>4</span>
+				<span class='lb_item lb_name'>lev</span>
+				<span class='lb_item lb_rating'>1948</span>
+			</div>
+			<div class='tab_row'>
+				<span class='lb_item lb_num'>5</span>
+				<span class='lb_item lb_name'>petergregory</span>
+				<span class='lb_item lb_rating'>1958</span>
+			</div>
+		</div>
+		<a href='#' class='lb_showmore'>Show more</a>
+		
+		<div class="index_spacer_large"></div><link rel="stylesheet" href="man-control.css">
+		
+		<a href='https://www.reddit.com/r/yare' class='footer_link'>Reddit</a>
+		<a href='https://discord.gg/tWDV7daRnB' class='footer_link'>Discord</a>
+		
+		<div class="index_spacer_large"></div>
+  	  </div>
+  </div>
 	  
 
-		 <h1 id="index_intro">Real-Time Strategy game where you control your units by writing
-JavaScript code.</h1>
+		 
 
 		<!--
 		<span class='temp_message' style='margin-left: 16%; line-height: 100px; font-weight: 500; color: rgba(255, 146, 160, 0.69)'>Server maintance in progress, game will be fully functional again in 5 minutes.</span>
 		-->
 		
-		<div class="index_spacer_large"></div>
-		<h3 class="index_head_trailer">TRAILER</h3>
-  		<div id="trailer_block"></div>
-		
-		
-		<div class="index_spacer_medium"></div>
-
-		<script>
-			function launchTutorial(){
-				fetch('/launchtut', {
-					method: "POST",
-					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({
-						user_id: getCookie('user_id'),
-						session_id: getCookie('session_id')
-					})
-				})
-					.then(response => response.json())
-					.then(response => {
-						game_id = response.g_id;
-						window.location.href = './' + response.server + 'n/' + response.g_id;
-					})
-				}
-		</script>
-		
-		<div class="action_block" id="action_tut" onclick="launchTutorial()">
-			<h4 class="action_head">TUTORIAL</h4>
-			<p class="action_desc">Learn the basics of the game in an interactive tutorial</p>
-			<div class="ico_arrow arrow_tut"></div>
-		</div>
-		<div class="index_sep_line"></div>
-		<div class="action_block" id="action_start_playing">
-			<h4 class="action_head">START PLAYING</h4>
-			<p class="action_desc">Create an account and play for free against real people</p>
-			<div class="ico_arrow arrow_start_playing"></div>
-		</div>
-		
-		
-		<!--
-		<div class="index_spacer_medium"></div>
-		
-		
-		<a href="/tournament" id="tournament_block">
-			<span class="yare_ico_ilu_index"><span class="yare_ico_ilu_blur_index"></span></span>
-			<h3 class="tournament_banner_h">Tournament for 1 Ethereum</h3>
-			<p class="tournament_banner_date">September 14–26</p>
-		</a>
-			-->
-		
-		<div class="index_spacer_medium"></div>
-		<div class="sep_line_full"></div>
-		
-		<div class="index_spacer_medium"></div>
-		<div class="index_outro">
-		    <h2 class="index_he">Easy to learn, difficult to master</h2>
-			<p>1 versus 1, harvest energy from stars and use it to create new spirits (the game’s units), attack, and defend yourself.</p>
-			<p>Write real JavaScript code, create functions and adjust your code in real-time, reacting to the current game state. Or feel free to try writing a fully autonomous code without supervision.</p>
-			
-			<div class="index_spacer_small"></div>
-			
-			<a href="/documentation" class="index_link">Documentation</a>
-			<a href="https://reddit.com/r/yaregame" class="index_link">r/yaregame</a>
-			<a href="https://discord.gg/tWDV7daRnB" class="index_link">Discord server</a>
-			
-	    </div>
 		
 		
 		
-		<div class="index_spacer_large"></div>
-		
-		<h3 class="index_head">GALLERY</h3>
-		<div id="gallery_block">
-			<div id="gallery_block_in">
-				<div class="gal_el">
-					<div id="gal_img1"><img src="./asset/gal1.png"></div>
-					<p class="img_description">Two players in the middle of a battle</p>
-				</div>
-				<div class="gal_el">
-					<div id="gal_img2"><img src="./asset/gal2.png"></div>
-					<p class="img_description">Spirits harvesting energy from a star...</p>
-				</div>
-				<div class="gal_el">
-					<div id="gal_img3"><img src="./asset/gal3.png"></div>
-					<p class="img_description">... and sending it to the base</p>
-				</div>
-				<div class="gal_el">
-					<div id="gal_img4"><img src="./asset/gal4.png"></div>
-					<p class="img_description">Spirits going into fight</p>
-				</div>
-			</div>
-		</div>
 		
 		<div class="index_spacer_large"></div>
 	  
@@ -302,39 +397,27 @@ JavaScript code.</h1>
   
   </body>
   <script src="../animations.js"></script>
+  <script src="../newgame.js"></script>
   <script>
-	  var from_nongame = 1;
-	  let el = document.querySelector("#gallery_block");
-	  let drag_x = 0, drag_y = 0, drag_top = 0, drag_left = 0;
-
-	  let draggingFunction = (e) => {
-	      document.addEventListener('mouseup', () => {
-	          document.removeEventListener("mousemove", draggingFunction);
-	      });
-
-	      el.scrollLeft = drag_left - e.pageX + drag_x;
-	      el.scrollTop = drag_top - e.pageY + drag_y;
-	  };
-
-	  el.addEventListener('mousedown', (e) => {
-	      e.preventDefault();
-
-	      drag_y = e.pageY;
-	      drag_x = e.pageX;
-	      drag_top = el.scrollTop;
-	      drag_left = el.scrollLeft;
-
-	      document.addEventListener('mousemove', draggingFunction);
-	  });
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  
 	  
 	  //trailer
 	  
-	  var trailer_in = document.getElementById('trailer_block');
-	  var trailer_ov = document.getElementById('overlay_trailer');
-	  var trailer_vid = document.getElementById('trailer_box');
-	  
-	  trailer_in.addEventListener('click', trailer_open, false);
-	  trailer_ov.addEventListener('click', trailer_close, false);
+	  //var trailer_in = document.getElementById('trailer_block');
+	  //var trailer_ov = document.getElementById('overlay_trailer');
+	  //var trailer_vid = document.getElementById('trailer_box');
+	  //
+	  //trailer_in.addEventListener('click', trailer_open, false);
+	  //trailer_ov.addEventListener('click', trailer_close, false);
 	  
   </script>
  
