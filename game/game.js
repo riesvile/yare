@@ -50,17 +50,14 @@ s3client = new AWS.S3({
 	s3BucketEndpoint: config.s3.bucketEndpoint
 });
 
-const pino = require('pino')
-let logger; // this is pretty bad but idk any other way 🤷
-
 async function end_game(was_p1 = 0, was_p2 = 0){
-	logger.debug('END OF GAME INITIALIZED ------- STEP 1')
+	console.log('END OF GAME INITIALIZED ------- STEP 1')
 	game_finished = 1;
-	//logger.debug(game_file);
+	//console.log(game_file);
 	var game_data = JSON.stringify(game_file);
 
 	var compressed = compress.compress(game_file);
-	//logger.debug(JSON.stringify(game_file));
+	//console.log(JSON.stringify(game_file));
 	
 	//game history
 	var game_history = 'test';
@@ -85,7 +82,7 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		return;
 	}
 	
-	logger.debug('END OF GAME INITIALIZED ------- STEP 3')
+	console.log('END OF GAME INITIALIZED ------- STEP 3')
 	
 	//to handle client
 	end_winner = gameWinner
@@ -101,11 +98,11 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		Body: compressed,
 		Bucket: config.s3.bucket,
 		Key: 'replays/' + workerData[0] + '.json.comp',
-	}).promise().catch(err => logger.error(err)).finally(() => {
+	}).promise().catch(err => console.error(err)).finally(() => {
 
 		Game.find({game_id: workerData[0]})
 			.then(async (result) => {
-				logger.debug('END OF GAME INITIALIZED ------- STEP 4')
+				console.log('END OF GAME INITIALIZED ------- STEP 4')
 				var winnerShape;
 				if (p2won == 1){
 					gameWinner = players['p2'];
@@ -116,10 +113,10 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 				
 					newWinnerRating = getNewRating(winnerRating, loserRating, 1);
 					newLoserRating = getNewRating(loserRating, winnerRating, 0);
-					logger.debug('newWinnerRating');
-					logger.debug(newWinnerRating);
-					logger.debug('newLoserRating');
-					logger.debug(newLoserRating);
+					console.log('newWinnerRating');
+					console.log(newWinnerRating);
+					console.log('newLoserRating');
+					console.log(newLoserRating);
 				} else {
 					gameWinner = players['p1'];
 					winnerShape = result[0].p1_shape;
@@ -129,21 +126,21 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 				
 					newWinnerRating = getNewRating(winnerRating, loserRating, 1);
 					newLoserRating = getNewRating(loserRating, winnerRating, 0);
-					logger.debug('newWinnerRating');
-					logger.debug(newWinnerRating);
-					logger.debug('newLoserRating');
-					logger.debug(newLoserRating);
+					console.log('newWinnerRating');
+					console.log(newWinnerRating);
+					console.log('newLoserRating');
+					console.log(newLoserRating);
 				}
 
 				if(gameLoser == 'qual-bot') {
 					//await User.updateOne({user_id: gameWinner, $or: [{qualified: {$exists: false}}, {qualified: ""}]}, {qualified: workerData[0], qualified_shape: winnerShape}).exec();
 				}
 			
-				logger.debug('result');
+				console.log('result');
 				if (result[0]['ranked'] == 0) {
 					Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
 						.then((qq) => {
-							logger.debug('winner updated to ' + gameWinner);
+							console.log('winner updated to ' + gameWinner);
 							setTimeout(function(){
 								process.exit(0);
 							}, 1000);
@@ -152,13 +149,13 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 				
 					Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
 						.then((qq) => {
-							logger.debug('winner updated to ' + gameWinner);
+							console.log('winner updated to ' + gameWinner);
 							User.updateOne({user_id: gameWinner}, {rating: newWinnerRating}, {upsert: true})
 								.then((qq) => {
-									logger.debug('winner rating updated');
+									console.log('winner rating updated');
 									User.updateOne({user_id: gameLoser}, {rating: newLoserRating}, {upsert: true})
 										.then((qq) => {
-											logger.debug('loser rating updated');
+											console.log('loser rating updated');
 											setTimeout(function(){
 												process.exit(0);
 											}, 1000);
@@ -169,7 +166,7 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 			
 			})
 			.catch((error) => {
-				logger.error(error);
+				console.log(error);
 				setTimeout(function(){
 					process.exit(0);
 				}, 3000);
@@ -197,8 +194,8 @@ const {SourceMapConsumer} = require("source-map")
 
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-	.then((result) => logger.info('connected to db'))
-	.catch((error) => logger.error(error));
+	.then((result) => console.log('connected to db'))
+	.catch((error) => console.log(error));
 
 
 const min_beam = 200;
@@ -219,15 +216,6 @@ function setBotCode(name, sand) {
 
 //initiate_world
 parentPort.on("message", message => {
-	logger = pino({
-		transport: {
-			targets: [
-				{ target: "pino-pretty", level: "debug"},
-				{ target: "pino/file", options: {destination: `/var/log/game-${workerData[0]}.log`}, level: "trace"},
-			]
-		},
-		level: "trace",
-	})
   if (message.data == "initiate world") {
 	    if (workerData[1] == 'tutorial'){
 			game_duration = 0;
@@ -302,7 +290,7 @@ parentPort.on("message", message => {
 			  player1_code = message.pl_code;
 			  sand1.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
-				logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+				console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 				end_game(0, 1);
 			}
 		  } else {
@@ -314,7 +302,7 @@ parentPort.on("message", message => {
 		  				player1_session = message.session_id;
 						sand1.setPlayerCode(message.pl_code);
 						if (message.resigning == 1){
-							logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+							console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 							end_game(0, 1);
 						}
 		  			} else { 
@@ -323,7 +311,7 @@ parentPort.on("message", message => {
 				}
 			})
 			.catch((error) => {
-				logger.error(error);
+				console.log(error);
 			}) 
 		  }
 		  
@@ -332,7 +320,7 @@ parentPort.on("message", message => {
 			  player2_code = message.pl_code;
 			  sand2.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
-				logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+				console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 				end_game(1, 0);
 			}
 		  } else {
@@ -344,7 +332,7 @@ parentPort.on("message", message => {
 						player2_session = message.session_id;
 					  sand2.setPlayerCode(message.pl_code);
 					  if (message.resigning == 1){
-						  logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+						  console.log(message.pl_id + 'is resigning !!!!!!!!!!!');
 						  end_game(1, 0);
 					  }
 					} else { 
@@ -353,7 +341,7 @@ parentPort.on("message", message => {
 			  	}
 			})
 			.catch((error) => {
-				logger.error(error);
+				console.log(error);
 			}) 
 		  }
 	  }
@@ -383,7 +371,7 @@ parentPort.on("message", message => {
 
 			setBotCode(result[0].player2, sand2);
 
-			logger.debug('starting rating update');
+			console.log('starting rating update');
 			User.find({user_id: {$in: [players['p1'], players['p2']]}})
 				.then((results) => {
 					updates = {};
@@ -397,18 +385,18 @@ parentPort.on("message", message => {
 					}
 					Game.updateOne({game_id: workerData[0]}, updates, {upsert: true})
 						.then((qq) => {
-							logger.debug('p1 and p2 ratings updated');
+							console.log('p1 and p2 ratings updated');
 						});	
 					
 				})
 				.catch((error) => {
-					logger.error(error);
+					console.log(error);
 				})
 			
 				
 		})
   		.catch((error) => {
-  			logger.error(error);
+  			console.log(error);
   		}) 
   } else if (message.data == "update anonymous"){
   	  players_update['p1'] = message.player1;
@@ -473,10 +461,10 @@ async function handle_error(error, player, code){
 
 async function user_code(){
 	if (workerData[1] == 'tutorial'){
-		//logger.debug(player1_code);
+		//console.log(player1_code);
 		var helper_count = (player1_code.match(/my_spirits/g) || []).length;
-		//logger.debug('my_spirits count');
-		//logger.debug(helper_count);
+		//console.log('my_spirits count');
+		//console.log(helper_count);
 		
 		if (helper_count > 0){
 			tutorial_flag1 = 1;
@@ -519,7 +507,7 @@ async function user_code(){
 			handle_error(run_err, player, sand1.currentCode);
 		}
 	} catch (error){
-		logger.error("error getting output p1" + error);
+		console.log("error getting output p1" + error);
 		handle_error(error, player, sand1.currentCode);
 	}
 
@@ -550,7 +538,7 @@ async function user_code(){
 			handle_error(run_err, player, sand2.currentCode);
 		}
 	} catch (error){
-		logger.error("error getting output p2" + error);
+		console.log("error getting output p2" + error);
 		handle_error(error, player, sand2.currentCode);
 	}
 }
@@ -853,7 +841,7 @@ class Sandbox {
 		try {
 			this.funcs.channel_in.applySync(this.yd.derefInto(), [name, data], {arguments: {copy: true}});
 		} catch(e) {
-			logger.error(e);
+			console.log(e);
 		}
 	}
 
@@ -884,7 +872,7 @@ class Sandbox {
 		let pre = this.isolate.cpuTime;
 		await this.script.run(this.context, {timeout: 220});
 		let post = this.isolate.cpuTime;
-		logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
+		console.log("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 	}
 
 	async output() {
@@ -1037,7 +1025,7 @@ if (!isMainThread){
 	}
 
 	function initiate_world(ws){
-		logger.debug(init_data);
+		console.log(init_data);
 		ws.send(JSON.stringify(init_data));
 	}
 
@@ -1213,7 +1201,7 @@ if (!isMainThread){
 		}
 
 		function work(i, j){
-			//logger.debug('work ' + living_spirits[i].id + " " + living_spirits[j].id)
+			//console.log('work ' + living_spirits[i].id + " " + living_spirits[j].id)
 			let pi = living_spirits[i].player_id;
 			let pj = living_spirits[j].player_id;
 			if (pi == pj){
@@ -1399,7 +1387,7 @@ if (!isMainThread){
 				if(nb == undefined)
 					continue;
 
-				//logger.debug("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
+				//console.log("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
 				// O(N^2) part
 				for(let i = 1; i <bin.length;i++){
 					for(let j = 1; j <nb.length;j++){
@@ -1449,11 +1437,11 @@ if (!isMainThread){
 		for (i = 0; i < living_length; i++){
 			for (j = i+1; j < living_length; j++){
 				if (living_spirits[j].hp == 0) continue;
-				//logger.debug(i + ', ' + j);
+				//console.log(i + ', ' + j);
 				if (is_in_sight(living_spirits[i], living_spirits[j])){
 					//maybe add distance stuff later
 					//distance_approx = distance_nonrooted(living_spirits[i].position, living_spirits[j].position);
-					//logger.debug('distance between ' + living_spirits[i].id + ' and ' + living_spirits[j].id + 'is ' + distance_approx);
+					//console.log('distance between ' + living_spirits[i].id + ' and ' + living_spirits[j].id + 'is ' + distance_approx);
 					if (living_spirits[j].player_id == players['p1']){
 						if (living_spirits[i].player_id == players['p1']){
 							//is friend
@@ -1520,8 +1508,8 @@ if (!isMainThread){
 			}
 			
 			
-			//logger.debug('living_spirits[i].qcollisions');
-			//logger.debug(living_spirits[i].qcollisions);
+			//console.log('living_spirits[i].qcollisions');
+			//console.log(living_spirits[i].qcollisions);
 			
 		}
 		
@@ -1537,7 +1525,7 @@ if (!isMainThread){
 				if (living_spirits[n].hp == 0) continue;
 				
 				if (is_in_sight(living_spirits[n], bases[m], 400)){
-					//logger.debug(bases[m].id + ' controlled by ' + bases[m].control);
+					//console.log(bases[m].id + ' controlled by ' + bases[m].control);
 					if (bases[m].control == players['p1']){
 						if (living_spirits[n].player_id == players['p1']){
 							bases[m].sight.friends.push(living_spirits[n].id);
@@ -1585,7 +1573,7 @@ if (!isMainThread){
 
 	function progress_tut(phase_done, log=false){
 		if(log)
-		logger.debug('tutorial phase ' + phase_done +' done');
+			console.log('tutorial phase ' + phase_done +' done');
 		let i = phase_done - 1;
 
 		try {
@@ -1595,8 +1583,8 @@ if (!isMainThread){
 				parentPort.postMessage({data: i+1, game_id: workerData[0], meta: 'monitoring'});
 			}
 		} catch (error){
-			logger.error('ERROR progress tutorial error, phase_done = ' + phase_done);
-			logger.error(error);
+					console.log('ERROR progress tutorial error, phase_done = ' + phase_done);
+					console.log(error);
 				}
 	}
 
@@ -1617,7 +1605,7 @@ if (!isMainThread){
 			Object.keys(queue).forEach((id) => {
 				if(id == 'merge') return;
 				if(!id || !player_owns_spirit(id, player)){
-					logger.info("WTF: null or possible hack: player " + player + 
+					console.log("WTF: null or possible hack: player " + player + 
 						" calls "  + id + ".move()");
 					return;
 				}
@@ -1661,8 +1649,8 @@ if (!isMainThread){
 
 					let potential_structure_collisions = spirit.sight.structures;
 					for (let k = 0; k < potential_structure_collisions.length; k++){
-						//logger.debug(' ------------------------------- structure potential collisions');
-						//logger.debug(potential_structure_collisions[k]);
+						//console.log(' ------------------------------- structure potential collisions');
+						//console.log(potential_structure_collisions[k]);
 						
 						let object_name = potential_structure_collisions[k];
 						// name prefix - safe (is structure)
@@ -1711,11 +1699,11 @@ if (!isMainThread){
 				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
 				if(spirit_lookup[spirit].shape != "triangles") continue;
 				if(!commands[spirit].explode) continue;
-				//logger.debug(spirit + ' is about to explode');
+				//console.log(spirit + ' is about to explode');
 				let explodee = spirit_lookup[spirit];
 				for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
 					let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
-					//logger.debug('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
+					//console.log('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
 					if (fast_dist_leq(explodee.position, potential_target.position, 160)){
 						energize_apply.push([potential_target, -10]);
 					}
@@ -1783,11 +1771,11 @@ if (!isMainThread){
 				const to_id = queue[from_id].energize;
 
 				if(!to_id){
-					//logger.debug('thisss happened');
+					//console.log('thisss happened');
 					return;
 				} 
 				if(!from_id || !player_owns_spirit(from_id, player) || !to_id){
-					logger.info("WTF: null or possible hack player " + player + 
+					console.log("WTF: null or possible hack player " + player + 
 						" calls "  + from_id + ".energize(" + to_id+")");
 					return;
 				}
@@ -1800,23 +1788,23 @@ if (!isMainThread){
 				var to_obj;
 				
 				if (Array.isArray(to_id) && to_id.length == 2){
-					logger.debug('to_id is a position array !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+					console.log('to_id is a position array !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 					to_obj = to_id;
 				} else {
 					to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
 				}
 				
 				
-				//logger.debug('from_obj.id = ' + from_obj.id);
-				//logger.debug('to_obj.id = ' + to_obj.id);
+				//console.log('from_obj.id = ' + from_obj.id);
+				//console.log('to_obj.id = ' + to_obj.id);
 
 				if(!from_obj || !to_obj || from_obj.hp == 0 || to_obj.hp == 0){
-					logger.debug('tthis happened');
+					console.log('tthis happened');
 					return;
 				}
 				
-				//logger.debug('from_obj.id = ' + from_obj.id);
-				//logger.debug('to_obj.id = ' + to_obj.id);
+				//console.log('from_obj.id = ' + from_obj.id);
+				//console.log('to_obj.id = ' + to_obj.id);
 
 				// harvest star or fragment (prioritize fragment)
 				if (from_id == to_id){
@@ -1836,7 +1824,7 @@ if (!isMainThread){
 					if (is_harving == 1) return;
 					
 					for (let j = 0; j < from_obj.sight.structures.length; j++){
-						//logger.debug('ilook here');
+						//console.log('ilook here');
 						let struc_name = from_obj.sight.structures[j];
 
 						// name prefix - safe (is structure)
@@ -1863,14 +1851,14 @@ if (!isMainThread){
 					return;
 				}
 				
-				//logger.debug('to_obj is ' + to_obj);
+				//console.log('to_obj is ' + to_obj);
 				
 				let to_check = to_obj.position;
 				if (Array.isArray(to_obj)) to_check = to_obj;
 
 				let target_close = fast_dist_leq(from_obj.position, to_check, from_obj.range);
 				if(! target_close){
-					//logger.debug('target not close enough');
+					//console.log('target not close enough');
 					return;
 				}
 					
@@ -1899,7 +1887,7 @@ if (!isMainThread){
 					render_data3.e.push([from_id, to_id, beam_strength]);
 				} 
 				else if (to_obj.id.startsWith('base') && base_lookup[to_id]){
-					//logger.debug('energizing base---------------------------');
+					//console.log('energizing base---------------------------');
 					energize_apply.push([from_obj, -beam_strength]);
 					energize_apply_base.push([from_obj, beam_strength, to_obj]);
 					render_data3.e.push([from_id, to_id, beam_strength]);
@@ -1962,7 +1950,7 @@ if (!isMainThread){
 			let amount = energize_apply[i][1];
 			
 			if (is_fragment){
-				logger.debug('energizing fragmentTTTTTT!!!!!!!!!!');
+				console.log('energizing fragmentTTTTTT!!!!!!!!!!');
 				let new_frag = 1;
 				let frag_target = {
 					'position': target,
@@ -2079,10 +2067,10 @@ if (!isMainThread){
 
 				if (target.structure_type == 'base' && game_finished != 1){
 					
-					//logger.debug('find out whether player controls any other structures - otherwise end the game')
+					//console.log('find out whether player controls any other structures - otherwise end the game')
 					
 					//game_finished = 1;
-					//logger.debug(target.player_id + ' lost');
+					//console.log(target.player_id + ' lost');
                     //
 					//let p2won = target.player_id == players['p1'] ? 1 : 0;
 					//end_game(1 - p2won, p2won);
@@ -2144,12 +2132,12 @@ if (!isMainThread){
 				if(incoming_p1[pylon.id] == undefined)
 					incoming_p1[pylon.id] = 0;
 				incoming_p1[pylon.id] += amount;
-				//logger.debug('incoming amount 1 = ' + incoming_p1[pylon.id]);
+				//console.log('incoming amount 1 = ' + incoming_p1[pylon.id]);
 			} else {
 				if(incoming_p2[pylon.id] == undefined)
 					incoming_p2[pylon.id] = 0;
 				incoming_p2[pylon.id] += amount;
-				//logger.debug('incoming amount 2 = ' + incoming_p2[pylon.id]);
+				//console.log('incoming amount 2 = ' + incoming_p2[pylon.id]);
 			}
 		}
 		
@@ -2227,7 +2215,7 @@ if (!isMainThread){
 			if (base.energy < 0){
 				base.control = '';
 				base.shape = 'neutral';
-				logger.debug('find out whether player controls any other structures - otherwise end the game');
+				console.log('find out whether player controls any other structures - otherwise end the game');
 				check_structure_control();
 			}
 			base.energy = Math.max(0, Math.min(base.energy, base.energy_capacity));
@@ -2274,14 +2262,14 @@ if (!isMainThread){
 		
 		//if (base_lookup['base_' + players['p1']].energy >= base_lookup['base_' + players['p1']].current_spirit_cost){
 		//	if (workerData[1] == 'tutorial' && top_s > 20){
-		//		//logger.debug('can not have more than 20 spirits in tutorial');
+		//		//console.log('can not have more than 20 spirits in tutorial');
 		//	} else {
 		//		if (p1_defend != 1){
 		//			top_s++;
 		//			global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [-690, -520], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
 		//			base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
 		//			//global[players['p1'] + top_s].move([-710, -540]);
-		//			//logger.debug('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+		//			//console.log('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 		//			if (workerData[1] == 'tutorial')
 		//				progress_tut(5, true);
 		//		}
@@ -2293,7 +2281,7 @@ if (!isMainThread){
 		//		global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [520, 690], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
 		//		base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
 		//		//global[players['p2'] + top_q].move([540, 710]);
-		//		//logger.debug(top_q);
+		//		//console.log(top_q);
 		//	}
 		//}
 		
@@ -2373,16 +2361,16 @@ if (!isMainThread){
 		get_sight();
 		var diff = process.hrtime(start);
 		var took1 = (diff[0] * 1000000000 + diff[1]) / 1000000;
-		logger.debug('get_sight took = ' + took1);
+		console.log('get_sight took = ' + took1);
 		*/
 
 
 
-		//logger.debug('TIME: get_sight_fast = ' + elapsed_ms_from(sight_t0));
+		//console.log('TIME: get_sight_fast = ' + elapsed_ms_from(sight_t0));
 
-		//logger.debug('spirit_lookup[s1].sight');
-		//logger.debug(spirit_lookup['s1'].sight);
-		//logger.debug(spirit_lookup['sp1'].sight);
+		//console.log('spirit_lookup[s1].sight');
+		//console.log(spirit_lookup['s1'].sight);
+		//console.log(spirit_lookup['sp1'].sight);
 		
 		
 		// stars energy update
@@ -2410,7 +2398,7 @@ if (!isMainThread){
 	
 		//objects death & vm sandbox objects update
 		for (let i = death_queue.length - 1; i >= 0; i--){
-			//logger.debug(death_queue[i].id + ' died');
+			//console.log(death_queue[i].id + ' died');
 			if (workerData[1] == 'tutorial'){
 				if (death_queue[i].id == 'easy-bot_2')
 					progress_tut(8, true);
@@ -2418,7 +2406,7 @@ if (!isMainThread){
 			
 //			if (!death_queue[i].structure_type == 'outpost') 
 				death_queue[i].hp = 0;
-			//logger.debug(death_queue[i]);
+			//console.log(death_queue[i]);
 			//render_data2.death.push(death_queue[i].id);
 			
 			//delete spirit_lookup[suid];
@@ -2568,8 +2556,8 @@ if (!isMainThread){
 				}
 
 				for (var object_name in structure_lookup){
-					//logger.debug(' ------------------------------- structure potential collisions');
-					//logger.debug(potential_structure_collisions[k]);
+					//console.log(' ------------------------------- structure potential collisions');
+					//console.log(potential_structure_collisions[k]);
 					
 					// name prefix - safe (is structure)
 					let min_distance = structure_lookup[object_name].collision_radius;
@@ -2657,7 +2645,7 @@ if (!isMainThread){
 				spt = living_spirits[i];
 				let cutoff_parts = spt.id.split('_');
 				let cutoff_id = cutoff_parts.pop();
-				//logger.debug(spt);	
+				//console.log(spt);	
 				if (spt.player_id == players['p2']){
 					
 					//render3 part
@@ -2685,14 +2673,14 @@ if (!isMainThread){
 				//what is this doing here? (maybe important)
 				//spt.move(spt.position);
 			}
-			//logger.debug('objects processing');
+			//console.log('objects processing');
 			temp_flag = 0;
-			//logger.debug('my_spirits1.length = ' + my_spirits1.length);
-			//consolelogger.debug('living_spirits.length = ' + living_spirits.length + " p1 = " + p1_living + " p2 = " + p2_living );
+			//console.log('my_spirits1.length = ' + my_spirits1.length);
+			//console.log('living_spirits.length = ' + living_spirits.length + " p1 = " + p1_living + " p2 = " + p2_living );
 				spirit_cost(1, p1_living);
 				spirit_cost(2, p2_living);
 		} 
-		logger.debug(bases[2].id + " control = " + bases[2].control)
+		console.log(bases[2].id + " control = " + bases[2].control)
 	}
 			
 
@@ -2705,11 +2693,11 @@ if (!isMainThread){
 		}
 
 		ticks['now'] = game_duration;
-		//logger.debug('game_duration = ' + game_duration);
+		//console.log('game_duration = ' + game_duration);
 		//after everything is calculated
 			
-	//logger.debug(player2_code);
-	//logger.debug('player2_code');
+	//console.log(player2_code);
+	//console.log('player2_code');
 			//render_data = [[],[],[],[],[]];
 			
 			render_data3 = {
@@ -2748,7 +2736,7 @@ if (!isMainThread){
 					'end': end_winner
 				};
 				
-				//logger.debug(tutorial_phase);
+				//console.log(tutorial_phase);
 				
 				if (game_duration == 600){
 					if (tutorial_phase[0] == 0){
@@ -2822,8 +2810,8 @@ if (!isMainThread){
 			}
 		
 			//broadcast to clients
-			//logger.debug(JSON.stringify(render_data2))
-			//logger.debug(render_data2);
+			//console.log(JSON.stringify(render_data2))
+			//console.log(render_data2);
 			//parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData[0], meta: ''});
 			//wss.broadcast();
 			
@@ -2856,7 +2844,7 @@ if (!isMainThread){
 
 			if (workerData[1] != 'tutorial'){
 				game_file.push(render_data3);
-				//logger.debug(render_data3);
+				//console.log(render_data3);
 			}
 
 			log1 = [];
@@ -2866,7 +2854,7 @@ if (!isMainThread){
 			await user_code();
 			let update_total = elapsed_ms_from(update_t0);
 
-			logger.debug('TIME: update_state = ' + update_no_players + " (" + update_total + " total)");
+			console.log('TIME: update_state = ' + update_no_players + " (" + update_total + " total)");
 			if (update_total > 1000) cancel_game();
 	}
 	
@@ -2992,12 +2980,12 @@ if (!isMainThread){
 
 	async function mainLoop() {
 		const t1 = (+new Date());
-		logger.debug("tick " + workerData[0]);
+		console.log("tick " + workerData[0]);
 		await update_state();
 		if(game_duration % 30 == 0){
-			logger.debug("updating game " + workerData[0]);
+			console.log("updating game " + workerData[0]);
 			Game.updateOne({game_id: workerData[0]}, {last_update: (+new Date())}).catch(err => {
-				logger.error(err)
+				console.log(err)
 			});
 		}
 		setTimeout(mainLoop, Math.max(0, game_tick - (+new Date()) + t1));
