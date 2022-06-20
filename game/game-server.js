@@ -23,31 +23,18 @@ const {Worker} = require('worker_threads');
 const config = require('../config');
 const path = require('path');
 const fetch = require('node-fetch');
-const pino = require('pino')
 require('isolated-vm'); // require to avoid glitch locally
 
 var this_server = process.env.SERVER || 'd1';
 var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
-
-const logger = pino({
-  transport: {
-		targets: [
-			{ target: "pino-pretty", level: "debug"},
-			{ target: "pino/file", options: {destination: `/var/log/game-server-${this_server}.log`}, level: "trace"},
-		]
-	},
-	level: "trace",
-})
-
-logger.info(`Starting ${this_server} (${this_server_type})`);
 
 const mongoose = require('mongoose');
 const Game = require('../models/newgame.js');
 const {User, Session} = require('../models/users.js');
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-	.then((result) => logger.debug('connected to dbb'))
-	.catch((error) => logger.error(error));
+	.then((result) => console.log('connected to dbb'))
+	.catch((error) => console.log(error));
 
 var workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
@@ -73,10 +60,10 @@ function discord_postmessage(hook, msg){
 	      .then(response => {
 		  })
 	      .catch(err => {
-						logger.error(err);
+			  console.log(err);
 		  });
 	} catch (e) {
-			logger.error(e);
+		console.log(e);
 	}
 	
 }
@@ -91,23 +78,23 @@ function create_worker (game_id, game_type) {
     worker.on('error', (err) => { throw err })
     worker.on('message', (render_data) => {
         if (render_data.meta == 'initiate'){
-						logger.debug('initiate world');
+            console.log('initiate world');
             try {
                 connections[render_data.client].send(render_data.data);
                 delete connections[render_data.client];
             } catch (e){
-								logger.error(e);
+                console.log(e);
             }
         } else if (render_data.meta == 'test'){
-						logger.debug('testing');
-						logger.debug(render_data.data);
+            console.log('testing');
+            console.log(render_data.data);
         } else if (render_data.meta == 'monitoring'){
-						logger.debug('monitoring!!!!!!!!!');
-						trigger_monitoring(render_data.game_id, render_data.data);
+            console.log('monitoring!!!!!!!!!');
+            trigger_monitoring(render_data.game_id, render_data.data);
         } else {
-						logger.debug('processing render data');
-						logger.debug(render_data.game_id);
-						wss.broadcast(render_data.data, render_data.user_data, render_data.game_id);
+            console.log('processing render data');
+            console.log(render_data.game_id);
+            wss.broadcast(render_data.data, render_data.user_data, render_data.game_id);
         }
         
     })
@@ -148,8 +135,8 @@ function findAgain(req, res, g_id){
 	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
-			logger.debug('db result');
-			logger.debug(result);
+			console.log('db result');
+			console.log(result);
 			if (result.length == 0){
 				res.status(200).send({
 		        	data: "no game found"
@@ -158,14 +145,14 @@ function findAgain(req, res, g_id){
 				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
 				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
-						logger.debug('game is ready');
+						console.log('game is ready');
 						res.status(200).send({
 				        	data: "game ready",
 							server: this_server
 				        });
 					});			
 			} else if (result[0]['active'] == 1 && result[0]['server'] == this_server){
-				logger.debug('game already active, redirect');
+				console.log('game already active, redirect');
 				res.status(200).send({
 		        	data: "game already active",
 					server: this_server
@@ -177,7 +164,7 @@ function findAgain(req, res, g_id){
 			}
 		})
 		.catch((error) => {
-			logger.error(error);
+			console.log(error);
 		})
 }
 
@@ -186,7 +173,7 @@ function start_world(game_id){
 	try {
 		workers[game_id].postMessage({data: "start world", player1: active_games[game_id][1], player2: active_games[game_id][2], p1_shape: active_games[game_id][4], p2_shape: active_games[game_id][5], p1_color: active_games[game_id][6], p2_color: active_games[game_id][7]});
 	} catch (error) {
-	  logger.error(error);
+	  console.error(error);
 	}
 }
 
@@ -197,7 +184,7 @@ function initiate_world(ws, game_id){
 	try {
 		workers[game_id].postMessage({client: ws, data: "initiate world"});
 	} catch (error) {
-	  logger.error(error);
+	  console.error(error);
 	}
 }
 
@@ -218,13 +205,13 @@ function trigger_deactivation(game_id){
 		    })
 		}).then(response => response.json())
 	      .then(response => {
-					logger.debug(response);
+			  console.log(response);
 		  })
 	      .catch(err => {
-					logger.error(err);
+			  console.log(err);
 		  });
 	} catch (error) {
-		logger.error(error);
+		console.log(error);
 	}
 	
 }
@@ -243,20 +230,20 @@ function trigger_monitoring(gid, val){
 		    })
 		}).then(response => response.json())
 	      .then(response => {
-					logger.debug(response);
+			  console.log(response);
 		  })
 	      .catch(err => {
-					logger.error(err);
+			  console.log(err);
 		  });
 	} catch (error) {
-		logger.error(error);
+		console.log(error);
 	}
 }
 
 wss.broadcast = function broadcast(data, userData, game_id) {
 	var render = JSON.parse(data);
     wss.clients.forEach(function each(client) {
-			logger.debug(client.game_id);
+		console.log(client.game_id);
         if (client.readyState === WebSocket.OPEN) {
 			if (client.game_id == game_id){
 				let user_id = client.user_id;
@@ -270,18 +257,18 @@ wss.broadcast = function broadcast(data, userData, game_id) {
 
 
 wss.on('connection', function connection(ws, req) {
-	logger.debug('new client connected');
+	console.log('new client connected');
 	var g_id = /[^/]*$/.exec(req.url)[0];
 	var resigning1 = 0;
 	var resigning2 = 0;
-	logger.debug(g_id); 
+	console.log(g_id); 
 	ws.game_id = g_id;
 	//cookie session?
 	ws.client_id = generateUniqueString();
 	connections[ws.client_id] = ws;
-	//logger.debug(url);
+	//console.log(url);
 	//ws.send('welcome!');
-	//logger.debug(connections);
+	//console.log(connections);
 	initiate_world(ws.client_id, g_id);
 	
 	ws.on('message', async function incoming(message) {
@@ -294,17 +281,17 @@ wss.on('connection', function connection(ws, req) {
 		}
 		
 		if (message == 'reinitiate'){
-			logger.debug('reinitiating the world for g_id = ' + g_id);
+			console.log('reinitiating the world for g_id = ' + g_id);
 			initiate_world(ws.client_id, g_id);
 		} else {
 			try {
 				message = JSON.parse(message);
 			} catch (error) {
-				logger.error(error);
+				console.log(error);
 				return;
 			}
 			if (message.meta == "resign"){
-				logger.debug(message.u_id + ' is resigning');
+				console.log(message.u_id + ' is resigning');
 				if (message['u_id'] == active_game[1]) resigning1 = 1;
 				if (message['u_id'] == active_game[2]) resigning2 = 1;
 			} else {
@@ -329,7 +316,7 @@ wss.on('connection', function connection(ws, req) {
 
 		if (message['u_code_lang'] != undefined && message['u_code_lang'] != "javascript") {
 			let req = await fetch(config.frontendAddress + "/transpiler/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
-			// logger.debug(await req.text());
+			// console.log(await req.text());
 			let res = await req.json();
 			if (res.result) message['u_code'] = res.result;
 			if (res.error) {
@@ -342,9 +329,9 @@ wss.on('connection', function connection(ws, req) {
 		//player1_code = message;
 		try {
 			if (message['u_id'].length > 1){
-				//logger.debug('code sent by');
-				//logger.debug(message['u_id']);
-				//logger.debug(active_game[1])
+				//console.log('code sent by');
+				//console.log(message['u_id']);
+				//console.log(active_game[1])
 			}
 			if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
@@ -358,7 +345,7 @@ wss.on('connection', function connection(ws, req) {
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
 			}
 		} catch (error) {
-		  //logger.error(error);
+		  //console.error(error);
 		}
 		/*if (message['session_id'] == player1_session){
 			player1_code = `all = spirits.length;
@@ -387,26 +374,26 @@ app.get('/' + this_server + 'n/:game_id', (req, res) => {
 app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 	let g_id = req.params.game_id;
 	
-	logger.debug('finding game via mongoooooooooooooooooooose');
+	console.log('finding game via mongoooooooooooooooooooose');
 	Game.find({game_id: g_id})
 		.then((result) => {
 			//res.send(result);
-			logger.debug('db result');
-			logger.debug(result);
+			console.log('db result');
+			console.log(result);
 			if (result.length == 0){
 				findAgain(req, res, g_id);
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
 				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
 				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
-						logger.debug('game is ready');
+						console.log('game is ready');
 						res.status(200).send({
 				        	data: "game ready",
 							server: this_server
 				        });
 					});			
 			} else if (result[0]['active'] == 1 && result[0]['server'] == this_server){
-				logger.debug('game already active, redirect');
+				console.log('game already active, redirect');
 				res.status(200).send({
 		        	data: "game already active",
 					server: this_server
@@ -418,13 +405,13 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 			}
 		})
 		.catch((error) => {
-			logger.error(error);
+			console.log(error);
 		})
 });
 
 
 //app.get('/' + this_server + 'stripe', (req, res) => {
-//	logger.debug('stripe pay works');
+//	console.log('stripe pay works');
 //	
 //	res.status(200).send({
 //		data: 'donezoa'
@@ -476,12 +463,12 @@ function get_color_num(color_name){
 }
 
 function handleCheckout(checkout){
-	logger.debug('checkout reference id');
-	logger.debug(checkout.client_reference_id);
+	console.log('checkout reference id');
+	console.log(checkout.client_reference_id);
 	
 	let arr = checkout.client_reference_id.split(',');
-	logger.debug(arr[0]);
-	logger.debug(arr[1]);
+	console.log(arr[0]);
+	console.log(arr[1]);
 	
 	let c_code = get_color_num(arr[0]);
 	
@@ -493,23 +480,23 @@ function add_color_to_user(userid, color_code){
 	//	.then((result) => {
 	//		//res.send(result);
 	//		if (result.length == 0){
-	//			logger.debug('user does not exist')
+	//			console.log('user does not exist')
 	//		} else {
-	//			logger.debug('updating color ' + color_code);
+	//			console.log('updating color ' + color_code);
 	//			User.updateOne({user_id: userid}, { $push: { colors: color_code } }, {upsert: true});
 	//		}
 	//	})
 	//	.catch((error) => {
-	//		logger.debug(error);
+	//		console.log(error);
 	//	})
 	//	
 		
 		
 		User.findOneAndUpdate({user_id: userid},{"$push": {"colors": color_code}},{new: true, safe: true, upsert: true }).then((result) => {
-			logger.debug('updating color ' + color_code);
-		}).catch((error) => {
-			logger.debug('some error');
-		});
+					console.log('updating color ' + color_code);
+		        }).catch((error) => {
+					console.log('some error');
+		        });
 		
 		
 }
@@ -517,33 +504,33 @@ function add_color_to_user(userid, color_code){
 
 
 app.post('/' + this_server + 'stripe', express.json({type: 'application/json'}), (request, response) => {
-	logger.debug('stripe pay works');
+	console.log('stripe pay works');
 	const event = request.body;
 	
   // Handle the event
     switch (event.type) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
-				logger.debug('payment intent succeeded');
-				logger.debug(paymentIntent);
+		console.log('payment intent succeeded');
+		console.log(paymentIntent);
         // Then define and call a method to handle the successful payment intent.
         // handlePaymentIntentSucceeded(paymentIntent);
         break;
       case 'checkout.session.completed':
         const checkoutSession = event.data.object;
-				logger.debug('checkout done');
-				logger.debug(checkoutSession);
+	    console.log('checkout done');
+	    console.log(checkoutSession);
 		handleCheckout(checkoutSession);
         // Then define and call a method to handle the successful payment intent.
         // handlePaymentIntentSucceeded(paymentIntent);
         break;
       case 'payment_method.attached':
         const paymentMethod = event.data.object;
-        logger.debug('payment method')
+        console.log('payment method')
         break;
       // ... handle other event types
       default:
-        logger.debug(`Unhandled event type ${event.type}`);
+        console.log(`Unhandled event type ${event.type}`);
     }
 	
 	response.json({received: true});
@@ -551,7 +538,7 @@ app.post('/' + this_server + 'stripe', express.json({type: 'application/json'}),
 });
 
 app.get('/' + this_server + 'strip', (req, res) => {
-	logger.debug('stripe pay works');
+	console.log('stripe pay works');
 	
 	res.status(200).send({
 		data: 'dwork'
@@ -565,31 +552,31 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 	let active_game = active_games[g_id];
 	if (active_game == undefined){
 		//add a simple page stating the result and stats of a game
-		logger.debug('game ended or does not exist');
+		console.log('game ended or does not exist');
 		Game.find({game_id: g_id})
 			.then((result) => {
 				//res.send(result);
-				logger.debug('dbdb result');
-				//logger.debug(result);
+				console.log('dbdb result');
+				//console.log(result);
 				if (result.length == 0){
 					res.sendFile(base + '/public/nope.html');
 				} else if (result.length == 1){
 					res.sendFile(base + '/public/game-status.html');
 				} else {
-					logger.debug('something went wrong');
+					console.log('something went wrong');
 					res.sendFile(base + '/public/nope.html');
 				}
 			})
 			.catch((error) => {
-				logger.error(error);
+				console.log(error);
 			})
 	} else if (active_game[0] == 1){
 		res.sendFile(base + '/public/game.html');
 	} else {
 		if (this_server_type == "tutorial" && active_game[0] == 0){
-			logger.debug('game is being saved into db?? maybe??????????????????????????????????????');
+			console.log('game is being saved into db?? maybe??????????????????????????????????????');
 		} else {
-			logger.debug('not sure what happened here');
+			console.log('not sure what happened here');
 			res.send(404);
 		}
 	}
@@ -599,10 +586,4 @@ app.get('/' + this_server + '/:game_id', (req, res) => {
 
 app.use('/' + this_server + '/a/', express.static(base + '/public', {extensions: ["html"]}));
 
-// Internal server error (500)
-app.use((err,req,res,next)=>{
-	logger.error(err)
-	res.status(500).send("Something blew up, sorry!")
-})
-
-server.listen(5000, () => logger.info('Listening on port :5000'));
+server.listen(5000, () => console.log('Listening on port :5000'));

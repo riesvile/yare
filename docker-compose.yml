@@ -10,7 +10,6 @@ services:
       - minio
     volumes:
       - ./public:/usr/src/app/public
-      - ./logs:/var/log
   d1:
     build:
       context: .
@@ -21,8 +20,6 @@ services:
       - mongodb
       - minio
       - transpiler
-    volumes:
-      - ./logs:/var/log
   d2:
     build:
       context: .
@@ -34,8 +31,6 @@ services:
       - mongodb
       - minio
       - transpiler
-    volumes:
-      - ./logs:/var/log
   tutorial:
     build:
       context: .
@@ -46,8 +41,6 @@ services:
       - SERVER_TYPE=tutorial
     depends_on:
       - mongodb
-    volumes:
-      - ./logs:/var/log
   mongodb:
     image: "mongo"
   mongo-express:
@@ -81,5 +74,3 @@ services:
     build:
       context: ./transpiler
       dockerfile: Dockerfile
-    volumes:
-      - ./logs:/var/log
