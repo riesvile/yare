@@ -26,4 +26,4 @@ jobs:
         uses: creyD/prettier_action@v3.3
         with:
           # Running the script in dry mode just shows whether there are files that should be prettified or not
-          dry: true
+          dry: false
