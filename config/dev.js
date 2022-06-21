@@ -1,10 +1,12 @@
-var config = require('./global');
+var config = require("./global");
 
-config.mongo = 'mongodb://mongodb:27017/yare-io';
+config.mongo = "mongodb://mongodb:27017/yare-io";
 //config.mongo = 'mongodb+srv://levmiseri:02468a13579A@cluster0.us90f.mongodb.net/yare-io?retryWrites=true&w=majority';
 
-config.hooks.new_match = 'https://discord.com/api/webhooks/857711043005120532/gC9OPl80IALNIwUH3gbaS25zPw_dEiveTdfHNH0KCt1DJZJRnuCuiy9Co4OLDWXqWfNV';
-config.hooks.queue = 'https://discord.com/api/webhooks/857711043005120532/gC9OPl80IALNIwUH3gbaS25zPw_dEiveTdfHNH0KCt1DJZJRnuCuiy9Co4OLDWXqWfNV';
+config.hooks.new_match =
+  "https://discord.com/api/webhooks/857711043005120532/gC9OPl80IALNIwUH3gbaS25zPw_dEiveTdfHNH0KCt1DJZJRnuCuiy9Co4OLDWXqWfNV";
+config.hooks.queue =
+  "https://discord.com/api/webhooks/857711043005120532/gC9OPl80IALNIwUH3gbaS25zPw_dEiveTdfHNH0KCt1DJZJRnuCuiy9Co4OLDWXqWfNV";
 
 //config.s3 = {
 //    key: 'minioadmin',
@@ -15,13 +17,13 @@ config.hooks.queue = 'https://discord.com/api/webhooks/857711043005120532/gC9OPl
 //};
 
 config.s3 = {
-    key: 'HRPXONDTHZ5GLOZ6ZKDQ',
-    secret: 'pmRvXApmdh+2gWdwHqvcD3du1jZdugYYRXHnGGYpR4E',
-    bucket: 'yare',
-    endpoint: 'https://yare.sfo3.digitaloceanspaces.com/',
-    bucketEndpoint: true
+  key: "HRPXONDTHZ5GLOZ6ZKDQ",
+  secret: "pmRvXApmdh+2gWdwHqvcD3du1jZdugYYRXHnGGYpR4E",
+  bucket: "yare",
+  endpoint: "https://yare.sfo3.digitaloceanspaces.com/",
+  bucketEndpoint: true,
 };
 
-config.frontendAddress = "http://frontend:5000"
+config.frontendAddress = "http://frontend:5000";
 
 module.exports = config;
