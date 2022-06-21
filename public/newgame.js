@@ -117,11 +117,11 @@ function style_selection(e){
 	if (el.id == 'playstyle_manual'){
 		document.getElementById('playstyle_manual').classList.add('playstyle_active');
 		selected_playstyle = 'manual';
-		localStorage.setItem("chosen_playstyle") = 'manual';
+		localStorage.setItem("chosen_playstyle, 'manual');
 	} else {
 		document.getElementById('playstyle_code').classList.add('playstyle_active');
 		selected_playstyle = 'code';
-		localStorage.setItem("chosen_playstyle") = 'code';
+		localStorage.setItem("chosen_playstyle", 'code');
 	}
 	
 }
