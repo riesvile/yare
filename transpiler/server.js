@@ -1,6 +1,19 @@
 const fs = require('fs');
 const express = require('express')
+const pino = require('pino')
 const app = express()
+
+const logger = pino({
+  transport: {
+		targets: [
+			{ target: "pino-pretty", level: "debug"},
+			{ target: "pino/file", options: {destination: "/var/log/transpiler.log"}, level: "trace"},
+		]
+	},
+	level: "trace",
+})
+
+logger.info("Starting transpiler server")
 
 const router = new express.Router()
 
@@ -26,7 +39,7 @@ router.post('/transpile', function (req, res) {
   try {
     let result = require(`./languages/${language}`)(code)
     res.status(200).send({result})
-    console.log(`Transpiled from ${language} successfully`)
+    logger.info(`Transpiled from ${language} successfully`)
   }catch(e){
     let errorMessage = e.message.split("\n").slice(1).join("\n")
     res.status(400).send({error: errorMessage})
@@ -43,5 +56,12 @@ router.get("/languages", (req, res) => {
 // haproxy sends requests starting with /transpiler >:(
 app.use("/transpiler", router)
 
+// Internal server error (500)
+app.use((err,req,res,next)=>{
+	logger.error(err)
+	res.status(500).send("Something blew up, sorry!")
+})
+
 // listen to 5000
 app.listen(5000)
+logger.info("Listening...")

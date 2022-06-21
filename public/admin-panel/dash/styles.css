@@ -95,6 +95,7 @@ pre {
   margin: 0;
   margin-bottom: 2rem;
   background-color: var(--bg2);
+  overflow: auto;
 }
 
 .splitter {
