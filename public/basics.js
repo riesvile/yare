@@ -409,10 +409,10 @@ pub_modules['mod_basic-info-graphs'] = {
 	server_script_location: 0, 
 	public: 1
 }
-pub_modules['mod_manual-controls'] = {
+pub_modules['mod_manual-ui'] = {
 	active: 0,
 	name: 'Manual controls interface',
-	module_id: 'manual-controls',
+	module_id: 'manual-ui',
 	author: 'yare.io',
 	description: "Play yare with your mouse like a traditional Real-Time Strategy.",
 	type: 'UI controls',
@@ -420,8 +420,20 @@ pub_modules['mod_manual-controls'] = {
 	server_script_location: 'local',
 	public: 1
 }
+pub_modules['mod_code-editor'] = {
+	active: 0,
+	name: 'Code editor & Console',
+	module_id: 'code-editor',
+	author: 'yare.io',
+	description: "Play yare with an in-game code editor and console",
+	type: 'Essentials',
+	client_script_location: 'local',
+	server_script_location: 0,
+	public: 1
+}
 modules_local['mod_basic-info-graphs'] = pub_modules['mod_basic-info-graphs'];
-modules_local['mod_manual-controls'] = pub_modules['mod_manual-controls'];
+modules_local['mod_manual-ui'] = pub_modules['mod_manual-ui'];
+modules_local['mod_code-editor'] = pub_modules['mod_code-editor'];
 
 
 function expand_card(m_id){
@@ -978,6 +990,18 @@ function get_module_info(module_id){
 function integrate_modules(){
 	
 	let user_name = getCookie('user_id');
+	
+	if (user_name == 'anonymous'){
+		if (localStorage.getItem('chosen_playstyle') == 'manual'){
+			modules_local['mod_manual-ui'].active = 1;
+			modules_local['mod_code-editor'].active = 0;
+		}
+		if (localStorage.getItem('chosen_playstyle') == 'code'){
+			modules_local['mod_manual-ui'].active = 0;
+			modules_local['mod_code-editor'].active = 1;
+		}
+		modules_local['mod_basic-info-graphs'].active = 0;
+	}
 	
 	let server_scripts_combined = '';
 	

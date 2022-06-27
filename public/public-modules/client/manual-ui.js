@@ -1,8 +1,28 @@
+// UI
+
+let manual_css = " .ico_man_bolt {background: url(../asset/ico_manui_bolt.png);background-size: cover;}.ico_man_jump {background: url(../asset/ico_manui_jump.png);background-size: cover;}.ico_man_merge {background: url(../asset/ico_manui_merge.png);background-size: cover;}.ico_man_divide {background: url(../asset/ico_manui_divide.png);background-size: cover;}.ico_man_lock {background: url(../asset/ico_manui_lock.png);background-size: cover;}.ico_man_unlock {background: url(../asset/ico_manui_unlock.png);background-size: cover;}.ico_man_explode {background: url(../asset/ico_manui_explode.png);background-size: cover;}.ico_man_chip {background: url(../asset/ico_manui_chip.png);background-size: cover;}.ico_man_done {background: url(../asset/ico_manui_done.png);background-size: cover;}.ico_man_close {background: url(../asset/ico_manui_close.png);background-size: cover;}#man_action_special_merge, #man_action_special_divide, #man_action_special_lock, #man_action_special_unlock, #man_action_special_explode, #man_action_special_jump {display: none;}#man_ui_wrap {position: fixed;right: 20px;top: 50%;transform: translateY(-50%);pointer-events: none;z-index: 1;opacity: 0;}.man_square_btn {width: 56px;height: 56px;background-color: rgba(212, 236, 255, 0.1);border-radius: 12px;margin-bottom: 4px;position: relative;cursor: pointer;}.btn_label {font-size: 12px;font-weight: 500;color: rgba(242, 246, 250, 0.55);position: absolute;top: 50%;right: 68px;text-align: right;transform: translateY(-50%);opacity: 0;transition: opacity 0.2s;pointer-events: none;}.man_square_btn:hover {background-color: rgba(212, 236, 255, 0.16);}.man_square_btn:hover span {opacity: 0.9;}.man_square_btn:hover p {opacity: 1;}.man_square_btn span {display: block;width: 24px;height: 24px;line-height: 24px;text-align: center;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);opacity: 0.69;pointer-events: none !important;}#man_action_harvest:hover p#tut_help_harv {opacity: 0;}#man_select_count {background-color: rgba(212, 236, 255, 0.2);margin-bottom: 12px;position: absolute;top: 0;right: 0;transition: all 0.2s;z-index: 5;}#man_select_count.man_count_slided {height: 156px;right: 8px;top: 20px;border-radius: 4px 4px 12px 12px;}.man_count_slided #man_select_slider_val, .man_count_slided #man_select_slider_expand, .man_count_slided #man_select_slider_lbls {opacity: 1;}#man_select_count_swap {position: absolute;top: -44px;right: 0;width: 40px;height: 40px;font-size: 12px;font-weight: 500;z-index: 10;}#man_select_slider_expand {background-color: rgba(212, 246, 255, 0.08);width: 56px;height: 56px;position: absolute;top: -58px;left: 0;border-radius: 12px 12px 4px 4px;opacity: 0;}#man_select_slider_expand_val {background-color: rgba(212, 246, 255, 0.6);width: 56px;height: 0px;position: absolute;bottom: 0;left: 0;border-radius: 4px;opacity: 1;}#man_select_slider_val {width: 56px;height: 120px;background-color: rgba(212, 246, 255, 0.6);position: absolute;bottom: 0;left: 0;border-radius: 4px 4px 12px 12px;opacity: 0;}#man_select_slider_lbls {position: absolute;left: -40px;bottom: 0;width: 24px;height: 156px;font-size: 11px;font-weight: 500;color: rgba(242, 246, 250, 0.69);opacity: 0;}span#man_count_current {position: absolute;top: 4px;left: -16px;font-size: 14px;font-weight: 500;color: rgba(242, 246, 250, 0.96);}span#man_count_max {display: block;position: absolute;top: -6px;transform: none;}span#man_count_half {transform: translateY(-50%);}span#man_count_one {display: block;position: absolute;top: auto;bottom: -6px;transform: none;}#man_action_group1 {margin-top: 68px;}#man_action_group2 {margin-top: 12px;}#man_action_done {margin-top: 12px;background-color: rgba(206, 245, 208, 0.1);}#man_action_done:hover {background-color: rgba(206, 245, 208, 0.16);}#man_action_ui_close {background-color: rgba(246, 206, 206, 0.1);position: absolute;right: 20px;top: 50%;transform: translateY(-50%);}"
++ "#man_action_ui_close:hover {background-color: rgba(246, 206, 206, 0.16);}#man_protection_full{width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.1);position: fixed;top: 0;left: 0;pointer-events: none;opacity: 0;}#man_protection_full_sliding {width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.6);position: fixed;top: 0;left: 0;pointer-events: none;opacity: 0;}#man_protection_gradient {width: 100%;max-width: 400px;height: 100%;position: absolute;top: 0;right: 0;background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);opacity: 0.48;pointer-events: none;opacity: 0;}#man_protection_gradient_soft {width: 100%;max-width: 400px;height: 100%;position: absolute;top: 0;right: 0;background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);pointer-events: none;opacity: 0;}#man_layer2, #man_layer3, #man_layer2_base {position: absolute;top: 50%;right: 0;opacity: 0;pointer-events: none;}#man_layer2 {transform: translateY(-20%);}#man_layer3 {opacity: 0;right: -20px;}h2.man_head2 {font-size: 24px;font-weight: 500;line-height: 30px;width: 180px;text-align: right;position: absolute;top: calc(50% + 40px);right: 24px;pointer-events: none;}#man_newborn_point {opacity: 0;}h3.man_head3 {font-size: 11px;font-weight: 500;letter-spacing: 1px;text-transform: uppercase;color: rgba(242, 246, 250, 0.72);margin-bottom: 14px;text-align: right;}.man_layer_option {line-height: 39px;background-color: rgba(212, 238, 255, 0.1);padding: 0px 12px 1px 12px;display: inline-block;float: right;font-size: 14px;font-weight: 500;color: rgba(242, 246, 250, 0.89);margin-left: 2px;border-radius: 4px;}.man_layer_option:hover {background-color: rgba(212, 238, 255, 0.16);cursor: pointer;}.man_option_left {border-top-left-radius: 12px;border-bottom-left-radius: 12px;}.man_option_right {border-top-right-radius: 12px;border-bottom-right-radius: 12px;}.man_option_secondary {border-radius: 12px;float: right;margin-top: 12px;}.man_option_active {background-color: rgba(212, 238, 255, 0.86) !important;color: rgba(0, 0, 0, 0.89);}.man_layer_section_desc {font-size: 11px;line-height: 15px;font-weight: 500;color: rgba(242, 246, 250, 0.69);text-align: right;margin-top: 8px;float: right;display: inline-block;}#man_action_ui_close {}#tut_help_harv {font-size: 16px;font-weight: 500;color: rgba(242, 246, 250, 1);line-height: 16px;position: absolute;top: 22px;right: 64px;width: 260px;pointer-events: none;transition: opacity 0.2;}#tut_arrow {position: absolute;top: 50% !important;left: auto !important;right: -6px !important;width: 16px !important;height: 16px !important;}#tut_help_selection_desktop, #tut_help_selection_mobile {line-height: 26px;font-size: 16px;position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);min-width: 400px;text-align: center;opacity: 0;pointer-events: none;}.keyboard_btn {display: inline-block;border: 1px solid rgba(242, 246, 250, 0.25);color: rgba(242, 246, 250, 0.69);padding: 0px 8px;font-size: 12px;font-weight: 500;border-radius: 8px;margin: 0px 4px;}.tut_text {font-size: 16px;font-weight: 500;color: rgba(242, 246, 250, 1);line-height: 26px;pointer-events: none;}"
+document.head.insertAdjacentHTML("beforeend", "<style>" + manual_css + "</style>");
+
+
+let manual_html = "<div id='man_ui_module'> <div id='man_protection_gradient_soft'></div><p id='tut_help_selection_desktop' class='tut_text'>Hold <span class='keyboard_btn'>CTRL</span> and move mouse to select units</p><p id='tut_help_selection_mobile' class='tut_text'>Tap on units to select them</p><div id='man_ui_wrap'> <div id='man_select_count' class='man_square_btn'> <div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div><span id='man_f1'>9</span> <div id='man_select_slider_expand'><div id='man_select_slider_expand_val'></div></div><div id='man_select_slider_val'><span id='man_count_current'>8</span></div><div id='man_select_slider_lbls'> <span id='man_count_max'>9</span> <span id='man_count_half'>5</span> <span id='man_count_one'>1</span> </div></div><div id='man_action_group1'> <div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p><p id='tut_help_harv'>Get energy from star to base<span id='tut_arrow' class='ico_right_arrow'></span></p></div><div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div><div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div><div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div><div id='man_action_special_unlock' class='man_square_btn'><span class='ico_man_unlock'></span><p class='btn_label'>unlock</p></div><div id='man_action_special_explode' class='man_square_btn'><span class='ico_man_explode'></span><p class='btn_label'>explode</p></div><div id='man_action_special_jump' class='man_square_btn'><span class='ico_man_jump'></span><p class='btn_label'>jump</p></div></div><div id='man_action_group2'> <div id='man_action_group_behaviour' class='man_square_btn'><span class='ico_man_chip'></span><p class='btn_label'>behaviour</p></div></div><div id='man_action_done' class='man_square_btn'><span class='ico_man_done'></span></div></div>" 
++ "<div id='man_protection_full_sliding'></div><div id='man_protection_full'><div id='man_protection_gradient'></div></div><div id='man_layer2'> <h3 class='man_head3'>Attitude towards enemies</h3> <div class='man_layer_section' id='man_attitude'> <div id='man_attitude_chase' class='man_layer_option man_option_right'>Chase</div><div id='man_attitude_keepdist' class='man_layer_option man_option_mid man_option_active'>Keep distance</div><div id='man_attitude_nothing' class='man_layer_option man_option_left'>Nothing</div></div><div id='man_attitude_jump' class='man_layer_option man_option_secondary'>Use jump to stay out of range</div><div class='sep_medium'></div><h3 class='man_head3'>Energize enemy targets</h3> <div class='man_layer_section' id='man_targets'> <div id='man_targetting_lowest' class='man_layer_option man_option_right'>Lowest energy</div><div id='man_targetting_nearest' class='man_layer_option man_option_mid'>Nearest</div><div id='man_targetting_nothing' class='man_layer_option man_option_left man_option_active'>Nothing</div></div><div class='sep_medium'></div><h3 class='man_head3'>Move priority</h3> <div class='man_layer_section' id='man_priority'> <div id='man_priority_attitude' class='man_layer_option man_option_right'>Attitude setting</div><div id='man_priority_manual' class='man_layer_option man_option_left man_option_active'>Touch/Mouse</div></div><p class='man_layer_section_desc'>Manual actions overwrite 'Keep distance' attitude</p></div><div id='man_layer2_base'> <h3 class='man_head3'>Newborn's behaviour</h3> <div class='man_layer_section' id='man_newborn'> <div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest star</div><div id='man_newborn_goto' class='man_layer_option man_option_left'>Go to position</div></div><div id='man_newborn_where' class='man_layer_option man_option_secondary'>Choose point on board</div></div><h2 class='man_head2' id='man_newborn_point'>Choose point for newborn spirits</h2> <div id='man_layer3'> <div id='man_energize_pairing'> <h2 class='man_head2'>Select a <span id='e_pair_star'>star</span> and <span id='e_pair_structure'>structure</span></h2> <div id='man_action_ui_close' class='man_square_btn'><span class='ico_man_close'></span></div></div></div></div>";
+document.getElementById("modules_plate").insertAdjacentHTML('beforeend', manual_html);
+
+//
+//
+
+
+
+
+
+
+
 function man_ui_crossroad(e){
 	e.stopPropagation();
     e = e || window.event;
     let el = (e.target || e.srcElement);
-	console.log(el.id);
+	//console.log(el.id);
 	let b_val = '';
 	
 	switch (el.id){
@@ -32,7 +52,7 @@ function man_ui_crossroad(e){
 		slider_open();
 		break;
 	case 'man_select_count_swap':
-		console.log('hhh');
+		//console.log('hhh');
 		break;
 	case 'man_attitude_nothing':
 	case 'man_attitude_keepdist':
@@ -385,7 +405,10 @@ function update_ability_buttons(){
 			if (local_memory['behaviour'][spi.id]['lock']) document.getElementById('man_action_special_unlock').style.display = 'block';
 		}
 	} else if (this_player_shape == 'triangles'){
-		
+		for (let spi of selected_group){
+			if (local_memory['behaviour'][spi.id] == undefined) set_default_behaviour([spi]);
+			document.getElementById('man_action_special_explode').style.display = 'block';
+		}
 	}
 	
 	
@@ -613,7 +636,7 @@ function man_canvas_click(e){
 	let gameboard_x = mouse_x*multiplier - offsetX;
 	let gameboard_y = mouse_y*multiplier - offsetY;
 	
-	console.log(gameboard_x + ', ' + gameboard_y);
+	//console.log(gameboard_x + ', ' + gameboard_y);
 	
 	if (newborn_point_selection){
 		assign_newborn_behaviour(base_selection, 'goto', [Math.round(gameboard_x), Math.round(gameboard_y)]);
@@ -624,7 +647,6 @@ function man_canvas_click(e){
 	base_selection = false;
 	let temp_base = is_base_click(gameboard_x, gameboard_y);
 	if (temp_base && !(energize_pair_selection)) {
-		console.log('got here')
 		base_selection = temp_base;
 		get_newborn_behaviour(temp_base);
 		show_newborn_options();
@@ -647,7 +669,7 @@ function man_canvas_click(e){
 
 function man_canvas_rightclick(e){
 	e.preventDefault();
-	console.log('rightclicked');	
+	//console.log('rightclicked');	
 	let mouse_x = e.clientX;
 	let mouse_y = e.clientY;
 	let gameboard_x = mouse_x*multiplier - offsetX;
@@ -701,7 +723,15 @@ function man_desktop_spirit_selection(e){
 	swap_group = [];
 	swap_amount = 0;
 	
-	selected_group.length > 0 ? selection_invoke() : selection_done();
+	if (selected_group.length > 0){
+		selection_invoke();
+		if (guidance_shown[0] == 0){
+			guidance_shown[0] = 1;
+			show_guidance(2);
+		}
+	} else {
+		selection_done();
+	}
 	
 }
 
@@ -712,8 +742,8 @@ function man_mobile_touchstart(e){
     touch_point[0] = Math.round(touch.pageX);
     touch_point[1] = Math.round(touch.pageY);
 	
-	console.log('start')
-	console.log(touch_point);
+	//console.log('start')
+	//console.log(touch_point);
 }
 
 function man_mobile_touchend(e){
@@ -762,7 +792,15 @@ function man_mobile_spirit_selection(man_t_x, man_t_y, t_rad = 20){
 	slider_total_amount = select_current_amount;
 	swap_group = [];
 	swap_amount = 0;
-	selected_group.length > 0 ? selection_invoke() : selection_done();
+	if (selected_group.length > 0){
+		selection_invoke();
+		if (guidance_shown[0] == 0){
+			guidance_shown[0] = 1;
+			show_guidance(2);
+		}
+	} else {
+		selection_done();
+	}
 	update_labels();
 }
 
@@ -828,6 +866,11 @@ function man_select_energize_pair(man_x, man_y){
 	if (energize_pair.structure != '' && energize_pair.star != ''){
 		assign_behaviour(selected_group, 'energize_chain', [energize_pair.structure.id, energize_pair.star.id]);
 		energize_pair_cancelled();
+		if (guidance_shown[1] == 0){
+			guidance_shown[1] = 1;
+			show_guidance(3);
+		}
+		
 		energize_pair = {
 			structure: '',
 			star: ''
@@ -840,7 +883,7 @@ function man_plate_click(e){
 	e.stopPropagation();
     e = e || window.event;
     let el = (e.target || e.srcElement);
-	console.log(el.id);
+	//console.log(el.id);
 	if (el.id == 'man_attack_base'){
 		man_attack(man_selected_spirits);
 	}
@@ -940,14 +983,14 @@ function get_newborn_behaviour(base_id){
 	if (beh_newborn.position.length == 0){
 		document.getElementById('man_newborn_where').innerHTML = 'Choose point on board';
 	} else {
-		console.log(beh_newborn.position.length);
+		//console.log(beh_newborn.position.length);
 		document.getElementById('man_newborn_where').classList.add('man_option_active');
 		document.getElementById('man_newborn_where').innerHTML = beh_newborn.position;
 	}
 }
 
 function man_attitude(selected_val){
-	console.log('attitude = ' + selected_val);
+	//console.log('attitude = ' + selected_val);
 	document.getElementById('man_attitude_nothing').classList.remove('man_option_active');
 }
 
@@ -982,16 +1025,16 @@ function assign_behaviour(spirit_group, beh_type, beh_value){
 		if (beh_type == 'merge' && beh_value == ''){
 			local_memory['behaviour'][sp.id]['move'] = [];
 		}
-		console.log('stored');
+		//console.log('stored');
 	}	
 	update_code();
 }
 
 function assign_newborn_behaviour(base_id, beh_value, beh_position = []){
 	client['newborn_' + base_id] = [beh_value, beh_position];
-	console.log('base_id = ' + base_id);
-	console.log('beh_val = ' + beh_value);
-	console.log('beh_position = ' + beh_position);
+	//console.log('base_id = ' + base_id);
+	//console.log('beh_val = ' + beh_value);
+	//console.log('beh_position = ' + beh_position);
 	local_memory['newborn_' + base_id].role = beh_value;
 	if (beh_position.length != 0) local_memory['newborn_' + base_id].position = beh_position;
 	update_code();
@@ -1005,8 +1048,8 @@ function choose_newborn_point(){
 }
 
 function man_attack(attackers){
-	console.log('attackers = ');
-	console.log(attackers);
+	//console.log('attackers = ');
+	//console.log(attackers);
 	//client['attacking'] = man_selected_spirits;
 	update_code();
 }
@@ -1019,6 +1062,37 @@ function merge_group(grp){
 	let the_one = get_closest_spirit_id(grp, center_point);
 	assign_behaviour(grp, 'merge', the_one);
 	assign_behaviour(grp, 'move', center_point);
+}
+
+
+// tutorial
+
+function reset_tut(){
+	try {
+		document.getElementById('tut_help_selection_desktop').style.opacity = 0;
+		document.getElementById('tut_help_selection_mobile').style.opacity = 0;
+	} catch (e) {
+		//console.log(e)
+	}
+	
+}
+
+function show_guidance(guide_num){
+	if (tick_counter > 300) return;
+	reset_tut();
+	switch (guide_num){
+		case 1:
+			document.getElementById('tut_help_selection_desktop').style.opacity = 1;
+			document.getElementById('tut_help_selection_mobile').style.opacity = 1;
+			break;
+		case 2:
+			//document.getElementById('tut_help_harv').style.opacity = 1;
+			break;
+		case 3:
+			document.getElementById('tut_help_harv').style.opacity = 0;
+		default:
+			break;
+	}
 }
 
 
@@ -1188,6 +1262,8 @@ client['newborn_base_nua'] = [];
 //  obj_energize: ''	
 //}
 
+const touch_input = matchMedia('(hover: none)').matches;
+
 let man_selected_spirits = [];
 let slider_el = document.getElementById('man_select_count');
 let slider_val_el = document.getElementById('man_select_slider_val');
@@ -1246,28 +1322,17 @@ let behaviour_selection = false;
 let base_selection = false;
 let newborn_point_selection = false; //selecting a point on map where newborn spirits should go
 let assignment_tick = 0; //for stacking multiple commands in the same tick
+let guidance_shown = [0, 0, 0] //prepared as flags for onboarding/tutorial guidance
 
 //set base and spirit default behaviour - change this to better suit your playing style
 set_default_behaviour();
 set_newborn_default();
 
-
-// UI
-
-
-
+setTimeout(() => {
+  if (tick_counter < 10 && tick_counter >= 0) show_guidance(1);
+}, 1000)
 
 
-
-
-
-
-
-
-
-
-//
-//
 //let attack_btn = document.createElement('div');
 //attack_btn.innerHTML = "<span id='man_attack_base' style='display: block; width: 100%; height: 100%; background-color: #f00;'></span>";
 //attack_btn.style.cssText = 'position:absolute; top: 50%; right: 28px; width:52px; height:52px; opacity:1; z-index:100;';
@@ -1300,5 +1365,99 @@ document.getElementById('man_select_count_swap').addEventListener("click", funct
 	update_labels();
 }, false);
 
+
+console.log('it is a ' + touch_input + ' 1 = touch, 0 = mouse');
+
+
+
+
+
+
+
+
+
+
+
+
+//html:
+
+/*
+    <div id='man_ui_module'>
+  		<div id='man_protection_gradient_soft'></div>
+		<p id='tut_help_selection_desktop' class='tut_text'>Hold <span class='keyboard_btn'>CTRL</span> and move mouse to select units</p>
+		<p id='tut_help_selection_mobile' class='tut_text'>Tap on units to select them</p>
+    	<div id='man_ui_wrap'>
+  		<div id='man_select_count' class='man_square_btn'>
+  			<div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div>
+  			<span id='man_f1'>9</span>
+  			<div id='man_select_slider_expand'><div id='man_select_slider_expand_val'></div></div>
+  			<div id='man_select_slider_val'><span id='man_count_current'>8</span></div>
+  			<div id='man_select_slider_lbls'>
+  				<span id='man_count_max'>9</span>
+  				<span id='man_count_half'>5</span>
+  				<span id='man_count_one'>1</span>
+  			</div>
+  		</div>
+  		<div id='man_action_group1'>
+  			<div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p><p id='tut_help_harv'>Start harvesting from the star to the base <span id='tut_arrow' class='ico_right_arrow'></span></p></div>
+  			<div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div>
+  			<div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div>
+  			<div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div>
+  			<div id='man_action_special_unlock' class='man_square_btn'><span class='ico_man_unlock'></span><p class='btn_label'>unlock</p></div>
+  			<div id='man_action_special_explode' class='man_square_btn'><span class='ico_man_explode'></span><p class='btn_label'>explode</p></div>
+  			<div id='man_action_special_jump' class='man_square_btn'><span class='ico_man_jump'></span><p class='btn_label'>jump</p></div>
+  		</div>
+  		<div id='man_action_group2'>
+  			<div id='man_action_group_behaviour' class='man_square_btn'><span class='ico_man_chip'></span><p class='btn_label'>behaviour</p></div>
+  		</div>
+  		<div id='man_action_done' class='man_square_btn'><span class='ico_man_done'></span></div>
+  	</div>
+  	<div id='man_protection_full_sliding'></div>
+  	<div id='man_protection_full'><div id='man_protection_gradient'></div></div>
+  	<div id='man_layer2'>
+  		<h3 class='man_head3'>Attitude towards enemies</h3>
+  		<div class='man_layer_section' id='man_attitude'>
+  			<div id='man_attitude_chase' class='man_layer_option man_option_right'>Chase</div>
+  			<div id='man_attitude_keepdist' class='man_layer_option man_option_mid man_option_active'>Keep distance</div>
+  			<div id='man_attitude_nothing' class='man_layer_option man_option_left'>Nothing</div>
+  		</div>
+  		<div id='man_attitude_jump' class='man_layer_option man_option_secondary'>Use jump to stay out of range</div>
+		
+  		<div class='sep_medium'></div>
+		
+  		<h3 class='man_head3'>Energize enemy targets</h3>
+  		<div class='man_layer_section' id='man_targets'>
+  			<div id='man_targetting_lowest' class='man_layer_option man_option_right'>Lowest energy</div>
+  			<div id='man_targetting_nearest' class='man_layer_option man_option_mid'>Nearest</div>
+  			<div id='man_targetting_nothing' class='man_layer_option man_option_left man_option_active'>Nothing</div>
+  		</div>
+		
+  		<div class='sep_medium'></div>
+		
+  		<h3 class='man_head3'>Move priority</h3>
+  		<div class='man_layer_section' id='man_priority'>
+  			<div id='man_priority_attitude' class='man_layer_option man_option_right'>Attitude setting</div>
+  			<div id='man_priority_manual' class='man_layer_option man_option_left man_option_active'>Touch/Mouse</div>
+  		</div>
+  		<p class='man_layer_section_desc'>Manual actions overwrite 'Keep distance' attitude</p>
+  	</div>
+  	<div id='man_layer2_base'>
+  		<h3 class='man_head3'>Newborn's behaviour</h3>
+  		<div class='man_layer_section' id='man_newborn'>
+  			<div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest star</div>
+  			<div id='man_newborn_goto' class='man_layer_option man_option_left'>Go to position</div>
+  		</div>
+  		<div id='man_newborn_where' class='man_layer_option man_option_secondary'>Choose point on board</div>
+  	</div>
+  	<h2 class='man_head2' id='man_newborn_point'>Choose point for newborn spirits</h2>
+  	<div id='man_layer3'>
+  		<div id='man_energize_pairing'>
+  			<h2 class='man_head2'>Select a <span id='e_pair_star'>star</span> and <span id='e_pair_structure'>structure</span></h2>
+  			<div id='man_action_ui_close' class='man_square_btn'><span class='ico_man_close'></span></div>
+  		</div>
+  	</div>
+    </div>
+
+*/
 
 

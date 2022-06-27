@@ -269,6 +269,12 @@ function dismissals(){
 		
 	}
 	
+	try {
+		hide_mechanics()
+	} catch (e) {
+		
+	}
+	
 }
 
 function dismiss_helper(){
@@ -305,7 +311,12 @@ function replace_button_prompt(){
 		duration: 300
 	});
 	
-	document.getElementById('choose_playstyle_block').style.pointerEvents = 'auto';
+	try{
+		document.getElementById('choose_playstyle_block').style.pointerEvents = 'auto';
+	} catch (e) {
+		
+	}
+	
 	document.getElementById('main_button').style.pointerEvents = 'auto';
 	document.getElementById('button_prompt').style.pointerEvents = 'none';
 }
@@ -960,6 +971,13 @@ function wait_opponent_view(){
   		easing: 'easeOutQuad',
   		duration: 300
   	});
+  	anime({
+  		targets: '#create_acc_prompt',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+	
 	
 	document.getElementById('tr_loader2').style.opacity = 1;
 	document.getElementById('load_para').innerHTML = 'Waiting for opponent...';
@@ -1014,6 +1032,62 @@ function get_ready_view(){
   		easing: 'easeOutQuad',
   		duration: 300
   	});
+  	anime({
+  		targets: '#create_acc_prompt',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+}
+
+function show_mechanics(){
+  	anime({
+  		targets: '#mechanics_block',
+  		opacity: 1,
+		translateX: '-50%',
+		scale: [0.8, 1],
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0.69)',
+		backdropFilter: 'blur(12px)',
+		"-webkit-backdrop-filter": 'blur(12px)',
+		easing: 'easeOutQuad',
+		duration: 300
+	});
+	
+	
+	document.getElementById('mechanics_block').style.pointerEvents = 'auto';
+	document.getElementById('overlay').style.pointerEvents = 'auto';
+}
+
+function hide_mechanics(){
+  	anime({
+  		targets: '#mechanics_block',
+  		opacity: 0,
+  		easing: 'easeOutQuad',
+  		duration: 200
+  	});
+  	anime({
+  		targets: '#mechanics_block',
+		translateX: '-50%',
+		scale: [1, 0.8],
+  		easing: 'easeOutQuad',
+  		duration: 300
+  	});
+	anime({
+		targets: '#overlay',
+		backgroundColor: 'rgba(0, 0, 0, 0)',
+		backdropFilter: 'blur(0px)',
+		"-webkit-backdrop-filter": 'blur(0px)',
+		easing: 'easeOutQuad',
+		duration: 400
+	});
+	
+	document.getElementById('mechanics_block').style.pointerEvents = 'none';
+	document.getElementById('overlay').style.pointerEvents = 'none';
 }
 
 function pre_resign(){
@@ -1526,13 +1600,16 @@ function show_info_snippet(elid, leftPos, topPos){
 			info_content.innerHTML = "<p class='p_normal'>energy_capacity = 10 × size</p><div class='sep_mini'></div>";
 			break;
 		case "info_spirit_sight":
-			info_content.innerHTML = "<pre class='code_sample'>my_spirits[1].sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>structures:</span> [‘star_zxq’]&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy spirit and a star within 400 radius around the spirit</p>			<pre class='code_sample'>my_spirits[1].sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
+			info_content.innerHTML = "<pre class='code_sample'>my_spirits[1].sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>structures:</span> [‘star_zxq’],&#10;  <span class='lowlight'>friends_beamable:</span> [‘jane2’],&#10;  <span class='lowlight'>enemies_beamable:</span> []&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy spirit and a star within 400 radius around the spirit. 1 friendly spirit is within <code>energize()</code> distance</p>			<pre class='code_sample'>my_spirits[1].sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
 			break;
 		case "info_base_sight":
 			info_content.innerHTML = "<pre class='code_sample'>base.sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>structures:</span> []&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy spirit within 400 radius around the base</p>			<pre class='code_sample'>base.sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
 			break;
 		case "info_outpost_sight":
-			info_content.innerHTML = "<pre class='code_sample'>outpost.sight = &#10;{&#10;  <span class='lowlight'>enemies:</span> [‘jane2’, ‘jane3’, ‘jane4’]&#10;}<span class='lowlight'></pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 enemy spirits within outpost's range</p>			<pre class='code_sample'>enemy.sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'jane2'</pre>			<div class='sep_medium'></div>";
+			info_content.innerHTML = "<pre class='code_sample'>outpost.sight = &#10;{&#10;  <span class='lowlight'>enemies:</span> [‘jane2’, ‘jane3’, ‘jane4’]&#10;}<span class='lowlight'></pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 enemy spirits within outpost's range</p>			<pre class='code_sample'>outpost.sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'jane2'</pre>			<div class='sep_medium'></div>";
+			break;
+		case "info_pylon_sight":
+			info_content.innerHTML = "<pre class='code_sample'>pylon.sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’]&#10;}<span class='lowlight'></pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly spirits within pylon's sight (not range)</p>			<pre class='code_sample'>pylon.sight.friends[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'jane2'</pre>			<div class='sep_medium'></div>";
 			break;
 		case "info_birth":
 			info_content.innerHTML = "<span class='g_con'><span class='ico_circle'></span> Circles new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–50 spirits</td><td>25 energy</td></tr><tr><td>51–100</td><td>50 energy</td></tr><tr><td>101–200</td><td>90 energy</td></tr><tr><td>201+</td><td>150 energy</td></tr></table><div class='sep_small'></div><span class='g_con'><span class='ico_square'></span> Squares new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–10 spirits</td><td>360 energy</td></tr><tr><td>11–16 spirits</td><td>500 energy</td></tr><tr><td>17+ spirits</td><td>700 energy</td></tr></table><div class='sep_small'></div><span class='g_con'><span class='ico_triangle'></span> Triangles new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–30 spirits</td><td>90 energy</td></tr><tr><td>31-120 spirits</td><td>160 energy</td></tr><tr><td>121+ spirits</td><td>300 energy</td></tr></table><div class='sep_mini'></div><div class='sep_small'></div>";

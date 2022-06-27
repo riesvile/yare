@@ -24,6 +24,10 @@
 	#panel {
 		width: 620px;
 	}	
+	
+	#tut_help_selection_mobile {
+		display: none;
+	}
 }
 
 
@@ -63,6 +67,19 @@
 	
 	.tournament_banner_date {
 		display: none;
+	}
+	
+	#index_intro {
+		font-size: 26px;
+		line-height: 38px;
+		padding-top: calc(60px + 2vh);;
+	}
+	
+	#play_type_ilu {
+		top: calc(60px + 2vh);
+		width: 340px;
+		height: 170px;
+		right: 2%;
 	}
 	
 }
@@ -200,7 +217,7 @@ h1#logo {
 	font-weight: 500;
 	color: rgba(242, 246, 250, 1);
 	margin-left: 24px;
-	margin-top: 16px;
+	margin-top: 11px;
 }
 
 #logo a {
@@ -233,7 +250,6 @@ h1#logo {
 }
 
 #profile_links {
-	position: absolute;
 	top: 12px;
 	right: 40px;
 	z-index: 20000;
@@ -841,13 +857,18 @@ p.p_somewhat_important {
 
 /* index stuff */
 
-#index_intro {
-	padding-top: calc(60px + 8vh);
-	width: calc(100% - 48px);
+#index_container_in {
+	width: 100%;
 	margin-left: 26px;
-	font-size: 26px;
+}
+
+#index_intro {
+	padding-top: calc(0px + 7vh);
+	width: calc(100% - 48px);
+	margin-left: 0px;
+	font-size: 24px;
 	font-weight: 500;
-	line-height: 38px;
+	line-height: 30px;
 	color: rgba(242, 246, 250, 1);
 }
 
@@ -1052,6 +1073,46 @@ a.index_link:hover {
 	color: rgba(159, 157, 232, 1);
 }
 
+#mechanics_h {
+	position: absolute;
+	top: 22px;
+	left: 20px;
+}
+
+.mech_p {
+	font-size: 18px;
+	line-height: 28px;
+	margin-left: 20px;
+	margin-top: 60px;
+	width: calc(100% - 48px);
+}
+
+h5.allcapi {
+	font-size: 11px;
+}
+
+#mech_win_conditions, #mech_factions {
+	margin-top: 36px;
+	margin-left: 20px;
+	margin-bottom: 16px;
+}
+
+.mech_num {
+	margin-left: 20px;
+	line-height: 17px;
+}
+
+.mech_spacer {
+	height: 26px;
+}
+
+.t_small {
+	font-size: 13px;
+	line-height: 17px;
+	max-width: calc(100% - 48px);
+}
+
+
 /* ----- */
 
 /* -- */
@@ -1230,23 +1291,195 @@ p.tour_intro1, p.tour_intro2 {
 
 }
 
+@media (max-width: 780px) {
+	#play_type_ilu {
+		display: none;
+	}
+	
+	.play_type {
+		opacity: 1 !important;
+		background: initial;
+		-webkit-text-fill-color: rgb(142,146,160);
+	}
+	
+	#tut_help_selection_desktop {
+		display: none;
+	}
 
-@media (max-width: 520px) {
+}
+
+
+@media (max-width: 590px) {
 	
 	/* index */
 	
+	#create_acc_prompt {
+		bottom: 6%;
+	}
+	
+	#index_container {
+		left: 0;
+		width: 100%;
+		background: #000;
+	}
+
+	#index_container_in {
+		width: calc(100% - 48px);
+		margin-left: 24px;
+	}
+	
 	#game_selections {
 		width: 372px;
+		top: 36%;
 	}
 	
 	.shape_block {
 		width: 120px;
+		height: 240px;
+		margin-right: 0;
+		margin-left: 4px;
+		background-color: rgba(242, 246, 250, 0.06);
+	}
+	
+	#choose_color_block {
+		width: 80%;
+		left: 20%;
+		bottom: 32%;
+		transform: none;
+	}
+	
+	#player_selection_wrap_in {
+		position: absolute;
+		width: 100%;
+		bottom: 16px;
+	}
+	
+	#ps_human_options, #ps_bot_index_options {
+		position: relative;
+		clear: both;
+		padding-top: 52px;
+		top: 0;
+		left: 0;
+	}
+	
+	.ps_card {
+		width: calc(100% - 32px);
+		margin-left: 16px;
+		margin-bottom: 4px;
+		height: 60px;
+	}
+	
+	p.ps_p_desc {
+		display: none;
+	}
+	
+	.ps_bot_card h3.ps_p_name, .ps_main_card h3.ps_p_name {
+		font-size: 13px;
+		left: 24px;
+		top: 0;
+		line-height: 60px;
+	}
+	
+	.ps_shape_in_card_wrap {
+		top: 12px;
+		left: auto;
+		right: 16px;
+	}
+	
+	.ps_type_lbl {
+		top: 20px;
+		left: 20px;
 	}
 	
 	/* -- */
 	
+	#language_settings {
+		display: none;
+	}
+	
+	#create_new_module {
+		display: none;
+	}
+	
+	#profile_links {
+		right: 16px;
+	}
+	
+	#modules_section, #modules_section_mine {
+	    width: 100%;
+	}
+	
+	.module_card {
+		width: calc(100% - 32px);
+		height: 146px;
+		margin-bottom: 4px;
+	}
+	
+	.module_card_mine {
+		width: calc(100% - 32px);
+		height: 68px;
+		margin-bottom: 4px;
+	}
+	
+	.module_ilu {
+		bottom: 0;
+	    width: 180px;
+	    height: 90px;
+	}
+	
+	.module_options {
+		display: none;
+	}
+	
+	#panel {
+		visibility: hidden;
+	}
+	
+	#update_switch_wrapper {
+		visibility: hidden;
+	}
+	
+	.tab_row_first {
+		margin-top: 20px;
+	}
 	
 	
+	.lb_item {
+		font-size: 20px;
+	}
+	
+	#tut_help_selection_mobile {
+		display: block;
+	}
+	
+}
+
+
+
+
+
+@media (hover: hover) {
+	
+	#tut_help_selection_desktop {
+		display: block;
+	}
+	
+	#tut_help_selection_mobile {
+		display: none;
+	}
+
+}
+
+@media (not(hover)) {
+	
+	#tut_help_selection_desktop {
+		display: none;
+	}
+	
+	#tut_help_selection_mobile {
+		display: block;
+	}
+
 }
 
 

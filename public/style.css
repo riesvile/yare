@@ -21,6 +21,10 @@
 	display: block;
 }
 
+.desktop_only_soft {
+	visibility: hidden;
+}
+
 body {
 	/*background-color: #06080a;*/
 	background-color: #000;
@@ -31,6 +35,7 @@ body {
 	width: 100%;
 	height: 100%;
 	/*overflow: hidden;*/
+	overflow-x: hidden;
 }
 
 canvas#main_canvas, canvas#base_canvas {
@@ -72,7 +77,7 @@ code {
 }
 
 .lowlight {
-	color: rgba(242, 246, 250, 0.55);
+	color: rgba(242, 246, 250, 0.55) !important;
 }
 
 .lowlightish {
@@ -112,6 +117,7 @@ div.tutorial_editor {
 	left: 28px;
 	z-index: 9998;
 	pointer-events: none;
+	display: none;
 }
 
 .update_switch_wrapper_real {
@@ -633,7 +639,7 @@ h1#logo {
 	
 	#bg_mdl_code-editor {
 		background: rgb(59,19,20);
-		background: linear-gradient(222deg, rgba(75,35,35,1) 0%, rgba(36,36,49,1) 86%);
+		background: linear-gradient(222deg, rgba(20,13,56,1) 0%, rgba(38,25,36,1) 86%);
 	}
 	
 	#bg_mdl_manual-controls {
@@ -1027,6 +1033,7 @@ h1#logo {
 		font-size: 13px;
 		font-weight: 500;
 		opacity: 0;
+		pointer-events: none;
 	}
 	
 	#modules_server_message_loader {
@@ -1339,6 +1346,7 @@ input[type=submit] {
     border-radius: 12px;
 	border: 1px solid hsla(234, 40%, 60%, 0.2);
 	box-sizing: border-box;
+	display: none;
 }
 
 #panel_dragger {
@@ -1403,6 +1411,7 @@ input[type=submit] {
 	z-index: 1;
 	background: linear-gradient(180deg, rgba(6,8,10,0) 0%, rgba(6,8,10,1) 100%);
 	display: none;
+	pointer-events: none;
 }
 
 
@@ -1493,20 +1502,25 @@ input[type=submit] {
 	
 	#countdown {
 		position: fixed;
-		bottom: 72px;
-		right: 20px;
-		height: 52px;
-		padding: 0 20px;
-		line-height: 52px;
-		background-color: rgba(56, 60, 94, 1);
+		top: 80px;
+		right: 24px;
 		z-index: 9999;
-		border-radius: 12px;
-		color: rgba(242, 246, 250, 0.69);
 	}
 	
 	.starting_when {
 		font-size: 14px;
 		font-weight: 500;
+		display: none;
+	}
+	
+	.waiting_for {
+		font-size: 16px;
+		font-weight: 500;
+		color: rgba(242, 246, 250, 1);
+	}
+	
+	#waitingo {
+		display: none;
 	}
 	
 	#countdown_num {
@@ -2470,7 +2484,7 @@ h1#pnf {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	font-weight: 500;
-	color: rgba(242, 246, 250, 0.2);
+	color: rgba(242, 246, 250, 0.28);
 }
 
 /* index stuff */
@@ -2490,14 +2504,6 @@ h1#pnf {
 
 #trailer_block:hover {
 	opacity: 0.8;
-}
-
-#gallery_block {
-	width: calc(100% - 40px);
-	height: 660px;
-	padding-left: 40px;
-	overflow: scroll;
-	overflow-y: hidden;
 }
 
 ::-webkit-scrollbar {
@@ -2540,7 +2546,7 @@ h1#pnf {
 }
 
 #gal_img2 {
-	width: 600px;
+	width: 900px;
 	height: 600px;
 	/* background: url(./asset/gal2.png);
 	background-size: cover; */
@@ -2554,7 +2560,7 @@ h1#pnf {
 }
 
 #gal_img4 {
-	width: 900px;
+	width: 600px;
 	height: 600px;
 	/* background: url(./asset/gal4.png);
 	background-size: cover; */
@@ -2594,14 +2600,7 @@ h1#pnf {
 	clear: both;
 }
 
-.index_head {
-	margin-bottom: 24px;
-	margin-left: 40px;
-	font-size: 13px;
-	color: rgba(242, 246, 250, 0.55);
-	letter-spacing: 1px;
-	font-weight: 400;
-}
+
 
 .index_head_trailer {
 	margin-bottom: 24px;
@@ -2656,6 +2655,14 @@ h1#pnf {
 	position: absolute;
 	top: 50%;
 	right: 0;
+}
+
+.ico_right_arrow {
+	width: 16px;
+	height: 16px;
+	display: block;
+	background: url('./asset/ico_right_arrow.png') no-repeat scroll;
+	background-size: cover;
 }
 
 .arrow_tut {
@@ -3590,6 +3597,19 @@ h3.bs_heading {
 	cursor: pointer;
 }
 
+#ps_human_options .ps_card, #ps_bot_index_options .ps_card {
+	background-color: rgba(148, 158, 255, 0.12);
+}
+
+#ps_human_options .ps_card:hover, #ps_bot_index_options .ps_card:hover {
+	background-color: rgba(148, 158, 255, 0.16);
+}
+
+#ps_human_options .card_active, #ps_bot_index_options .card_active {
+	border: 2px solid rgba(148, 158, 255, 0.32);
+	background-color: rgba(158, 168, 255, 0.2) !important;
+}
+
 .ps_card:hover {
 	background-color: rgba(242, 246, 250, 0.14);
 }
@@ -3687,13 +3707,34 @@ p.ps_p_desc {
 	pointer-events: none !important;
 }
 
+#ps_human_options .ps_sandbox_card {
+	background-color: rgba(58, 180, 160, 0.12);
+}
+
+#ps_human_options .ps_sandbox_card:hover {
+	background-color: rgba(58, 180, 160, 0.16);
+}
+
+.ps_sandbox_card h3.ps_p_name {
+	color: rgba(233, 252, 230, 1);
+}
+
 
 
 /* ----- */
 
 
 
-
+.beta_badge {
+	font-size: 9px;
+	line-height: 14px;
+	color: rgba(242, 246, 250, 0.86);
+	border: 1px solid rgba(242, 246, 250, 0.4);
+	border-radius: 4px;
+	padding: 0px 2px;
+	margin-left: 5px;
+	vertical-align: middle;
+}
 
 
 

@@ -2441,7 +2441,7 @@ try{
 			module_draw[draw_func]();
 		}
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 
 	try {

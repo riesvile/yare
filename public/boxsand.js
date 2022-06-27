@@ -54,7 +54,7 @@ function stop_engine(){
 	})
 }
 
-function update_live_code(){
+function update_code(){
   update_success();
   user_code = editor.getValue();
   localStorage.setItem("code_code", user_code);

@@ -28,7 +28,7 @@
 	</style>
 	
   </head>
-  <body>
+  <body style='overflow:hidden'>
 
   <!--
   <audio src="../sound/enemy_incoming.mp3" crossorigin="anonymous" id="au_enemy_incoming"></audio>
@@ -186,11 +186,11 @@
   
   
   <div id="hector">
-	  <h1 id="logo"><a href="/">yare<span class="logo_lowlight">.io</span></a></h1>
+	  <h1 id="logo"><a href="/">yare <span class="logo_lowlight">2</span><span class='beta_badge'>BETA</span></a></h1>
 	  <div class="menu">
 		  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
 		  <div class="menu_line desktop_only"></div>
-		  <a href="/newgame" class="menu_link new_g" id="new_g">New game</a>
+		  <a href="/" class="menu_link new_g" id="new_g">New game</a>
 		  <a href="#" id="resign_game_menu">
 			  <span class="resign_lbl" id="pre_resign_btn">Resign</span>
 			  <span class="resign_lbl" id="resign_btn">Yes, I resign</span>
@@ -203,79 +203,7 @@
   </div>
 	  
   <div id="modules_plate">
-    <div id='man_ui_module'>
-  	<div id='man_protection_gradient_soft'></div>
-    	<div id='man_ui_wrap'>
-  		<div id='man_select_count' class='man_square_btn'>
-  			<div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div>
-  			<span id='man_f1'>9</span>
-  			<div id='man_select_slider_expand'><div id='man_select_slider_expand_val'></div></div>
-  			<div id='man_select_slider_val'><span id='man_count_current'>8</span></div>
-  			<div id='man_select_slider_lbls'>
-  				<span id='man_count_max'>9</span>
-  				<span id='man_count_half'>5</span>
-  				<span id='man_count_one'>1</span>
-  			</div>
-  		</div>
-  		<div id='man_action_group1'>
-  			<div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p></div>
-  			<div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div>
-  			<div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div>
-  			<div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div>
-  			<div id='man_action_special_unlock' class='man_square_btn'><span class='ico_man_unlock'></span><p class='btn_label'>unlock</p></div>
-  			<div id='man_action_special_explode' class='man_square_btn'><span class='ico_man_explode'></span><p class='btn_label'>explode</p></div>
-  			<div id='man_action_special_jump' class='man_square_btn'><span class='ico_man_jump'></span><p class='btn_label'>jump</p></div>
-  		</div>
-  		<div id='man_action_group2'>
-  			<div id='man_action_group_behaviour' class='man_square_btn'><span class='ico_man_chip'></span><p class='btn_label'>behaviour</p></div>
-  		</div>
-  		<div id='man_action_done' class='man_square_btn'><span class='ico_man_done'></span></div>
-  	</div>
-  	<div id='man_protection_full_sliding'></div>
-  	<div id='man_protection_full'><div id='man_protection_gradient'></div></div>
-  	<div id='man_layer2'>
-  		<h3 class='man_head3'>Attitude towards enemies</h3>
-  		<div class='man_layer_section' id='man_attitude'>
-  			<div id='man_attitude_chase' class='man_layer_option man_option_right'>Chase</div>
-  			<div id='man_attitude_keepdist' class='man_layer_option man_option_mid man_option_active'>Keep distance</div>
-  			<div id='man_attitude_nothing' class='man_layer_option man_option_left'>Nothing</div>
-  		</div>
-  		<div id='man_attitude_jump' class='man_layer_option man_option_secondary'>Use jump to stay out of range</div>
-		
-  		<div class='sep_medium'></div>
-		
-  		<h3 class='man_head3'>Energize enemy targets</h3>
-  		<div class='man_layer_section' id='man_targets'>
-  			<div id='man_targetting_lowest' class='man_layer_option man_option_right'>Lowest energy</div>
-  			<div id='man_targetting_nearest' class='man_layer_option man_option_mid'>Nearest</div>
-  			<div id='man_targetting_nothing' class='man_layer_option man_option_left man_option_active'>Nothing</div>
-  		</div>
-		
-  		<div class='sep_medium'></div>
-		
-  		<h3 class='man_head3'>Move priority</h3>
-  		<div class='man_layer_section' id='man_priority'>
-  			<div id='man_priority_attitude' class='man_layer_option man_option_right'>Attitude setting</div>
-  			<div id='man_priority_manual' class='man_layer_option man_option_left man_option_active'>Touch/Mouse</div>
-  		</div>
-  		<p class='man_layer_section_desc'>Manual actions overwrite 'Keep distance' attitude</p>
-  	</div>
-  	<div id='man_layer2_base'>
-  		<h3 class='man_head3'>Newborn's behaviour</h3>
-  		<div class='man_layer_section' id='man_newborn'>
-  			<div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest star</div>
-  			<div id='man_newborn_goto' class='man_layer_option man_option_left'>Go to position</div>
-  		</div>
-  		<div id='man_newborn_where' class='man_layer_option man_option_secondary'>Choose point on board</div>
-  	</div>
-  	<h2 class='man_head2' id='man_newborn_point'>Choose point for newborn spirits</h2>
-  	<div id='man_layer3'>
-  		<div id='man_energize_pairing'>
-  			<h2 class='man_head2'>Select a <span id='e_pair_star'>star</span> and <span id='e_pair_structure'>structure</span></h2>
-  			<div id='man_action_ui_close' class='man_square_btn'><span class='ico_man_close'></span></div>
-  		</div>
-  	</div>
-    </div>
+    
   </div>	  
 	  
   <canvas id='main_canvas'></canvas>
@@ -342,9 +270,10 @@
   
   <div id="countdown">
 	  <p class="starting_when">Game starts in <span id="countdown_num">25</span><span id="waiting_for_what"> · Waiting for both players to upload code</span></p>
+	  <span id='waitingo' class='waiting_for'>Waiting for opponent's first action...</span>
   </div>
   
-  <div id="panel" class="panel_start">
+  <div id="panel" class="panel_start desktop_only">
     <div id="panel_dragger"><div id="drag_line1"></div><div id="drag_line2"></div></div>
 	  
 	  
@@ -394,7 +323,7 @@
   </div>
   
   
-  <div id="update_switch_wrapper">
+  <div id="update_switch_wrapper" class='desktop_only'>
   <a href="#" id="update_code"><span>UPDATE CODE</span></a>
   <div id="shortcut_info">SHIFT + ENTER</div>
   <div id="switch_view" class="mobile_only"><span class="switch_ico">{ }</span></div>
@@ -430,10 +359,7 @@
 	  </div>
 	  
 	  <a class="game_over_link" id="watch_replay" href="#">Watch replay</a>
-	  <a class="game_over_link" id="back_to_hub" href="../hub">Back to player hub</a>
-	  <a class="game_over_link" id="back_to_new" href="../newgame">New game</a>
-	  
-	  
+	  <a class="game_over_link" id="back_to_new" href="../">New game</a>
 	  
   </div>
  
@@ -546,7 +472,7 @@
 			  tickering_block = 0;
 		  } else {
   		  	  setTimeout(function(){
-				  console.log('buffering');
+				  //console.log('buffering');
 		  		  buffer += 40;
 				  tick_adjust += 40;
   		  		  draw_it2();
@@ -599,6 +525,7 @@
 	  }
 	  
 	  function run_tick(){
+		  //console.log('ioiofdjsiofjiosd');
 		  if (buffer == 0){
 			  buffer = 200;
 			  setTimeout(function(){
@@ -721,6 +648,12 @@
 	  var energy_processed = {};
 	  var base_drawn = {};
 	  var game_blocks = {};
+	  game_blocks['t-1'] = {
+		  b1: [0, 0, 0, 0, 0],
+		  b2: [0, 0, 0, 0, 0],
+		  b3: [0, 0, 0, 0, 0],
+		  b4: [0, 0, 0, 0, 0]
+	  }
 	  var active_block = 0;
 	  var game_running = 0;
 	  var tick_counter = 0;
@@ -755,6 +688,8 @@
 	  var offsetY_adjust = 0;
 	  
 	  var live_render = 1;
+	  
+	  var code_sent = 0;
 	  
 	  var osys = getOS();
 	  
@@ -793,6 +728,8 @@
 					initiate(message.data);
 					return;
 				}
+				
+				
 
 				 incoming = message.render;
 				 chan = message.chan || {};
@@ -811,9 +748,13 @@
 				 } else if (incoming.t > 0){
 				 	 //document.getElementById('console').style.display = 'block';
 					 document.getElementById('countdown').style.display = 'none';
+				 } else if (incoming.t == 0 && code_sent == 1){
+					 document.getElementById('waitingo').style.display = 'block';
 				 }
 				 
-				 if (tick_counter > 1){
+				 
+				 
+				 if (tick_counter >= 0){
 					 if (monitor_flag) console.log(ready_blocks[ready_blocks.length - 1]);
 					 if (monitor_flag) console.log(active_block);
 					 //game_blocks['t' + tick_counter] = incoming;
@@ -842,8 +783,6 @@
 					 	 if (monitor_flag) console.log('avg_diff = ' + avg_diff);
 					 	 //console.log('ccc = ' + ccc);
 					 }
-					 
-					 
 					 
 					 
 					 
@@ -876,14 +815,30 @@
 							 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
 							 var oldLoc = [0, 0];
 							 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
-							 var oldEnergy = 0;
-							 var oldSize = 0;
+							 var oldEnergy = 10;
+							 var oldSize = 1;
 							 
 							 if (spirits[spir_id] == undefined && pla1 != undefined){
 								 create_spirit_p1(spir_id);
 							 }
 							 
-							 if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
+							 if (game_blocks['t' + (tick_counter - 1)].p1 == undefined){
+								if (shapes['shape1'] == 'squares'){
+									oldSize = 10;
+									oldEnergy = 100;
+								}
+								if (shapes['shape1'] == 'triangles'){
+									oldSize = 3;
+									oldEnergy = 30;
+								}
+  	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
+  	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
+  	   							game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
+  	   							game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
+							 
+  	   							game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
+  	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+							 } else if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
 							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
 								oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
 								oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
@@ -911,6 +866,7 @@
 						 }
 					 }
 					 
+					 
 					 for (j = 0; j < incoming.p2.length; j++){
 						 var spir_id = incoming.pl2 + '_' + incoming.p2[j][0];
 						 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3], incoming.p2[j][4]];
@@ -921,15 +877,31 @@
 							 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
 							 var oldLoc = [0, 0];
 							 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
-							 var oldEnergy = 0;
-							 var oldSize = 0;
+							 var oldEnergy = 10;
+							 var oldSize = 1;
 							 
 							 if (spirits[spir_id] == undefined && pla2 != undefined){
 								 create_spirit_p2(spir_id);
 								 //console.log('spirit created ' + spir_id);
 							 }
 							 
-							 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
+							 if (game_blocks['t' + (tick_counter - 1)].p2 == undefined){
+ 								if (shapes['shape2'] == 'squares'){
+ 									oldSize = 10;
+ 									oldEnergy = 100;
+ 								}
+ 								if (shapes['shape2'] == 'triangles'){
+ 									oldSize = 3;
+ 									oldEnergy = 30;
+ 								}
+								 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
+								 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
+								 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
+								 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
+							 
+								 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
+								 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+							 } else if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
 							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
 								oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
 								oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
@@ -1075,23 +1047,23 @@
 				 
 				 
 			 
-				 if (incoming.tutorial.length > 0){
-					 //console.log('tutorial !!!!!!!!!!!!!!!!!!!');
-					 //console.log(incoming.tutorial[0]);
-					 if (incoming.tutorial[0][0] == 'end'){
-						 
-					 	setTimeout(function(){
-					 		location.reload()
-					 	}, 3000);
-					 }
-					 
-					 for (t = 0; t < incoming.tutorial[0].length; t++){
-						 if (incoming.tutorial[0][t] == 1){
-							 tutorial_phase = t + 1;
-							 //console.log('tutorial phase = ' + tutorial_phase);
-						 }
-					 }
-				 }
+				 //if (incoming.tutorial.length > 0){
+				 //	 //console.log('tutorial !!!!!!!!!!!!!!!!!!!');
+				 //	 //console.log(incoming.tutorial[0]);
+				 //	 if (incoming.tutorial[0][0] == 'end'){
+				 //		 
+				 //	 	setTimeout(function(){
+				 //	 		location.reload()
+				 //	 	}, 3000);
+				 //	 }
+				 //	 
+				 //	 for (t = 0; t < incoming.tutorial[0].length; t++){
+				 //		 if (incoming.tutorial[0][t] == 1){
+				 //			 tutorial_phase = t + 1;
+				 //			 //console.log('tutorial phase = ' + tutorial_phase);
+				 //		 }
+				 //	 }
+				 //}
 			 
 				 if (tutorial_started == 0){
 			 	
@@ -1189,7 +1161,7 @@
 				 
 				 
 			  } catch (e) {
-				  //console.log(e);
+				  console.log(e);
 			  }
 		  
 			  
@@ -1312,6 +1284,7 @@
 	  }
 	  
 	  function update_code(){
+		  code_sent = 1;
 		  update_success();
 		  if (tutorial_started == 0){
 			  tutorial_started = 1;
@@ -1538,7 +1511,6 @@
   <script src="a/tutorial_texts.js"></script>
   <script src="a/rendering3.js"></script>
   <script src="a/basics.js"></script>
-  <script src="a/public-modules/client/manual-ui.js"></script>
   <!--<script src="../sound.js"></script>-->
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

@@ -15,6 +15,7 @@
 	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./documentation.css">
+	<link rel="stylesheet" href="./index_style.css">
 	<link rel="stylesheet" href="./style-mobile.css">
 	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./anime.min.js"></script>
@@ -173,12 +174,12 @@
   
   
 	  <div id="hector">
-		  <h1 id="logo"><a href="/">yare<span class="logo_lowlight">.io</span></a></h1>
+		  <h1 id="logo"><a href="/">yare <span class="logo_lowlight">2</span><span class='beta_badge'>BETA</span></a></h1>
 		  <div id="doc_sections">
-				  <a href="#doc_intro" id="doc_sec_link_intro" class="doc_sec_link">Intro & Gameplay</a>
+				  <a href="#doc_intro" id="doc_sec_link_intro" class="doc_sec_link">Intro</a>
 				  <a href="#doc_spirit" id="doc_sec_link_spirit" class="doc_sec_link doc_sec_active">Spirit</a>
 				  <a href="#doc_base" id="doc_sec_link_base" class="doc_sec_link">Base</a>
-				  <a href="#doc_outpost" id="doc_sec_link_outpost" class="doc_sec_link">Outpost</a>
+				  <a href="#doc_outpost" id="doc_sec_link_outpost" class="doc_sec_link">Outpost & Pylon</a>
 				  <a href="#doc_energy" id="doc_sec_link_energy" class="doc_sec_link">Energy</a>
 				  <a href="#doc_credits" id="doc_sec_link_credits" class="doc_sec_link">Credits</a>
 				  <div class="menu_line line2"></div>
@@ -212,15 +213,50 @@
 	  <div id="doc_content">
 		  
 		<section id="doc_intro">
-		  <p class="p_intro">yare.io is a real-time 2-player (1v1) strategy game where you control your units (spirits) via JavaScript. You win by destroying the opponent’s base.</p>
-		  <p id="early_access">If you are new to yare.io, try out the <a href="#" onclick="new_game('easy-bot')">Interactive Tutorial</a></p>
+		  <p class="p_intro">yare.io is a real-time 2-player (1v1) strategy game where you control units with any input method you want.<br><br><span class='lowlight'>The default built-in methods are JavaScript/Python or a traditional Mouse/Touch interface, but you can create your own UI and modalities using the <a href='/modules-documentation'>modules system</a>.</span></p>
+		  
+		  <div id='mechanics_button' style='margin-top: 0px;'><span class='mechanics_button_lbl'>Game mechanics</span><span class='ico_mechplus'></span></div>
+  		<div id='mechanics_block' style='transform: translateX(-50%) scale(0.8)'>
+  			<div id='mechanics_close_btn'><span class='ico_close'></span></div>
+			
+  			<h4 id='mechanics_h' class='gradiented_h'>Game mechanics</h4>
+  			<p class='mech_p'>There is one resource — energy. You extract energy from stars and use it to attack, defend and produce new units. The only thing you can control is the movement of your units and where they transfer the energy. </p>
+			
+  			<h5 id='mech_win_conditions' class='allcapi'>End game conditions</h5>
+  			<span class='lowlight t_small mech_num'>1</span><p class='t_small'>Player with 0 remaining units loses</p>
+  			<span class='lowlight t_small mech_num'>2</span><p class='t_small'>Player with 0 structures (bases, pylon, outpost) under their control loses</p>
+			
+  			<h5 id='mech_factions' class='allcapi desktop_only'>Factions</h5>
+  			<div class='mech_faction_wrap_all desktop_only'>
+  				<span class='mech_unique_lbl'>Unique ability</span>
+  				<div class='mech_faction_wrap'>
+  					<span class='mech_faction_icon ico_sh_circles'></span>
+  					<p class='mech_faction_desc'>Small and weak, but their power lies in numbers.</p>
+  					<p class='mech_ability_name'>merge/divide</p>
+  					<p class='mech_ability_desc'>Combines spirits into one stronger unit</p>
+  				</div>
+  				<div class='mech_faction_wrap'>
+  					<span class='mech_faction_icon ico_sh_squares'></span>
+  					<p class='mech_faction_desc'>Large and strong, but expensive to produce and small in numbers.</p>
+  					<p class='mech_ability_name'>lock/unlock</p>
+  					<p class='mech_ability_desc'>Can’t move, but increases energize range</p>
+  				</div>
+  				<div class='mech_faction_wrap'>
+  					<span class='mech_faction_icon ico_sh_triangles'></span>
+  					<p class='mech_faction_desc'>Neither too strong, nor too week, but most difficult to play right.</p>
+  					<p class='mech_ability_name'>explode</p>
+  					<p class='mech_ability_desc'>Damages all enemies in surrounding area</p>
+  				</div>
+  			</div>
+  			<div class='mech_spacer'></div>
+  			<img id='mech_ilu' class='desktop_only' src='asset/mech_ilu.svg'>
+  			<img id='mech_lights' src='asset/mech_lights.png'>
+			
+			
+  		</div>
+		
 		  <div class="sep_large"></div>
 		  <div class="sep_large"></div>
-		  <div id="trailer_placeholder"><span>placeholder for trailer video</span></div>
-		  <h4 id="gm_board" class="doc_h4">Game board</h4>
-		  <p class="p_normal">Yare.io is played on a board sized 4400&nbsp;×&nbsp;2700 units. It’s an Euclidian plane starting [0,&nbsp;0] at the top left and [4400,&nbsp;2700] at the bottom right. Star and player base positions shown below.</p>
-		  <div class="sep_small"></div>
-		  <img src="asset/board.png" class="board_img">
 		  
 		  <div class="sep_medium"></div>
 		  <h4 class="doc_h4">Game's global variables</h4>
@@ -241,44 +277,72 @@
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
-					<span class="table_doc_property">base</span>
+					<span class="table_doc_property">base_zxq</span>
 					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Your base</span>
+					<span class="table_doc_value">Top-left base (Player 1 start position)</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
-					<span class="table_doc_property">enemy_base</span>
+					<span class="table_doc_property">base_a2c</span>
 					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Enemy base</span>
+					<span class="table_doc_value">Bottom-right base (Player 2 start position)</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">base_p89</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Bottom-left base (neutral)</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">base_nua</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">top-right base (neutral)</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
 					<span class="table_doc_property">star_zxq</span>
 					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Top-left corner star</span>
+					<span class="table_doc_value">Top-left star</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
-					<span class="table_doc_property">star_a1c</span>
+					<span class="table_doc_property">star_a2c</span>
 					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Bottom-right corner star</span>
+					<span class="table_doc_value">Bottom-right star</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
 					<span class="table_doc_property">star_p89</span>
 					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Star in the middle</span>
+					<span class="table_doc_value">Bottom-left star</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
-					<span class="table_doc_property">outpost</span>
+					<span class="table_doc_property">star_nua</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Top-right star</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">outpost_mdo <span class='lowlight'>and</span> outpost</span>
 					<span class="table_doc_type">object</span>
 					<span class="table_doc_value">Outpost</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">pylon_u3p <span class='lowlight'>and</span> pylon</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value">Pylon</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -399,7 +463,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">mark</span>
 					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">Custom string assignable via <code>set_mark()</code> method.</span>
+					<span class="table_doc_value">custom string assignable via <code>set_mark()</code> method.</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -407,6 +471,20 @@
 					<span class="table_doc_property">last_energized</span>
 					<span class="table_doc_type">string</span>
 					<span class="table_doc_value">id of most recently energized object</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">shape</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">'circles'<span class='lowlight'>, </span>'squares' <span class='lowlight'>or</span> 'triangles'</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">player_id</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">username</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -450,6 +528,7 @@
 						<div class="sep_small"></div>
 						
 						<p class="p_method_desc">If <span class="target_lowlight">target</span> is the same spirit as origin, the spirit will attempt harvesting energy from a star.</p>
+						<p class="p_method_desc">If <span class="target_lowlight">target</span> is a location (e.g. <code>[450, 380]</code>) the spirit will create an <a href='#doc_energy'>energy fragment</a> at that point.</p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
@@ -498,6 +577,33 @@
 					</div>
 					
 					
+				</div>
+			</div>
+		  	<div id="exp_jump_method_wrap" class="row_doc">
+				<div id="exp_jump_method" class="row_in_doc">
+					<span class="table_doc_method">jump(<span class="target_lowlight">target</span>)</span>
+					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
+					<span class="table_doc_usedby">
+						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
+						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
+						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
+					</span>
+					<span id="expand_for_jump" class="expando_more"><span class="ico_expand"></span></span>
+						
+					<div class="exp_content">
+						<div class="sep_small"></div>
+						<p class="p_method_desc">Teleports a spirit into a new location. Energy cost of the jump is equal to distance/5. <span class="lowlight">Target can not be within a 50 unit distance from any base, outpost or pylon, or 100 unit distance from a star. If target is not a valid location, the jump will land in the nearest valid location from <code>target</code></span></p>
+						
+						<div class="sep_small"></div>
+						<div class="sep_small"></div>
+						
+						<!--
+						<div class="method_gif_example">
+							<div id="gif_move" class="gif_in"></div>
+							<code class="example_code">my_spirits[0].jump([800, 900])</code>
+						</div>
+						-->
+					</div>
 				</div>
 			</div>
 		  	<div id="exp_merge_method_wrap" class="row_doc">
@@ -553,20 +659,20 @@
 					
 				</div>
 			</div>
-		  	<div id="exp_jump_method_wrap" class="row_doc">
-				<div id="exp_jump_method" class="row_in_doc">
-					<span class="table_doc_method">jump(<span class="target_lowlight">target</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
+		  	<div id="exp_lock_method_wrap" class="row_doc">
+				<div id="exp_lock_method" class="row_in_doc">
+					<span class="table_doc_method">lock()</span>
+					<span class="table_doc_argument"><span class="target_lowlight">no argument</span></span>
 					<span class="table_doc_usedby">
 						<span class="g_con method_nouse"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
 						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
 						<span class="g_con method_nouse"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
 					</span>
-					<span id="expand_for_jump" class="expando_more"><span class="ico_expand"></span></span>
+					<span id="expand_for_lock" class="expando_more"><span class="ico_expand"></span></span>
 						
 					<div class="exp_content">
 						<div class="sep_small"></div>
-						<p class="p_method_desc">Teleports a spirit into a new location. Energy cost of the jump is equal to distance/5. <span class="lowlight">Target can not be within a 50 unit distance from any base or outpost (in both x and y direction, not radius), or 100 unit distance from a star. If target is not a valid location, the jump will land in the nearest valid location from <code>target</code></span></p>
+						<p class="p_method_desc">Spirit locks itself — cannot move anymore, but every tick its range increases by 25 units until it reaches 300 (4 ticks).</p>
 						
 						<div class="sep_small"></div>
 						<div class="sep_small"></div>
@@ -574,7 +680,35 @@
 						<!--
 						<div class="method_gif_example">
 							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].jump([800, 900])</code>
+							<code class="example_code">my_spirits[0].lock([800, 900])</code>
+						</div>
+						-->
+					</div>
+				</div>
+			</div>
+			
+		  	<div id="exp_unlock_method_wrap" class="row_doc">
+				<div id="exp_unlock_method" class="row_in_doc">
+					<span class="table_doc_method">unlock()</span>
+					<span class="table_doc_argument"><span class="target_lowlight">no argument</span></span>
+					<span class="table_doc_usedby">
+						<span class="g_con method_nouse"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
+						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
+						<span class="g_con method_nouse"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
+					</span>
+					<span id="expand_for_unlock" class="expando_more"><span class="ico_expand"></span></span>
+						
+					<div class="exp_content">
+						<div class="sep_small"></div>
+						<p class="p_method_desc">Unlocks the spirit, returning its energize range back to 200. The spirit can move again.</p>
+						
+						<div class="sep_small"></div>
+						<div class="sep_small"></div>
+						
+						<!--
+						<div class="method_gif_example">
+							<div id="gif_move" class="gif_in"></div>
+							<code class="example_code">my_spirits[0].unlock([800, 900])</code>
 						</div>
 						-->
 					</div>
@@ -706,7 +840,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">id</span>
 					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“base_“ + username, e.g. base_jane</span>
+					<span class="table_doc_value">“base_zxq“<span class='lowlight'>, </span>"base_a2c"<span class='lowlight'>, </span>"base_p89"<span class='lowlight'> or  </span>"base_nua"</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -720,7 +854,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">position</span>
 					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">[1500, 600] player1 base, [2300, 1400] player2 base</span>
+					<span class="table_doc_value">[x, y] coordinates of the base</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -750,9 +884,9 @@
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
-					<span class="table_doc_property">hp</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">8</span>
+					<span class="table_doc_property">control</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">id of the player controlling the base</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -766,7 +900,8 @@
 		  </div>
 		  
 		  <div class="sep_medium"></div>
-		  <p class="p_somewhat_important">The base's hp decreases by 1 every tick it doesn't have enough energy to defend itself while being attacked. The game ends when the base's hp reaches 0</p>
+		  <p class="p_somewhat_important">If a base is in a neutral state, the player that pours more energy into it in the next tick claims control.</p>
+		  <p class="p_somewhat_important">When a non-neutral base's energy would have gone below 0 (i.e. while under attack), the base becomes neutral.</p>
 		  
 		</section>
 		
@@ -774,24 +909,10 @@
 	  	<div class="sep_medium"></div>
 	  	<section id="doc_outpost">
 		  <h2 class="h_sec_head">Outpost</h2>
-		  <p class="p_sec_intro">Neutral structure in the middle of the map that provides strategic advantage for whoever controls it by automatically shooting at enemy targets within its range.</p>
-		  
-		  
-		  <div class="sep_medium"></div>
-		  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">Who controls the outpost</span></p>
-		  <p class="p_normal" style="max-width: max-content;">The player that first sends energy into the outpost takes over its control. The outpost then automatically uses this energy to energize a random target within its <code>range</code>. Enemy can energize the outpost — e.g. <code>my_spirits[0].energize(outpost)</code> — to reduce its current energy (same way as if it was a spirit).</p>
-		  
-		  <p class="p_normal" style="max-width: max-content;">Once the outpost’s energy reaches 0 (either by using up all of its energy to attack or by the enemy damaging it), it becomes neutral again, available for any player to take control over it.</p>
-		  
-		  <p class="p_normal" style="max-width: max-content;"><span class="lowlight">If both players are trying to take over the outpost’s control at the same time, the player that sends more energy takes over it.</span></p>
-		  
-		  
-		  
-		  
-		  
+		  <p class="p_sec_intro">Neutral structure that provides strategic advantage for whoever controls it by automatically shooting at enemy targets within its range.</p>
 		  
 		  <div class="sep_medium"></div>
-		  <div class="sep_medium"></div>
+
 		  <h4 class="doc_h4">Properties</h4>
 		  <div class="sep_small"></div>
 		  
@@ -819,7 +940,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">position</span>
 					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">[2200, 1100]</span>
+					<span class="table_doc_value">[-230, 230]</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -869,7 +990,96 @@
 		  
 		  <div class="sep_medium"></div>
 		  
-		  <p class="p_somewhat_important">Outpost deals 2 damage (costing 1 energy, same as a spirit) when it has less then 500 energy and 8 damage (costing 4 energy) when it has over 500 energy.</p>
+		  <p class="p_normal">Outpost deals 2 damage (costing 1 energy, same as a spirit) when it has less then 500 energy and 8 damage (costing 4 energy) when it has over 500 energy.</p>
+		  <div class="sep_medium"></div>
+		  <div class="sep_medium"></div>
+		  
+		  
+		  <h2 class="h_sec_head">Pylon</h2>
+		  <p class="p_sec_intro">Neutral structure that provides strategic advantage for whoever controls it by automatically healing all friendly spirits within its range.</p>
+		  
+		  <div class="sep_medium"></div>
+
+		  <h4 class="doc_h4">Properties</h4>
+		  <div class="sep_small"></div>
+		  
+		  <div class="table_doc">
+				<div class="row_in_doc_head">
+					<span class="table_doc_property">Property</span>
+					<span class="table_doc_type">Type</span>
+					<span class="table_doc_value">Value</span>
+				</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">id</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">"pylon_u3p"</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">structure_type</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">“pylon“</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">position</span>
+					<span class="table_doc_type">array</span>
+					<span class="table_doc_value">[228, -228]</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">size</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">20</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">energy_capacity</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">1000</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">energy</span>
+					<span class="table_doc_type">number</span>
+					<span class="table_doc_value">pylon’s current energy</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">control</span>
+					<span class="table_doc_type">string</span>
+					<span class="table_doc_value">player's id (e.g. "jane")</span>
+				</div>
+			</div>
+		  	<div class="row_doc">
+				<div class="row_in_doc">
+					<span class="table_doc_property">sight</span>
+					<span class="table_doc_type">object</span>
+					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
+					<span id="info_pylon_sight" class="expando_info">?</span>
+				</div>
+			</div>
+		  </div>
+		  
+		  <div class="sep_medium"></div>
+		  
+		  <p class="p_normal">Pylon heals all friendly spirits that are inside the annulus area where the smaller circle has radius 200 and the larger one 400 units. The healing rate is 1 energy per tick per spirit.</p>
+		  <div class="sep_medium"></div>
+		  
+		  
+		  
+		  
+		  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">Who controls the outpost / pylon / neutral base</span></p>
+		  <p class="p_normal" style="max-width: max-content;">The player that first sends energy into the neutral structure takes over its control. If both players are energizing neutral structure at the same time, the player who pours more energy in that tick takes control (structure remains neutral if both energize it with the same amount). Energizing a structure controlled by an enemy deals 2 damage — same as attacking a spirit.</p>
+		  
+		  <p class="p_normal" style="max-width: max-content;">Once the structure's energy reaches 0 (either by using up all of its energy to attack/heal or by the enemy damaging it), it becomes neutral again, available for any player to take control over it. Base remains under the player's control until its energy would have gone below 0.</p>
 		  
 		</section>
 		
@@ -879,10 +1089,8 @@
 		<section id="doc_energy">
 		  <h2 class="h_sec_head">Energy</h2>
 		  <p class="p_sec_intro">Energy is the only resource in the game. Spirits harvest it from the stars, use it to create new spirits, transfer energy between themselves and attack with it.</p>
-		  <div class="sep_large"></div>
-		  <p class="p_intro">Stars are the source of energy. <span class="lowlight">Every tick (1 tick = 600ms), a star generates 2 energy + 2% of its current energy (rounded to a nearest integer)</span></p>
-		  
-		  <p class="p_intro"><span class="lowlight">The star in the middle of the map – <code>star_p89</code> – starts generating energy after the 100th tick.</span></p>
+		  <div class="sep_medium"></div>
+		  <p class="p_intro">Stars are the source of energy. <span class="lowlight">Every tick (1 tick = 500ms), a star generates 2 energy + 2% of its current energy (rounded to a nearest integer). Except for <code>star_nua</code> that generates 3 energy + 3%.</span></p>
 			  
 		  <div class="star_ilu">
 		  	<div class="star_large"></div>
@@ -904,7 +1112,7 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">id</span>
 					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“star_zxq“, “star_a1c” and "star_p89" <a href="#gm_board">game board</a></span>
+					<span class="table_doc_value">“star_zxq“, “star_a2c”, "star_p89" and "star_nua"</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
@@ -925,28 +1133,25 @@
 				<div class="row_in_doc">
 					<span class="table_doc_property">energy_capacity</span>
 					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">1000</span>
+					<span class="table_doc_value">1000 (3000 for star_nua)</span>
 				</div>
 			</div>
 		  	<div class="row_doc">
 				<div class="row_in_doc">
 					<span class="table_doc_property">position</span>
 					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">[x, y] coordinates (see <a href="#gm_board">game board</a>)</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">active_in</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">Ticks until star starts generating energy (relevant only for the middle star)</span>
+					<span class="table_doc_value">[x, y] coordinates</span>
 				</div>
 			</div>
 		  </div>
 		  
 		  <div class="sep_medium"></div>
 		  
-		  <p class="p_somewhat_important">All “movement” of energy in the game is done via the energize(<span class="lowlight">target</span>) method. See the <a href="#methods_ent">Spirit methods</a> section.</p>
+		  <p class="p_normal">All “movement” of energy in the game is done via the energize(<span class="lowlight">target</span>) method. See the <a href="#methods_ent">Spirit methods</a> section.</p>
+		  
+		  <div class="sep_medium"></div>
+		  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">Energy fragments</span></p>
+		  <p class="p_normal">Energizing a location (e.g. <code>spirit.energize([450, 500])</code>) will create an energy fragment at that point. Fragments can then be harvested by any player in the same way as stars (spirit energizing itself). If a spirit can harvest from a star or from a fragment, it will prioritize the fragment.</p>
 		  
 		  
 		  
@@ -956,7 +1161,8 @@
 		  
 		<section id="doc_credits">
 		  <h2 class="h_sec_head">Credits</h2>
-		   <p class="p_sec_intro">Yare.io was made by <a href="http://ries.cz">Vilem Ries</a>, <a href="j2m.cz/~jm/">jm</a> and <a href="https://github.com/andyleap">Vendan</a>. Feel free to reach out over <a href="https://discord.gg/tWDV7daRnB">Discord</a> </p>
+		   <p class="p_sec_intro">Author: <a href="http://ries.cz">Vilem Ries</a></p>
+		   <p class="p_sec_intro">Key contributors: <a href="https://github.com/andyleap">Vendan</a>, <a href="j2m.cz/~jm/">jm</a> and <a href="swz.works">swz</a>
 		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>
 		   <div class="sep_large"></div>
@@ -981,7 +1187,7 @@
 	  
 	  
   </body>
-  
+  <script src="./animations.js"></script>
   <script>
 	  var prevActive;
 	  var currentActive;
@@ -1116,6 +1322,12 @@
 		  case 'expand_for_divide':
 			  expand_documentation('exp_divide_method', this.id)
 			  break;
+		  case 'expand_for_lock':
+			  expand_documentation('exp_lock_method', this.id)
+			  break;
+		  case 'expand_for_unlock':
+			  expand_documentation('exp_unlock_method', this.id)
+			  break;
 		  case 'expand_for_jump':
 			  expand_documentation('exp_jump_method', this.id)
 			  break;
@@ -1144,11 +1356,13 @@
 	  for (i = 0; i < expandos.length; i++){
 		  expandos[i].addEventListener('click', expanding_row, false);
 	  }
+	  
+	  document.getElementById('mechanics_button').addEventListener('click', show_mechanics, false);
+	  document.getElementById('mechanics_close_btn').addEventListener('click', hide_mechanics, false);
   
   
   </script>
   
-  <script src="./animations.js"></script>
   <script src="./basics.js"></script>
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>

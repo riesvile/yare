@@ -578,6 +578,26 @@ function bot_game(data, botinfo){
 	}
 }
 
+function lego_bot_game(data){
+	return bot_game(data, {
+		id: 'lego-bot',
+		session_id: 'bot',
+		rating: 500,
+		shape: 'squares',
+		color: 'color14'
+	});
+}
+
+function hard_bot_game(data){
+	return bot_game(data, {
+		id: 'hard-bot',
+		session_id: 'bot',
+		rating: 500,
+		shape: 'triangles',
+		color: 'color11'
+	});
+}
+
 function boom_bot_game(data){
 	return bot_game(data, {
 		id: 'boom-bot',
@@ -1758,7 +1778,7 @@ app.post('/populate-hub', (req, res) => {
 app.post('/populate-leaderboard', (req, res) => {
 	User.find({})
 		.sort({rating:'desc'})
-		.limit(100)
+		.limit(20)
 		.exec()
 		.then((result) => {
 			//res.send(result);
@@ -2238,6 +2258,7 @@ function sendAutomatchStatus(){
 }
 
 async function newGame(data, socket){
+	//TODO rewrite these into one function, not one per bot, jesus.
 	let response = {}
 	switch(data.type) {
 		case "boom-bot":
@@ -2272,6 +2293,26 @@ async function newGame(data, socket){
 			break;
 		case "dumb-bot":
 			response = dumb_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "hard-bot":
+			response = hard_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "lego-bot":
+			response = lego_bot_game(data)
 			socket.send(JSON.stringify({
 				type: "match-found",
 				data: {

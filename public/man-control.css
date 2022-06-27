@@ -63,7 +63,7 @@
 	right: 20px;
 	top: 50%;
 	transform: translateY(-50%);
-	pointer-events: auto;
+	pointer-events: none;
 	z-index: 1;
 	opacity: 0;
 }
@@ -116,6 +116,10 @@
 	transform: translate(-50%, -50%);
 	opacity: 0.69;
 	pointer-events: none !important;
+}
+
+#man_action_harvest:hover p#tut_help_harv {
+	opacity: 0;
 }
 
 #man_select_count {
@@ -333,7 +337,7 @@ h2.man_head2 {
 	position: absolute;
 	top: calc(50% + 40px);
 	right: 24px;
-	
+	pointer-events: none;
 }
 
 #man_newborn_point {
@@ -405,6 +409,62 @@ h3.man_head3 {
 	
 }
 
+
+/* -- tutorial -- */
+
+#tut_help_harv {
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	line-height: 16px;
+	position: absolute;
+	top: 22px;
+	right: 64px;
+	width: 360px;
+	pointer-events: none;
+	transition: opacity 0.2;
+}
+
+#tut_arrow {
+	position: absolute;
+	top: 50% !important;
+	left: auto !important;
+	right: -6px !important;
+	width: 16px !important;
+	height: 16px !important;
+}
+
+#tut_help_selection_desktop, #tut_help_selection_mobile {
+	line-height: 26px;
+	font-size: 16px;
+	position: absolute;
+	top: 45%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	min-width: 400px;
+	text-align: center;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.keyboard_btn {
+	display: inline-block;
+	border: 1px solid rgba(242, 246, 250, 0.25);
+	color: rgba(242, 246, 250, 0.69);
+	padding: 0px 8px;
+	font-size: 12px;
+	font-weight: 500;
+	border-radius: 8px;
+	margin: 0px 4px;
+}
+
+.tut_text {
+	font-size: 16px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	line-height: 26px;
+	pointer-events: none;
+}
 
 
 

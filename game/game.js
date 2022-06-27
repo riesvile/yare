@@ -214,6 +214,10 @@ function setBotCode(name, sand) {
 		sand.setPlayerCode(botCodes['boom-bot']);
 	} else if (name == 'dumb-bot'){
 		sand.setPlayerCode(botCodes['dumb-bot']);
+	} else if (name == 'hard-bot'){
+		sand.setPlayerCode(botCodes['hard-bot']);
+	} else if (name == 'lego-bot'){
+		sand.setPlayerCode(botCodes['lego-bot']);
 	}
 }
 
@@ -328,7 +332,7 @@ parentPort.on("message", message => {
 		  }
 		  
 	  } else if (message.pl_num == "player2"){
-		  if (message.session_id == player2_session){
+		  if (message.session_id == player2_session || message.pl_id == 'anonymous'){
 			  player2_code = message.pl_code;
 			  sand2.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
@@ -680,7 +684,8 @@ var end_winner = 0;
 var tutorial_phase;
 var tutorial_flag1;
 
-var game_duration = -50;
+var game_duration = 0;
+var waiting_time = 500;
 var game_activity = 1;
 var qqmonitoring = [0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -705,6 +710,7 @@ color_palettes['color11'] = 'rgba(78, 142, 250, 1)';
 color_palettes['color12'] = 'rgba(240, 70, 60, 1)';
 
 color_palettes['color13'] = 'rgba(18, 255, 248, 1)';
+color_palettes['color14'] = 'rgba(235, 93, 0, 1)';
 
 
 
@@ -2697,11 +2703,13 @@ if (!isMainThread){
 			
 
 	async function update_state(){
+		if (waiting_time >= 0) waiting_time--;
 		let update_t0 = process.hrtime();
 		game_duration++;
+		
 
-		if(game_duration < -3 && sand1.successful_compile && sand2.successful_compile) {
-			game_duration = -3;
+		if (game_duration == 1 && !(sand1.successful_compile && sand2.successful_compile) && waiting_time >= 0) {
+			game_duration = 0;
 		}
 
 		ticks['now'] = game_duration;
@@ -2796,7 +2804,7 @@ if (!isMainThread){
 				}
 			}
 			
-			if(game_duration >= 0) {
+			if(game_duration > 0) {
 				process_stuff();
 			}
 			

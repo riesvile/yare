@@ -171,7 +171,7 @@
   
   
   <div id="hector">
-	  <h1 id="logo"><a href="/">yare<span class="logo_lowlight">.io</span></a></h1>
+	  <h1 id="logo"><a href="/">yare <span class="logo_lowlight">2</span><span class='beta_badge'>BETA</span></a></h1>
 	  <div class="menu">
 		  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
 		  <div class="menu_line desktop_only"></div>
@@ -186,6 +186,8 @@
   <div id="modules_plate">
   <div id='man_ui_module'>
 	<div id='man_protection_gradient_soft'></div>
+	<p id='tut_help_selection_desktop' class='tut_text'>Hold <span class='keyboard_btn'>CTRL</span> and move mouse to select units</p>
+	<p id='tut_help_selection_mobile' class='tut_text'>Tap on units to select them</p>
   	<div id='man_ui_wrap'>
 		<div id='man_select_count' class='man_square_btn'>
 			<div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div>
@@ -199,7 +201,7 @@
 			</div>
 		</div>
 		<div id='man_action_group1'>
-			<div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p></div>
+			<div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p><p id='tut_help_harv'>Start harvesting from the star to the base <span id='tut_arrow' class='ico_right_arrow'></span></p></div>
 			<div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div>
 			<div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div>
 			<div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div>
@@ -471,8 +473,8 @@
 		  firstLineNumber: 2
 	  });
 	  editor.commands.addCommand({
-	      name: "update_live_code",
-	      exec: function() {update_live_code();},
+	      name: "update_code",
+	      exec: function() {update_code();},
 	      bindKey: {mac: "cmd-s", win: "ctrl-s"}
 	  });
 	  editor.completers.push({
@@ -645,7 +647,7 @@
 		  document.getElementById('c2_option_current').addEventListener('click', console_view_current, false);
 		  document.getElementById('c2_option_all').addEventListener('click', console_view_all, false);
 		  
-		  document.getElementById('update_code').addEventListener("click", update_live_code, false);
+		  document.getElementById('update_code').addEventListener("click", update_code, false);
 		  
 		  //placing elements
 		  document.getElementById('base_canvas').addEventListener("mousedown", canvas_down, false);

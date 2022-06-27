@@ -71,6 +71,9 @@ function player_selection_crossroad(e){
 	  		break;
 	  	case 'upload_bot_box':
 	  		break;
+		case 'ps_sandbox':
+			window.location.href = '/boxsand';
+			break;
 	  	default:
 	  		console.log('defaulted');
 	  		break;
@@ -117,11 +120,11 @@ function style_selection(e){
 	if (el.id == 'playstyle_manual'){
 		document.getElementById('playstyle_manual').classList.add('playstyle_active');
 		selected_playstyle = 'manual';
-		localStorage.setItem("chosen_playstyle") = 'manual';
+		localStorage.setItem("chosen_playstyle", 'manual');
 	} else {
 		document.getElementById('playstyle_code').classList.add('playstyle_active');
 		selected_playstyle = 'code';
-		localStorage.setItem("chosen_playstyle") = 'code';
+		localStorage.setItem("chosen_playstyle", 'code');
 	}
 	
 }
@@ -395,6 +398,28 @@ function cncl_game(){
 	location.reload();
 }
 
+function reset_play_type_ilu(){
+	document.getElementById('play_type_ilu').classList.remove('ilu_js');
+	document.getElementById('play_type_ilu').classList.remove('ilu_py');
+	document.getElementById('play_type_ilu').classList.remove('ilu_mouse');
+	document.getElementById('play_type_ilu').classList.remove('ilu_touch');
+	document.getElementById('play_type_ilu').classList.remove('ilu_more');
+}
+
+function play_type_hover(e){
+	e = e || window.event;
+	let el = (e.target || e.srcElement);
+	console.log(el.id)
+	reset_play_type_ilu();
+	let ilu_type = el.id.split('_')[1];
+	document.getElementById('play_type_ilu').classList.add('ilu_' + ilu_type);
+	
+	for (let el of play_types){
+		el.style.opacity = 0.4;
+	}
+	el.style.opacity = 1;
+}
+
 
 
 function copyTextToClipboard(text, target) {
@@ -486,4 +511,17 @@ document.getElementById('main_button_versus').addEventListener('click', versus_s
 document.getElementById('main_button').addEventListener('click', start_game, false);
 document.getElementById('cncl_button').addEventListener('click', cncl_game, false);
 
+document.getElementById('mechanics_button').addEventListener('click', show_mechanics, false);
+document.getElementById('mechanics_close_btn').addEventListener('click', hide_mechanics, false);
+
 document.getElementById('new_acc_link').addEventListener('click', new_account, false);
+
+let play_types = document.getElementsByClassName('play_type');
+for (let el of play_types){
+	el.addEventListener('mouseover', play_type_hover, false);
+}
+
+if (localStorage.getItem('chosen_playstyle') == null && getCookie('user_id') == 'anonymous'){
+  localStorage.setItem('chosen_playstyle', 'manual');
+}
+

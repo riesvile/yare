@@ -244,7 +244,7 @@ function man_jump(sp){
 
 function man_merge(sp){
 	let beh_value = memory['behaviour'][sp.id]['merge'];
-	if (beh_value == '' || beh_value == sp.id) return;
+	if (beh_value == '' || beh_value == sp.id) return false;
 	sp.merge(spirits[beh_value]);
 }
 
@@ -255,8 +255,25 @@ function man_divide(sp){
 			memory['behaviour'][sp_id]['merge'] = '';
 			memory['behaviour'][sp_id]['move'] = memory['behaviour'][sp.id]['move'];
 		}
-		sp.divide();
+		if (sp.shape == 'circles') sp.divide();
 	}
+}
+
+function man_lock(sp){
+	let beh_value = memory['behaviour'][sp.id]['lock'];
+	if (beh_value == '') return;
+	if (beh_value == 1) sp.lock();
+}
+
+function man_unlock(sp){
+	let beh_value = memory['behaviour'][sp.id]['lock'];
+	if (beh_value == 0 && sp.shape == 'squares') sp.unlock();
+}
+
+function man_explode(sp){
+	let beh_value = memory['behaviour'][sp.id]['explode'];
+	if (beh_value == '') return;
+	if (beh_value == 1) sp.explode();
 }
 
 function man_energize_structure(sp){
@@ -270,6 +287,7 @@ function man_enemy_triggered_actions(sp){
 	let beh_move = memory['behaviour'][sp.id]['move'];
 	let beh_target = memory['behaviour'][sp.id]['targetting'];
 	let beh_attitude = memory['behaviour'][sp.id]['attitude'];
+	let beh_attitude_jump = memory['behaviour'][sp.id]['attitude_jump'];
 	let beh_priority = memory['behaviour'][sp.id]['action_priority'];
 	let enemy_target_id = '';
 	
@@ -286,28 +304,50 @@ function man_enemy_triggered_actions(sp){
 		enemy.energy -= 2;
 	}
 	
-	//if ()
+	// automatic behaviour settings
 	if (beh_attitude == 'keepdist'){
-		if (!(beh_priority == 'manual' && beh_move.length != 0)) basic_escape(sp);
+		if (!(beh_priority == 'manual' && beh_move.length != 0)) basic_escape(sp, beh_attitude_jump);
+		if (beh_priority == 'attitude') basic_escape(sp, beh_attitude_jump);
+		if (beh_priority == 'manual' && beh_move == sp.position) basic_escape(sp, beh_attitude_jump);
+	} else if (beh_attitude == 'chase'){
+		if (!(beh_priority == 'manual' && beh_move.length != 0)) chase_enemy(sp, beh_attitude_jump, beh_move);
+		if (beh_priority == 'attitude') chase_enemy(sp, beh_attitude_jump, sp.position);
+		if (beh_priority == 'manual' && beh_move == sp.position) chase_enemy(sp, beh_attitude_jump, beh_move);
 	}
 	
 }
 
-function basic_escape(sp, howfar = 241){
+function basic_escape(sp, jumpy, howfar = 241){
 	let nearest_enemy = find_nearest(sp, sp.sight.enemies);
 	let towards_point = 0;
 	let vectorish = [];
 	let away_point = [];
 	if (nearest_enemy != ''){
-		let attacker = spirits[nearest_enemy]
-		towards_point = circle_line_intersect(sp.position, attacker.position, 20);
+		let attacker = spirits[nearest_enemy];
+		towards_point = circle_line_intersect(sp.position, attacker.position, 40);
 		vectorish = [towards_point[0] - sp.position[0], towards_point[1] - sp.position[1]];
 		away_point = [sp.position[0] + (-1 * vectorish[0]), sp.position[1] + (-1 * vectorish[1])];
 		
 		if (get_distance(sp.position, attacker.position) < howfar) sp.move(away_point);
+		if (get_distance(sp.position, attacker.position) < 200 && jumpy) sp.jump(away_point)
 	}
 }
 
+function chase_enemy(sp, jumpy, anchor, howfar = 200){
+	let nearest_enemy = find_nearest(sp, sp.sight.enemies);
+	let towards_point = 0;
+	if (nearest_enemy != ''){
+		let victim = spirits[nearest_enemy];
+		towards_point = circle_line_intersect(sp.position, victim.position, 40);
+		if (get_distance(sp.position, anchor) <= howfar){
+			sp.move(victim.position);
+		} 
+		if (get_distance(sp.position, victim.position) >= 200 && jumpy){
+			sp.jump(towards_point);
+		}
+	}
+	
+}
 
 function create_harvesting_group(star_id, structure_id){
 	let harv_star = globalThis[star_id];
@@ -448,15 +488,16 @@ memory['newborn_base_p89'] = client[ttick]['newborn_base_p89'];
 memory['newborn_base_nua'] = client[ttick]['newborn_base_nua'];
 
 for (let sp of my_living){
+	if (sp.hp == 0) continue;
 	sp.set_mark('');
 	man_universal(sp);
 	man_move(sp);
 	man_jump(sp);
 	man_merge(sp);
 	man_divide(sp);
-	//man_lock(sp);
-	//man_unlock(sp);
-	//man_explode(sp);
+	man_lock(sp);
+	man_unlock(sp);
+	man_explode(sp);
 	man_energize_structure(sp);
 	man_enemy_triggered_actions(sp);
 	man_populate_harvesting_groups(sp);
