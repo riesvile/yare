@@ -1,0 +1,1 @@
+docker-compose stop -t 4
