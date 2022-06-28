@@ -1,6 +1,7 @@
 //setup
 const express = require('express');
 const app = express();
+app.set('trust proxy', true);
 const crypto = require("crypto");
 const fetch = require('node-fetch');
 const sha256 = hash_string => crypto.createHash('sha256').update(hash_string, 'utf8').digest('hex');
