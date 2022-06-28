@@ -19,7 +19,7 @@ var hashRounds = 10;
 
 var rate_limiter = {};
 
-setTimeout(function(){
+setInterval(function(){
 	rate_limiter = {};
 }, 10000);
 
