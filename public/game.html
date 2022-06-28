@@ -492,6 +492,7 @@ var basic_code =
 	  function draw_it(){
 		  //console.log('hooked');
 		  let last_ready = ready_blocks[ready_blocks.length - 1];
+		  //console.log('last_ready = ' + last_ready); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   		  if (last_ready >= last_rendered + 1){
   		  	  active_block = 't' + last_ready;
 		  	  last_rendered = last_ready;
@@ -505,7 +506,13 @@ var basic_code =
 			  if (ask_diff < 10 + avg_diff) tick_adjust = 50;
 			  if (ask_diff > 200 + avg_diff) tick_adjust = 0;
 			  if (ask_diff > 250 + avg_diff) tick_adjust = -5;
+			  //console.log('ask_diff = ' + ask_diff);
+			  //console.log('avg_diff = ' + avg_diff);
 			  tickering_block = 0;
+  		  } else if (last_ready == 0){
+			  buffer = 200;
+			  tick_adjust = 0;
+			  tickering_block = 1;
   		  } else {
 			  //TODO: check if game over - then don't buffer
   		  	  setTimeout(function(){

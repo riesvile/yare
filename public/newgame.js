@@ -19,7 +19,7 @@ function update_links(){
 }
 
 function game_window_setup(){
-  console.log(getCookie('user_id'));
+  //console.log(getCookie('user_id'));
   if (getCookie('user_id') == 'anonymous' || getCookie('user_id') == null){
 	  document.getElementById('buy_more_colors').style.display = 'none';
 	  document.getElementById('main_button').style.padding = '0px 52px 0px 52px';
@@ -269,7 +269,7 @@ fetch('/get_colors', {
 	  } else if (response.data == "something went wrong"){
 		  console.log('hmmm, something went wrong, not sure what')
 	  } else {
-		  console.log(response.data);
+		  //console.log(response.data);
 		  let clr_arr = response.data;
 		  //clr_arr = [1, 2, 3, 4, 5, 9, 10, 14];
 		  //console.log(temp_clr_arr);
@@ -321,21 +321,21 @@ socket.onmessage = (event) => {
 	let message = JSON.parse(msg)
 	switch (message.type) {
 		case "automatching":
-			console.log("got automatching message")
+			//console.log("got automatching message")
 			break;
 		case "automatch-status":
-			console.log("got automatch-status message")
+			//console.log("got automatch-status message")
 			//document.getElementById('someone_in_queue').style.display = message.data.peopleAutomatching > 0 ? "block" : "none";
 			break;
 		case "challenge-wait":
-			console.log("got challenge-wait message")
+			//console.log("got challenge-wait message")
 			const challengeLink = `${location.origin}/challenge/${message.data.game_id}`;
 			friendly = 1;
 			document.getElementById("ch_link").innerText = challengeLink;
 			//document.getElementById('friend_link').setAttribute('code', challengeLink);
 			break;
 		case "match-found":
-			console.log("got match-found message", message.data)
+			//console.log("got match-found message", message.data)
 			joinSound.play()
 			setTimeout(() => {
 				window.location.href = `/${message.data.server}n/${message.data.game_id}`;

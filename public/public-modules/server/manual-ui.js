@@ -217,13 +217,25 @@ function man_universal(sp){
 	
 	if (memory['behaviour'][sp.id]['energize_chain'].length > 0) {
 		let closest_base = find_closest_base(sp);
-		if (get_distance(sp.position, closest_base.position) <= 200) {
-			if (sp.energy > 0) sp.energize(closest_base);
-			sp.energy -= 1;
+		//console.log(sp.id + ' should be energizing ' + closest_base.id);
+		let closest_base_distance = get_distance(sp.position, closest_base.position);
+		if (closest_base_distance <= 200) {
+			if (sp.energy > 0){
+				sp.energize(closest_base);
+				sp.energy -= 1;
+			}
+		} else if (closest_base_distance <= 300 && closest_base.id == 'base_nua'){
+			//console.log('send to that moving spirit');
+			let spirit_group = [];
+			if (memory['harvesting_groups']['star_nua|base_nua'] != undefined) spirit_group = memory['harvesting_groups']['star_nua|base_nua']['spirits'];
+			let chain_friend_id = find_weakest(spirit_group);
+			if (sp.energy > 0 && chain_friend_id != ''){
+				sp.energize(spirits[chain_friend_id]);
+				sp.energy -= 1;
+				spirits[chain_friend_id].energy += 1;
+			}
 		}
 	}
-	
-	
 	
 }
 
@@ -400,6 +412,7 @@ function man_harvest(){
 				let chosens = gather_friends(chain_points[i], per_point * temp_mult, spirit_pool);
 				spirits_at_point.unshift(chosens);
 				for (let sp_id of chosens){
+					//if (sp_id == '') continue;
 					let link = spirits[sp_id];
 					link.set_mark(chain + i);
 					link.move(chain_points[i]);

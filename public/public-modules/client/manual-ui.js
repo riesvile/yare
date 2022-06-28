@@ -650,6 +650,8 @@ function man_canvas_click(e){
 		base_selection = temp_base;
 		get_newborn_behaviour(temp_base);
 		show_newborn_options();
+		selected_group = [];
+		selection_done();
 	}
 	
 	if (energize_pair_selection) man_select_energize_pair(gameboard_x, gameboard_y);

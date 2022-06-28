@@ -924,7 +924,7 @@ function get_active_modules(){
 
     }).then(response => response.json())
       .then(response => {
-		  console.log(response);
+		  //console.log(response);
 		  if (response.data == "modules retreived"){
 			  //console.log('all good');
 			  //console.log('active modules = ');
