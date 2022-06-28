@@ -480,6 +480,7 @@ var color_table = {
 };
 const joinSound = new Audio("/sound/join_game.mp3");
 
+
 if (localStorage.getItem("versus") != null) selected_versus = localStorage.getItem("versus");
 if (localStorage.getItem("chosen_shape") != null){
   let sh = localStorage.getItem("chosen_shape");

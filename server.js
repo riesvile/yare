@@ -1717,6 +1717,31 @@ app.post('/playerinfo', (req, res) => {
 
 });
 
+app.post('/get-player-rating', (req, res) => {
+	User.find({user_id: req.body.user_name})
+		.then((result) => {
+			if (result.length == 0){
+				res.status(200).send({
+		        	data: "no user found"
+		        });
+			} else if (result[0]['rating'] != undefined && result[0]['rating'] != ''){
+				let player_rating = result[0]['rating'];
+				res.status(200).send({
+					rating: player_rating,
+					data: 'all good'
+		        });
+			} else {
+				res.status(200).send({
+		        	data: "something went wrong"
+		        });
+			}
+		})
+		.catch((error) => {
+			logger.error(error);
+		})
+
+});
+
 
 app.post('/get_colors', (req, res) => {
 	User.find({user_id: req.body.user_id})
@@ -1741,6 +1766,31 @@ app.post('/get_colors', (req, res) => {
 		.catch((error) => {
 			logger.error(error);
 		})
+});
+
+app.get('/reset_ratings', (req, res) => {
+	User.updateMany({}, {"$set":{"rating": 1500}}, {upsert: true})
+		.then((result) => {
+			//res.send(result);
+		
+			res.status(200).send({
+	        	data: "done?"
+	        });
+		
+		})
+		.catch((error) => {
+			logger.error(error);
+		})
+	//User.update({}, {'$set': {'rating' : 1500}}, multi: true)
+	//	.then((result) => {
+	//			res.status(200).send({
+	//	        	data: "done"
+	//	        });
+	//		
+	//	})
+	//	.catch((error) => {
+	//		logger.error(error);
+	//	})
 });
 
 app.post('/populate-hub', (req, res) => {

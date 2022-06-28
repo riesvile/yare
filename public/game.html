@@ -433,8 +433,16 @@
 	      }
 	  });
 	  
+var basic_code = 
+"\n// The following code should help you start things off. Learn more \n// in the Documentation   \n\n// ---------- ---------- ---------- ---------- ---------- \n// ---------- ---------- ---------- ---------- ---------- \n\n// Simple function for comparing distances  \nfunction dist_sq(coor1, coor2){\n    let a = coor1[0] - coor2[0];\n    let b = coor1[1] - coor2[1];\n    return a*a + b*b;\n}\n\n// Marking whether my base is at the top starting position or bottom\nvar my_base = base_zxq;\nvar enemy_base = base_a2c;\nvar my_star = star_zxq;\nvar enemy_star = star_a2c;\n\nif (base_a2c.control == this_player_id){\n	my_base = base_a2c;\n	enemy_base = base_zxq;\n}\n\nif (dist_sq(star_a2c.position, my_base.position) < dist_sq(star_zxq.position, my_base.position)){\n    my_star = star_a2c;\n    enemy_star = star_zxq;\n}\n\n// Loop through all my spirits and making a state machine — if the\n// spirit is empty, go harvest energy. If full, give it to the base\nfor (let spirit of my_spirits){\n    if (spirit.energy == spirit.energy_capacity)\n        spirit.set_mark('charging');\n    if (spirit.energy == 0)\n        spirit.set_mark('harvesting');\n  \n    if (spirit.mark == 'charging'){\n        spirit.move(my_base.position);\n        spirit.energize(my_base);\n    }\n    if (spirit.mark == 'harvesting'){\n        spirit.move(my_star.position);\n        spirit.energize(spirit);\n    }\n\n    // Rather bad code to deal with attackers. Improve it!\n    if (my_base.sight.enemies.length > 0){\n        //spirit objects are accessed by spirits['id']\n        let enemy = spirits[my_base.sight.enemies[0]];\n        spirit.move(enemy.position);\n        spirit.energize(enemy);\n    }\n    \n    // the last action (move, energize, ...) will overwrite any previous ones\n    // in the same tick\n}"
+	  
 	  if (localStorage.getItem("code_code") != null){
-		  var code_code = localStorage.getItem("code_code");
+		  let code_code = localStorage.getItem("code_code");
+		  editor.setValue(code_code, 1);
+	  }
+	  
+	  if (getCookie('user_id') == 'anonymous'){
+		  var code_code = basic_code;
 		  editor.setValue(code_code, 1);
 	  }
 	  

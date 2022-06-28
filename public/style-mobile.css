@@ -880,10 +880,11 @@ p.p_somewhat_important {
 }
 
 #gallery_block {
-	width: calc(100% - 24px);
+	width: calc(100vw - 24px);
 	height: 468px;
 	padding-left: 24px;
 	overflow: scroll;
+	margin-left: calc(-7vw - 26px);
 }
 
 #gallery_block_in {
@@ -921,7 +922,7 @@ p.p_somewhat_important {
 }
 
 #gal_img2 {
-	width: 400px;
+	width: 600px;
 	height: 400px;
 	/* background: url(./asset/gal2.png);
 	background-size: cover; */
@@ -935,7 +936,7 @@ p.p_somewhat_important {
 }
 
 #gal_img4 {
-	width: 600px;
+	width: 400px;
 	height: 400px;
 	/* background: url(./asset/gal4.png);
 	background-size: cover; */
@@ -1450,6 +1451,11 @@ p.tour_intro1, p.tour_intro2 {
 	
 	#tut_help_selection_mobile {
 		display: block;
+	}
+	
+	
+	#gallery_block {
+		margin-left: -24px;
 	}
 	
 }

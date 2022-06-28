@@ -259,6 +259,32 @@ function submit_test(){
 	//console.log('submit teest');
 }
 
+function get_elo(){
+	let user_name = getCookie('user_id');
+	
+	fetch('/get-player-rating', {
+	        method: "POST",
+	        headers: {
+	          Accept: "application/json",
+	          "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify({
+		        user_name: user_name
+		    })
+
+    }).then(response => response.json())
+      .then(response => {
+		  //console.log(response);
+		  if (response.data == "all good"){
+			  document.getElementById('acc_info_elo').innerHTML = response.rating;
+		  } else {
+			  console.log('something went wrong');
+		  } 
+	  })
+      .catch(err => {
+		  console.log(err);
+	  });
+}
 
 function get_lang(){
 	let user_name = getCookie('user_id');
@@ -1220,6 +1246,7 @@ try {
 
 get_lang();
 get_all_modules();
+get_elo();
 
 
 
