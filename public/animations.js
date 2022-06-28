@@ -243,7 +243,7 @@ function dismissals(){
 			collapse_bot_selection();
 		}
 	} catch (e){
-		console.log('whatever');
+		//console.log('whatever');
 	}
 	
 	module_edit_mode_off();

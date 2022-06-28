@@ -1274,12 +1274,12 @@ app.post('/get-available-modules', async (req, res) => {
 		.then((result) => {
 			console.log('db result');
 			if (result.length == 0){
-				res.status(404).send({
+				res.status(200).send({
 					data: "no such session"
 				});
 			} else {
 				if (result[0]['user_id'] != req.body.user_name){
-					res.status(404).send({
+					res.status(200).send({
 						data: "session mismatch"
 					});
 					return;

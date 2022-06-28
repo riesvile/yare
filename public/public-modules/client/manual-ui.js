@@ -1358,19 +1358,12 @@ document.getElementById('man_select_count').addEventListener("touchend", slider_
 
 document.getElementById('man_select_count_swap').addEventListener("click", function(e){
 	e.stopPropagation();
-	console.log('works');
+	//console.log('works');
 	swap_array(selected_group, swap_group);
 	select_current_amount = selected_group.length;
 	swap_amount = swap_group.length;
 	update_labels();
 }, false);
-
-
-console.log('it is a ' + touch_input + ' 1 = touch, 0 = mouse');
-
-
-
-
 
 
 

@@ -278,7 +278,7 @@ function get_elo(){
 		  if (response.data == "all good"){
 			  document.getElementById('acc_info_elo').innerHTML = response.rating;
 		  } else {
-			  console.log('something went wrong');
+			  //console.log('something went wrong');
 		  } 
 	  })
       .catch(err => {
@@ -303,9 +303,9 @@ function get_lang(){
       .then(response => {
 		  //console.log(response);
 		  if (response.data == "lang incoming"){
-			  console.log('all good');
+			  //console.log('all good');
 			  lang_sel = response.lang;
-			  console.log('preferred lang = ' + response.lang);
+			  //console.log('preferred lang = ' + response.lang);
 			  
 		  	let sel_js = document.getElementById("lang_js");
 		  	let sel_ts = document.getElementById("lang_ts");
@@ -359,7 +359,7 @@ function set_lang(){
       .then(response => {
 		  //console.log(response);
 		  if (response.data == "lang updated"){
-			  console.log('language is updated');
+			  //console.log('language is updated');
 		  } 
 	  })
       .catch(err => {
@@ -375,7 +375,7 @@ function lang_toggle(e){
 	
 	let el_id = el.id;
 	
-	console.log('lang = ' + el_id);
+	//console.log('lang = ' + el_id);
 	
 	let sel_js = document.getElementById("lang_js");
 	let sel_ts = document.getElementById("lang_ts");
@@ -463,13 +463,13 @@ modules_local['mod_code-editor'] = pub_modules['mod_code-editor'];
 
 
 function expand_card(m_id){
-  console.log('expanding ' + m_id);
+  //console.log('expanding ' + m_id);
 }
 
 function settings_crossroad(e){
   e = e || window.event;
   var el_id = (e.target || e.srcElement).id;
-  console.log('over id= ' + el_id);
+  //console.log('over id= ' + el_id);
   
   switch (el_id){
   	case 'profile_links':
@@ -516,7 +516,7 @@ function create_module(){
 		document.getElementById("modules_server_message").style.opacity = 0;
 	}
 	
-	console.log('module name = ' + module_name_input.value);
+	//console.log('module name = ' + module_name_input.value);
 
 	fetch('/new-module', {
 	        method: "POST",
@@ -534,8 +534,8 @@ function create_module(){
       .then(response => {
 		  //console.log(response);
 		  if (response.data == "module created"){
-			  console.log('all good');
-			  console.log('module_id = ' + response.module_id);
+			  //console.log('all good');
+			  //console.log('module_id = ' + response.module_id);
 			  modules_local['mod_' + response.module_id] = {
 			  	  name: module_name_input.value,
 				  author: user_name,
@@ -555,7 +555,7 @@ function create_module(){
 }
 
 function integrate_new_module(mod_id){
-	console.log('goes here');
+	//console.log('goes here');
 	
 	let m_id = mod_id;
 	let script_name = modules_local['mod_' + m_id].name;
@@ -563,7 +563,7 @@ function integrate_new_module(mod_id){
 	let mod_state = 'module_off';
 	if (modules_local['mod_' + mod_id].active == 1) mod_state = 'module_on';
 	
-	console.log('script name = ' + script_name);
+	//console.log('script name = ' + script_name);
 	
 	let user_module_html_string = "<div class='module_card_mine " + mod_state + "' id='mdl_" + m_id + "'><div class='module_card_bg' id='bg_mdl_mine'></div><div class='module_options' id='options_" + m_id + "'><a href='#' class='module_options_btn btn_edit' id='edit_" + m_id + "'>Edit</a><a href='#' class='module_options_btn btn_pre_delete_module' id='predel_" + m_id + "'>Delete</a><div class='delete_confirm' id='confirm_" + m_id + "'><a href='#' class='module_options_btn delete_module' id='del_" + m_id + "'>Yes, delete</a><a href='#' class='module_options_btn cancel_delete' id='cancel_" + m_id + "'>Cancel</a></div></div><div class='module_toggle' id='toggle_" + m_id + "'><div class='the_toggle' id='thetog'></div></div><h3 class='module_name'>" + script_name + "</h3></div>";
 	
@@ -573,7 +573,7 @@ function integrate_new_module(mod_id){
 	let script_insert = document.createElement('script');
 	script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/" + mod_id + ".js";
 	document.head.appendChild(script_insert);
-	console.log('module ' + mod_id + " should be appended");
+	//console.log('module ' + mod_id + " should be appended");
 	
 	document.getElementById("toggle_" + m_id).addEventListener('click', toggle_toggle, false);
 	document.getElementById("options_" + m_id).addEventListener('click', mod_options_cross, false);
@@ -622,7 +622,7 @@ function update_module_info(module_id, delete_module = 0){
       .then(response => {
 		  //console.log(response);
 		  if (response.data == "module updated"){
-			  console.log('all good');
+			  //console.log('all good');
 			  modules_local['mod_' + module_id]['name'] = module_name_input.value;
 			  modules_local['mod_' + module_id]['active'] = 1;
 	
@@ -666,7 +666,7 @@ function upload_script(module_id, script_type, meta = ""){
 	
 	getBase64(document.getElementById("file_script_" + script_type).files[0]).then(
 		data => {
-			console.log(data);
+			//console.log(data);
 			let file_client = data;
 			fetch('/upload-script', {
 			        method: "POST",
@@ -687,8 +687,8 @@ function upload_script(module_id, script_type, meta = ""){
 		      .then(response => {
 				  //console.log(response);
 				  if (response.data == "script uploaded"){
-					  console.log('all good');
-					  console.log(script_type);
+					  //console.log('all good');
+					  //console.log(script_type);
 					  if (script_type == 'client') integrate_new_module(module_id);
 					  
 					  document.getElementById("modules_server_message_loader").style.opacity = 0;
@@ -727,7 +727,7 @@ function download_module_script(module_id, client = 1){
     }).then(response => response.json())
       .then(response => {
 		  if (response.meta == 'script retreived'){
-			  console.log('receiving script file');
+			  //console.log('receiving script file');
 			  let temp_user_code = editor.getValue();
 			  temp_user_code += "\n" + response.data;
 			  editor.setValue(temp_user_code);
@@ -756,7 +756,7 @@ function local_server_script(module_id){
 					temp_user_code = editor.getValue();
 					temp_user_code += "\n\n// ----------------------------------------\n" + "// loaded module: " + module_id + "\n// ------ Do not remove this comment ------\n" + text + "\n// ----------------------------------------";
 					editor.setValue(temp_user_code);
-					console.log('script appended');
+					//console.log('script appended');
 					//return 'script appended';
    				});
   		    });
@@ -781,7 +781,7 @@ function get_all_modules(){
 	//console.log(allSessionStorage());
 	
 	if (sessionStorage.getItem('populated') == 'yes'){
-		console.log('session retreival');
+		//console.log('session retreival');
 		allSessionStorage();
 		integrate_modules();
 		return;
@@ -802,10 +802,10 @@ function get_all_modules(){
 
     }).then(response => response.json())
       .then(response => {
-		  console.log(response);
+		  //console.log(response);
 		  if (response.data == "modules retreived"){
-			  console.log('all good');
-			  console.log('data stream = ');
+			  //console.log('all good');
+			  //console.log('data stream = ');
 			  //console.log(response.stream);
 			  for (let i = 0; i < response.stream.length; i++){
 				  modules_local['mod_' + response.stream[i].module_id] = response.stream[i];
@@ -847,7 +847,7 @@ function toggle_toggle(e){
 		el_parent.classList.remove('module_off');
 		
 		//TODO: modules_local with a module id from el_id (make active)
-		console.log('m_id = ' + m_id);
+		//console.log('m_id = ' + m_id);
 		try {
 			modules_local['mod_' + m_id]['active'] = 1;
 			sessionStorage.setItem('mod_' + m_id, JSON.stringify(modules_local['mod_' + m_id]))
@@ -886,25 +886,25 @@ function mod_options_cross(e){
 	
 	switch (el_mod_action) {
 	case "predel":
-		console.log('predeleting');
+		//console.log('predeleting');
 		module_pre_delete(el_mod_id);
 		break;
 	case "del":
-		console.log('deleting');
+		//console.log('deleting');
 		update_module_info(el_mod_id, 1);
 		document.getElementById("mdl_" + el_mod_id).style.opacity = "0";
 		document.getElementById("mdl_" + el_mod_id).style.pointerEvents = "none";
 		break;
 	case "edit":
-		console.log('editing');
+		//console.log('editing');
 		module_edit_mode_on(2, el_mod_id);
 		break;
 	case "cancel":
 		module_cancel_delete(el_mod_id);
-		console.log('cancelling');
+		//console.log('cancelling');
 		break;
 	default:
-		console.log('defaulted');
+		//console.log('defaulted');
 		break;
 	}
 }
@@ -926,9 +926,9 @@ function get_active_modules(){
       .then(response => {
 		  console.log(response);
 		  if (response.data == "modules retreived"){
-			  console.log('all good');
-			  console.log('active modules = ');
-			  console.log(response.active_modules);
+			  //console.log('all good');
+			  //console.log('active modules = ');
+			  //console.log(response.active_modules);
 			  for (let i = 0; i < response.active_modules.length; i++){
 				  modules_local['mod_' + response.active_modules[i]]['active'] = 1;
 				  sessionStorage.setItem('mod_' + response.active_modules[i], JSON.stringify(modules_local['mod_' + response.active_modules[i]]));
@@ -961,7 +961,7 @@ function set_active_modules(){
 		sessionStorage.setItem(mod_id, JSON.stringify(modules_local[mod_id]));
 	}
 	
-	console.log('new active modules = ' + active_array);
+	//console.log('new active modules = ' + active_array);
 	
 	fetch('/set-active-modules', {
 	        method: "POST",
@@ -978,7 +978,7 @@ function set_active_modules(){
       .then(response => {
 		  console.log(response);
 		  if (response.data == "updated"){
-			  console.log('active modules updated');
+			  //console.log('active modules updated');
 			  sessionStorage.setItem('populated', 'no');
 			  location.reload();
 		  } 
@@ -1004,8 +1004,8 @@ function get_module_info(module_id){
       .then(response => {
 		  console.log(response);
 		  if (response.data == "module info retreived"){
-			  console.log('all good');
-			  console.log('module name = ' + response.m_name);
+			  //console.log('all good');
+			  //console.log('module name = ' + response.m_name);
 		  } 
 	  })
       .catch(err => {
@@ -1084,7 +1084,7 @@ function integrate_modules(){
 	
 	
 	let ready_insertion = Object.values(modules_local).filter(item => item.active == 1);
-	console.log(ready_insertion);
+	//console.log(ready_insertion);
 	
 	//skip insertion if not in a game
 	if (from_gameserver == '') return;
@@ -1103,8 +1103,8 @@ function integrate_modules(){
 				download_module_script(ready_insertion[i].module_id, 0);
 			}
 			document.head.appendChild(script_insert);
-			console.log(ready_insertion[i].module_id + ' should be appended');
-			console.log('module author: ' + m_author);	
+			//console.log(ready_insertion[i].module_id + ' should be appended');
+			//console.log('module author: ' + m_author);	
 			
 			//try for server script
 					
@@ -1171,8 +1171,8 @@ try {
 	      .then(response => {
 			  //console.log(response);
 			  if (response.data == "user created"){
-				  console.log('all good');
-				  console.log('session_id = ' + getCookie('session_id'));
+				  //console.log('all good');
+				  //console.log('session_id = ' + getCookie('session_id'));
 				  setCookie('user_id', response.user_id);
 				  setCookie('session_id', response.session_id);
 				  try {
