@@ -423,7 +423,7 @@ function check_limiter(ip_a){
 		return false;
 	}
 	rate_limiter[ip_a] += 1;
-	if (rate_limiter[ip_a] > 10){
+	if (rate_limiter[ip_a] > 100){
 		console.log('ip rate limit exceeded');
 		return true;
 	}
