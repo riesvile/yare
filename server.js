@@ -17,6 +17,12 @@ const pino = require('pino')
 const fs = require('fs');
 var hashRounds = 10;
 
+var rate_limiter = {};
+
+setTimeout(function(){
+	rate_limiter = {};
+}, 10000);
+
 const logger = pino({
   transport: {
 		targets: [
@@ -410,6 +416,19 @@ function add_color_to_user(userid, color_code){
 	});
 }
 
+function check_limiter(ip_a){
+	console.log('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiip = ' + ip_a)
+	if (rate_limiter[ip_a] == undefined){
+		rate_limiter[ip_a] = 1;
+		return false;
+	}
+	rate_limiter[ip_a] += 1;
+	if (rate_limiter[ip_a] > 10){
+		console.log('ip rate limit exceeded');
+		return true;
+	}
+}
+
 
 
 app.post('/stripe', express.json({type: 'application/json'}), (request, response) => {
@@ -729,6 +748,12 @@ app.use(express.json());
 
 
 app.post('/check-status/:game_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	game_id_url = req.params.game_id;
 	if (active_games[game_id_url][0] == 0.5){
 		res.status(200).send({
@@ -751,6 +776,12 @@ app.post('/check-status/:game_id', (req, res) => {
 
 
 app.get('/active-games/:user_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	
 	let user_id = req.params.user_id;	
 	let active_g = [];
@@ -783,6 +814,12 @@ app.get('/active-games/:user_id', (req, res) => {
 
 app.post('/validate', (req, res) => {
 	// logger.debug(req.body.user_name);
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	
 	User.find({user_id: req.body.user_name})
 		.then((result) => {
@@ -838,6 +875,12 @@ app.post('/validate', (req, res) => {
 });
 
 app.post('/session', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	// logger.debug(req.body.user_name);
 	// logger.debug(req.body.password);
@@ -893,6 +936,12 @@ function isValid(str) {
 }
 
 app.post('/add-user', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	// logger.debug(req.body.user_name);
 	// logger.debug(req.body.password);
@@ -967,7 +1016,12 @@ app.post('/add-user', async (req, res) => {
 });
 
 app.post('/get-pref-lang', async (req, res) => {
-	
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	//later on description and other stuff
 	// logger.debug('getting preferred language');
 	
@@ -996,7 +1050,12 @@ app.post('/get-pref-lang', async (req, res) => {
 });
 
 app.post('/set-pref-lang', async (req, res) => {
-	
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	//TODO: protect with session_id check of the incoming request
 	// logger.debug('setting preferred language');
 	
@@ -1027,6 +1086,12 @@ app.post('/set-pref-lang', async (req, res) => {
 });
 
 app.post('/upload-script', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	
 	let file_type = req.body.script_type == "client";
 	
@@ -1070,6 +1135,12 @@ app.post('/upload-script', async (req, res) => {
 });
 
 app.post('/download-script', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	
 	let module_id = req.body.module_id;
 	let script_type = req.body.script_type + '/';
@@ -1093,6 +1164,12 @@ app.post('/download-script', async (req, res) => {
 });
 
 app.post('/update-module-info', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	
 	//later on description and other stuff
 	logger.debug('updating a module');
@@ -1180,6 +1257,12 @@ function store_script(script_file, module_id, client = 1){
 
 
 app.post('/new-module', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	
 	if (req.body.module_name.length > 30){
@@ -1223,6 +1306,12 @@ app.post('/new-module', async (req, res) => {
 });
 
 app.post('/edit-module', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	
 	let module_id = req.body.module_id;
@@ -1261,6 +1350,12 @@ app.post('/edit-module', async (req, res) => {
 });
 
 app.post('/get-available-modules', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	
 	if (typeof req.body.session_id !== 'string'){
@@ -1333,6 +1428,12 @@ app.post('/get-available-modules', async (req, res) => {
 });
 
 app.post('/get-active-modules', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	
     User.find({user_id: req.body.user_name})
@@ -1363,6 +1464,12 @@ app.post('/get-active-modules', async (req, res) => {
 });
 
 app.post('/set-active-modules', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	
     User.find({user_id: req.body.user_name})
@@ -1393,6 +1500,12 @@ app.post('/set-active-modules', async (req, res) => {
 });
 
 app.post('/get-module-info', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 
 	Module.find({module_id: req.body.module_id})
@@ -1425,6 +1538,12 @@ app.post('/get-module-info', async (req, res) => {
 
 
 app.post('/' + this_server + '/tutorial-signup', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 
 	Game.find({game_id: req.body.game_id})
 		.then((result) => {
@@ -1457,6 +1576,13 @@ app.post('/' + this_server + '/tutorial-signup', (req, res) => {
 });
 
 app.get('/game/:game_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	game_id_url = req.params.game_id;
 	res.sendFile(__dirname + '/public/game.html');
 });
@@ -1553,6 +1679,12 @@ setInterval(function(){
 }, 60000);
 
 app.post('/gameinfo', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 
 	Game.find({game_id: req.body.game_id})
 		.then((result) => {
@@ -1627,6 +1759,12 @@ if(!config.s3.bucketEndpoint) {
 }
 
 app.post('/get_replay', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	
 	try {
 		let data = await s3client.getObject({
@@ -1658,6 +1796,13 @@ app.post('/get_replay', async (req, res) => {
 
 
 app.post('/playerinfo', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	var p111_rating = 0;
 	var p222_rating = 0;
 
@@ -1718,6 +1863,13 @@ app.post('/playerinfo', (req, res) => {
 });
 
 app.post('/get-player-rating', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	User.find({user_id: req.body.user_name})
 		.then((result) => {
 			if (result.length == 0){
@@ -1744,6 +1896,13 @@ app.post('/get-player-rating', (req, res) => {
 
 
 app.post('/get_colors', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	User.find({user_id: req.body.user_id})
 		.then((result) => {
 			//res.send(result);
@@ -1794,6 +1953,13 @@ app.get('/reset_ratings', (req, res) => {
 });
 
 app.post('/populate-hub', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	Game.find({$or:[{player1: req.body.user_id},{player2: req.body.user_id}]})
 		.sort({updatedAt:'desc'})
 		.limit(10)
@@ -1825,7 +1991,15 @@ app.post('/populate-hub', (req, res) => {
 			logger.error(error);
 		})
 });
+
 app.post('/populate-leaderboard', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	User.find({})
 		.sort({rating:'desc'})
 		.limit(20)
@@ -1858,6 +2032,13 @@ app.post('/populate-leaderboard', (req, res) => {
 });
 
 app.get('/set-dumb', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	User.updateMany({}, {"$set":{"goodenough": 0}}, {upsert: true})
 		.then((result) => {
 			//res.send(result);
@@ -1874,6 +2055,13 @@ app.get('/set-dumb', (req, res) => {
 });
 
 app.get('/set-email', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	User.updateMany({}, {"$set":{"email": ""}}, {upsert: true})
 		.then((result) => {
 			//res.send(result);
@@ -1892,6 +2080,13 @@ app.get('/set-email', (req, res) => {
 
 
 app.post('/stripe-payment', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	logger.debug('stripe pay');
 	logger.debug(req.body);
 	
@@ -1903,6 +2098,12 @@ app.post('/stripe-payment', (req, res) => {
 
 
 app.post('/deactivate', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug('deactivating');
 	// logger.debug(req.body.game_id);
 	deactivate_game(req.body.game_id);
@@ -1915,6 +2116,12 @@ app.post('/deactivate', (req, res) => {
 
 
 app.post('/get-qualified', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug('retreiving qualified players');
 	
 	User.find({qualified: {$ne: "", $exists: true}})
@@ -1947,12 +2154,25 @@ app.post('/get-qualified', (req, res) => {
 
 
 app.get('/t2f/est', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug('triggerring');
 	trigger_deactivation();	
 });
 // ------
 // ------
 app.get('/challenge/:game_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	let active_game = active_games[req.params.game_id];
 	if(active_game == undefined){
 		// TODO VILEM CHECK - is this proper handling?
@@ -1970,7 +2190,15 @@ app.get('/challenge/:game_id', (req, res) => {
 		res.send(404);
 	}
 });
+
 app.post('/validate-challenge/:game_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	let g_id = req.params.game_id;
 	//find via mongoose, check if player1 != player2
 	// logger.debug('finding game via mongoooooooooooooooooooose');
@@ -2016,6 +2244,13 @@ app.post('/validate-challenge/:game_id', (req, res) => {
 		})
 });
 app.post('/confirm-challenge/:game_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	let g_id = req.params.game_id;
 	let active_game = active_games[g_id];
 	if(active_game == undefined){
@@ -2106,6 +2341,13 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 	
 })
 app.post('/resume-game', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	// logger.debug(req.body);
 	// logger.debug(req.body.user_name);
   //   logger.debug(req.body.password);
@@ -2142,6 +2384,12 @@ app.post('/resume-game', (req, res) => {
 		})
 });
 app.post('/monitor', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	tutorial_finishings[req.body.game_id] = req.body.phase;
 	
@@ -2150,6 +2398,12 @@ app.post('/monitor', (req, res) => {
     });
 });
 app.post('/qqmonitoring', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
 	// logger.debug(req.body);
 	
 	res.status(200).send({
@@ -2174,6 +2428,13 @@ var processTime2 = 0;
 var processTimeRes = 0;
 //var render_data = [[],[],[],[],[]];
 app.get('/d1n/:game_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	let g_id = req.params.game_id;
 	//if (active_games[g_id][0] == 1){
 	//	res.redirect('/' + d1 + '/' + g_id);
@@ -2183,6 +2444,13 @@ app.get('/d1n/:game_id', (req, res) => {
 	
 });
 app.get('/replay/:game_id', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	let g_id = req.params.game_id;
 	//if (active_games[g_id][0] == 1){
 	//	res.redirect('/' + d1 + '/' + g_id);
@@ -2192,6 +2460,13 @@ app.get('/replay/:game_id', (req, res) => {
 	
 });
 app.post("/launchtut", (req,res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	tutorial_game(req,res,req.body.user_id)
 })
 function findAgain(req, res, g_id){
@@ -2235,6 +2510,13 @@ function findAgain(req, res, g_id){
 const adminpassword = process.env.ADMINPANEL_PASSWORD | "yareyareyareyare4444"
 
 app.get('/server-weight/:server_id/:weight', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	if(req.query.password != adminpassword) {
 		res.send(404);
 		return;
@@ -2249,6 +2531,13 @@ app.get('/server-weight/:server_id/:weight', (req, res) => {
 });
 
 app.get("/admin-panel/dash", async (req,res,next) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({
+			data: 'no!'
+        });
+		return;
+	}
+	
 	if (req.query.password != adminpassword) {
 		res.status(400).redirect("/admin-panel/login")
 	}

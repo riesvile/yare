@@ -1035,7 +1035,7 @@ function integrate_modules(){
 	
 	//first populating module cards
 	let card_insertion = Object.values(modules_local);
-	console.log(card_insertion);
+	//console.log(card_insertion);
 	
 	try {
 		for (let i=0; i < card_insertion.length; i++){
