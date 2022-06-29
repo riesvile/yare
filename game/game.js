@@ -955,6 +955,8 @@ if (!isMainThread){
 			this.last_energized = '';
 			this.active_in = 0;
 			this.active_at = active_at;
+			this.regeneration = 2;
+			if (id == 'star_nua') this.regeneration = 3;
 			//this.energy = energy;
 			this.collision_radius = 100;
 		

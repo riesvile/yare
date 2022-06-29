@@ -1017,6 +1017,9 @@ function integrate_modules(){
 	
 	let user_name = getCookie('user_id');
 	
+	let winwidth = window.innerWidth;
+	if (winwidth <= 560) localStorage.setItem('chosen_playstyle', 'manual');
+	
 	if (user_name == 'anonymous'){
 		if (localStorage.getItem('chosen_playstyle') == 'manual'){
 			modules_local['mod_manual-ui'].active = 1;
