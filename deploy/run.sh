@@ -14,6 +14,10 @@ case $1 in
         pull_and_run main "registry.digitalocean.com/yare/yare-main:$2" "" $PORT
         exit 0
         ;;
+    (transpiler)
+        pull_and_run transpiler "registry.digitalocean.com/yare/yare-traspiler:$2" "" $PORT
+        exit 0
+        ;;
     (t*)
         CONTAINER_NAME="game"
         SERVER_NAME="$1"
