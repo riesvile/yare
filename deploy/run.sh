@@ -8,7 +8,7 @@ pull_and_run() {
 
 CONTAINER_NAME="main"
 SERVER_TYPE="real"
-PORT="5000"
+PORT=${PORT=5000}
 case $1 in
     (main)
         pull_and_run main "registry.digitalocean.com/yare/yare-main:$2" "" $PORT
