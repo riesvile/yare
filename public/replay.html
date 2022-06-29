@@ -563,6 +563,7 @@
 			 game_blocks['t' + tick_counter].total_u_2 = p2_count;
 			 game_blocks['t' + tick_counter].total_u_1 = p1_count;
 			 
+			 console.log('t = ' + t);
 			 console.log(rep_file[t]);
 			 game_blocks['t' + tick_counter]['e'] = rep_file[t].e;
 			 game_blocks['t' + tick_counter]['s'] = rep_file[t].s;
@@ -572,7 +573,7 @@
 			 game_blocks['t' + tick_counter]['b4'] = rep_file[t].b4;
 			 
 			 if (tick_counter == 1){
-				 console.log(game_blocks)
+				 //console.log(game_blocks)
 				 game_blocks['t' + tick_counter]['b1'][4] = 0;
 				 game_blocks['t' + tick_counter]['b2'][4] = 0;
 				 game_blocks['t' + tick_counter]['b3'][4] = 0;

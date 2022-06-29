@@ -2864,7 +2864,7 @@ if (!isMainThread){
 				return;
 			}
 
-			if (workerData[1] != 'tutorial'){
+			if (workerData[1] != 'tutorial' && game_duration != 0){
 				game_file.push(render_data3);
 				//logger.debug(render_data3);
 			}
