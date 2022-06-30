@@ -406,7 +406,7 @@
 	      enableBasicAutocompletion: true,
 		  enableSnippets: true,
    	   	  enableLiveAutocompletion: true,
-		  firstLineNumber: 2
+		  firstLineNumber: 1
 	  });
 	  editor.commands.addCommand({
 	      name: "update_code",
@@ -1308,7 +1308,7 @@ var basic_code =
 		  }
 		  user_code = editor.getValue();
 		  localStorage.setItem("code_code", user_code);
-		  socket.send(JSON.stringify({u_code: "client[ttick] = " + JSON.stringify(client) + "\n" + user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
+		  socket.send(JSON.stringify({u_code: user_code, u_code_lang: globalThis.codeLanguage || "javascript", u_id: getCookie('user_id'), session_id: getCookie('session_id')}));
 	  }
 	  
 	  function resign_game(){
