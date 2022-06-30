@@ -2743,6 +2743,13 @@ wss.on("connection", (ws)=>{
 	})
 })
 
+setInterval(()=>{
+	wssBroadcast({
+		type: "heartbeat",
+		data: "I'm alive!"
+	})
+}, 1000)
+
 // Route not found (404)
 app.use((req,res,next)=>{
   return res.status(404).send("404: Not Found");
