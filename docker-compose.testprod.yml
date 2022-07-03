@@ -1,0 +1,77 @@
+version: "3.3"
+services:
+  main:
+    build:
+      context: .
+    environment:
+      - NODE_ENV=testprod
+    depends_on:
+      - mongodb
+      - minio
+    volumes:
+      - ./public:/usr/src/app/public
+      - ./logs:/var/log
+  d1:
+    build:
+      context: .
+      dockerfile: game/Dockerfile
+    environment:
+      - NODE_ENV=testprod
+    depends_on:
+      - mongodb
+      - minio
+      - transpiler
+    volumes:
+      - ./logs:/var/log
+  d2:
+    build:
+      context: .
+      dockerfile: game/Dockerfile
+    environment:
+      - SERVER=d2
+      - NODE_ENV=testprod
+    depends_on:
+      - mongodb
+      - minio
+      - transpiler
+    volumes:
+      - ./logs:/var/log
+  tutorial:
+    build:
+      context: .
+      dockerfile: game/Dockerfile
+    environment:
+      - NODE_ENV=testprod
+      - SERVER=t2
+      - SERVER_TYPE=tutorial
+    depends_on:
+      - mongodb
+    volumes:
+      - ./logs:/var/log
+  mongodb:
+    image: "mongo"
+  frontend:
+    build:
+      context: dev/haproxy
+    ports:
+      - "${FRONTEND_PORT}:5000"
+    depends_on:
+      - main
+      - d1
+      - d2
+      - tutorial
+      - minio
+  minio:
+    image: "minio/minio"
+    ports:
+      - "9000"
+      - "9001"
+    command: ["server", "/data", "--console-address=:9001"]
+  transpiler:
+    ports:
+      - "5000"
+    build:
+      context: ./transpiler
+      dockerfile: Dockerfile
+    volumes:
+      - ./logs:/var/log
