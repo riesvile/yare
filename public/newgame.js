@@ -397,7 +397,6 @@ function start_game(e){
 }
 
 function heartbeat(){
-	console.log('heartbeat send')
 	
 	socket.send(JSON.stringify({
 		"type": "heartbeat",
