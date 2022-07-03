@@ -44,7 +44,6 @@ logger.info(`Starting ${this_server} (${this_server_type})`);
 const mongoose = require('mongoose');
 const Game = require('../models/newgame.js');
 const {User, Session} = require('../models/users.js');
-const Module = require("../models/modules.js")
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then((result) => logger.debug('connected to dbb'))
@@ -269,17 +268,6 @@ wss.broadcast = function broadcast(data, userData, game_id) {
     });
 };
 
-const AWS = require('aws-sdk');
-// let compress = require('./compress/compress.js');
-AWS.config.setPromisesDependency(null);
-
-s3client = new AWS.S3({
-	accessKeyId: config.s3.key,
-	secretAccessKey: config.s3.secret,
-	endpoint: config.s3.endpoint,
-	s3ForcePathStyle: !config.s3.bucketEndpoint,
-	s3BucketEndpoint: config.s3.bucketEndpoint
-});
 
 wss.on('connection', function connection(ws, req) {
 	logger.debug('new client connected');
@@ -339,7 +327,6 @@ wss.on('connection', function connection(ws, req) {
 			return;
 		}
 
-		// Transpile from whatever language to js
 		if (message['u_code_lang'] != undefined && message['u_code_lang'] != "javascript") {
 			let req = await fetch(config.frontendAddress + "/transpiler/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
 			// logger.debug(await req.text());
@@ -350,31 +337,6 @@ wss.on('connection', function connection(ws, req) {
 				message['u_code'] = `throw JSON.parse(${tempJSON})["error"];`;
 			}
 		}
-
-		// Inject modules code
-		let modulesInjectionStartTime = Date.now()
-		let user = await User.findOne({"user_id": message['u_id']})
-		let promised_active_modules = user.active_modules.map(module_id=>Module.findOne({module_id}))
-
-		let active_modules = await Promise.all(promised_active_modules)
-
-		let active_module_code_locations = active_modules.map(mod=>mod != null ? `${mod.server_script_location}/${mod.module_id}` : null).filter(loc=>loc!=="local" && loc!==null)
-
-		let promised_active_module_codes = active_module_code_locations.map((loc) => {
-			return s3client.getObject({
-				Bucket: config.s3.bucket,
-				Key: `${loc}.js`,
-			}).promise()
-		});
-
-		let active_module_codes = (await Promise.all(promised_active_module_codes)).map(data=>data.Body.toString('utf8'))
-
-		let active_module_codes_joined = `;${active_module_codes.join("\n\n\n")};`
-
-		message['u_code'] += active_module_codes_joined
-		let moduleInjectionTime = Date.now()-modulesInjectionStartTime
-		logger.debug(`Injecting modules took ${moduleInjectionTime}ms`)
-		// End of module injection
 
 		connections[ws.client_id] = ws;
 		//player1_code = message;
