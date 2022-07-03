@@ -1,5 +1,3 @@
-if (user_role != 'observer'){
-	
 
 
 // UI
@@ -1377,8 +1375,6 @@ document.getElementById('man_select_count_swap').addEventListener("click", funct
 
 
 
-
-}
 
 
 
