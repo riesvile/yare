@@ -955,8 +955,8 @@ if (!isMainThread){
 			this.last_energized = '';
 			this.active_in = 0;
 			this.active_at = active_at;
-			this.regeneration = 2;
-			if (id == 'star_nua') this.regeneration = 3;
+			this.regeneration = 0.2;
+			if (id == 'star_nua') this.regeneration = 0.3;
 			//this.energy = energy;
 			this.collision_radius = 100;
 		
@@ -996,6 +996,8 @@ if (!isMainThread){
 			this.structure_type = 'pylon';
 			this.energy = 0;
 			this.energy_capacity = 1000;
+			this.range_min = 200;
+			this.range_max = 400;
 			//this.energy = energy;
 			this.collision_radius = 50;
 			
@@ -1021,16 +1023,21 @@ if (!isMainThread){
 				structures: []
 			}
 			this.collision_radius = 50;
+			this.spirit_costs = [];
 			
 			//this.hp = 8;
 			if (this.shape == 'circles'){
 				this.energy_capacity = 400;
+				this.spirit_costs = [[1, 25], [51, 50], [101, 90], [201, 150]];
 			} else if (this.shape == 'squares'){
 				this.energy_capacity = 1000;
+				this.spirit_costs = [[1, 350], [11, 500], [17, 700]];
 			} else if (this.shape == 'triangles'){
 				this.energy_capacity = 600;
+				this.spirit_costs = [[1, 90], [31, 160], [121, 300]];
 			} else {
 				this.energy_capacity = 100;
+				this.spirit_costs = [];
 			}
 			
 			this.player_id = player;
@@ -2135,8 +2142,11 @@ if (!isMainThread){
 				outpost.energy -= 2 * from_enemy;
 			}
 
-			if (outpost.energy <= 0)
+			if (outpost.energy <= 0){
 				outpost.control = '';
+				check_structure_control();
+			}
+				
 			outpost.energy = Math.max(0, Math.min(outpost.energy, outpost.energy_capacity));
 			outpost.range = outpost.energy <= 500 ? 400 : 600;
 		}
@@ -2179,8 +2189,11 @@ if (!isMainThread){
 				pylon.energy -= 2 * from_enemy_pylon;
 			}
         
-			if(pylon.energy <= 0)
+			if (pylon.energy <= 0){
 				pylon.control = '';
+				check_structure_control();
+			}
+				
 			pylon.energy = Math.max(0, Math.min(pylon.energy, pylon.energy_capacity));
 			//pylon.range = pylon.energy <= 500 ? 400 : 600;
 		}
@@ -2701,6 +2714,9 @@ if (!isMainThread){
 				spirit_cost(2, p2_living);
 		} 
 		logger.debug(bases[2].id + " control = " + bases[2].control)
+		
+		if (p1_living == 0) end_game(0, 1);
+		if (p2_living == 0) end_game(1, 0);
 	}
 			
 
@@ -2982,7 +2998,7 @@ if (!isMainThread){
 		outpost_mdo = new Outpost('outpost_mdo', [-230, 230]);
 		outpost_lookup['outpost_mdo'] = outpost_mdo;
 		
-		pylon_u3p = new Pylon('pylon_u3p', [228, -228]);
+		pylon_u3p = new Pylon('pylon_u3p', [232, -232]);
 		pylon_lookup['pylon_u3p'] = pylon_u3p;
 
 		structure_lookup['outpost_mdo'] = outpost_mdo;

@@ -2066,7 +2066,7 @@ function initiate_world(){
 	star_lookup['star_nua'] = new Star('star_nua', [420, -420], 50, 690);
 	
 	outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [-230, 230], 0);	
-	pylon_lookup['pylon_u3p'] = new Pylon('pylon_u3p', [228, -228], 0);	
+	pylon_lookup['pylon_u3p'] = new Pylon('pylon_u3p', [232, -232], 0);	
 	
 	//star_energy_lookup['star_zxq'] = new Star_energy('star_zxq', [1000, 1000], 50);
 	//star_energy_lookup['star_a1c'] = new Star_energy('star_a1c', [3200, 1400], 50);

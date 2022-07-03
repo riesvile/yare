@@ -341,6 +341,8 @@ socket.onmessage = (event) => {
 				window.location.href = `/${message.data.server}n/${message.data.game_id}`;
 			}, joinSound.duration * 1000)
 			break;
+		default:
+			break;
 	}
 }
 
@@ -391,6 +393,19 @@ function start_game(e){
 		  	}
 		}))
 	}
+	
+}
+
+function heartbeat(){
+	console.log('heartbeat send')
+	
+	socket.send(JSON.stringify({
+		"type": "heartbeat",
+		"data": {
+			type: "heartbeat"
+	  	}
+	}));
+	
 	
 }
 
@@ -526,3 +541,4 @@ if (localStorage.getItem('chosen_playstyle') == null && getCookie('user_id') == 
   localStorage.setItem('chosen_playstyle', 'manual');
 }
 
+setInterval(function(){ heartbeat() }, 3000);

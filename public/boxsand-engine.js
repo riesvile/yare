@@ -382,6 +382,8 @@ class Star {
 		this.last_energized = '';
 		this.active_in = 0;
 		this.active_at = active_at;
+		this.regeneration = 2;
+		if (id == 'star_nua') this.regeneration = 3;
 		//this.energy = energy;
 		this.collision_radius = 100;
 	
@@ -421,6 +423,8 @@ class Pylon {
 		this.structure_type = 'pylon';
 		this.energy = 0;
 		this.energy_capacity = 1000;
+		this.range_min = 200;
+		this.range_max = 400;
 		//this.energy = energy;
 		this.collision_radius = 50;
 		
@@ -447,15 +451,21 @@ class Base {
 		}
 		this.collision_radius = 50;
 		
+		this.spirit_costs = [];
+		
 		//this.hp = 8;
 		if (this.shape == 'circles'){
 			this.energy_capacity = 400;
+			this.spirit_costs = [[1, 25], [51, 50], [101, 90], [201, 150]];
 		} else if (this.shape == 'squares'){
 			this.energy_capacity = 1000;
+			this.spirit_costs = [[1, 350], [11, 500], [17, 700]];
 		} else if (this.shape == 'triangles'){
 			this.energy_capacity = 600;
+			this.spirit_costs = [[1, 90], [31, 160], [121, 300]];
 		} else {
 			this.energy_capacity = 100;
+			this.spirit_costs = [];
 		}
 		
 		this.player_id = player;

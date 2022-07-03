@@ -2601,6 +2601,12 @@ async function newGame(data, socket){
 	//TODO rewrite these into one function, not one per bot, jesus.
 	let response = {}
 	switch(data.type) {
+		case "heartbeat":
+			console.log('heartbeat received')
+			response = {
+				meta: "ok",
+			}
+			break;
 		case "boom-bot":
 			response = boom_bot_game(data)
 			socket.send(JSON.stringify({
@@ -2742,13 +2748,6 @@ wss.on("connection", (ws)=>{
 		}
 	})
 })
-
-setInterval(()=>{
-	wssBroadcast({
-		type: "heartbeat",
-		data: "I'm alive!"
-	})
-}, 1000)
 
 // Route not found (404)
 app.use((req,res,next)=>{
