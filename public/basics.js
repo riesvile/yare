@@ -712,57 +712,61 @@ function download_module_script(module_id, client = 1){
 	
 	let script_type = 'server';
 	if (client == 1) script_type = 'client';
-	
-	fetch('/download-script', {
-	        method: "POST",
-	        headers: {
-	          Accept: "application/json",
-	          "Content-Type": "application/json"
-	        },
-	        body: JSON.stringify({
-		        module_id: module_id,
-		        script_type: script_type
-		    })
 
-    }).then(response => response.json())
-      .then(response => {
-		  if (response.meta == 'script retreived'){
-			  //console.log('receiving script file');
-			  let temp_user_code = editor.getValue();
-			  temp_user_code += "\n" + response.data;
-			  editor.setValue(temp_user_code);
-			  return 'script appended';
-		  } else {
-			  return 'nope';
-		  }
+	// modules are now handled on the server
+	
+	// fetch('/download-script', {
+	//         method: "POST",
+	//         headers: {
+	//           Accept: "application/json",
+	//           "Content-Type": "application/json"
+	//         },
+	//         body: JSON.stringify({
+	// 	        module_id: module_id,
+	// 	        script_type: script_type
+	// 	    })
+
+  //   }).then(response => response.json())
+  //     .then(response => {
+	// 	  if (response.meta == 'script retreived'){
+	// 		  //console.log('receiving script file');
+	// 		  let temp_user_code = editor.getValue();
+	// 		  temp_user_code += "\n" + response.data;
+	// 		  editor.setValue(temp_user_code);
+	// 		  return 'script appended';
+	// 	  } else {
+	// 		  return 'nope';
+	// 	  }
 		  
-	  })
-      .catch(err => {
-		  console.log(err);
-	  });
+	//   })
+  //     .catch(err => {
+	// 	  console.log(err);
+	//   });
 }
 
 function local_server_script(module_id){
-	let load_helper = 1;
-	let data_helper = '';
-	if (modules_local['mod_' + module_id]['server_script_location'] == 0) return;
-	let temp_user_code = editor.getValue();
-	if (temp_user_code.includes('// loaded module: ' + module_id)) return;
+	// Now handled on the server
+
+	// let load_helper = 1;
+	// let data_helper = '';
+	// if (modules_local['mod_' + module_id]['server_script_location'] == 0) return;
+	// let temp_user_code = editor.getValue();
+	// if (temp_user_code.includes('// loaded module: ' + module_id)) return;
 	
-	try {
-		fetch(from_gameserver + "public-modules/server/" + module_id + ".js")
-			.then(function(response) {
-    			return response.text().then(function(text) {
-					temp_user_code = editor.getValue();
-					temp_user_code += "\n\n// ----------------------------------------\n" + "// loaded module: " + module_id + "\n// ------ Do not remove this comment ------\n" + text + "\n// ----------------------------------------";
-					editor.setValue(temp_user_code);
-					//console.log('script appended');
-					//return 'script appended';
-   				});
-  		    });
-	} catch (e){
-		console.log(e);
-	}
+	// try {
+	// 	fetch(from_gameserver + "public-modules/server/" + module_id + ".js")
+	// 		.then(function(response) {
+  //   			return response.text().then(function(text) {
+	// 				temp_user_code = editor.getValue();
+	// 				temp_user_code += "\n\n// ----------------------------------------\n" + "// loaded module: " + module_id + "\n// ------ Do not remove this comment ------\n" + text + "\n// ----------------------------------------";
+	// 				editor.setValue(temp_user_code);
+	// 				//console.log('script appended');
+	// 				//return 'script appended';
+  //  				});
+  // 		    });
+	// } catch (e){
+	// 	console.log(e);
+	// }
 	
 	
 	//console.log();
