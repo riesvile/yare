@@ -485,6 +485,7 @@ var color_table = {
   'pistagre': ['rgba(148, 176, 108, 1)', 'rgba(168, 196, 128, 1)', 'invert(86%) sepia(12%) saturate(982%) hue-rotate(40deg) brightness(87%) contrast(87%)'],
   'magion': ['rgba(180, 27, 227, 1)', 'rgba(200, 57, 247, 1)', 'invert(27%) sepia(52%) saturate(4052%) hue-rotate(272deg) brightness(104%) contrast(94%)'],
   'rozblue': ['rgba(18, 255, 248, 1)', 'rgba(28, 255, 254, 1)'],
+  'lolight': ['rgba(202, 202, 202, 1)', 'rgba(212, 212, 212, 1)', 'invert(100%) sepia(0%) saturate(4403%) hue-rotate(53deg) brightness(121%) contrast(66%);'],
   'legorange': ['rgba(235, 93, 0, 1)', 'rgba(255, 103, 0, 1)', 'invert(41%) sepia(43%) saturate(1933%) hue-rotate(356deg) brightness(105%) contrast(113%)'],
   'brigenta': ['rgba(198, 166, 224, 1)', 'rgba(218, 174, 240, 1)', 'invert(77%) sepia(29%) saturate(838%) hue-rotate(213deg) brightness(97%) contrast(94%)'],
   'greson': ['rgba(138, 228, 122, 1)', 'rgba(158, 248, 142, 1)', 'invert(81%) sepia(70%) saturate(311%) hue-rotate(51deg) brightness(103%) contrast(94%)'],

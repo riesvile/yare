@@ -342,6 +342,9 @@ function get_color(color_name){
 		case 'legorange':
 			return 'color14';
 			break;
+		case 'lolight':
+			return 'color15';
+			break;
 		default:
 			return 'color1';
 	}
@@ -390,6 +393,9 @@ function get_color_num(color_name){
 			break;
 		case 'legorange':
 			return 14;
+			break;
+		case 'lolight':
+			return 15;
 			break;
 		default:
 			return 'color1';

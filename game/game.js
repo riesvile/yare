@@ -711,6 +711,7 @@ color_palettes['color12'] = 'rgba(240, 70, 60, 1)';
 
 color_palettes['color13'] = 'rgba(18, 255, 248, 1)';
 color_palettes['color14'] = 'rgba(235, 93, 0, 1)';
+color_palettes['color15'] = 'rgba(212, 212, 212, 1)';
 
 
 
