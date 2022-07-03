@@ -236,6 +236,7 @@ function fill_color_insides(){
   document.getElementById('color_wirple').style.backgroundColor = color_table['wirple'][0];
   document.getElementById('color_magion').style.backgroundColor = color_table['magion'][0];
   document.getElementById('color_rozblue').style.backgroundColor = color_table['rozblue'][0];
+  document.getElementById('color_lolight').style.backgroundColor = color_table['lolight'][0];
   document.getElementById('color_legorange').style.backgroundColor = color_table['legorange'][0];
   document.getElementById('color_brigenta').style.backgroundColor = color_table['brigenta'][0];
   document.getElementById('color_greson').style.backgroundColor = color_table['greson'][0];
