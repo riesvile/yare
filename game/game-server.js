@@ -358,16 +358,28 @@ wss.on('connection', function connection(ws, req) {
 
 		let active_modules = await Promise.all(promised_active_modules)
 
-		let active_module_code_locations = active_modules.map(mod=>mod != null ? `${mod.server_script_location}/${mod.module_id}` : null).filter(loc=>loc!=="local" && loc!==null)
+		let active_module_code_locations = active_modules.map((mod, i)=>{
+			if (mod == null){
+				return `local/${user.active_modules[i]}`
+			}
+			return `${mod.server_script_location}/${mod.module_id}`
+		}).filter(loc=>loc!=="local" && loc!==null)
+
+		logger.debug(active_module_code_locations)
 
 		let promised_active_module_codes = active_module_code_locations.map((loc) => {
+			if (loc.startsWith("local/")) {
+				return fetch(`${config.frontendAddress}/public-modules/${loc.replace("local", "server")}.js`).then(r=>r.text())
+			}
 			return s3client.getObject({
 				Bucket: config.s3.bucket,
 				Key: `${loc}.js`,
-			}).promise()
+			}).promise().then(r=>r.Body.toString('utf8'))
 		});
 
-		let active_module_codes = (await Promise.all(promised_active_module_codes)).map(data=>data.Body.toString('utf8'))
+		let active_module_codes = (await Promise.all(promised_active_module_codes))
+
+		logger.debug(active_module_codes)
 
 		let active_module_codes_joined = `;${active_module_codes.join("\n\n\n")};`
 
