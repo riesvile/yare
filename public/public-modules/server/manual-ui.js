@@ -1,4 +1,6 @@
 
+client[ttick] = channels.recv("MANUALUI")[0]
+
 // manual ui game code (server-side)
 
 // basics
