@@ -1031,7 +1031,7 @@ function assign_behaviour(spirit_group, beh_type, beh_value){
 		}
 		//console.log('stored');
 	}	
-	update_code();
+	// update_code(); not needed, using channels now
 }
 
 function assign_newborn_behaviour(base_id, beh_value, beh_position = []){
@@ -1041,7 +1041,7 @@ function assign_newborn_behaviour(base_id, beh_value, beh_position = []){
 	//console.log('beh_position = ' + beh_position);
 	local_memory['newborn_' + base_id].role = beh_value;
 	if (beh_position.length != 0) local_memory['newborn_' + base_id].position = beh_position;
-	update_code();
+	// update_code(); not needed, using channels now
 }
 
 function choose_newborn_point(){
@@ -1055,7 +1055,7 @@ function man_attack(attackers){
 	//console.log('attackers = ');
 	//console.log(attackers);
 	//client['attacking'] = man_selected_spirits;
-	update_code();
+	// update_code(); not needed, using channels now
 }
 
 
@@ -1370,6 +1370,11 @@ document.getElementById('man_select_count_swap').addEventListener("click", funct
 }, false);
 
 
+// Send manual ui data for every tick
+sendData("MANUALUI", client)
+document.addEventListener('chan', (e) => {
+  sendData("MANUALUI", client)
+});
 
 
 
