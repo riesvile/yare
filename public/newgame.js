@@ -52,6 +52,7 @@ function player_selection_crossroad(e){
 	    case 'ps_medium-bot':
 	  	case 'ps_hard-bot':
 	  	case 'ps_lego-bot':
+		case 'ps_andersgee-bot':
 		case 'ps_ranked':
 	  		set_versus_state(el.id);
 			dismissals();
@@ -211,6 +212,7 @@ document.getElementById('ps_dumb-bot').classList.remove('card_active');
 document.getElementById('ps_medium-bot').classList.remove('card_active');
 document.getElementById('ps_hard-bot').classList.remove('card_active');
 document.getElementById('ps_lego-bot').classList.remove('card_active');
+document.getElementById('ps_andersgee-bot').classList.remove('card_active');
 }
 
 function reset_shape_sel(){
@@ -368,7 +370,7 @@ function start_game(e){
 	console.log(game_type);
 	if (game_type == 'challenge'){
 		wait_challenge_view();
-	} else if (["easy-bot", "dumb-bot", "medium-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot"].includes(game_type)){
+	} else if (["easy-bot", "dumb-bot", "medium-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot", "andersgee-bot"].includes(game_type)){
 		//document.getElementById("game_selections").classList.add("hidden")
 		//document.getElementById("choose_playstyle_block").classList.add("hidden")
 		//document.getElementById("choose_color_block").classList.add("hidden")

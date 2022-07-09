@@ -121,8 +121,8 @@ function create_worker (game_id, game_type) {
     workers[game_id] = worker;
   }
 
-  function is_bot(id) {
-	return id == "dumb-bot" || id == "medium-bot" || id == "will-bot" || id == "qual-bot" || id == "boom-bot" || id == "lego-bot" || id == "hard-bot"
+  function is_bot(id) {	
+	return id == "dumb-bot" || id == "medium-bot" || id == "will-bot" || id == "qual-bot" || id == "boom-bot" || id == "lego-bot" || id == "hard-bot" || id == "andersgee-bot"
   }
 
   function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_shape = 0, pla2_shape = 0, pla1_color = 'color1', pla2_color = 'color2', game_type = 'tutorial'){
@@ -383,7 +383,8 @@ wss.on('connection', function connection(ws, req) {
 
 		let active_module_codes_joined = `;${active_module_codes.join("\n\n\n")};`
 
-		message['u_code'] += active_module_codes_joined
+		//message['u_code'] = active_module_codes_joined + "\n\n" + message['u_code'];
+		message['u_code'] += active_module_codes_joined;
 		let moduleInjectionTime = Date.now()-modulesInjectionStartTime
 		logger.debug(`Injecting modules took ${moduleInjectionTime}ms`)
 		// End of module injection

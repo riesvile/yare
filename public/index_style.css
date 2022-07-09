@@ -773,6 +773,7 @@ span.lb_num {
 #player_selection_wrap_in {
 	position: absolute;
 	width: 100%;
+	max-width: 1200px;
 }
 
 .t_small {

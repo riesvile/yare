@@ -624,6 +624,16 @@ function hard_bot_game(data){
 	});
 }
 
+function andersgee_bot_game(data){
+	return bot_game(data, {
+		id: 'andersgee-bot',
+		session_id: 'bot',
+		rating: 1900,
+		shape: 'squares',
+		color: 'color6'
+	});
+}
+
 function boom_bot_game(data){
 	return bot_game(data, {
 		id: 'boom-bot',
@@ -2655,6 +2665,16 @@ async function newGame(data, socket){
 			break;
 		case "hard-bot":
 			response = hard_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "andersgee-bot":
+			response = andersgee_bot_game(data)
 			socket.send(JSON.stringify({
 				type: "match-found",
 				data: {

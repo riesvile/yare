@@ -634,6 +634,7 @@ function reset_bot_sel(){
   document.getElementById('ps_medium-bot').classList.remove('card_active');
   document.getElementById('ps_hard-bot').classList.remove('card_active');
   document.getElementById('ps_lego-bot').classList.remove('card_active');
+  document.getElementById('ps_andersgee-bot').classList.remove('card_active');
 }
 
 function set_sel(pl, elname){
@@ -698,6 +699,7 @@ function player_selection_crossroad(e){
 	case 'ps_dumb-bot':
   	case 'ps_medium-bot':
 	case 'ps_hard-bot':
+	case 'ps_andersgee-bot':
 	case 'ps_lego-bot':
 		set_sel(currently_picking, el.id);
 		break;

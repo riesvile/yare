@@ -216,6 +216,8 @@ function setBotCode(name, sand) {
 		sand.setPlayerCode(botCodes['dumb-bot']);
 	} else if (name == 'hard-bot'){
 		sand.setPlayerCode(botCodes['hard-bot']);
+	} else if (name == 'andersgee-bot'){
+		sand.setPlayerCode(botCodes['andersgee-bot']);
 	} else if (name == 'lego-bot'){
 		sand.setPlayerCode(botCodes['lego-bot']);
 	}
@@ -887,11 +889,16 @@ class Sandbox {
 	}
 
 	async run() {
-		await this.loadData();
-		let pre = this.isolate.cpuTime;
-		await this.script.run(this.context, {timeout: 220});
-		let post = this.isolate.cpuTime;
-		logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
+		try {
+			await this.loadData();
+			let pre = this.isolate.cpuTime;
+			await this.script.run(this.context, {timeout: 220});
+			let post = this.isolate.cpuTime;
+			logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
+		} catch (e) {
+			console.log(e);
+		}
+		
 	}
 
 	async output() {
@@ -956,8 +963,8 @@ if (!isMainThread){
 			this.last_energized = '';
 			this.active_in = 0;
 			this.active_at = active_at;
-			this.regeneration = 0.2;
-			if (id == 'star_nua') this.regeneration = 0.3;
+			this.regeneration = 2;
+			if (id == 'star_nua') this.regeneration = 3;
 			//this.energy = energy;
 			this.collision_radius = 100;
 		

@@ -1033,6 +1033,7 @@ function assign_behaviour(spirit_group, beh_type, beh_value){
 	}	
 	// update_code(); not needed, using channels now
 	sendData("MANUALUI", client)
+	update_code();
 }
 
 function assign_newborn_behaviour(base_id, beh_value, beh_position = []){
@@ -1043,8 +1044,8 @@ function assign_newborn_behaviour(base_id, beh_value, beh_position = []){
 	local_memory['newborn_' + base_id].role = beh_value;
 	if (beh_position.length != 0) local_memory['newborn_' + base_id].position = beh_position;
 	// update_code(); not needed, using channels now
-	sendData("MANUALUI", client)
-	
+	sendData("MANUALUI", client);
+	update_code();
 }
 
 function choose_newborn_point(){
@@ -1059,7 +1060,8 @@ function man_attack(attackers){
 	//console.log(attackers);
 	//client['attacking'] = man_selected_spirits;
 	// update_code(); not needed, using channels now
-	sendData("MANUALUI", client)
+	sendData("MANUALUI", client);
+	update_code();
 }
 
 
