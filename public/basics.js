@@ -436,7 +436,7 @@ pub_modules['mod_basic-info-graphs'] = {
 	public: 1
 }
 pub_modules['mod_manual-ui'] = {
-	active: getCookie("user_id") === "anonymous",
+	active: 0,
 	name: 'Manual controls interface',
 	module_id: 'manual-ui',
 	author: 'yare.io',
