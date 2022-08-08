@@ -335,7 +335,7 @@ wss.on('connection', function connection(ws, req) {
 		}
 
 		if(message.meta == 'channel') {
-			workers[g_id].postMessage({data: "channel", user_id: ws.user_id, channel: message.channel, chan_data: message.data});
+			workers[g_id].postMessage({data: "channel", user_id: ws.user_id || "anonymous", channel: message.channel, chan_data: message.data});
 			return;
 		}
 
