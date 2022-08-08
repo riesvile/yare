@@ -1088,8 +1088,8 @@ function reset_tut(){
 }
 
 function show_guidance(guide_num){
-	if (tick_counter > 300) return;
 	reset_tut();
+	if (tick_counter > 500) return;
 	switch (guide_num){
 		case 1:
 			document.getElementById('tut_help_selection_desktop').style.opacity = 1;
@@ -1397,6 +1397,8 @@ sendData("MANUALUI", client)
   		<div id='man_protection_gradient_soft'></div>
 		<p id='tut_help_selection_desktop' class='tut_text'>Hold <span class='keyboard_btn'>CTRL</span> and move mouse to select units</p>
 		<p id='tut_help_selection_mobile' class='tut_text'>Tap on units to select them</p>
+		<p id='tut_help_move_desktop' class='tut_text'><span class='keyboard_btn'>RIGHT-CLICK</span> to move</p>
+		<p id='tut_help_attack_desktop' class='tut_text'>Attack enemy when you have enough units. Good luck!</p>
     	<div id='man_ui_wrap'>
   		<div id='man_select_count' class='man_square_btn'>
   			<div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div>

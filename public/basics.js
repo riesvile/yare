@@ -747,7 +747,9 @@ function download_module_script(module_id, client = 1){
 
 function local_server_script(module_id){
 	// Now handled on the server
-
+	let user_name = getCookie('user_id');
+	if (user_name != 'anonymous') return;
+	
 	 let load_helper = 1;
 	 let data_helper = '';
 	 if (modules_local['mod_' + module_id]['server_script_location'] == 0) return;
