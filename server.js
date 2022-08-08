@@ -585,7 +585,7 @@ function bot_game(data, botinfo){
 	let player = [pl1,pl2][playerIndex];
 
 	User.findOne({user_id: player.id}).then(result => {
-		if (!color_validity(player.color, result.colors)) {
+		if (!!result && !color_validity(player.color, result.colors)) {
 			game[(playerIndex===0?"p1":"p2")+"_color"] = "color1"
 		}
 		game.save()
