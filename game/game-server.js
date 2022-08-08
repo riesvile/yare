@@ -354,16 +354,21 @@ wss.on('connection', function connection(ws, req) {
 		// Inject modules code
 		let modulesInjectionStartTime = Date.now()
 		let user = await User.findOne({"user_id": message['u_id']})
-		let promised_active_modules = user.active_modules.map(module_id=>Module.findOne({module_id}))
-
-		let active_modules = await Promise.all(promised_active_modules)
-
-		let active_module_code_locations = active_modules.map((mod, i)=>{
-			if (mod == null){
-				return `local/${user.active_modules[i]}`
-			}
-			return `${mod.server_script_location}/${mod.module_id}`
-		}).filter(loc=>loc!=="local" && loc!==null)
+		let active_module_code_locations
+		if (!!user){
+			// if user exists, find active module locations
+			let promised_active_modules = user.active_modules.map(module_id=>Module.findOne({module_id}))
+			let active_modules = await Promise.all(promised_active_modules)
+			active_module_code_locations = active_modules.map((mod, i)=>{
+				if (mod == null){
+					return `local/${user.active_modules[i]}`
+				}
+				return `${mod.server_script_location}/${mod.module_id}`
+			}).filter(loc=>loc!=="local" && loc!==null)
+		} else {
+			// If user doesn't exist, activate manual-ui module
+			active_module_code_locations = ["local/manual-ui"]
+		}
 
 		logger.debug(active_module_code_locations)
 
