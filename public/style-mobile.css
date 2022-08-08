@@ -1458,6 +1458,15 @@ p.tour_intro1, p.tour_intro2 {
 		margin-left: -24px;
 	}
 	
+	#trailer_layer iframe {
+		position: absolute;
+		width: 90%;
+		height: 50%;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+	
 }
 
 

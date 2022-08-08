@@ -1766,11 +1766,13 @@ function replay_loaded(){
 function trailer_open(){
 	
 	anime({
-  		targets: '#overlay_trailer',
-  		opacity: 0.8,
+  		targets: '#trailer_layer',
+  		opacity: 1,
   		easing: 'easeOutQuad',
   		duration: 200
 	});
+	
+	trailer_vid.src = 'https://www.youtube-nocookie.com/embed/fJvHsV32Yms?autoplay=1&enablejsapi=1';
 	
 	try {
 		trailer_ov.style.pointerEvents = 'auto';
@@ -1784,11 +1786,13 @@ function trailer_open(){
 function trailer_close(){
 	
 	anime({
-  		targets: '#overlay_trailer',
+  		targets: '#trailer_layer',
   		opacity: 0,
   		easing: 'easeOutQuad',
   		duration: 200
 	});
+	
+	trailer_vid.src = '';
 	
 	try {
 		trailer_ov.style.pointerEvents = 'none';

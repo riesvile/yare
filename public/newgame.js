@@ -29,6 +29,7 @@ function game_window_setup(){
   } else {
 	  document.getElementById('buy_more_colors').style.display = 'inline-block';
 	  document.getElementById('main_button').style.padding = '0px 38px 0px 38px';
+	  document.getElementById('main_button').style.pointerEvents = 'auto';
 	  document.getElementById('choose_color_block').style.display = 'block';
 	  document.getElementById('choose_playstyle_block').style.opacity = 0;
 	  document.getElementById('choose_playstyle_block').style.pointerEvents = 'none';
@@ -473,7 +474,7 @@ function copyTextToClipboard(text, target) {
 
 
 var from_nongame = 1;
-var selected_versus = 'ps_medium-bot';
+var selected_versus = 'ps_dumb-bot';
 var selected_shape = '';
 var selected_color = 'default';
 var selected_playstyle = 'manual';
@@ -509,7 +510,11 @@ if (localStorage.getItem("chosen_shape") != null){
   }
 } 
 if (localStorage.getItem("chosen_color") != null) selected_color = localStorage.getItem("chosen_color");
-if (localStorage.getItem("chosen_playstyle") != null) selected_playstyle = localStorage.getItem("chosen_playstyle");
+if (localStorage.getItem("chosen_playstyle") != null) {
+	selected_playstyle = localStorage.getItem("chosen_playstyle");
+} else {
+	localStorage.setItem('chosen_playstyle', 'manual');
+}
 
 game_window_setup();
 
@@ -538,10 +543,6 @@ document.getElementById('new_acc_link').addEventListener('click', new_account, f
 let play_types = document.getElementsByClassName('play_type');
 for (let el of play_types){
 	el.addEventListener('mouseover', play_type_hover, false);
-}
-
-if (localStorage.getItem('chosen_playstyle') == null && getCookie('user_id') == 'anonymous'){
-  localStorage.setItem('chosen_playstyle', 'manual');
 }
 
 setInterval(function(){ heartbeat() }, 3000);

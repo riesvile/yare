@@ -394,6 +394,18 @@
 		</div>
 		
 		
+		<div id='index_trailer_bg'>
+			<div id='index_trailer'>
+				<div id='trailer_play_icon'></div>
+			</div>
+		</div>
+		
+		<p id='index_expl_text'><span class='highlight'>Yare is a traditional RTS, but the game’s entire functionality and foundation is programmable. </span>This means that you can play the game by writing a real code controlling your unit’s actions, as well as creating your own game UI with HTML/CSS/JS. You can even create voice-control mechanics or anything else you can think of.</p>
+		
+		<div id='trailer_layer'>
+			<iframe id='trailer_frame' width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		</div>
+		
 		
 		<div id='leaderboard_table'>
 			<h3 class='head_norm'>Leaderboard</h3>
@@ -552,12 +564,20 @@
 	  
 	  //trailer
 	  
-	  //var trailer_in = document.getElementById('trailer_block');
-	  //var trailer_ov = document.getElementById('overlay_trailer');
-	  //var trailer_vid = document.getElementById('trailer_box');
+	  let trailer_in = document.getElementById('index_trailer');
+	  let trailer_ov = document.getElementById('trailer_layer');
+	  let trailer_vid = document.getElementById('trailer_frame');
+	  let vid = document.querySelector('video');
 	  //
-	  //trailer_in.addEventListener('click', trailer_open, false);
-	  //trailer_ov.addEventListener('click', trailer_close, false);
+	  trailer_in.addEventListener('click', trailer_open, false);
+	  trailer_ov.addEventListener('click', trailer_close, false);
+	  
+	  document.onkeydown = function(evt) {
+	      evt = evt || window.event;
+	      if (evt.keyCode == 27) {
+	          trailer_close();
+	      }
+	  };
 	  
   </script>
  
