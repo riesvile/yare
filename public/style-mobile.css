@@ -1306,6 +1306,10 @@ p.tour_intro1, p.tour_intro2 {
 	#tut_help_selection_desktop {
 		display: none;
 	}
+	
+	#tut_help_move_desktop {
+		display: none;
+	}
 
 }
 
@@ -1479,7 +1483,19 @@ p.tour_intro1, p.tour_intro2 {
 		display: block;
 	}
 	
+	#tut_help_move_desktop {
+		display: block;
+	}
+	
+	#tut_help_attack_desktop {
+		display: block;
+	}
+	
 	#tut_help_selection_mobile {
+		display: none;
+	}
+	
+	#tut_help_move_mobile {
 		display: none;
 	}
 
@@ -1491,7 +1507,19 @@ p.tour_intro1, p.tour_intro2 {
 		display: none;
 	}
 	
+	#tut_help_move_desktop {
+		display: none;
+	}
+	
+	#tut_help_attack_desktop {
+		display: block;
+	}
+	
 	#tut_help_selection_mobile {
+		display: block;
+	}
+	
+	#tut_help_move_mobile {
 		display: block;
 	}
 

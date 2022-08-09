@@ -1772,7 +1772,7 @@ function trailer_open(){
   		duration: 200
 	});
 	
-	trailer_vid.src = 'https://www.youtube-nocookie.com/embed/fJvHsV32Yms?autoplay=1&enablejsapi=1';
+	trailer_vid.src = 'https://www.youtube-nocookie.com/embed/hp4eYgl5npM?autoplay=1&enablejsapi=1';
 	
 	try {
 		trailer_ov.style.pointerEvents = 'auto';
