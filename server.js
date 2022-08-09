@@ -1386,7 +1386,7 @@ app.post('/get-available-modules', async (req, res) => {
 		.then((result) => {
 			console.log('db result');
 			if (result.length == 0){
-				res.status(200).send({
+				res.status(400).send({
 					data: "no such session"
 				});
 			} else {
