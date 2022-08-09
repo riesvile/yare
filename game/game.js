@@ -894,7 +894,7 @@ class Sandbox {
 			let pre = this.isolate.cpuTime;
 			await this.script.run(this.context, {timeout: 220});
 			let post = this.isolate.cpuTime;
-			logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
+			//logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 		} catch (e) {
 			console.log(e);
 		}
@@ -1834,7 +1834,7 @@ if (!isMainThread){
 				//logger.debug('to_obj.id = ' + to_obj.id);
 
 				if(!from_obj || !to_obj || from_obj.hp == 0 || to_obj.hp == 0){
-					logger.debug('tthis happened');
+					//logger.debug('tthis happened');
 					return;
 				}
 				
@@ -2721,7 +2721,7 @@ if (!isMainThread){
 				spirit_cost(1, p1_living);
 				spirit_cost(2, p2_living);
 		} 
-		logger.debug(bases[2].id + " control = " + bases[2].control)
+		//logger.debug(bases[2].id + " control = " + bases[2].control)
 		
 		if (p1_living == 0) end_game(0, 1);
 		if (p2_living == 0) end_game(1, 0);
@@ -2900,7 +2900,7 @@ if (!isMainThread){
 			await user_code();
 			let update_total = elapsed_ms_from(update_t0);
 
-			logger.debug('TIME: update_state = ' + update_no_players + " (" + update_total + " total)");
+			//logger.debug('TIME: update_state = ' + update_no_players + " (" + update_total + " total)");
 			if (update_total > 1000) cancel_game();
 	}
 	
@@ -3026,10 +3026,10 @@ if (!isMainThread){
 
 	async function mainLoop() {
 		const t1 = (+new Date());
-		logger.debug("tick " + workerData[0]);
+		//logger.debug("tick " + workerData[0]);
 		await update_state();
 		if(game_duration % 30 == 0){
-			logger.debug("updating game " + workerData[0]);
+			//logger.debug("updating game " + workerData[0]);
 			Game.updateOne({game_id: workerData[0]}, {last_update: (+new Date())}).catch(err => {
 				logger.error(err)
 			});
