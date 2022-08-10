@@ -1006,7 +1006,7 @@ app.post('/add-user', async (req, res) => {
 			email: "",
 			marker: 0,
 			visible_modules: [],
-			active_modules: [],
+			active_modules: ['manual-ui'],
 			lang_preference: 'javascript',
 			audio_preference: [50, 60] 
 		});
