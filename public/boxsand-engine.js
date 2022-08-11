@@ -2137,9 +2137,9 @@ function prefill_code(pl){
 }
 
 function start_engine(){
-	console.log('starting');
+	//console.log('starting');
 	
-	console.log('played_codes');
+	//console.log('played_codes');
 	//console.log(player_codes);
 	
 	game_duration = -1;
@@ -2209,6 +2209,9 @@ var live_input = '';
 onmessage = function(message){
 	
 	let msg = message.data;
+	
+	//console.log('received msg:');
+	//console.log(msg);
 	
 	if (msg.meta == 'initiate'){
 		boxsanded_copy = msg.boxsanded;

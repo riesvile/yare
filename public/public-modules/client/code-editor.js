@@ -11,3 +11,5 @@ try {
 } catch (e) {
 	//console.log(e);
 }
+
+var helper_man_flag = 1;

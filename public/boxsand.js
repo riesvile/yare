@@ -56,11 +56,11 @@ function stop_engine(){
 
 function update_code(){
   update_success();
-  user_code = editor.getValue();
+  user_code = ' ' + editor.getValue();
   localStorage.setItem("code_code", user_code);
   boxsand_engine.postMessage({
 	  meta: 'live-input',
-	  code_string: "client[ttick] = " + JSON.stringify(client) + "\n" + user_code
+	  code_string: "client[ttick] = " + JSON.stringify(client) + "\n " + user_code + "\n"
   });
 }
 

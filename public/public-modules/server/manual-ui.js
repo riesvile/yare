@@ -1,6 +1,10 @@
 
-received = channels.recv("MANUALUI")
-client[ttick] = received?.length > 0 ? received.reverse()[0] : memory["MANUALUI"]
+try {
+    received = channels.recv("MANUALUI")
+    client[ttick] = received?.length > 0 ? received.reverse()[0] : memory["MANUALUI"]
+} catch (e) {
+    
+}
 memory["MANUALUI"] = client[ttick]
 
 // manual ui game code (server-side)

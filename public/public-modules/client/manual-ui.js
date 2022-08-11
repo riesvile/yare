@@ -1047,7 +1047,11 @@ function assign_behaviour(spirit_group, beh_type, beh_value){
 		//console.log('stored');
 	}	
 	// update_code(); not needed, using channels now
-	sendData("MANUALUI", client)
+	try {
+		sendData("MANUALUI", client)
+	} catch (e) {
+		
+	}
 	update_code();
 }
 
@@ -1059,7 +1063,11 @@ function assign_newborn_behaviour(base_id, beh_value, beh_position = []){
 	local_memory['newborn_' + base_id].role = beh_value;
 	if (beh_position.length != 0) local_memory['newborn_' + base_id].position = beh_position;
 	// update_code(); not needed, using channels now
-	sendData("MANUALUI", client);
+	try {
+		sendData("MANUALUI", client)
+	} catch (e) {
+		
+	}
 	update_code();
 }
 
@@ -1075,7 +1083,11 @@ function man_attack(attackers){
 	//console.log(attackers);
 	//client['attacking'] = man_selected_spirits;
 	// update_code(); not needed, using channels now
-	sendData("MANUALUI", client);
+	try {
+		sendData("MANUALUI", client)
+	} catch (e) {
+		
+	}
 	update_code();
 }
 
@@ -1416,7 +1428,11 @@ document.getElementById('man_select_count_swap').addEventListener("click", funct
 
 
 // Send manual ui data for every tick
-sendData("MANUALUI", client)
+try {
+	sendData("MANUALUI", client)
+} catch (e) {
+	
+}
 // document.addEventListener('chan', (e) => {
 //   sendData("MANUALUI", client)
 // });
