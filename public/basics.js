@@ -748,11 +748,11 @@ function download_module_script(module_id, client = 1){
 function local_server_script(module_id){
 	// Now handled on the server
 	let user_name = getCookie('user_id');
-	if (typeof is_sandbox === 'undefined') {
-	    //var is_sandbox = 0;
+	if (typeof is_sandbox == 'undefined') {
+	    is_sandbox = 0;
 	}
 	//console.log('is sand? ' + is_sandbox);
-	if (user_name != 'anonymous' && is_sandbox != 1) return;
+	if (user_name != 'anonymous' && !is_sandbox) return;
 	
 	 let load_helper = 1;
 	 let data_helper = '';
