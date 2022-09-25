@@ -15,7 +15,7 @@ case $1 in
         exit 0
         ;;
     (transpiler)
-        pull_and_run transpiler "registry.digitalocean.com/yare/yare-traspiler:$2" "" $PORT
+        pull_and_run transpiler "registry.digitalocean.com/yare/yare-transpiler:$2" "" $PORT
         exit 0
         ;;
     (t*)
