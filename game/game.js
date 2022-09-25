@@ -428,7 +428,7 @@ parentPort.on("message", message => {
 });
 
 function to_html(txt){
-	return txt.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+	return txt.toString().replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
 }
 
 async function clean_error(error, sourcemap){
