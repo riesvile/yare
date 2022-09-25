@@ -340,16 +340,16 @@ wss.on('connection', function connection(ws, req) {
 		}
 
 		// Transpile from whatever language to js
-//		if (message['u_code_lang'] != undefined && message['u_code_lang'] != "javascript") {
-//			let req = await fetch(config.frontendAddress + "/transpiler/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
-//			// logger.debug(await req.text());
-//			let res = await req.json();
-//			if (res.result) message['u_code'] = res.result;
-//			if (res.error) {
-//				let tempJSON = JSON.stringify(JSON.stringify({error: res.error}));
-//				message['u_code'] = `throw JSON.parse(${tempJSON})["error"];`;
-//			}
-//		}
+		if (message['u_code_lang'] != undefined && message['u_code_lang'] != "javascript") {
+			let req = await fetch(config.frontendAddress + "/transpiler/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
+			// logger.debug(await req.text());
+			let res = await req.json();
+			if (res.result) message['u_code'] = res.result;
+			if (res.error) {
+				let tempJSON = JSON.stringify(JSON.stringify({error: res.error}));
+				message['u_code'] = `throw JSON.parse(${tempJSON})["error"];`;
+			}
+		}
 
 		// Inject modules code
 		let modulesInjectionStartTime = Date.now()
