@@ -535,11 +535,9 @@ async function user_code(){
 	player = players['p2'];
 	try {
 		let run_err = null;
-		try {
-			await p2_async;
-		} catch (error) {
+		await p1_async.catch((error) => {
 			run_err = error;
-		}
+		})
 
 		let out = await sand2.output();
 		all_commands[player] = out.commands;
