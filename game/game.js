@@ -504,11 +504,9 @@ async function user_code(){
 	let player = players['p1'];
 	try {
 		let run_err = null;
-		try {
-			await p1_async;
-		} catch (error) {
+		await p1_async.catch((error) => {
 			run_err = error;
-		}
+		})
 
 		let out = await sand1.output();
 		all_commands[player] = out.commands;
@@ -896,7 +894,8 @@ class Sandbox {
 			let post = this.isolate.cpuTime;
 			//logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 		} catch (e) {
-			console.log(e);
+			// console.log(e);
+			throw e;
 		}
 		
 	}
