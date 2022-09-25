@@ -535,7 +535,7 @@ async function user_code(){
 	player = players['p2'];
 	try {
 		let run_err = null;
-		await p1_async.catch((error) => {
+		await p2_async.catch((error) => {
 			run_err = error;
 		})
 
