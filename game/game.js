@@ -893,7 +893,8 @@ class Sandbox {
 			//logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 		} catch (e) {
 			// console.log(e);
-			throw e;
+			// throw e;
+			this.last_compile_err = e;
 		}
 		
 	}
