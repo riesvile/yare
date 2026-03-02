@@ -270,7 +270,7 @@ const AWS = require('aws-sdk');
 // let compress = require('./compress/compress.js');
 AWS.config.setPromisesDependency(null);
 
-s3client = new AWS.S3({
+const s3client = new AWS.S3({
 	accessKeyId: config.s3.key,
 	secretAccessKey: config.s3.secret,
 	endpoint: config.s3.endpoint,
@@ -294,7 +294,7 @@ wss.on('connection', function connection(ws, req) {
 	initiate_world(ws.client_id, g_id);
 	
 	ws.on('message', async function incoming(message) {
-		d1 = process.hrtime();
+		let d1 = process.hrtime();
 		let active_game = active_games[g_id];
 		if(active_game == undefined){
 			// TODO VILEM CHECK - is this proper handling?
@@ -403,12 +403,12 @@ wss.on('connection', function connection(ws, req) {
 			}
 			if (message['u_id'] == active_game[1] || active_game[1] == 'anonymous'){
 				//code_temps['player1'] = message['u_code'];
-				player1_code = message['u_code'];
+				let player1_code = message['u_code'];
 
 				send_code(ws.client_id, 'player1', message['u_id'], player1_code, g_id, message['session_id'], resigning1);
 			} else if (message['u_id'] == active_game[2]){
 				//code_temps['player2'] = message['u_code'];
-				player2_code = message['u_code'];
+				let player2_code = message['u_code'];
 
 				send_code(ws.client_id, 'player2', message['u_id'], player2_code, g_id, message['session_id'], resigning2);
 			}

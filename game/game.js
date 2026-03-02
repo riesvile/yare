@@ -20,9 +20,13 @@ function cancel_game(){
 	}, 2000);
 }
 
+function round_to_top(number, places) {
+	return +number.toFixed(places);
+}
+
 function elapsed_ms_from(t0) {
 	let diff = process.hrtime(t0);
-	return round_to((diff[0] * 1e9 + diff[1]) / 1e6, 3);
+	return round_to_top((diff[0] * 1e9 + diff[1]) / 1e6, 3);
 }
 
 
@@ -32,7 +36,7 @@ const AWS = require('aws-sdk');
 const compress = require('../compress/compress.js');
 AWS.config.setPromisesDependency(null);
 
-s3client = new AWS.S3({
+const s3client = new AWS.S3({
 	accessKeyId: config.s3.key,
 	secretAccessKey: config.s3.secret,
 	endpoint: config.s3.endpoint,
@@ -334,10 +338,10 @@ parentPort.on("message", message => {
 	if (workerData[1] == 'tutorial'){
 		tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 		tutorial_flag1 = 0;
-		cat_p2_cost = 30;
+		let cat_p2_cost = 30; // eslint-disable-line no-unused-vars
 		sand2.setPlayerCode(botCodes['tutorial0']);
 	}
-	  game_start();
+	  game_start(); // eslint-disable-line no-undef
 	  
 	  Game.find({game_id: workerData[0]})
 	  	.then((result) => {
@@ -349,16 +353,16 @@ parentPort.on("message", message => {
 			logger.debug('starting rating update');
 			User.find({user_id: {$in: [players['p1'], players['p2']]}})
 				.then((results) => {
-					updates = {};
-					for(let rp of results) {
-						if(rp.user_id == players['p1']){
-							updates.p1_rating = rp.rating;
-						}
-						if(rp.user_id == players['p2']){
-							updates.p2_rating = rp.rating;
-						}
+				let updates = {};
+				for(let rp of results) {
+					if(rp.user_id == players['p1']){
+						updates.p1_rating = rp.rating;
 					}
-					Game.updateOne({game_id: workerData[0]}, updates, {upsert: true})
+					if(rp.user_id == players['p2']){
+						updates.p2_rating = rp.rating;
+					}
+				}
+				Game.updateOne({game_id: workerData[0]}, updates, {upsert: true})
 						.then((qq) => {
 							logger.debug('p1 and p2 ratings updated');
 						});	
@@ -429,7 +433,7 @@ async function handle_error(error, player, code){
 	if (!(/^data:(application|text)\/json;base64,/.test(sourcemap))) {
 		sourcemap = null
 	}
-	message = await clean_error(error, sourcemap);
+	let message = await clean_error(error, sourcemap);
 
 	fill_error(player, to_html(message));
 }

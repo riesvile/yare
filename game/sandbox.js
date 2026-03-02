@@ -60,7 +60,7 @@ function send_error(msg) {
     //yd.errors.push(msg);
 }
 
-errChan = global.channels.get("err");
+const errChan = global.channels.get("err");
 
 function soft_error(msg) {
     try {

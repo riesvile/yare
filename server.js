@@ -165,7 +165,8 @@ function matchmake(){
 		let user1 = pair[0];
 		let user2 = pair[1];
 
-		let game_id = new_game(user1.id, user2.id, init_status = 0.5, chosen_server);
+		let init_status = 0.5;
+		let game_id = new_game(user1.id, user2.id, init_status, chosen_server);
 		
 		//add server
 		users_joining_match[user1.id] = {game_id, server: chosen_server};
@@ -343,7 +344,7 @@ function tutorial_game(req, res, pl_id){
 	const chosen_server = pick_server('tutorial');
 	
 	
-	g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
+	let g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
 	
 
 	res.status(200).send({
@@ -406,7 +407,7 @@ function bot_game(data, botinfo){
 		[pl1, pl2] = [pl2, pl1];
 	}
 	
-	g_id = new_game(pl1.id, pl2.id, 0.5, chosen_server);
+	let g_id = new_game(pl1.id, pl2.id, 0.5, chosen_server);
 	
 	const game = new Game({
 		game_id: g_id,
@@ -466,7 +467,8 @@ function friend_challenge(data){
 	const chosen_server = pick_server('real');
 	const color_code = get_color(data.user_color);
 		
-	g_id = new_game(data.user_id, 0, init_status = 0.5, chosen_server);
+	let init_status = 0.5;
+	let g_id = new_game(data.user_id, 0, init_status, chosen_server);
 		
 	const game = new Game({
 		game_id: g_id,
@@ -556,7 +558,7 @@ app.post('/check-status/:game_id', (req, res) => {
         });
 		return;
 	}
-	game_id_url = req.params.game_id;
+	let game_id_url = req.params.game_id;
 	if (active_games[game_id_url][0] == 0.5){
 		res.status(200).send({
 			player1: active_games[game_id_url][1],
@@ -660,7 +662,7 @@ app.get('/game/:game_id', (req, res) => {
 		return;
 	}
 	
-	game_id_url = req.params.game_id;
+	let game_id_url = req.params.game_id; // eslint-disable-line no-unused-vars
 	res.sendFile(__dirname + '/public/game.html');
 });
 
@@ -1304,7 +1306,7 @@ function findAgain(req, res, g_id){
 		        	data: "no game found"
 		        });
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
-				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_color'], result[0]['p2_color'], 'real');
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_color'], result[0]['p2_color'], 'real'); // eslint-disable-line no-undef
 				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						// logger.debug('game is ready');
