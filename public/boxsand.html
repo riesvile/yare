@@ -9,8 +9,6 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./man-control.css">
 	<link rel="stylesheet" href="./style.css">
@@ -98,67 +96,6 @@
 		
 		<div class="sep_medium"></div>
 		
-		<!--
-		<div id="module_expanded">
-			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
-			<span class='module_main_tag'>Data visualization</span>
-			<div class="module_toggle" id="toggle_basic_info_graphs">
-				<div class="the_toggle" id="thetog"></div>
-			</div>
-			<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
-			<div class="module_expanded_buttons">
-				<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
-				<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
-			</div>
-			<div class="module_ilu"></div>
-			<div class="sep_medium"></div>
-			<div class="sep_medium"></div>
-		</div>
-		-->
-		
-		<span class="pref_section_label">MODULES</span>
-		<div id="modules_section">
-			
-			<div id="create_new_module">
-				<span class="ico_new_module"></span>
-				<span class="new_module_label">Create Module</span>
-			</div>
-			
-			<!--
-			<div class="module_card module_off" id="mdl_code-editor">
-				<div class="module_card_bg" id="bg_mdl_code-editor"></div>
-				<span class="module_main_tag">Essentials</span>
-				<div class="module_toggle" id="toggle_code-editor">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Code editor <br>& Console</h3>
-				<div class="module_ilu"></div>
-			</div>
-				
-				-->
-			
-			
-		</div>
-		
-		<div id="modules_section_mine">
-			<!--
-			<div class="module_card_mine module_off" id="mdl_code_editor">
-				<div class="module_card_bg" id="bg_mdl_mine"></div>
-				<div class="module_options">
-					<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
-					<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
-					<div class="delete_confirm" id="confirm_1234">
-						<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
-						<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
-					</div>
-				</div>
-				<div class="module_toggle" id="toggle_1234">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Module name</h3>
-			</div>
-			-->
-		</div>
 		
 		<div class="sep_medium" id="dismiss"></div>
 		<div class="sep_medium" id="dismiss"></div>
@@ -213,16 +150,8 @@
   			<span id="c2_close">Close</span>
   		</div>
   		<div id="console2_tick_in">
-  			<p class="console_item console_error">ReferenceError:&nbsp;meow&nbsp;is&nbsp;not&nbsp;defined<br>&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;~sandbox/user.js:48:1</p>
-  			<p class="console_item">{"friends":[]}</p>
-  			<p class="console_item">-230,230</p>
-  			<p class="console_item">-800,800</p>
   		</div>
   		<div id="console2_all_in">
-  			<div class="console_item_group">
-  				<span class="console_item_tick tick_error">145</span>
-  				<p class="console_item">itemmmm</p>
-  			</div>
   		</div>
   	</div>
     </div>
@@ -242,9 +171,9 @@
   
   <div id="game_info_panel">
 	 <div id="game_info_panel_in">
-	  <div id="info_player1_shape"><span class="ico_circle"></span></div>
+	  <div id="info_player1_shape"><span class="ico_triangles"></span></div>
 	  <p id="info_player1_name">levmiseri</p>
-	  <div id="info_player2_shape"><span class="ico_circle"></span></div>
+	  <div id="info_player2_shape"><span class="ico_triangles"></span></div>
 	  <p id="info_player2_name">levmiseri</p>
      </div>
   </div>
@@ -256,19 +185,11 @@
 	  
 	  <div id="ps_main_options">
 		  <div id="ps_live-input" class="ps_card ps_main_card card_active">
-			  <div class="ps_shape_in_card_wrap">
-				  <div class="ps_shape_option ps_shape_circles ps_shape_active"><span id="live_shape_circles" class="ico_sh_circles"></span></div>
-				  <div class="ps_shape_option ps_shape_squares"><span id="live_shape_squares" class="ico_sh_squares"></span></div>
-				  <div class="ps_shape_option ps_shape_triangles"><span id="live_shape_triangles" class="ico_sh_triangles"></span></div>
-			  </div>
+			  <div class="ps_shape_in_card_wrap"></div>
 			  <h3 class="ps_p_name">You · Live input</h3>
 		  </div>
 		  <div id="ps_upload-bot" class="ps_card ps_main_card">
-			  <div class="ps_shape_in_card_wrap">
-				  <div class="ps_shape_option ps_shape_circles ps_shape_active"><span id="upload_shape_circles" class="ico_sh_circles"></span></div>
-				  <div class="ps_shape_option ps_shape_squares"><span id="upload_shape_squares" class="ico_sh_squares"></span></div>
-				  <div class="ps_shape_option ps_shape_triangles"><span id="upload_shape_triangles" class="ico_sh_triangles"></span></div>
-			  </div>
+			  <div class="ps_shape_in_card_wrap"></div>
 	  		  <label id="upload_bot_box" class="upload_bot_label">
 	  			  <input type="file" id="bot_script" class="upload_bot" accept=".js">
 	  			  <span id="abcdefg" class="bot_upload_btn">Upload file</span>
@@ -280,14 +201,14 @@
 	  <div id="ps_bot_options">
 		  <div id="ps_dumb-bot" class="ps_card ps_bot_card">
 			  <div class="ps_shape_in_card_wrap">
-			  	<div class="ps_bot_shape"><span class="ico_sh_circles"></span></div>
+			  	<div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div>
 		  	  </div>
 			  <h3 class="ps_p_name">dumb-bot</h3>
 			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
 		  </div>
 		  <div id="ps_medium-bot" class="ps_card ps_bot_card">
 			  <div class="ps_shape_in_card_wrap">
-			  	<div class="ps_bot_shape"><span class="ico_sh_circles"></span></div>
+			  	<div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div>
 		  	  </div>
 			  <h3 class="ps_p_name">medium-bot</h3>
 			  <p class="ps_p_desc">Peaceful bot that doesn’t attack, only defends itself</p>
@@ -301,17 +222,17 @@
 		  </div>
 		  <div id="ps_lego-bot" class="ps_card ps_bot_card">
 			  <div class="ps_shape_in_card_wrap">
-			  	<div class="ps_bot_shape"><span class="ico_sh_squares"></span></div>
+			  	<div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div>
 		  	  </div>
 			  <h3 class="ps_p_name">lego-bot</h3>
 			  <p class="ps_p_desc">Rush bot. Goes after your throat right away.</p>
 		  </div>
 		  <div id="ps_andersgee-bot" class="ps_card ps_bot_card">
 			  <div class="ps_shape_in_card_wrap">
-			  	<div class="ps_bot_shape"><span class="ico_sh_squares"></span></div>
+			  	<div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div>
 		  	  </div>
 			  <h3 class="ps_p_name">andersgee-bot</h3>
-			  <p class="ps_p_desc">Super strong jumping sniper bot.</p>
+			  <p class="ps_p_desc">Super strong bot.</p>
 		  </div>
 		  
 		  
@@ -324,7 +245,7 @@
 	  <div id="bs_load_prev">Set to starting positions</div>
 	  
 	  <div id="boxsand_p1" class="bs_player_selection">
-		  <span id="bs_ico_pl1" class="bs_player_ico ico_circles" style="background-color: rgba(128,140,255,1)"></span>
+		  <span id="bs_ico_pl1" class="bs_player_ico ico_triangles" style="background-color: rgba(128,140,255,1)"></span>
 		  <span id="bs_pl1_name" class="bs_player_name"><span class='lowlight'>Player 1 · </span>You</span>
 		  <span class="bs_player_dropdown"></span>
 	  </div>
@@ -336,9 +257,8 @@
 	  
 	  <div id="bs_element_placer">
 	  	<h3 class="bs_heading">Select element to place</h3>
-		<div id="bs_placing_pl1" class="bs_select_element ele_active"><span id="bs_ele_pl1" class="bs_player_ico ico_circles" style="background-color: rgba(128,140,255,1)"></span></div>
+		<div id="bs_placing_pl1" class="bs_select_element ele_active"><span id="bs_ele_pl1" class="bs_player_ico ico_triangles" style="background-color: rgba(128,140,255,1)"></span></div>
 		<div id="bs_placing_pl2" class="bs_select_element"><span id="bs_ele_pl2" class="bs_player_ico ico_triangles" style="background-color: rgba(232,97,97,1)"></span></div>
-		<div id="bs_placing_frag" class="bs_select_element"><span id="bs_ele_frag" class="bs_fragment_ico"></span></div>
 		<span class="bs_lbl">SHIFT + click to delete</span>
   	  </div>
 	  
@@ -414,7 +334,7 @@
 	      getCompletions: function(editor, session, pos, prefix, callback) {
 	          var completions = [];
 	          // we can use session and pos here to decide what we are going to show
-	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "base_zxq", "base_a2c", "base_p89", "base_nua", "star_zxq", "star_p89", "star_nua", "star_a2c", "outpost", "pylon", "fragments", "my_spirits", "spirits", "tick", "ttick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable"].forEach(function(w) {
+	          ["pew()", "move()", "shout()", "range", "id", "energy", "energy_capacity", "memory", "position", "barricades", "pods", "my_cats", "cats", "tick", "ttick", "hp", "sight", "enemies", "friends", "enemies_pewable", "friends_pewable"].forEach(function(w) {
 	              completions.push({
 	                  value: w,
 	                  meta: "keyword",
@@ -430,14 +350,6 @@
 		  editor.setValue(code_code, 1);
 	  }
 	  
-	  
-	  var shape_match = {
-		  'dumb-bot': 'circles',
-		  'medium-bot': 'circles',
-		  'hard-bot': 'triangles',
-		  'lego-bot': 'squares',
-		  'andersgee-bot': 'squares'
-	  }
 	  
 	  var client = {};
 	  var incoming = {
@@ -463,12 +375,9 @@
 	  var move_queue = [];
 	  var birth_queue = [];
 	  var units_queue = [];
-	  var energize_queue = [];
-	  var merge_queue = [];
-	  var divide_queue = [];
+	  var pew_queue = [];
 	  var death_queue = [];
-	  var stars_queue = [];
-	  var bases_queue = [];
+	  var barricades_queue = [];
 	  var logs = [];
 	  var from_gameserver = './';
 	  
@@ -499,14 +408,6 @@
 		  pl1: '',
 		  pl2: ''
 	  };
-	  var upload_bot_shape = {
-		  pl1: 'circles',
-		  pl2: 'circles'
-	  };
-	  var live_bot_shape = {
-		  pl1: 'circles',
-		  pl2: 'circles'
-	  };
 	  var selected_player = {
 		  pl1: 'live-input',
 		  pl2: 'dumb-bot'
@@ -518,23 +419,8 @@
 	  var boxsanded = {
 		  pl1: 'live-input',
 		  pl2: 'dumb-bot',
-		  pl1_sh: 'squares',
-		  pl2_sh: 'circles',
-		  bases: [
-			  ['base_zxq', [-650, -480], 0, 'pl1', col1, 'squares'],
-			  ['base_a2c', [480, 650], 0, 'pl2', col2, 'circles'],
-			  ['base_p89', [-800, 800], 0, '', col_neut, 'neutral'],
-			  ['base_nua', [860, -860], 0, '', col_neut, 'neutral']
-		  ],
-		  stars: [
-			  ['star_zxq', [-1200, -340], 100, 140],
-			  ['star_a2c', [340, 1200], 100, 140],
-			  ['star_p89', [-540, 540], 0, 140],
-			  ['star_nua', [420, -420], 0, 690]
-		  ],
-		  outposts: [['outpost_mdo', [-230, 230], 0]],
-		  pylons: [['pylon_u3p', [232, -232], 0]],
-		  fragments: [],
+		  barricades: [[0, -200], [0, 200], [370, 0], [-370, 0]],
+		  pods: [[-110, -300], [110, -300], [-260, 320], [260, 320], [-500, 84], [500, 84]],
 		  p1_units: [],
 		  p2_units: [],
 		  pl1_uploaded_code: '',
@@ -567,11 +453,10 @@
 			boxsanded[currently_picking + "_uploaded_name"] = this.files[0].name;
 			getBase64(this.files[0]).then(
 				data => {
-					console.log(data);
 					boxsanded[currently_picking + "_uploaded_code"] = atob(data.split(',')[1]);
 				})
   		        .catch(err => {
-  				    console.log(err);
+  				    console.error(err);
   			    });
 			set_sel(currently_picking, 'ps_upload-bot');
 		  }
@@ -598,14 +483,16 @@
 		  {
 		      var canvas1 = document.getElementById('main_canvas');
 			  var canvas2 = document.getElementById('base_canvas');
-		      canvas1.width = window.innerWidth;
-		      canvas1.style.width = window.innerWidth;
-		      canvas1.height = window.innerHeight;
-		      canvas1.style.height = window.innerHeight;
-		      canvas2.width = window.innerWidth;
-		      canvas2.style.width = window.innerWidth;
-		      canvas2.height = window.innerHeight;
-		      canvas2.style.height = window.innerHeight;
+			  var _dpr = window.devicePixelRatio || 1;
+		      canvas1.width = window.innerWidth * _dpr;
+		      canvas1.style.width = window.innerWidth + 'px';
+		      canvas1.height = window.innerHeight * _dpr;
+		      canvas1.style.height = window.innerHeight + 'px';
+		      canvas2.width = window.innerWidth * _dpr;
+		      canvas2.style.width = window.innerWidth + 'px';
+		      canvas2.height = window.innerHeight * _dpr;
+		      canvas2.style.height = window.innerHeight + 'px';
+			  if (typeof dpr !== 'undefined') dpr = _dpr;
 			  offsetUpdate();
 		  }
 		  
@@ -624,9 +511,12 @@
 		  
 		  
 		  if (sessionStorage.getItem("boxsand_state") != null){
-			  boxsanded = JSON.parse(sessionStorage.getItem("boxsand_state"));
-			  //console.log('boxsand loaded?');
-			  //console.log(boxsanded);
+			  var _saved = JSON.parse(sessionStorage.getItem("boxsand_state"));
+			  if (_saved && _saved['barricades']){
+				  boxsanded = _saved;
+			  } else {
+				  sessionStorage.removeItem("boxsand_state");
+			  }
 			  get_pick_state('pl1');
 			  get_pick_state('pl2');
 			  if (!boxsanded['p1_def'] || !boxsanded['p2_def']) document.getElementById('bs_load_prev').style.display = 'block';
@@ -635,7 +525,7 @@
 		  
   </script>
   <script src="../basics.js"></script>
-  <script src="./public-modules/client/manual-ui.js"></script>
+  <!-- <script src="./public-modules/client/manual-ui.js"></script> -->
   
   
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

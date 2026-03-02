@@ -10,8 +10,6 @@
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./documentation.css">
@@ -210,9 +208,6 @@
 					<li><span class="bullet desktop_only">1</span>Can I play my game in advance if my opponent agrees?</li>
 					<p class="para_faq">Yes, but only in the group stage.</p>
 					<div class="sep_small"></div><div class="sep_small"></div>
-					<li><span class="bullet desktop_only">2</span>Do I need to play with the same shape I qualified with?</li>
-					<p class="para_faq">No, you can choose whichever shape you want before every game.</p>	 
-					<div class="sep_small"></div><div class="sep_small"></div>
 					<li><span class="bullet desktop_only">3</span>What if there is a game breaking bug?</p>
 					<p class="para_faq">This will be handled on a case-by-case basis. The organizers reserver the right to change/influence anything anytime.</p>	 	 
 					<div class="sep_small"></div><div class="sep_small"></div>
@@ -278,8 +273,6 @@
 	  }
 	  
 	  function fill_qual_table(wow){
-		  console.log(wow);
-		  
 		  let temp_html = '';
 		  
 		  for (let i = 0; i < wow.length; i++){
@@ -307,16 +300,12 @@
   	    }).then(response => response.json())
   	      .then(response => {
   			  //console.log(response);
-	  		  if (response.data == 'no results'){
-	  			  console.log('Noone qualified???');
-	  		  } else {
-	  			  console.log('populate table');
-				  console.log(response);
+	  		  if (response.data != 'no results'){
 	  			  fill_qual_table(response.players);
 	  		  }
 	  	  })
 	  	  .catch(error => {
-	  		  console.log(error);
+	  		  console.error(error);
 	  	  })
 		
 		

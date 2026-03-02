@@ -1,0 +1,19 @@
+{
+  "env": {
+    "node": true,
+    "es2020": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
+  "rules": {
+    "no-undef": "error",
+    "no-unused-vars": ["warn", { "args": "none", "varsIgnorePattern": "^_" }],
+    "no-constant-condition": "warn",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-unreachable": "warn",
+    "eqeqeq": "off",
+    "no-var": "warn"
+  }
+}

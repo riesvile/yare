@@ -4,25 +4,19 @@ const app = express();
 app.set('trust proxy', true);
 const crypto = require("crypto");
 const fetch = require('node-fetch');
-const sha256 = hash_string => crypto.createHash('sha256').update(hash_string, 'utf8').digest('hex');
 const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 const {Worker} = require('worker_threads');
 const config = require('./config');
-const zlib = require('zlib');
 const ejs = require('ejs');
 const os = require('os');
-const bcrypt = require('bcrypt');
 const pino = require('pino')
 const fs = require('fs');
-var hashRounds = 10;
+const mongoSanitize = require('express-mongo-sanitize');
 
-var rate_limiter = {};
-
-setInterval(function(){
-	rate_limiter = {};
-}, 10000);
+const { generateUniqueString, get_color, get_color_num, color_validity } = require('./utils/helpers');
+const createRateLimiter = require('./middleware/rateLimiter');
 
 const logger = pino({
   transport: {
@@ -36,21 +30,7 @@ const logger = pino({
 
 logger.info("Main server booting up!")
 
-function randomString(length) {
-	return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
-}
-
-function generateUniqueString(prefix) {
-	var timeStampo = String(new Date().getTime()),
-			i = 0,
-			out = '';
-
-	for (i = 0; i < timeStampo.length; i += 2) {
-			out += Number(timeStampo.substr(i, 2)).toString(36);
-	}
-
-	return (randomString(prefix) + out);
-}
+const check_limiter = createRateLimiter(logger);
 
 const userSocketMap = {}
 
@@ -81,7 +61,7 @@ function requestGameServerUpdate(srvr, gid){
 		}
 }
 
-function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2color, p1rating, p2rating){
+function update_game_db(gid, srvr, p1id, p2id, p1color, p2color, p1rating, p2rating){
 	const game = new Game({
 		game_id: gid,
 		server: srvr,
@@ -89,8 +69,6 @@ function update_game_db(gid, srvr, p1id, p2id, p1shape, p2shape, p1color, p2colo
 		player2: p2id,
 		p1_session_id: '',
 		p2_session_id: '',
-		p1_shape: p1shape,
-		p2_shape: p2shape,
 		p1_color: p1color,
 		p2_color: p2color,
 		p1_rating: p1rating,
@@ -123,7 +101,6 @@ let matchmaking_queue = [];
 // 	id: 'test',
 // 	rating: 1500,
 // 	time_in_queue: 0, // in milliseconds
-// 	shape: 'circles',
 // 	color: '???',
 // 	lives: 3, // if this number touches 0, the user is removed from the queue
 // }
@@ -132,7 +109,7 @@ let users_joining_match = {};
 
 // add time to users in queue
 setInterval(()=>{
-	for (i = 0; i < matchmaking_queue.length; i++){
+	for (let i = 0; i < matchmaking_queue.length; i++){
 		matchmaking_queue[i].lives -= 1; // knocking on the /automatch-status endpoint adds a life
 		matchmaking_queue[i].time_in_queue += 1000;
 	}
@@ -150,15 +127,24 @@ function matchmake(){
 	);
 
 	let matched_pairs = []
+	const MAX_RATING_GAP_BASE = 200;
+	const RATING_GAP_PER_SEC = 10;
 
 	// Find pairs and add them to matched_pairs
-	for (let user of prioritized_queue) {
-		let closest_rated_user = prioritized_queue
-			.filter((user2) => user2.id !== user.id)
+	while (prioritized_queue.length >= 2) {
+		let user = prioritized_queue[0];
+		let rating_window = MAX_RATING_GAP_BASE + (user.time_in_queue / 1000) * RATING_GAP_PER_SEC;
+		let candidates = prioritized_queue
+			.filter((user2) => user2.id !== user.id && Math.abs(user.rating - user2.rating) <= rating_window)
 			.sort(
 				(a, b) =>
 					Math.abs(user.rating - a.rating) - Math.abs(user.rating - b.rating)
-			)[0];
+			);
+		let closest_rated_user = candidates[0];
+		if (closest_rated_user == null) {
+			prioritized_queue = prioritized_queue.filter(u => u.id !== user.id);
+			continue;
+		}
 		matchmaking_queue = matchmaking_queue.filter(u =>
 			u.id !== closest_rated_user.id &&
 			u.id !== user.id
@@ -167,8 +153,7 @@ function matchmake(){
 			u.id !== closest_rated_user.id &&
 			u.id !== user.id
 		);
-		if (user != null && closest_rated_user != null)
-			matched_pairs.push([user, closest_rated_user]);
+		matched_pairs.push([user, closest_rated_user]);
 	}
 
 	logger.info("Matchmaking matched pairs:", matched_pairs);
@@ -186,7 +171,7 @@ function matchmake(){
 		users_joining_match[user1.id] = {game_id, server: chosen_server};
 		users_joining_match[user2.id] = {game_id, server: chosen_server};
 		
-		update_game_db(game_id, chosen_server, user1.id, user2.id, user1.shape, user2.shape, user1.color, user2.color, user1.rating, user2.rating);
+		update_game_db(game_id, chosen_server, user1.id, user2.id, user1.color, user2.color, user1.rating, user2.rating);
 	}
 
 	for (let x of Object.entries(users_joining_match)) {
@@ -201,22 +186,20 @@ function matchmake(){
 				server: game.server
 			}
 		}))
-		users_joining_match[userid] = null;
+		delete users_joining_match[userid];
 	}
 }
 
-function generateSecureString(length) {
-	return crypto.randomBytes(length/2).toString('hex');
-}
+const { generateSecureString } = require('./utils/helpers');
 
-var workers = {};
+const workers = {};
 //active_games[game_id] = 0.5 means game is pending (e.g. waiting for p2 to connect)
 //active games[game_id] = [status, player1_id, player2_id, server];
-var active_games = {};
-var tutorial_finishings = {};
+const active_games = {};
+const tutorial_finishings = {};
 
-var servers = {};
-var server_count = {};
+let servers = {};
+const server_count = {};
 
 //pick random server from servers based on type, weighted by value and current count from server_count
 function pick_server(type) {
@@ -241,17 +224,16 @@ function pick_server(type) {
 	return best;
 }
 
-var this_server = process.env.SERVER || 'd1';
-var this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
+const this_server = process.env.SERVER || 'd1';
+const this_server_type = process.env.SERVER_TYPE || 'real'; //'real'
 
-var user_sessions = {};
+const user_sessions = {};
 
 //connect to mongodb
 const mongoose = require('mongoose');
 const {User, Session} = require('./models/users.js');
 const Game = require('./models/newgame.js');
 const Server = require('./models/servers.js');
-const Module = require('./models/modules.js');
 const dbURI = config.mongo;
 mongoose.set('useCreateIndex', true);
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -284,123 +266,16 @@ function updateServers() {
 updateServers();
 setInterval(updateServers, 30000);
 
-function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd4', pla1_shape = 0, pla2_shape = 0) {
-	var g_id = generateUniqueString(3);
-	active_games[g_id] = [0, 0, 0, 0, 0, 0];
+function new_game(pl1_id, pl2_id, init_status = 1, server_id = 'd4') {
+	const g_id = generateUniqueString(3);
+	active_games[g_id] = [0, 0, 0, 0];
 	active_games[g_id][0] = init_status;
 	active_games[g_id][1] = pl1_id;
 	active_games[g_id][2] = pl2_id;
 	active_games[g_id][3] = server_id;
-	//0=circle, 1=square, 2=triangle
-	active_games[g_id][4] = pla1_shape;
-	active_games[g_id][5] = pla2_shape;
 	return g_id;
 }
 
-function get_color(color_name){
-	switch(color_name){
-		case 'gblue':
-			return 'color3';
-			break;
-		case 'purply':
-		case 'default':
-			return 'color1';
-			break;
-		case 'redish':
-			return 'color2';
-			break;
-		case 'yerange':
-			return 'color4';
-			break;
-		case 'wirple':
-			return 'color5';
-			break;
-		case 'pistagre':
-			return 'color6';
-			break;
-		case 'magion':
-			return 'color7';
-			break;
-		case 'brigenta':
-			return 'color8';
-			break;
-		case 'greson':
-			return 'color9';
-			break;
-		case 'mmmsalmon':
-			return 'color10';
-			break;
-		case 'skyblue':
-			return 'color11';
-			break;
-		case 'toored':
-			return 'color12';
-			break;
-		case 'rozblue':
-			return 'color13';
-			break;
-		case 'legorange':
-			return 'color14';
-			break;
-		case 'lolight':
-			return 'color15';
-			break;
-		default:
-			return 'color1';
-	}
-}
-
-function get_color_num(color_name){
-	switch(color_name){
-		case 'gblue':
-			return 3;
-			break;
-		case 'purply':
-			return 1;
-			break;
-		case 'redish':
-			return 2;
-			break;
-		case 'yerange':
-			return 4;
-			break;
-		case 'wirple':
-			return 5;
-			break;
-		case 'pistagre':
-			return 6;
-			break;
-		case 'magion':
-			return 7;
-			break;
-		case 'brigenta':
-			return 8;
-			break;
-		case 'greson':
-			return 9;
-			break;
-		case 'mmmsalmon':
-			return 10;
-			break;
-		case 'skyblue':
-			return 11;
-			break;
-		case 'toored':
-			return 12;
-			break;
-		case 'rozblue':
-			return 13;
-			break;
-		case 'legorange':
-			return 14;
-			break;
-		case 'lolight':
-			return 15;
-			break;
-		default:
-			return 'color1';
-	}
-}
 
 function handleCheckout(checkout){
 	logger.debug('checkout reference id');
@@ -423,18 +298,6 @@ function add_color_to_user(userid, color_code){
 	});
 }
 
-function check_limiter(ip_a){
-	console.log('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiip = ' + ip_a)
-	if (rate_limiter[ip_a] == undefined){
-		rate_limiter[ip_a] = 1;
-		return false;
-	}
-	rate_limiter[ip_a] += 1;
-	if (rate_limiter[ip_a] > 100){
-		console.log('ip rate limit exceeded');
-		return true;
-	}
-}
 
 
 
@@ -474,20 +337,10 @@ app.post('/stripe', express.json({type: 'application/json'}), (request, response
 
 
 
-function color_validity(color, clr_array){
-	
-	let user_color = color.replace("color", "")
-	if (user_color == 6) user_color = 5;
-	if (user_color == 5) user_color = 6;
-	
-	if (clr_array.includes(user_color)) return true;
-	return false;
-	
-}
 
 function tutorial_game(req, res, pl_id){
 	
-	var chosen_server = pick_server('tutorial');
+	const chosen_server = pick_server('tutorial');
 	
 	
 	g_id = new_game(pl_id, 'easy-bot', 1, chosen_server);
@@ -506,8 +359,6 @@ function tutorial_game(req, res, pl_id){
 		player2: 'easy-bot',
 		p1_session_id: req.body.session_id,
 		p2_session_id: 'bot',
-		p1_shape: 'circles',
-		p2_shape: 'circles',
 		p1_color: 'color1',
 		p2_color: 'color2',
 		p1_rating: 1000,
@@ -537,20 +388,19 @@ function bot_game(data, botinfo){
 	// actively_waiting[req.body.user_id] = 0;
 	let basic_colors = ['color1', 'color2', 'color3', 'color4'];
 	
-	var chosen_server = pick_server('real');
+	let chosen_server = pick_server('real');
 
 	if (data.force_server != undefined){
 		chosen_server = data.force_server;
 	}
 
-	var pl1 = {
+	let pl1 = {
 		id: data.user_id,
 		session_id: data.session_id,
 		rating: 1000,
 		color: get_color(data.user_color),
-		shape: data.user_shape,
 	}
-	var pl2 = botinfo;
+	let pl2 = botinfo;
 
 	if(Math.random() > 0.5) {
 		[pl1, pl2] = [pl2, pl1];
@@ -565,8 +415,6 @@ function bot_game(data, botinfo){
 		player2: pl2.id,
 		p1_session_id: pl1.session_id,
 		p2_session_id: pl2.session_id,
-		p1_shape: pl1.shape,
-		p2_shape: pl2.shape,
 		p1_color: pl1.color,
 		p2_color: pl2.color,
 		p1_rating: pl1.rating,
@@ -604,81 +452,19 @@ function bot_game(data, botinfo){
 	}
 }
 
-function lego_bot_game(data){
-	return bot_game(data, {
-		id: 'lego-bot',
-		session_id: 'bot',
-		rating: 500,
-		shape: 'squares',
-		color: 'color14'
-	});
-}
-
-function hard_bot_game(data){
-	return bot_game(data, {
-		id: 'hard-bot',
-		session_id: 'bot',
-		rating: 500,
-		shape: 'triangles',
-		color: 'color11'
-	});
-}
-
-function andersgee_bot_game(data){
-	return bot_game(data, {
-		id: 'andersgee-bot',
-		session_id: 'bot',
-		rating: 1900,
-		shape: 'squares',
-		color: 'color6'
-	});
-}
-
-function boom_bot_game(data){
-	return bot_game(data, {
-		id: 'boom-bot',
-		session_id: 'bot',
-		rating: 2000,
-		shape: 'triangles',
-		color: 'color11'
-	});
-}
-
-function will_bot_game(data){
-	return bot_game(data, {
-		id: 'will-bot',
-		session_id: 'bot',
-		rating: 1700,
-		shape: 'squares',
-		color: 'color5'
-	});
-}
-
-function medium_bot_game(data){
-	return bot_game(data, {
-		id: 'medium-bot',
-		session_id: 'bot',
-		rating: 1000,
-		shape: 'circles',
-		color: 'color2'
-	});
-}
-
-
 function dumb_bot_game(data){
 	return bot_game(data, {
 		id: 'dumb-bot',
 		session_id: 'bot',
 		rating: 500,
-		shape: 'circles',
 		color: 'color2'
 	});
 }
 
 function friend_challenge(data){
 	
-	var chosen_server = pick_server('real');
-	var color_code = get_color(data.user_color);
+	const chosen_server = pick_server('real');
+	const color_code = get_color(data.user_color);
 		
 	g_id = new_game(data.user_id, 0, init_status = 0.5, chosen_server);
 		
@@ -689,8 +475,6 @@ function friend_challenge(data){
 		player2: '',
 		p1_session_id: data.session_id,
 		p2_session_id: '',
-		p1_shape: data.user_shape,
-		p2_shape: 'circles',
 		p1_color: color_code,
 		//p1_color: req.body.user_color,
 		p2_color: 'color2',
@@ -763,6 +547,7 @@ app.use(express.urlencoded({ extended: true }));
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
+app.use(mongoSanitize());
 
 app.post('/check-status/:game_id', (req, res) => {
 	if (check_limiter(req.ip)){
@@ -827,731 +612,6 @@ app.get('/active-games/:user_id', (req, res) => {
 	
 	
 });
-
-
-app.post('/validate', (req, res) => {
-	// logger.debug(req.body.user_name);
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	User.find({user_id: req.body.user_name})
-		.then((result) => {
-			//res.send(result);
-			// logger.debug('db result');
-			if (result.length == 0){
-				res.status(404).send({
-		        	data: "no such user"
-		        });
-			} else {
-				var good = false;
-				var newHash = null;
-				if(bcrypt.compareSync(req.body.password, result[0]['passwrd'])){
-					good = true;
-				} else if (result[0]['passwrd'] == sha256(req.body.password)) {
-					//all good, update session id and prolong expiration date
-					good = true;
-					newHash = bcrypt.hashSync(req.body.password, hashRounds);
-					logger.debug("Upgrading sha256 to bcrypt");
-				}
-
-				if(good) {
-					var user_id = result[0]['user_id'];
-					var session_id = generateSecureString(64);
-					var session_expire = new Date();
-					session_expire = (session_expire.getTime() + (7*24*60*60*1000));
-					// logger.debug('date');
-					// logger.debug(session_expire);
-					var updatePromise = Promise.resolve(true);
-					if(newHash) {
-						updatePromise = User.updateOne({user_id: req.body.user_name}, {passwrd: newHash}, {upsert: true});
-					}
-					
-					var sessionCreatePromise = Session.create({user_id: user_id, session_id: session_id, session_expire: session_expire});
-
-					Promise.all([updatePromise, sessionCreatePromise])
-						.then(() => {
-							res.status(200).send({
-								user_id: user_id,
-								data: session_id
-							});
-						});
-				} else {
-					res.status(404).send({
-						data: "wrong password"
-					});
-				}
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-app.post('/session', (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-	// logger.debug(req.body.user_name);
-	// logger.debug(req.body.password);
-	
-	if (typeof req.body.session_id !== 'string'){
-		res.status(200).send({
-			data: 'invalid request'
-		});
-	}
-	
-	logger.debug('session was called !!!!!!!');
-	
-	Session.find({session_id: req.body.session_id})
-		.then((result) => {
-			// logger.debug('db result');
-			if (result.length == 0){
-				res.status(404).send({
-					data: "no such session"
-				});
-			} else {
-				var session = result[0];
-				var session_id = session['session_id'];
-				var user_id = session['user_id'];
-				var session_expire = session['session_expire'];
-				// if session expire in less then 6 days
-				if ((new Date()).getTime() + (6*24*60*60*1000) > session_expire){
-					// update session_expire
-					session_id = generateSecureString(64);
-					session_expire = ((new Date()).getTime() + (7*24*60*60*1000));
-					logger.debug('creating new session');
-					Session.create({user_id: user_id, session_id: session_id, session_expire: session_expire})
-						.then((qq) => {
-							res.status(200).send({
-								username: user_id,
-								data: session_id
-							});
-						});
-				} else {
-					res.status(200).send({
-						username: user_id,
-						data: session_id
-					});
-				}
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-function isValid(str) {
-	return /^\w+$/.test(str);
-}
-
-app.post('/add-user', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-	// logger.debug(req.body.user_name);
-	// logger.debug(req.body.password);
-	// logger.debug(req.body.password.length);
-	
-	if (req.body.user_name.length > 20){
-		res.status(200).send({
-        	data: "toolong",
-			data2: req.body.user_name.length
-        });
-	} else if (req.body.user_name.length < 3){
-		res.status(200).send({
-        	data: "tooshort"
-        });
-	} else if (isValid(req.body.user_name) != true){
-		res.status(200).send({
-        	data: "special"
-        });
-	} else if (req.body.password.length < 1){
-		logger.debug('password too short');
-		res.status(200).send({
-        	data: "pass_empty"
-        });
-	} else if ((await User.find({user_id: req.body.user_name})).length !== 0){
-		logger.debug('user with name already exists');
-		res.status(200).send({
-        	data: "exists"
-        });
-	} else {
-		var session_id = generateSecureString(64);
-	    var session_expire = new Date();
-	    session_expire = (session_expire.getTime() + (7*24*60*60*1000));
-	
-		const user = new User({
-			user_id: req.body.user_name,
-			passwrd: bcrypt.hashSync(req.body.password, hashRounds),
-			rating: 1500,
-			rating_stability: 5,
-			games_count: 0,
-			games_history: '',
-			colors: [1, 2, 3, 4],
-			qualified: "",
-			qualified_shape: "",
-			goodenough: 0,
-			email: "",
-			marker: 0,
-			visible_modules: [],
-			active_modules: ['manual-ui'],
-			lang_preference: 'javascript',
-			audio_preference: [50, 60] 
-		});
-
-		user.save()
-			.then((user) => {
-				Session.create({user_id: user.user_id, session_id: session_id, session_expire: session_expire})
-				.then((qq) => {
-					res.status(200).send({
-						user_id: user.user_id,
-						data: "user created",
-						session_id: session_id
-					});
-				});
-			})
-			.catch((error) => {
-				logger.error(error);
-				res.status(200).send({
-					data: "exists"
-				});
-			});
-	}
-	
-});
-
-app.post('/get-pref-lang', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	//later on description and other stuff
-	// logger.debug('getting preferred language');
-	
-	User.find({user_id: req.body.user_name})
-		.then((result) => {
-			//res.send(result);
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no user found"
-		        });
-			} else if (result[0]['lang_preference'] != undefined){
-				// logger.debug('getting language ' + result[0]['lang_preference']);
-				res.status(200).send({
-		        	data: "lang incoming",
-					lang: result[0]['lang_preference']
-		        });
-			} else {
-				res.status(200).send({
-		        	data: "somethiinnng went wrong -"
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-app.post('/set-pref-lang', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	//TODO: protect with session_id check of the incoming request
-	// logger.debug('setting preferred language');
-	
-	User.find({user_id: req.body.user_name})
-		.then((result) => {
-			//res.send(result);
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no user found"
-		        });
-			} else if (result[0]['lang_preference'] != undefined){
-				User.updateOne({user_id: req.body.user_name}, {lang_preference: req.body.pref_lang})
-					.then((qq) => {
-						// logger.debug('language preference updated to ' + req.body.pref_lang);
-						res.status(200).send({
-				        	data: "lang updated"
-				        });
-					});	
-			} else {
-				res.status(200).send({
-		        	data: "somethiinnng went wrong - probably not the author of the module"
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-app.post('/upload-script', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	let file_type = req.body.script_type == "client";
-	
-	if (typeof req.body.module_id !== 'string' || req.body.module_id.length > 20 || typeof req.body.session_id !== 'string'){
-		res.status(200).send({
-			data: 'invalid request'
-		});
-		return;
-	}
-	
-	logger.debug('module_id = ' + req.body.module_id);
-	logger.debug('fold = ' + req.body.script_type);
-	
-	Session.find({session_id: req.body.session_id})
-		.then((result) => {
-			console.log('db result');
-			if (result.length == 0){
-				res.status(404).send({
-					data: "no such session"
-				});
-			} else {
-				if (result[0]['user_id'] == req.body.user_id){
-					store_script(req.body.script_file, req.body.module_id, file_type);
-				} else {
-					console.log('something went wrong with session check in /upload-script');
-				}
-			}
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-	
-	
-	//TODO: change to when the file is actually uploaded
-	setTimeout(function(){
-		res.status(200).send({
-			data: 'script uploaded'
-		});
-	}, 3000);
-	
-});
-
-app.post('/download-script', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	let module_id = req.body.module_id;
-	let script_type = req.body.script_type + '/';
-	logger.debug("downloading " + script_type + " script of module " + module_id);
-	
-	try {
-		let data = await s3client.getObject({
-			Bucket: config.s3.bucket,
-			Key: 'modules/' + script_type + module_id + '.js',
-		}).promise();
-		// logger.debug(data);
-		res.status(200).send({
-			data: data.Body.toString('utf8'),
-			meta: 'script retreived'
-		});
-		return;
-	} catch (err) {
-		logger.error(err);
-	}
-	
-});
-
-app.post('/update-module-info', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	//later on description and other stuff
-	logger.debug('updating a module');
-	
-	if (typeof req.body.session_id !== 'string'){
-		res.status(200).send({
-			data: 'invalid request'
-		});
-		return;
-	}
-	
-	let isalive = 1;
-	if (req.body.delete_module == 1) isalive = 0;
-	
-	Session.find({session_id: req.body.session_id})
-		.then((result) => {
-			console.log('db result');
-			if (result.length == 0){
-				res.status(404).send({
-					data: "no such session"
-				});
-			} else {
-				if (result[0]['user_id'] != req.body.user_name){
-					res.status(404).send({
-						data: "session mismatch"
-					});
-					return;
-				}
-			}
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-	
-	Module.find({module_id: req.body.module_id})
-		.then((result) => {
-			//res.send(result);
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no module found"
-		        });
-			} else if (result[0]['author'] == req.body.user_name && result[0]['public'] != 1){
-				//this is so stupid, rewrite later! Lev! Wtf!
-				let new_name = result[0]['name'];
-				if (req.body.module_name != '') new_name = req.body.module_name
-				Module.updateOne({module_id: req.body.module_id}, {name: new_name, alive: isalive})
-					.then((qq) => {
-						// logger.debug('name changed to ' + req.body.module_name);
-						res.status(200).send({
-				        	data: "module updated"
-				        });
-					});	
-			} else {
-				res.status(200).send({
-		        	data: "somethiinnng went wrong - probably not the author of the module"
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-function store_script(script_file, module_id, client = 1){
-	let fold = 'client/';
-	if (client == 0) fold = 'server/'; 
-	
-	let temp_help = script_file.split(',')[1];
-	
-	let deco = Buffer.from(temp_help, 'base64');
-
-	// logger.debug('script_file = ');
-	// logger.debug(script_file);
-	
-	// logger.debug('decoded.toString() = ');
-	// logger.debug(deco.toString());
-	
-	s3client.putObject({
-		Body: deco.toString(),
-		Bucket: config.s3.bucket,
-		ACL: 'public-read',
-		Key: 'modules/' + fold + module_id + '.js',
-	}).promise()
-}
-
-
-app.post('/new-module', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-	
-	if (req.body.module_name.length > 30){
-		res.status(200).send({
-			data: 'module name too long'
-		});
-		return;
-	}
-	
-	let module_id = generateUniqueString("mod");
-	
-	//store_script(req.body.module_content_client, module_id);
-
-	const module = new Module({
-		module_id: module_id,
-		type: "",
-		name: req.body.module_name,
-		description: "",
-		public: 0,
-		subscribers: ['test', req.body.user_name],
-		client_script_location: "modules/client",
-		server_script_location: "modules/server",
-		author: req.body.user_name,
-		illustration: 'link',
-		alive: 1
-	});
-
-	module.save()
-		.then((qq) => {
-			res.status(200).send({
-				module_id: module_id,
-				data: "module created"
-			});
-		})
-		.catch((error) => {
-			logger.error(error);
-			res.status(400).send({
-				data: "something went wrong :/"
-			});
-		});
-});
-
-app.post('/edit-module', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-	
-	let module_id = req.body.module_id;
-	
-	//store_script(req.body.module_content_client, module_id);
-
-	Module.find({module_id: module_id})
-		.then((result) => {
-			//res.send(result);
-			logger.debug('updating module');
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no module found"
-		        });
-			} else if (result[0]['author'] != req.body.user_name){
-				res.status(200).send({
-		        	data: "not an author"
-		        });
-			} else if (result[0]['public'] == 1){
-				res.status(200).send({
-		        	data: "cannot edit"
-		        });
-			} else {
-				Module.updateOne({module_id: req.body.module_id}, {name: req.body.module_name}, {upsert: true})
-				.then((qq) => {
-					// logger.debug('module renamed: ' + req.body.module_name);
-					res.status(200).send({
-			        	data: "updated"
-			        });
-				});
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-app.post('/get-available-modules', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-	
-	if (typeof req.body.session_id !== 'string'){
-		res.status(200).send({
-			data: 'invalid request'
-		});
-		return;
-	}
-	
-	Session.find({session_id: req.body.session_id})
-		.then((result) => {
-			console.log('db result');
-			if (result.length == 0){
-				res.status(400).send({
-					data: "no such session"
-				});
-			} else {
-				if (result[0]['user_id'] != req.body.user_name){
-					res.status(200).send({
-						data: "session mismatch"
-					});
-					return;
-				}
-			}
-		})
-		.catch((error) => {
-			console.log(error);
-		})
-	
-	Module.find({
-		//TODO: change public to 1
-		$and: [
-			{alive: 1},
-			{$or:[{public: 0},{subscribers: req.body.user_id}]}
-		]
-		
-		})
-		.then((result) => {
-			//res.send(result);
-			logger.debug('getting available modules');
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no module found"
-		        });
-			} else {
-				let result_array = [];
-				for (i = 0; i < result.length; i++){
-					let temp_obj = {
-						module_id: result[i].module_id,
-						author: result[i].author,
-						description: result[i].description,
-						name: result[i].name,
-						subscribers: result[i].subscribers,
-						type: result[i].type,
-						public: result[i].public,
-						client_script_location: result[i].client_script_location,
-						server_script_location: result[i].server_script_location
-					}
-					result_array.push(temp_obj);
-				}
-				res.status(200).send({
-		        	data: "modules retreived",
-					stream: result_array
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-app.post('/get-active-modules', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-	
-    User.find({user_id: req.body.user_name})
-    	.then((result) => {
-    		//res.send(result);
-    		logger.debug('getting active modules');
-    		if (result.length == 0){
-    			res.status(200).send({
-    	        	data: "no module found"
-    	        });
-    		} else if (result[0]['rating'] != undefined){
-					// logger.debug('rrrr');
-					// logger.debug(result[0]);    			
-    			res.status(200).send({
-    	        	data: "modules retreived",
-    				visible_modules: result[0]['visible_modules'],
-    				active_modules: result[0]['active_modules']
-    	        });
-    		} else {
-    			res.status(200).send({
-    	        	data: "something went wrong"
-    	        });
-    		}
-    	})
-    	.catch((error) => {
-    		logger.error(error);
-    	})
-});
-
-app.post('/set-active-modules', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-	
-    User.find({user_id: req.body.user_name})
-    	.then((result) => {
-    		//res.send(result);
-    		logger.debug('setting active modules');
-    		if (result.length == 0){
-    			res.status(200).send({
-    	        	data: "no module found"
-    	        });
-    		} else if (result[0]['rating'] != undefined){
-				User.updateOne({user_id: req.body.user_name}, {active_modules: req.body.active_modules}, {upsert: true})
-				.then((qq) => {
-					// logger.debug('activated modules: ' + req.body.active_modules);
-					res.status(200).send({
-			        	data: "updated"
-			        });
-				});
-    		} else {
-    			res.status(200).send({
-    	        	data: "something went wrong"
-    	        });
-    		}
-    	})
-    	.catch((error) => {
-    		logger.error(error);
-    	})
-});
-
-app.post('/get-module-info', async (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	// logger.debug(req.body);
-
-	Module.find({module_id: req.body.module_id})
-		.then((result) => {
-			//res.send(result);
-			logger.debug('getting modules info');
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no module found"
-		        });
-			} else if (result[0]['name'] != undefined){
-				res.status(200).send({
-		        	data: "module info retreived",
-					m_type: result[0]['type'],
-					m_name: result[0]['name'],
-					m_description: result[0]['description']
-		        });
-			} else {
-				res.status(200).send({
-		        	data: "somethinnnng went wrong"
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-
 
 
 app.post('/' + this_server + '/tutorial-signup', (req, res) => {
@@ -1655,22 +715,22 @@ function trigger_monitoring(gid, val){
 }
 
 function deactivate_game(game_id){
-	// logger.debug('here is deactivating happening');
 	try {
 		if(game_id in active_games){
-			var serv_id = active_games[game_id][3];
+			const serv_id = active_games[game_id][3];
 			server_count[serv_id]--;
 			delete active_games[game_id];
 		}
+		delete tutorial_finishings[game_id];
 	} catch (error) {
 	  logger.error(error);
 	}
 }
 
 setInterval(function(){
-	var updates = [];
+	const updates = [];
 
-	var game_ids = Object.keys(active_games);
+	const game_ids = Object.keys(active_games);
 	if(game_ids.length == 0) {
 		return;
 	}
@@ -1716,33 +776,29 @@ app.post('/gameinfo', (req, res) => {
 			} else if (result[0]['active'] == 1){
 				res.status(200).send({
 		        	data: "corrupted",
-					server: result[0]['server'],
-					ranked: result[0]['ranked'],
-					p1: result[0]['player1'],
-					p1_shape: result[0]['p1_shape'],
-					p1_color: result[0]['p1_color'],
-					p1_rating: result[0]['p1_rating'],
-					p2: result[0]['player2'],
-					p2_shape: result[0]['p2_shape'],
-					p2_color: result[0]['p2_color'],
-					p2_rating: result[0]['p2_rating'],
-					c_day: result[0]['createdAt']
+				server: result[0]['server'],
+				ranked: result[0]['ranked'],
+				p1: result[0]['player1'],
+				p1_color: result[0]['p1_color'],
+				p1_rating: result[0]['p1_rating'],
+				p2: result[0]['player2'],
+				p2_color: result[0]['p2_color'],
+				p2_rating: result[0]['p2_rating'],
+				c_day: result[0]['createdAt']
 		        });
 			} else if (result[0]['active'] == 0){
 				res.status(200).send({
 		        	data: "finished",
-					server: result[0]['server'],
-					ranked: result[0]['ranked'],
-					winner: result[0]['winner'],
-					p1: result[0]['player1'],
-					p1_shape: result[0]['p1_shape'],
-					p1_color: result[0]['p1_color'],
-					p1_rating: result[0]['p1_rating'],
-					p2: result[0]['player2'],
-					p2_shape: result[0]['p2_shape'],
-					p2_color: result[0]['p2_color'],
-					p2_rating: result[0]['p2_rating'],
-					c_day: result[0]['createdAt']
+				server: result[0]['server'],
+				ranked: result[0]['ranked'],
+				winner: result[0]['winner'],
+				p1: result[0]['player1'],
+				p1_color: result[0]['p1_color'],
+				p1_rating: result[0]['p1_rating'],
+				p2: result[0]['player2'],
+				p2_color: result[0]['p2_color'],
+				p2_rating: result[0]['p2_rating'],
+				c_day: result[0]['createdAt']
 		        });
 			} else {
 				res.status(200).send({
@@ -1760,7 +816,7 @@ const AWS = require('aws-sdk');
 let compress = require('./compress/compress.js');
 AWS.config.setPromisesDependency(null);
 
-s3client = new AWS.S3({
+const s3client = new AWS.S3({
 	accessKeyId: config.s3.key,
 	secretAccessKey: config.s3.secret,
 	endpoint: config.s3.endpoint,
@@ -1772,8 +828,19 @@ if(!config.s3.bucketEndpoint) {
 	s3client.createBucket({
 		ACL: 'public-read',
 		Bucket: config.s3.bucket,
-	}).promise().catch(err => logger.error(err));
+	}).promise().catch(err => {
+		if (err.code === 'BucketAlreadyOwnedByYou') {
+			logger.info('S3 bucket already exists, skipping creation');
+		} else {
+			logger.error(err);
+		}
+	});
 }
+
+const deps = { logger, check_limiter, config, s3client };
+app.use(require('./routes/auth')(deps));
+app.use(require('./routes/modules')({ ...deps, s3client }));
+app.use(require('./routes/misc')(deps));
 
 app.post('/get_replay', async (req, res) => {
 	if (check_limiter(req.ip)){
@@ -1811,242 +878,6 @@ app.post('/get_replay', async (req, res) => {
 });
 
 
-
-app.post('/playerinfo', (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	var p111_rating = 0;
-	var p222_rating = 0;
-
-	User.find({user_id: req.body.pla1})
-		.then((result) => {
-			//res.send(result);
-			// logger.debug('getting player info');
-			// logger.debug(result);
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no user found"
-		        });
-			} else if (result[0]['rating'] != undefined && result[0]['rating'] != ''){
-				p111_rating = result[0]['rating'];
-				if (req.body.pla2){
-					User.find({user_id: req.body.pla2})
-						.then((result2) => {
-							//res.send(result);
-							// logger.debug('getting player info');
-							// logger.debug(result2);
-							if (result2.length == 0){
-								res.status(200).send({
-						        	data: "no user found"
-						        });
-							} else if (result2[0]['rating'] != undefined && result2[0]['rating'] != ''){
-								p222_rating = result2[0]['rating'];
-								
-								res.status(200).send({
-									pla1_rating: p111_rating,
-									pla2_rating: p222_rating
-						        });
-				
-				
-							} else {
-								res.status(200).send({
-						        	data: "something went wrong"
-						        });
-							}
-						})
-						.catch((error) => {
-							logger.error(error);
-						})
-				} else {
-					res.status(200).send({
-						pla1_rating: p111_rating
-			        });
-				}
-			} else {
-				res.status(200).send({
-		        	data: "something went wrong"
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-
-});
-
-app.post('/get-player-rating', (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	User.find({user_id: req.body.user_name})
-		.then((result) => {
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no user found"
-		        });
-			} else if (result[0]['rating'] != undefined && result[0]['rating'] != ''){
-				let player_rating = result[0]['rating'];
-				res.status(200).send({
-					rating: player_rating,
-					data: 'all good'
-		        });
-			} else {
-				res.status(200).send({
-		        	data: "something went wrong"
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-
-});
-
-
-app.post('/get_colors', (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	User.find({user_id: req.body.user_id})
-		.then((result) => {
-			//res.send(result);
-			// logger.debug('getting user colors');
-			// logger.debug(result);
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no user found"
-		        });
-			} else if (result[0]['colors'] != undefined && result[0]['colors'] != ''){
-				res.status(200).send({
-					data: result[0]['colors']
-		        });
-			} else {
-				res.status(200).send({
-		        	data: "something went wrong"
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-app.get('/reset_ratings', (req, res) => {
-	User.updateMany({}, {"$set":{"rating": 1500}}, {upsert: true})
-		.then((result) => {
-			//res.send(result);
-		
-			res.status(200).send({
-	        	data: "done?"
-	        });
-		
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-	//User.update({}, {'$set': {'rating' : 1500}}, multi: true)
-	//	.then((result) => {
-	//			res.status(200).send({
-	//	        	data: "done"
-	//	        });
-	//		
-	//	})
-	//	.catch((error) => {
-	//		logger.error(error);
-	//	})
-});
-
-app.post('/populate-hub', (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	Game.find({$or:[{player1: req.body.user_id},{player2: req.body.user_id}]})
-		.sort({updatedAt:'desc'})
-		.limit(10)
-		.exec()
-		.then((result) => {
-			//res.send(result);
-			// logger.debug('dbdbdb result');
-			//logger.debug(result);
-			//logger.debug(result[0]);
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no results"
-		        });
-			} else {
-				for (i = 0; i < result.length; i++){
-					result[i]['passwrd'] = '0';
-					result[i]['session_id'] = '0';
-					result[i]['p1_session_id'] = '0';
-					result[i]['p2_session_id'] = '0';
-					result[i]['game_file'] = '';
-				}
-				res.status(200).send({
-		        	data: "populate",
-					stream: result
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
-
-app.post('/populate-leaderboard', (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	User.find({})
-		.sort({rating:'desc'})
-		.limit(20)
-		.exec()
-		.then((result) => {
-			//res.send(result);
-			// logger.debug('dbdbdb result');
-			// logger.debug(result);
-			// logger.debug(result[0]);
-			if (result.length == 0){
-				res.status(200).send({
-		        	data: "no results"
-		        });
-			} else {
-				for (i = 0; i < result.length; i++){
-					result[i]['passwrd'] = '0';
-					result[i]['session_id'] = '0';
-					result[i]['p1_session_id'] = '0';
-					result[i]['p2_session_id'] = '0';
-				}
-				res.status(200).send({
-		        	data: "populate",
-					stream: result
-		        });
-			}
-		})
-		.catch((error) => {
-			logger.error(error);
-		})
-});
 
 app.get('/set-dumb', (req, res) => {
 	if (check_limiter(req.ip)){
@@ -2096,24 +927,6 @@ app.get('/set-email', (req, res) => {
 
 
 
-app.post('/stripe-payment', (req, res) => {
-	if (check_limiter(req.ip)){
-		res.status(200).send({
-			data: 'no!'
-        });
-		return;
-	}
-	
-	logger.debug('stripe pay');
-	logger.debug(req.body);
-	
-	res.status(200).send({
-		data: 'done'
-    });
-	
-});
-
-
 app.post('/deactivate', (req, res) => {
 	if (check_limiter(req.ip)){
 		res.status(200).send({
@@ -2154,7 +967,7 @@ app.post('/get-qualified', (req, res) => {
 				// logger.debug(result);
 				let qual_arr = [];
 				for (let i = 0; i < result.length; i++){
-					qual_arr.push([result[i].user_id, result[i].qualified_shape]);
+					qual_arr.push([result[i].user_id]);
 				}
 				// logger.debug(qual_arr);
 				res.status(200).send({
@@ -2192,9 +1005,7 @@ app.get('/challenge/:game_id', (req, res) => {
 	
 	let active_game = active_games[req.params.game_id];
 	if(active_game == undefined){
-		// TODO VILEM CHECK - is this proper handling?
-		// or do we return something else?
-		res.send(404);
+		res.sendStatus(404);
 		return;
 	}
 	if (active_game[0] == 1){
@@ -2271,11 +1082,7 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 	let g_id = req.params.game_id;
 	let active_game = active_games[g_id];
 	if(active_game == undefined){
-		// TODO VILEM CHECK - is this proper handling?
-		// or do we return something else?
-		res.status(404).send({
-			data: "no game found"
-		});
+		res.status(404).send({ data: "no game found" });
 		return;
 	}
 	//find via mongoose, check if player1 != player2
@@ -2293,7 +1100,7 @@ app.post('/confirm-challenge/:game_id', (req, res) => {
 			        	data: "no game found"
 			        });
 				} else {
-					Game.updateOne({game_id: g_id}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_shape: req.body.user_shape, p2_color: get_color(req.body.user_color)}, {upsert: true})
+					Game.updateOne({game_id: g_id}, {player2: req.body.user_id, p2_session_id: req.body.session_id, p2_color: get_color(req.body.user_color)}, {upsert: true})
 						.then((qq) => {
 							let active_game = active_games[g_id];
 							if(active_game != undefined){
@@ -2430,19 +1237,19 @@ app.post('/qqmonitoring', (req, res) => {
     });
 });
 //global
-var player1_id = 'ab1';
-var player2_id = 'zx2';
-var player1_code;
-var player1_session = 'abc';
-var player2_code;
-var player2_session = 'xyz';
-var player1_code_temp;
-var player2_code_temp;
+let player1_id = 'ab1';
+let player2_id = 'zx2';
+let player1_code;
+let player1_session = 'abc';
+let player2_code;
+let player2_session = 'xyz';
+let player1_code_temp;
+let player2_code_temp;
 //var code_temps = {};
-var tutorial = {};
-var processTime1 = 0;
-var processTime2 = 0;
-var processTimeRes = 0;
+let tutorial = {};
+let processTime1 = 0;
+let processTime2 = 0;
+let processTimeRes = 0;
 //var render_data = [[],[],[],[],[]];
 app.get('/d1n/:game_id', (req, res) => {
 	if (check_limiter(req.ip)){
@@ -2497,7 +1304,7 @@ function findAgain(req, res, g_id){
 		        	data: "no game found"
 		        });
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == 'd1'){
-				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], 'real');
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_color'], result[0]['p2_color'], 'real');
 				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						// logger.debug('game is ready');
@@ -2524,7 +1331,7 @@ function findAgain(req, res, g_id){
 }
 
 // This is a pretty bad way of doing it, should be changed
-const adminpassword = process.env.ADMINPANEL_PASSWORD | "yareyareyareyare4444"
+const adminpassword = process.env.ADMINPANEL_PASSWORD || "yareyareyareyare4444"
 
 app.get('/server-weight/:server_id/:weight', (req, res) => {
 	if (check_limiter(req.ip)){
@@ -2556,7 +1363,7 @@ app.get("/admin-panel/dash", async (req,res,next) => {
 	}
 	
 	if (req.query.password != adminpassword) {
-		res.status(400).redirect("/admin-panel/login")
+	return res.status(400).redirect("/admin-panel/login")
 	}
 
 	let dashPath = "./public/admin-panel/dash/index.ejs"
@@ -2614,77 +1421,17 @@ function sendAutomatchStatus(){
 }
 
 async function newGame(data, socket){
-	//TODO rewrite these into one function, not one per bot, jesus.
+	// NOTE: bot game cases below share similar logic and could be consolidated into a single handler
 	let response = {}
 	switch(data.type) {
 		case "heartbeat":
-			console.log('heartbeat received')
+			logger.debug('heartbeat received')
 			response = {
 				meta: "ok",
 			}
 			break;
-		case "boom-bot":
-			response = boom_bot_game(data)
-			socket.send(JSON.stringify({
-				type: "match-found",
-				data: {
-					server: response.server,
-					game_id: response.g_id
-				}
-			}))
-			break;
-		case "will-bot":
-			response = will_bot_game(data)
-			socket.send(JSON.stringify({
-				type: "match-found",
-				data: {
-					server: response.server,
-					game_id: response.g_id
-				}
-			}))
-			break;
-		case "medium-bot":
-			response = medium_bot_game(data)
-			socket.send(JSON.stringify({
-				type: "match-found",
-				data: {
-					server: response.server,
-					game_id: response.g_id
-				}
-			}))
-			break;
 		case "dumb-bot":
 			response = dumb_bot_game(data)
-			socket.send(JSON.stringify({
-				type: "match-found",
-				data: {
-					server: response.server,
-					game_id: response.g_id
-				}
-			}))
-			break;
-		case "hard-bot":
-			response = hard_bot_game(data)
-			socket.send(JSON.stringify({
-				type: "match-found",
-				data: {
-					server: response.server,
-					game_id: response.g_id
-				}
-			}))
-			break;
-		case "andersgee-bot":
-			response = andersgee_bot_game(data)
-			socket.send(JSON.stringify({
-				type: "match-found",
-				data: {
-					server: response.server,
-					game_id: response.g_id
-				}
-			}))
-			break;
-		case "lego-bot":
-			response = lego_bot_game(data)
 			socket.send(JSON.stringify({
 				type: "match-found",
 				data: {
@@ -2708,7 +1455,7 @@ async function newGame(data, socket){
 				logger.error("User not found")
 				return;
 			}
-			if (matchmaking_queue.findIndex(x => x.user_id == user.user_id) != -1) {
+			if (matchmaking_queue.findIndex(x => x.id == user.user_id) != -1) {
 				response = {
 					meta: "already-in-queue",
 				}
@@ -2721,15 +1468,14 @@ async function newGame(data, socket){
 				play_color = 'color1';
 			} 
 
-			let toAdd = {
-				id: user.user_id,
-				rating: user.rating,
-				time_in_queue: 0, // in milliseconds
-				shape: data.user_shape,
-				color: play_color,
-				lives: Infinity, // how many seconds user has to be inactive to be removed from queue
-				socket
-			}
+		let toAdd = {
+			id: user.user_id,
+			rating: user.rating,
+			time_in_queue: 0, // in milliseconds
+			color: play_color,
+			lives: Infinity, // how many seconds user has to be inactive to be removed from queue
+			socket
+		}
 			
 			matchmaking_queue.push(toAdd)
 			matchmake()
@@ -2754,15 +1500,15 @@ async function newGame(data, socket){
 wss.on("connection", (ws)=>{
 	ws.send(automatchStatusContent())
 	ws.on("message", async (msg) => {
-		let message = JSON.parse(msg);
-		switch(message.type){
+	let message;
+	try { message = JSON.parse(msg); } catch (e) { return; }
+	switch(message.type){
 			case "join":
 				//if (message.data.user_id == 'anonymous') return;
-				let ushape = message.data.user_shape;
-				if (!(ushape == 'circles' || ushape == 'squares' || ushape == 'triangles')) break;
-				let session = await Session.find({session_id: message.data.session_id})
-				if (session == null && message.data.user_id != 'anonymous') return;
+			let session = await Session.find({session_id: message.data.session_id})
+			if (session.length === 0 && message.data.user_id != 'anonymous') return;
 				userSocketMap[message.data.user_id] = ws;
+				ws._yare_user_id = message.data.user_id;
 				newGame(message.data, ws)
 				ws.send(JSON.stringify({
 					type: "joining",
@@ -2771,6 +1517,14 @@ wss.on("connection", (ws)=>{
 					}
 				}))
 				break;
+		}
+	})
+	ws.on("close", () => {
+		if (ws._yare_user_id) {
+			if (userSocketMap[ws._yare_user_id] === ws) {
+				delete userSocketMap[ws._yare_user_id];
+			}
+			delete users_joining_match[ws._yare_user_id];
 		}
 	})
 })

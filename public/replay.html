@@ -10,8 +10,6 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../colors.css">
 	<link rel="stylesheet" href="../style.css">
 	<link rel="stylesheet" href="../style-mobile.css">
@@ -111,67 +109,6 @@
 		
 		<div class="sep_medium"></div>
 		
-		<!--
-		<div id="module_expanded">
-			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
-			<span class='module_main_tag'>Data visualization</span>
-			<div class="module_toggle" id="toggle_basic_info_graphs">
-				<div class="the_toggle" id="thetog"></div>
-			</div>
-			<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
-			<div class="module_expanded_buttons">
-				<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
-				<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
-			</div>
-			<div class="module_ilu"></div>
-			<div class="sep_medium"></div>
-			<div class="sep_medium"></div>
-		</div>
-		-->
-		
-		<span class="pref_section_label">MODULES</span>
-		<div id="modules_section">
-			
-			<div id="create_new_module">
-				<span class="ico_new_module"></span>
-				<span class="new_module_label">Create Module</span>
-			</div>
-			
-			<!--
-			<div class="module_card module_off" id="mdl_code-editor">
-				<div class="module_card_bg" id="bg_mdl_code-editor"></div>
-				<span class="module_main_tag">Essentials</span>
-				<div class="module_toggle" id="toggle_code-editor">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Code editor <br>& Console</h3>
-				<div class="module_ilu"></div>
-			</div>
-				
-				-->
-			
-			
-		</div>
-		
-		<div id="modules_section_mine">
-			<!--
-			<div class="module_card_mine module_off" id="mdl_code_editor">
-				<div class="module_card_bg" id="bg_mdl_mine"></div>
-				<div class="module_options">
-					<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
-					<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
-					<div class="delete_confirm" id="confirm_1234">
-						<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
-						<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
-					</div>
-				</div>
-				<div class="module_toggle" id="toggle_1234">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Module name</h3>
-			</div>
-			-->
-		</div>
 		
 		
 		
@@ -217,8 +154,8 @@
   
   
   <div id="game_hover">
-  	<span class="spirit_id">haha1 · <span class="lowlight">24</span></span>
-	<span class="spirit_energy">24 <span class="lowlight">energy</span></span>
+  	<span class="cat_id">haha1 · <span class="lowlight">24</span></span>
+	<span class="cat_energy">24 <span class="lowlight">energy</span></span>
   </div>
   
   <div id="overlay"></div>
@@ -246,19 +183,19 @@
   
   <div id="wg_game_stats" class="widget_standard">
 	  <div id="gs_player1">
-		  <div id="gs_player1_shape"><span class="ico_circles"></span></div>
+		  <div id="gs_player1_shape"><span class="ico_triangles"></span></div>
 		  <p id="info_player1_name" class="gs_player_name">levmiseri</p>
-		  <span id="gs_player1_unit_count" class="gs_unit_count">157</span><span class="gs_unit_count_desc">spirits</span>
-		  <span id="gs_player1_energy_count" class="gs_energy_count">1250</span><span class="gs_energy_count_desc">spirits energy</span>
+		  <span id="gs_player1_unit_count" class="gs_unit_count">157</span><span class="gs_unit_count_desc">cats</span>
+		  <span id="gs_player1_energy_count" class="gs_energy_count">1250</span><span class="gs_energy_count_desc">cats energy</span>
   	  </div>
 	  
 	  <div id="gs_vert_sep_line"></div>
 	  
 	  <div id="gs_player2">
-		  <div id="gs_player2_shape"><span class="ico_squares"></span></div>
+		  <div id="gs_player2_shape"><span class="ico_triangles"></span></div>
 		  <p id="info_player2_name" class="gs_player_name">levmiseri</p>
-		  <span id="gs_player2_unit_count" class="gs_unit_count">157</span><span class="gs_unit_count_desc">spirits</span>
-		  <span id="gs_player2_energy_count" class="gs_energy_count">1250</span><span class="gs_energy_count_desc">spirits energy</span>
+		  <span id="gs_player2_unit_count" class="gs_unit_count">157</span><span class="gs_unit_count_desc">cats</span>
+		  <span id="gs_player2_energy_count" class="gs_energy_count">1250</span><span class="gs_energy_count_desc">cats energy</span>
   	  </div>
 	  
   </div>
@@ -334,8 +271,8 @@
 		  document.getElementById('info_player1_name').innerHTML = pll1;
 		  document.getElementById('info_player2_name').innerHTML = pll2;
 		  
-		  document.getElementById('gs_player1_shape').innerHTML = "<span class='ico_" + shapes['shape1'] + "' style='background-color: " + colors['color1'] + ";'></span>";
-		  document.getElementById('gs_player2_shape').innerHTML = "<span class='ico_" + shapes['shape2'] + "' style='background-color: " + colors['color2'] + ";'></span>";
+		  document.getElementById('gs_player1_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color1'] + ";'></span>";
+		  document.getElementById('gs_player2_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color2'] + ";'></span>";
 	  }
 	  
 	  function play_pause(){
@@ -350,33 +287,16 @@
 		  }
 	  }
 	  
-	  function get_shape(spirit_cost){
-		  if (spirit_cost == 25){
-			  return 'circles';
-		  } else if (spirit_cost == 90){
-			  return 'triangles';
-		  } else {
-			  return 'squares';
-		  }
-	  }
+
 	  
 	  function process_replay_file(rep_file){
-		  //console.log('replay length: ' + rep_file.length);
 		  replay_length = (rep_file.length - 1);
-		  //console.log(rep_file);
 		  
-		  pla1 = rep_file[0].p1[0][0];
-		  pla1 = pla1.substring(0, pla1.length-2);
-		  pla2 = rep_file[0].p2[0][0];
-		  pla2 = pla2.substring(0, pla2.length-2);
-		  
-		  pll1 = rep_file[1].b1[3];
-		  pll2 = rep_file[1].b2[3];
+		  pll1 = rep_file[0].pl1;
+		  pll2 = rep_file[0].pl2;
 		  pla1 = pll1;
 		  pla2 = pll2;
 		  
-		  shapes['shape1'] = get_shape(rep_file[1].b1[1]);
-		  shapes['shape2'] = get_shape(rep_file[1].b2[1]);
 		  colors['color1'] = 'rgba(128,140,255,1)';
 		  colors['color2'] = 'rgba(232,97,97,1)';
 		  players['player1'] = pll1;
@@ -384,50 +304,6 @@
 		  
 		  prepare_replay_UI();
 		  
-		  var base1 = {
-			  'id': 'base_zxq',
-			  'position': [-650, -480],
-			  'energy': 0,
-			  'control': pll1,
-			  'player_id': pll1,
-			  'color': colors['color1'],
-			  'shape': shapes['shape1']
-		  };
-		  
-		  var base2 = {
-			  'id': 'base_a2c',
-			  'position': [480, 650],
-			  'energy': 0,
-			  'control': pll2,
-			  'player_id': pll2,
-			  'color': colors['color2'],
-			  'shape': shapes['shape2']
-		  };
-		  
-		  var base3 = {
-			  'id': 'base_p89',
-			  'position': [-800, 800],
-			  'energy': 0,
-			  'control': '',
-			  'player_id': '',
-			  'color': colors['color2'],
-			  'shape': shapes['shape2']
-		  };
-		  
-		  var base4 = {
-			  'id': 'base_nua',
-			  'position': [860, -860],
-			  'energy': 0,
-			  'control': '',
-			  'player_id': '',
-			  'color': colors['color2'],
-			  'shape': shapes['shape2']
-		  };
-		  
-		  bases_queue.push(base1);
-		  bases_queue.push(base2);
-		  bases_queue.push(base3);
-		  bases_queue.push(base4);
 		  
 		  
 		  for (t = 0; t < rep_file.length; t++){
@@ -438,15 +314,9 @@
 	 		 game_blocks['t' + tick_counter] = {
 	 			 'p1': {},
 	 			 'p2': {},
-	 			 'b1': [],
-	 			 'b2': [],
-				 'b3': [],
-	 			 'b4': [],
 	 			 'e': [],
-				 'ef': [],
 	 			 's': [],
-				 'ou': [],
-				 'py': [],
+	 			 'a': [],
 	 			 'units': [],
 				 'total_u_1': 0,
 				 'total_u_2': 0,
@@ -459,50 +329,40 @@
 			 
 			 for (i = 0; i < rep_file[t].p1.length; i++){
 				 var spir_id = pll1 + '_' + rep_file[t].p1[i][0];
-				 game_blocks['t' + tick_counter].p1[spir_id] = [rep_file[t].p1[i][1], rep_file[t].p1[i][2], rep_file[t].p1[i][3], rep_file[t].p1[i][4]];
-				 game_blocks['t' + tick_counter].units.push(pll1 + '_' + rep_file[t].p1[i][0]);
+				 game_blocks['t' + tick_counter].p1[spir_id] = [rep_file[t].p1[i][1], rep_file[t].p1[i][2], rep_file[t].p1[i][3]];
+				 game_blocks['t' + tick_counter].units.push(spir_id);
 				 
-				 if (rep_file[t].p1[i][4] == 1){
-					 game_blocks['t' + tick_counter].total_e_1 += rep_file[t].p1[i][3];
+				 if (rep_file[t].p1[i][3] == 1){
+					 game_blocks['t' + tick_counter].total_e_1 += rep_file[t].p1[i][2];
 					 p1_count++;
 				 }
 				 
-				 //console.log('previous tick');
 				 if (game_blocks['t' + (tick_counter - 1)] != undefined){
-					 //console.log('location');
-					 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
 					 var oldLoc = [0, 0];
 					 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
 					 var oldEnergy = 0;
-					 var oldSize = 0;
 					 
-					 if (spirits[spir_id] == undefined && pll1 != undefined){
-					 	 create_spirit_p1(spir_id);
+					 if (cats[spir_id] == undefined && pll1 != undefined){
+					 	 create_cat_p1(spir_id);
 					 }
 					 
 					 if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
 					 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
-						oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
-						oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
+						oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
 						
 						game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
 						game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
 						game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
 						game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
 					 
-						game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
-						game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+						game_blocks['t' + tick_counter].p1[spir_id][3] = oldEnergy;
 					 } else {
-						// new spirit instance
-						//console.log('spirit born (probably)');
-						 
 						game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
 						game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
 						game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
 						game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
 					 
-						game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
-						game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
+						game_blocks['t' + tick_counter].p1[spir_id][3] = game_blocks['t' + tick_counter].p1[spir_id][1];
 					 }
 					 
 				}
@@ -510,52 +370,40 @@
 			 
 			 for (j = 0; j < rep_file[t].p2.length; j++){
 				 var spir_id = pll2 + '_' + rep_file[t].p2[j][0];
-				 game_blocks['t' + tick_counter].p2[spir_id] = [rep_file[t].p2[j][1], rep_file[t].p2[j][2], rep_file[t].p2[j][3], rep_file[t].p2[j][4]];
-				 game_blocks['t' + tick_counter].units.push(pll2 + '_' + rep_file[t].p2[j][0]);
+				 game_blocks['t' + tick_counter].p2[spir_id] = [rep_file[t].p2[j][1], rep_file[t].p2[j][2], rep_file[t].p2[j][3]];
+				 game_blocks['t' + tick_counter].units.push(spir_id);
 				 
-				 //game_blocks['t' + tick_counter].total_e_2 += rep_file[t].p2[j][3];
-				 
-				 if (rep_file[t].p2[j][4] == 1){
-					 game_blocks['t' + tick_counter].total_e_2 += rep_file[t].p2[j][3];
+				 if (rep_file[t].p2[j][3] == 1){
+					 game_blocks['t' + tick_counter].total_e_2 += rep_file[t].p2[j][2];
 					 p2_count++;
 				 }
 				 
 				 if (game_blocks['t' + (tick_counter - 1)] != undefined){
-					 //console.log('location');
-					 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
 					 var oldLoc = [0, 0];
 					 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
 					 var oldEnergy = 0;
-					 var oldSize = 0;
 					 
-					 if (spirits[spir_id] == undefined && pll2 != undefined){
-					 	 create_spirit_p2(spir_id);
-					 	 //console.log('spirit created ' + spir_id);
+					 if (cats[spir_id] == undefined && pll2 != undefined){
+					 	 create_cat_p2(spir_id);
 					 }
 					 
 					 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
 					 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
-						oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
-						oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
+						oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
 						
 						game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
 						game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
 						game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
 						game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
 					 
-						game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-						game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+						game_blocks['t' + tick_counter].p2[spir_id][3] = oldEnergy;
 					 } else {
-						// new spirit instance
-						 //console.log('spirit born (probably)');
-						 
 						 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
 						 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
 						 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
 						 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
 					 
-						 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-						 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
+						 game_blocks['t' + tick_counter].p2[spir_id][3] = game_blocks['t' + tick_counter].p2[spir_id][1];
 					 }
 				 }
 			 }
@@ -563,40 +411,39 @@
 			 game_blocks['t' + tick_counter].total_u_2 = p2_count;
 			 game_blocks['t' + tick_counter].total_u_1 = p1_count;
 			 
-			 console.log('t = ' + t);
-			 console.log(rep_file[t]);
+			 var prev_block = game_blocks['t' + (tick_counter - 1)];
+			 if (prev_block) {
+				 for (var _pk in prev_block.p1) {
+					 if (prev_block.p1[_pk][2] != 0 && !game_blocks['t' + tick_counter].p1[_pk]) {
+						 var _lx = prev_block.p1[_pk][0][0] || 0;
+						 var _ly = prev_block.p1[_pk][0][1] || 0;
+						 game_blocks['t' + tick_counter].p1[_pk] = [[_lx, _ly, 0, 0, _lx, _ly], 0, 0, prev_block.p1[_pk][1] || 0];
+						 game_blocks['t' + tick_counter].units.push(_pk);
+						 if (cats[_pk] == undefined && pll1 != undefined) create_cat_p1(_pk);
+					 }
+				 }
+				 for (var _pk in prev_block.p2) {
+					 if (prev_block.p2[_pk][2] != 0 && !game_blocks['t' + tick_counter].p2[_pk]) {
+						 var _lx = prev_block.p2[_pk][0][0] || 0;
+						 var _ly = prev_block.p2[_pk][0][1] || 0;
+						 game_blocks['t' + tick_counter].p2[_pk] = [[_lx, _ly, 0, 0, _lx, _ly], 0, 0, prev_block.p2[_pk][1] || 0];
+						 game_blocks['t' + tick_counter].units.push(_pk);
+						 if (cats[_pk] == undefined && pll2 != undefined) create_cat_p2(_pk);
+					 }
+				 }
+			 }
+			 
 			 game_blocks['t' + tick_counter]['e'] = rep_file[t].e;
 			 game_blocks['t' + tick_counter]['s'] = rep_file[t].s;
-			 game_blocks['t' + tick_counter]['b1'] = rep_file[t].b1;
-			 game_blocks['t' + tick_counter]['b2'] = rep_file[t].b2;
-			 game_blocks['t' + tick_counter]['b3'] = rep_file[t].b3;
-			 game_blocks['t' + tick_counter]['b4'] = rep_file[t].b4;
+			 game_blocks['t' + tick_counter]['a'] = rep_file[t].a;
 			 
-			 if (tick_counter == 1){
-				 //console.log(game_blocks)
-				 game_blocks['t' + tick_counter]['b1'][4] = 0;
-				 game_blocks['t' + tick_counter]['b2'][4] = 0;
-				 game_blocks['t' + tick_counter]['b3'][4] = 0;
-				 game_blocks['t' + tick_counter]['b4'][4] = 0;
-			 } else {
-				 game_blocks['t' + tick_counter]['b1'][4] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
-				 game_blocks['t' + tick_counter]['b2'][4] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
-				 game_blocks['t' + tick_counter]['b3'][4] = game_blocks['t' + (tick_counter - 1)]['b3'][0];
-				 game_blocks['t' + tick_counter]['b4'][4] = game_blocks['t' + (tick_counter - 1)]['b4'][0];
-			 }
+
 			 
 			 
 			 
 			 game_blocks['t' + tick_counter]['st'] = rep_file[t].st;
-			 game_blocks['t' + tick_counter]['ef'] = rep_file[t].ef;
-			 
-			 game_blocks['t' + tick_counter]['ou'] = rep_file[t].ou;
-			 game_blocks['t' + tick_counter]['py'] = rep_file[t].py;
-
-			 //game_blocks['t' + tick_counter].graphics = (chan || {}).graphics;
-
-			 //game_blocks['t' + tick_counter]['g1'] = rep_file[t].g1;
-			 //game_blocks['t' + tick_counter]['g2'] = rep_file[t].g2;
+			 game_blocks['t' + tick_counter]['cr'] = rep_file[t].cr;
+			 game_blocks['t' + tick_counter]['end'] = rep_file[t].end;
 			 
 			 //console.log('processed block ' + t);
 			 
@@ -610,6 +457,7 @@
 		  replay_playing = 1;
 		  run_it();
 		  replay_loaded();
+		  try { document.getElementById('modules_plate').style.display = 'block'; } catch(e){}
 		  
 	  }
 	  
@@ -677,7 +525,6 @@
 				game_tick = '100';
 				break;
 			default:
-				console.log('defaulted');
 				break;
 		}
 		
@@ -792,8 +639,6 @@
 	    	  		  //console.log(response);
 					  if(response.ok) {
 						  game_file = response.text().then(function(data) {
-							console.log('got the file, start replay')
-							console.log(data);
 							process_replay_file(JSON.parse(data));
 							sessionStorage.setItem("replay_" + this_game_id, data);
 						  });
@@ -805,7 +650,6 @@
 						  document.getElementById('loading_msg').innerHTML = "<span style='color: red; font-size: 18px;'>Replay not available. Try reloading this page.</span>";
 						  document.getElementById('replay_load_gif').style.display = 'none';
 	    	  		  } else if (response.meta == "something went wrong"){
-	  				  	  console.log('replay not available');
 					  	  document.getElementById('loading_msg').innerHTML = "<span style='color: red; font-size: 18px;'>Replay not available. Try reloading this page.</span>";
 						  document.getElementById('replay_load_gif').style.display = 'none';
 	    	  			  //console.log('something went wrong');
@@ -887,37 +731,11 @@
 			  var temp_availWidth = window.innerWidth;
 			  var temp_availHeight = window.innerHeight;
 			  
-			  if (pll1 == cookie_user){
-				  if (temp_availWidth > 1800){
-					  offsetX = -650; //-670
-					  offsetY = -480; //-350
-				  } else if (temp_availWidth < 600) {
-					  offsetX = -650 + temp_availWidth; //-670
-					  offsetY = -480 + temp_availHeight; //-350
-					  scale = 0.6;
-					  multiplier = 1/scale;
-					  //console.log(scale + 'scale');
-				  } else {
-					  offsetX = -650 + temp_availWidth; //-670
-					  offsetY = -480 + temp_availHeight; //-350
-				  }
-				  
-			  } else if (pll2 == cookie_user){
-				  
-				  if (temp_availWidth > 1800){
-					  offsetX = 480 + temp_availWidth;
-					  offsetY = 650 + temp_availHeight;
-					  scale = 1;
-				  } else if (temp_availWidth < 600) {
-					  offsetX = 480 + temp_availWidth;
-					  offsetY = 650 + temp_availHeight;
-					  scale = 0.6;
-					  multiplier = 1/scale;
-				  } else {
-					  offsetX = 480 + temp_availWidth;
-					  offsetY = 650 + temp_availHeight;
-					  scale = 1;
-				  }
+			  offsetX = temp_availWidth / 2;
+			  offsetY = temp_availHeight / 2;
+			  if (temp_availWidth < 600) {
+				  scale = 0.6;
+				  multiplier = 1/scale;
 			  }
 		  }
 		  
@@ -929,8 +747,8 @@
 			 document.getElementById('game_info_panel').style.display = "block";
 			 document.getElementById('info_player1_name').innerHTML = pll1;
 			 document.getElementById('info_player2_name').innerHTML = pll2;
-			 document.getElementById('info_player1_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color1'] + "'></span>";
-			 document.getElementById('info_player2_shape').innerHTML = "<span class='ico_circle' style='background-color: " + colors['color2'] + "'></span>";
+			 document.getElementById('info_player1_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color1'] + "'></span>";
+			 document.getElementById('info_player2_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color2'] + "'></span>";
 			 
 			 if (pll1 == cookie_user || pll2 == getCookie('user_id')){
 				 user_role = 'player';
@@ -956,12 +774,9 @@
 	  var move_queue = [];
 	  var birth_queue = [];
 	  var units_queue = [];
-	  var energize_queue = [];
-	  var merge_queue = [];
-	  var divide_queue = [];
+	  var pew_queue = [];
 	  var death_queue = [];
-	  var stars_queue = [];
-	  var bases_queue = [];
+	  var barricades_queue = [];
 	  var logs = [];
 	  var tempURLThing = document.URL.replace('#', '');
 	  var this_game_id = /[^/]*$/.exec(tempURLThing)[0];
@@ -986,7 +801,6 @@
 	  var tut_helper_phase = 0;
 	  
 	  var energy_processed = {};
-	  var base_drawn = {};
 	  var game_blocks = {};
 	  var active_block = 0;
 	  var game_running = 0;
@@ -1029,18 +843,13 @@
 								var file = e.dataTransfer.items[i].getAsFile();
 								file.text().then((str) => {
 									var replay = JSON.parse(str);
-									bases = [];
-									bases_queue = [];
-									stars = [];
-									outposts = [];
-									pylons = [];
-									all_spirits = [];
-									living_spirits = [];
-									spirits = {};
+									barricades = [];
+									all_cats = [];
+									living_cats = [];
+									cats = {};
 									game_active = 0;
 									world_initiated = 0;
 									game_file = str;
-									base_lookup = {};
 									process_replay_file(replay);
 								});
 								return;
@@ -1067,7 +876,7 @@
 		// 					var replay = JSON.parse(str);
 		// 					unsafeWindow.bases = [];
 		// 					unsafeWindow.bases_queue = [];
-		// 					unsafeWindow.stars = [];
+		// 					unsafeWindow.barricades = [];
 		// 					unsafeWindow.outposts = [];
 		// 					unsafeWindow.game_active = 0;
 		// 					unsafeWindow.world_initiated = 0;
@@ -1099,7 +908,6 @@
 		  //socket.addEventListener('message', function(event){
 		  
 			  energy_processed = {};
-			  base_drawn = {};
 		  
 			  elapsed = 0;
 			  
@@ -1117,15 +925,9 @@
 					 game_blocks['t' + tick_counter] = {
 						 'p1': {},
 						 'p2': {},
-						 'b1': [],
-						 'b2': [],
-						 'b3': [],
-						 'b4': [],
 						 'e': [],
-						 'ef': [],
 						 's': [],
-						 'ou': [],
-						 'py': [],
+						 'a': [],
 						 'units': [],
 						 'g1': [],
 						 'g2': []
@@ -1151,8 +953,8 @@
 							 var oldEnergy = 0;
 							 var oldSize = 0;
 							 
-							 if (spirits[spir_id] == undefined && pll1 != undefined){
-								 create_spirit_p1(spir_id);
+							 if (cats[spir_id] == undefined && pll1 != undefined){
+								 create_cat_p1(spir_id);
 							 }
 							 
 							 if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
@@ -1168,8 +970,8 @@
 	   							game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
 	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
 							 } else {
-								// new spirit instance
-								//console.log('spirit born (probably)');
+								// new cat instance
+								//console.log('cat born (probably)');
 								 
  	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
  	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
@@ -1196,9 +998,9 @@
 							 var oldEnergy = 0;
 							 var oldSize = 0;
 							 
-							 if (spirits[spir_id] == undefined && pll2 != undefined){
-								 create_spirit_p2(spir_id);
-								 //console.log('spirit created ' + spir_id);
+							 if (cats[spir_id] == undefined && pll2 != undefined){
+								 create_cat_p2(spir_id);
+								 //console.log('cat created ' + spir_id);
 							 }
 							 
 							 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
@@ -1214,8 +1016,8 @@
 	   							game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
 	   							game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
 							 } else {
-								// new spirit instance
-								 //console.log('spirit born (probably)');
+								// new cat instance
+								 //console.log('cat born (probably)');
 								 
 								 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
 								 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
@@ -1230,29 +1032,16 @@
 					 
 					 game_blocks['t' + tick_counter]['e'] = incoming.e;
 					 game_blocks['t' + tick_counter]['s'] = incoming.s;
-					 game_blocks['t' + tick_counter]['b1'] = incoming.b1;
-					 game_blocks['t' + tick_counter]['b2'] = incoming.b2;
-					 game_blocks['t' + tick_counter]['b3'] = incoming.b3;
-					 game_blocks['t' + tick_counter]['b4'] = incoming.b4;
+					 game_blocks['t' + tick_counter]['a'] = incoming.a;
 					 
-					 //previous energy for animation purposes
-					 game_blocks['t' + tick_counter]['b1'][4] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
-					 game_blocks['t' + tick_counter]['b2'][4] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
-					 game_blocks['t' + tick_counter]['b3'][4] = game_blocks['t' + (tick_counter - 1)]['b3'][0];
-					 game_blocks['t' + tick_counter]['b4'][4] = game_blocks['t' + (tick_counter - 1)]['b4'][0];
 					 
 					 game_blocks['t' + tick_counter]['st'] = incoming.st;
-					 game_blocks['t' + tick_counter]['ef'] = incoming.ef;
 					 
-					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
-					 game_blocks['t' + tick_counter]['py'] = incoming.py;
 					 
 					 game_blocks['t' + tick_counter].graphics = (chan || {}).graphics;
 
 					 //game_blocks['t' + tick_counter]['g1'] = incoming.g1;
 					 //game_blocks['t' + tick_counter]['g2'] = incoming.g2;
-					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
-					 console.log(game_blocks);
 					 //console.log('t' + tick_counter + ' processed');
 					 run_it();
 					 
@@ -1421,11 +1210,6 @@
 			  //world_initiation
 			  try {
 				  
- 				 if (incoming.bases.length > 0){
- 					 bases_queue = incoming.bases;
- 		 			 //console.log('bases_queue');
- 		 			 //console.log(bases_queue);
- 				 }
 		 				 
 				 if (incoming.tut == 1){
 					 game_type = 'tutorial';
@@ -1455,8 +1239,6 @@
 				 pla2 = incoming.players[1];
 				 colors['color1'] = incoming.colors[0];
 				 colors['color2'] = incoming.colors[1];
-				 shapes['shape1'] = incoming.shapes[0];
-				 shapes['shape2'] = incoming.shapes[1];
 				 players['player1'] = pll1;
 				 players['player2'] = pll2;
 				 
@@ -1518,15 +1300,18 @@
 	  window.onresize = function()
 	  {
 			var canvas1 = document.getElementById('main_canvas');
-		  var canvas2 = document.getElementById('base_canvas');
-			canvas1.width = window.innerWidth;
-			canvas1.style.width = window.innerWidth;
-			canvas1.height = window.innerHeight;
-			canvas1.style.height = window.innerHeight;
-			canvas2.width = window.innerWidth;
-			canvas2.style.width = window.innerWidth;
-			canvas2.height = window.innerHeight;
-			canvas2.style.height = window.innerHeight;
+			var canvas2 = document.getElementById('base_canvas');
+			var _dpr = window.devicePixelRatio || 1;
+			canvas1.width = window.innerWidth * _dpr;
+			canvas1.style.width = window.innerWidth + 'px';
+			canvas1.height = window.innerHeight * _dpr;
+			canvas1.style.height = window.innerHeight + 'px';
+			canvas2.width = window.innerWidth * _dpr;
+			canvas2.style.width = window.innerWidth + 'px';
+			canvas2.height = window.innerHeight * _dpr;
+			canvas2.style.height = window.innerHeight + 'px';
+			if (typeof dpr !== 'undefined') dpr = _dpr;
+			if (typeof offsetUpdate === 'function') offsetUpdate();
 	  }
 	 
 	  

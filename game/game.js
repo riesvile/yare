@@ -4,8 +4,8 @@ function getRatingDelta(playerRating, opponentRating, playerResult) {
 	if ([0, 0.5, 1].indexOf(playerResult) === -1) {
 		return null;
 	}
-	var chanceToWin = 1 / ( 1 + Math.pow(10, (opponentRating - playerRating) / 400));
-	return Math.round(32 * (playerResult - chanceToWin));
+	const chanceToWin = 1 / ( 1 + Math.pow(10, (opponentRating - playerRating) / 400));
+	return Math.round(GAME_CONSTANTS.ELO_K_FACTOR * (playerResult - chanceToWin));
 }
 
 function getNewRating(playerRating, opponentRating, playerResult) {
@@ -26,16 +26,6 @@ function elapsed_ms_from(t0) {
 }
 
 
-function color_validity(color, clr_array){
-	
-	let user_color = color.replace("color", "")
-	//if (user_color == 6) user_color = 5;
-	//if (user_color == 5) user_color = 6;
-	
-	if (clr_array.includes(user_color)) return false;
-	return false;
-	
-}
 
 const config = require('../config');
 const AWS = require('aws-sdk');
@@ -56,24 +46,20 @@ let logger; // this is pretty bad but idk any other way 🤷
 async function end_game(was_p1 = 0, was_p2 = 0){
 	logger.debug('END OF GAME INITIALIZED ------- STEP 1')
 	game_finished = 1;
-	//logger.debug(game_file);
-	var game_data = JSON.stringify(game_file);
+	const game_data = JSON.stringify(game_file);
 
-	var compressed = compress.compress(game_file);
-	//logger.debug(JSON.stringify(game_file));
-	
-	//game history
-	var game_history = 'test';
+	const compressed = compress.compress(game_file);
+	const game_history = 'test';
 	
 	
-	var p1won = was_p1;
-	var p2won = was_p2;
-	var gameWinner = '';
-	var winnerRating = 0;
-	var newWinnerRating = 0;
-	var gameLoser = '';
-	var loserRating = 0;
-	var newLoserRating = 0;
+	let p1won = was_p1;
+	let p2won = was_p2;
+	let gameWinner = '';
+	let winnerRating = 0;
+	let newWinnerRating = 0;
+	let gameLoser = '';
+	let loserRating = 0;
+	let newLoserRating = 0;
 	
 	if (p2won == 1){
 		gameWinner = players['p2'];
@@ -106,10 +92,8 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		Game.find({game_id: workerData[0]})
 			.then(async (result) => {
 				logger.debug('END OF GAME INITIALIZED ------- STEP 4')
-				var winnerShape;
 				if (p2won == 1){
 					gameWinner = players['p2'];
-					winnerShape = result[0].p2_shape;
 					winnerRating = result[0]['p2_rating'];
 					gameLoser = players['p1'];
 					loserRating = result[0]['p1_rating'];
@@ -121,9 +105,8 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 					logger.debug('newLoserRating');
 					logger.debug(newLoserRating);
 				} else {
-					gameWinner = players['p1'];
-					winnerShape = result[0].p1_shape;
-					winnerRating = result[0]['p1_rating'];
+				gameWinner = players['p1'];
+				winnerRating = result[0]['p1_rating'];
 					gameLoser = players['p2'];
 					loserRating = result[0]['p2_rating'];
 				
@@ -135,9 +118,7 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 					logger.debug(newLoserRating);
 				}
 
-				if(gameLoser == 'qual-bot') {
-					//await User.updateOne({user_id: gameWinner, $or: [{qualified: {$exists: false}}, {qualified: ""}]}, {qualified: workerData[0], qualified_shape: winnerShape}).exec();
-				}
+			
 			
 				logger.debug('result');
 				if (result[0]['ranked'] == 0) {
@@ -170,10 +151,9 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 			})
 			.catch((error) => {
 				logger.error(error);
-				setTimeout(function(){
-					process.exit(0);
-				}, 3000);
-				//process.exit(0);
+			setTimeout(function(){
+				process.exit(0);
+			}, 3000);
 			}) 
 	});
 }
@@ -186,7 +166,6 @@ const { parentPort, workerData, isMainThread } = require("worker_threads");
 
 const zlib = require('zlib');
 
-//const LZString = require('LZstring');
 const botCodes = require('../bot-codes');
 const util = require('util');
 const mongoose = require('mongoose');
@@ -201,25 +180,37 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.catch((error) => logger.error(error));
 
 
-const min_beam = 200;
-// histogram square - maximal, s.t. any two points inside are closer <= beam 
+const GAME_CONSTANTS = {
+	TICK_MS: 500,
+	BASE_SPEED: 20,
+	MIN_BEAM_RANGE: 200,
+	SIGHT_RANGE: 400,
+	KITTEN_ENERGY: 10,
+	KITTEN_ENERGY_CAPACITY: 10,
+	KITTEN_HP: 1,
+	KITTEN_MOVE_SPEED: 1,
+	ENERGY_VALUE: 1,
+	START_NUM_KITTENS: 9,
+	KITTEN_SPACING: 25,
+	KITTEN_START_X: 200,
+	KITTEN_START_Y_OFFSET: -100,
+	BARRICADE_SIZE: 100,
+	WAITING_TICKS: 500,
+	ELO_K_FACTOR: 32,
+	AOE_RADIUS: 10,
+	CIRCLE_START_RADIUS: 1200,
+	CIRCLE_MIN_RADIUS: 50,
+	CIRCLE_SHRINK_RATE: 2,
+	CIRCLE_DRAIN: 1,
+};
+
+const min_beam = GAME_CONSTANTS.MIN_BEAM_RANGE;
+const aoe_radius = GAME_CONSTANTS.AOE_RADIUS;
 const h_square = min_beam / Math.sqrt(2);
 
 function setBotCode(name, sand) {
-	if (name == 'medium-bot'){
-		sand.setPlayerCode(botCodes['medium-bot']);
-	} else if (name == 'will-bot'){
-		sand.setPlayerCode(botCodes['will-bot']);
-	} else if (name == 'boom-bot'){
-		sand.setPlayerCode(botCodes['boom-bot']);
-	} else if (name == 'dumb-bot'){
+	if (name == 'dumb-bot'){
 		sand.setPlayerCode(botCodes['dumb-bot']);
-	} else if (name == 'hard-bot'){
-		sand.setPlayerCode(botCodes['hard-bot']);
-	} else if (name == 'andersgee-bot'){
-		sand.setPlayerCode(botCodes['andersgee-bot']);
-	} else if (name == 'lego-bot'){
-		sand.setPlayerCode(botCodes['lego-bot']);
 	}
 }
 
@@ -239,65 +230,33 @@ parentPort.on("message", message => {
 			game_duration = 0;
 			init_data = {
 				'units': [],
-				'stars': [],
-				'bases': [],
-				'outposts': [],
-				'pylons': [],
-				'fragments': [],
 				'players': [],
 				'colors': [],
-				'shapes': [],
 				'tut': 1
 			}
 	    } else {
 			init_data = {
 				'units': [],
-				'stars': [],
-				'bases': [],
-				'outposts': [],
-				'pylons': [],
-				'fragments': [],
 				'players': [],
 				'colors': [],
-				'shapes': [],
 			}
 	    }
-		var all_spirits = living_spirits.length;
-		//for (i = 0; i < all_spirits; i++){
-		//	init_data.units.push(living_spirits[i]);
-		//}
-
-		//for (i = 0; i < stars.length; i++){
-		//	init_data.stars.push(stars[i]);
-		//}
-		
-		for (i = 0; i < bases.length; i++){
-			init_data.bases.push(bases[i]);
-		}
-		
-		//for (i = 0; i < outposts.length; i++){
-		//	init_data.outposts.push(outposts[i]);
-		//}
-		//
-		//for (i = 0; i < pylons.length; i++){
-		//	init_data.pylons.push(pylons[i]);
-		//}
-		//
-		//for (i = 0; i < fragments.length; i++){
-		//	init_data.fragments.push(fragments[i]);
-		//}
-		
 		init_data.players[0] = players['p1'];
 		init_data.players[1] = players['p2'];
 		
 		init_data.colors[0] = colors['player1'];
 		init_data.colors[1] = colors['player2'];
 		
-		init_data.shapes[0] = shapes['player1'];
-		init_data.shapes[1] = shapes['player2'];
-		
 		if (players_update['p1'] != 'old'){
 			init_data.players[0] = players_update['p1'];
+		}
+		
+		var start_num = 9;
+		init_data.initial_cats = { p1: [], p2: [] };
+		for (var si = 1; si <= start_num; si++){
+			var sy = -100 + (si - 1) * 25;
+			init_data.initial_cats.p1.push({ id: init_data.players[0] + '_' + si, position: [-200, sy] });
+			init_data.initial_cats.p2.push({ id: init_data.players[1] + '_' + si, position: [200, sy] });
 		}
 		
 		parentPort.postMessage({data: JSON.stringify({meta: "initiate", data: init_data}), game_id: workerData[0], meta: 'initiate', client: message.client});
@@ -367,8 +326,6 @@ parentPort.on("message", message => {
 	  game_file = [];
 	  players['p1'] = message.player1;
 	  players['p2'] = message.player2;
-	  shapes['player1'] = message.p1_shape;
-	  shapes['player2'] = message.p2_shape;
 	  colors['player1'] = color_palettes[message.p1_color];
 	  colors['player2'] = color_palettes[message.p2_color];
 	  sand1.init(message.player1);
@@ -377,7 +334,7 @@ parentPort.on("message", message => {
 	if (workerData[1] == 'tutorial'){
 		tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 		tutorial_flag1 = 0;
-		spirit_p2_cost = 30;
+		cat_p2_cost = 30;
 		sand2.setPlayerCode(botCodes['tutorial0']);
 	}
 	  game_start();
@@ -393,7 +350,7 @@ parentPort.on("message", message => {
 			User.find({user_id: {$in: [players['p1'], players['p2']]}})
 				.then((results) => {
 					updates = {};
-					for(var rp of results) {
+					for(let rp of results) {
 						if(rp.user_id == players['p1']){
 							updates.p1_rating = rp.rating;
 						}
@@ -479,10 +436,7 @@ async function handle_error(error, player, code){
 
 async function user_code(){
 	if (workerData[1] == 'tutorial'){
-		//logger.debug(player1_code);
-		var helper_count = (player1_code.match(/my_spirits/g) || []).length;
-		//logger.debug('my_spirits count');
-		//logger.debug(helper_count);
+		const helper_count = (player1_code.match(/my_cats/g) || []).length;
 		
 		if (helper_count > 0){
 			tutorial_flag1 = 1;
@@ -557,142 +511,51 @@ async function user_code(){
 	}
 }
 
-//global
-var started = 0;
-var game_tick = 500; //
-var base_speed = 20;
-var stars = [];
-var bases = [];
-var outposts = [];
-var pylons = [];
-var fragments = [];
-var living_spirits = [];
-var spirit_lookup = {};
-var star_lookup = {};
-var base_lookup = {};
-var outpost_lookup = {};
-var pylon_lookup = {};
-var structure_lookup = {};
-var spirits = [];
-var spirits2 = [];
+let game_tick = GAME_CONSTANTS.TICK_MS;
+const base_speed = GAME_CONSTANTS.BASE_SPEED;
+const barricades = [[0, -200], [0, 200], [370, 0], [-370, 0]];
+const BARRICADE_COLLISION_RADIUS = GAME_CONSTANTS.BARRICADE_SIZE;
+const pods = [[-110, -300], [110, -300], [-260, 320], [260, 320], [-500, 84], [500, 84]];
+const POD_HALF_SIZE = 20;
+let living_cats = [];
+const cat_lookup = {};
+const structure_lookup = {};
 
 
-var all_commands = {};
+let all_commands = {};
 
-var birth_queue = [];
-var death_queue = [];
-var star_zxq;
-var star_a2c;
-var star_p89;
-var star_nua;
-var outpost_mdo;
-var pylon_u3p;
-var base1;
-var base2;
+let birth_queue = [];
+let death_queue = [];
 
-var player1_code = '';
-var player1_session = '';
-var player2_code = '';
-var player2_session = '';
-var players = {};
-var ticks = {};
+let player1_code = '';
+let player1_session = '';
+let player2_code = '';
+let player2_session = '';
+const players = {};
+const ticks = {};
 players['p1'] = 'ab1';
 players['p2'] = 'zx2';
-var players_update = {};
+const players_update = {};
 players_update['p1'] = 'old';
 
-var game_file = [];
+let game_file = [];
 
 
-var p1_process_time = 0;
-var p1_process_time_check = 0;
-var p1_process_time_res = 0;
-var p2_process_time_check = 0;
-var p2_process_time_res = 0;
+let temp_flag = 0;
+let end_winner = 0;
 
-function spirit_cost(p_num, alives){
-	//var shape = shapes["player" + p_num];
-	//if (shape == 'circles'){
-	//	if (alives <= 50) bases[p_num-1].current_spirit_cost = 25;
-	//	if (alives > 50) bases[p_num-1].current_spirit_cost = 50;
-	//	if (alives > 100) bases[p_num-1].current_spirit_cost = 90;
-	//	if (alives > 200) bases[p_num-1].current_spirit_cost = 150;
-	//	if (alives > 500) bases[p_num-1].current_spirit_cost = 1000;
-	//} else if (shape == 'squares'){
-	//	if (alives <= 10) bases[p_num-1].current_spirit_cost = 360;
-	//	if (alives > 10) bases[p_num-1].current_spirit_cost = 500;
-	//	if (alives > 16) bases[p_num-1].current_spirit_cost = 700;
-	//	if (alives > 400) bases[p_num-1].current_spirit_cost = 1100;
-	//} else if (shape == 'triangles'){
-	//	if (alives <= 30) bases[p_num-1].current_spirit_cost = 90;
-	//	if (alives > 30) bases[p_num-1].current_spirit_cost = 160;
-	//	if (alives > 120) bases[p_num-1].current_spirit_cost = 300;
-	//	if (alives > 300) bases[p_num-1].current_spirit_cost = 1000;
-	//}
-	
-	
-	let shape = shapes["player" + p_num];
-	for (let b = 0; b < bases.length; b++){
-		if (bases[b].control != players["p" + p_num]) continue;
-		if (shape == 'circles'){
-			if (alives <= 50) bases[b].current_spirit_cost = 25;
-			if (alives > 50) bases[b].current_spirit_cost = 50;
-			if (alives > 100) bases[b].current_spirit_cost = 90;
-			if (alives > 200) bases[b].current_spirit_cost = 150;
-			if (alives > 500) bases[b].current_spirit_cost = 1000;
-		} else if (shape == 'squares'){
-			if (alives <= 10) bases[b].current_spirit_cost = 360;
-			if (alives > 10) bases[b].current_spirit_cost = 500;
-			if (alives > 16) bases[b].current_spirit_cost = 700;
-			if (alives > 400) bases[b].current_spirit_cost = 1100;
-		} else if (shape == 'triangles'){
-			if (alives <= 30) bases[b].current_spirit_cost = 90;
-			if (alives > 30) bases[b].current_spirit_cost = 160;
-			if (alives > 120) bases[b].current_spirit_cost = 300;
-			if (alives > 300) bases[b].current_spirit_cost = 1000;
-		}
-	}
-	
-	
-	if (workerData[1] == 'tutorial'){
-		bases[0].current_spirit_cost = 100;
-		bases[1].current_spirit_cost = 50;
-	}
-		
-}
+let tutorial_phase;
+let tutorial_flag1;
 
-function get_def_size(pshape){
-	if(workerData[1] == 'tutorial'){
-		return 5;
-	}
-	if (pshape == 'circles') return 1;
-	if (pshape == 'squares') return 10;
-	if (pshape == 'triangles') return 3;
-}
+let game_duration = 0;
+let waiting_time = GAME_CONSTANTS.WAITING_TICKS;
+let qqmonitoring = [0, 0, 0, 0, 0, 0, 0, 0];
 
-
-var spirit_p1_cost = 100;
-var spirit_p2_cost = 100;
-var p1_defend = 0;
-var p2_defend = 0;
-
-var temp_flag = 0;
-var end_winner = 0;
-
-var tutorial_phase;
-var tutorial_flag1;
-
-var game_duration = 0;
-var waiting_time = 500;
-var game_activity = 1;
-var qqmonitoring = [0, 0, 0, 0, 0, 0, 0, 0];
-
-var colors = {};
-var shapes = {};
+const colors = {};
 colors['player1'] = "rgba(255, 0, 0, 1)";
 colors['player2'] = "rgba(0, 100, 255, 1)";
 colors['neutral'] = "rgba(160, 168, 180, 1)";
-var color_palettes = {};
+const color_palettes = {};
 color_palettes['color1'] = 'rgba(128,140,255,1)';
 color_palettes['color2'] = 'rgba(232,97,97,1)';
 color_palettes['color3'] = 'rgba(58,197,240,1)';
@@ -714,75 +577,44 @@ color_palettes['color15'] = 'rgba(212, 212, 212, 1)';
 
 
 
-var rawSpirits = {};
-var my_spirits1 = [];
-var my_spirits2 = [];
+const rawCats = {};
 
-var top_s = 0;
-var top_q = 0;
+let top_s = 0;
 
-var firstCode = 0;
+let energy_value = GAME_CONSTANTS.ENERGY_VALUE;
 
-var energy_value = 1;
+let game_finished = 0;
 
-var game_finished = 0;
+let circle_radius = GAME_CONSTANTS.CIRCLE_START_RADIUS;
 
-var user_error1 = [];
-var user_error2 = [];
+let user_error1 = [];
+let user_error2 = [];
 
-//var console1 = console;
-//var console2 = console;
+let log1 = [];
+let log2 = [];
 
-var log1 = [];
-var log2 = [];
+let chan1 = [];
+let chan2 = [];
 
-var chan1 = [];
-var chan2 = [];
-
-var render_data2 = {
-	'move': [],
-	'energize': [],
-	'death': [],
-	'birth': [],
-	'error_msg1': [],
-	'error_msg2': [],
-	'console1': [],
-	'console2': []
-}
-
-var render_data3 = {
+let render_data3 = {
 	't': 0,
 	'p1': [],
 	'p2': [],
 	'e': [],
 	's': [],
+	'a': [],
 };
 
-var init_data = {
+let init_data = {
 	'units': [],
-	'stars': [],
-	'bases': [],
-	'outposts': [],
-	'pylons': [],
-	'fragments': []
 }
 
-var memory1 = {a: 150};
-var memory2 = {a: 155};
+let memory1 = {a: 150};
+let memory2 = {a: 155};
 
-const {VM} = require('vm2');
 const ivm = require('isolated-vm');
 const fs = require('fs');
 const addons = require('../addons');
-
-function cutoff_log(log, cutoff){
-	if(log.length > cutoff){
-		let l1 = log.length;
-		log.length = cutoff;
-		log.push('WARN: output too long (>' + cutoff + ' lines), cutting off ' + (l1 - cutoff) + ' lines of log');
-	}
-	return log;
-}
 
 function push_chan(chan, name, data){
 	if(chan[name] == undefined){
@@ -799,22 +631,6 @@ function fill_error(plid, err_msg){
 	}
 }
 
-function jump_danger_zone(loc){
-	if (Math.abs(stars[0].position[0] - loc[0]) < 100 && Math.abs(stars[0].position[1] - loc[1]) < 100
- 	 || Math.abs(stars[1].position[0] - loc[0]) < 100 && Math.abs(stars[1].position[1] - loc[1]) < 100
-	 || Math.abs(stars[2].position[0] - loc[0]) < 100 && Math.abs(stars[2].position[1] - loc[1]) < 100
-	 || Math.abs(stars[3].position[0] - loc[0]) < 100 && Math.abs(stars[3].position[1] - loc[1]) < 100
-	 || Math.abs(bases[0].position[0] - loc[0]) < 50 && Math.abs(bases[0].position[1] - loc[1]) < 50
-	 || Math.abs(bases[1].position[0] - loc[0]) < 50 && Math.abs(bases[1].position[1] - loc[1]) < 50
-	 || Math.abs(bases[2].position[0] - loc[0]) < 50 && Math.abs(bases[2].position[1] - loc[1]) < 50
-	 || Math.abs(bases[3].position[0] - loc[0]) < 50 && Math.abs(bases[3].position[1] - loc[1]) < 50
-	 || Math.abs(outposts[0].position[0] - loc[0]) < 50 && Math.abs(outposts[0].position[1] - loc[1]) < 50
-	 || Math.abs(pylons[0].position[0] - loc[0]) < 50 && Math.abs(pylons[0].position[1] - loc[1]) < 50){
-		return true;
-	} else {
-		return false;
-	}
-}
 
 function shuffle_array(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -823,7 +639,7 @@ function shuffle_array(array) {
     }
 }
 
-var sandboxCode = fs.readFileSync(__dirname + "/sandbox.js", { encoding: 'utf8' });
+const sandboxCode = fs.readFileSync(__dirname + "/sandbox.js", { encoding: 'utf8' });
 
 class Sandbox {
 	constructor() {
@@ -881,7 +697,7 @@ class Sandbox {
 
 
 	async loadData() {
-		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], ttick: 't' + ticks['now'], spirits: rawSpirits, fragments: fragments, stars: JSON.parse(JSON.stringify(star_lookup)), bases: JSON.parse(JSON.stringify(base_lookup)), outposts: JSON.parse(JSON.stringify(outpost_lookup)), pylons: JSON.parse(JSON.stringify(pylon_lookup)), players: JSON.parse(JSON.stringify(players))}], {arguments: {copy: true}, result: {reference: true}});
+		this.funcs.loadData.apply(this.yd.derefInto(), [{tick: ticks['now'], ttick: 't' + ticks['now'], cats: rawCats, barricades: barricades, pods: pods, players: JSON.parse(JSON.stringify(players)), death_circle: circle_radius}], {arguments: {copy: true}, result: {reference: true}});
 	}
 
 	async run() {
@@ -890,10 +706,7 @@ class Sandbox {
 			let pre = this.isolate.cpuTime;
 			await this.script.run(this.context, {timeout: 220});
 			let post = this.isolate.cpuTime;
-			//logger.debug("sandbox run in " + ((post - pre) / 1000000n).toString() + " ms");
 		} catch (e) {
-			// console.log(e);
-			// throw e;
 			this.last_compile_err = e;
 		}
 		
@@ -904,158 +717,42 @@ class Sandbox {
 	}
 }
 
-var sand1 = new Sandbox();
+const sand1 = new Sandbox();
 
 sand1.loadAddons(['graphics.js', 'console.js']);
 
-var sand2 = new Sandbox();
+const sand2 = new Sandbox();
 
 sand2.loadAddons(['graphics.js', 'console.js']);
 
 if (!isMainThread){
-	class Spirit {
-		constructor(id, position, size, energy, player, color, shape){
-			this.shape = shape;
-			this.id = id
+	class Cat {
+		constructor(id, position, player, color){
+			this.id = id;
 			this.position = position;
-			this.size = size;
-			this.energy = energy;
-			this.last_energized = '';
+		this.energy = GAME_CONSTANTS.KITTEN_ENERGY;
+		this.energy_capacity = GAME_CONSTANTS.KITTEN_ENERGY_CAPACITY;
+			this.last_pewed = '';
 			this.color = color;
 			this.mark = '';
-			this.locked = false;
 			this.range = min_beam;
 		
 			this.sight = {
 				friends: [],
 				enemies: [],
-				structures: [],
-				fragments: []
 			}
-			this.merged = [];
 			this.qcollisions = [];
 		
-			//const properties
-			this.hp = 1;
-			this.move_speed = 1;
-			this.energy_capacity = size * 10;
-			this.player_id = player;
+		this.hp = GAME_CONSTANTS.KITTEN_HP;
+		this.move_speed = GAME_CONSTANTS.KITTEN_MOVE_SPEED;
+		this.player_id = player;
 		
-			living_spirits.push(this);
+			living_cats.push(this);
 			birth_queue.push(this);
 		}
-
-		birth() {
-		
-		}
 	}
 
-	class Star {
-		constructor(id, position, energy, size, active_at){
-			this.id = id
-			this.position = position;
-			this.size = size;
-			this.structure_type = 'star';
-			this.energy = energy;
-			this.energy_capacity = this.size * 10;
-			this.last_energized = '';
-			this.active_in = 0;
-			this.active_at = active_at;
-			this.regeneration = 2;
-			if (id == 'star_nua') this.regeneration = 3;
-			//this.energy = energy;
-			this.collision_radius = 100;
-		
-			stars.push(this);
-		}
-	}
 	
-	class Outpost {
-		constructor(id, position){
-			this.id = id
-			this.position = position;
-			this.size = 20;
-			this.control = '';
-			this.range = 400;
-			this.structure_type = 'outpost';
-			this.energy = 0;
-			this.energy_capacity = 1000;
-			this.last_energized = '';
-			//this.energy = energy;
-			this.collision_radius = 50;
-			
-			this.sight = {
-				enemies: []
-			}
-		
-			outposts.push(this);
-		}
-	}
-	
-	class Pylon {
-		constructor(id, position){
-			this.id = id
-			this.position = position;
-			this.size = 20;
-			this.control = '';
-			this.range = 400;
-			this.structure_type = 'pylon';
-			this.energy = 0;
-			this.energy_capacity = 1000;
-			this.range_min = 200;
-			this.range_max = 400;
-			//this.energy = energy;
-			this.collision_radius = 50;
-			
-			this.sight = {
-				friends: []
-			}
-		
-			pylons.push(this);
-		}
-	}
-	
-	class Base {
-		constructor(id, position, player, color, shape){
-			this.shape = shape;
-			this.id = id
-			this.position = position;
-			this.size = 40;
-			this.structure_type = 'base';
-			this.energy = 0;
-			this.sight = {
-				friends: [],
-				enemies: [],
-				structures: []
-			}
-			this.collision_radius = 50;
-			this.spirit_costs = [];
-			
-			//this.hp = 8;
-			if (this.shape == 'circles'){
-				this.energy_capacity = 400;
-				this.spirit_costs = [[1, 25], [51, 50], [101, 90], [201, 150]];
-			} else if (this.shape == 'squares'){
-				this.energy_capacity = 1000;
-				this.spirit_costs = [[1, 350], [11, 500], [17, 700]];
-			} else if (this.shape == 'triangles'){
-				this.energy_capacity = 600;
-				this.spirit_costs = [[1, 90], [31, 160], [121, 300]];
-			} else {
-				this.energy_capacity = 100;
-				this.spirit_costs = [];
-			}
-			
-			this.player_id = player;
-			this.control = player;
-			this.color = color;
-			//this.energy = energy;
-			
-			this.current_spirit_cost = 100;
-		
-			bases.push(this);
-		}
-	}
 
 	function initiate_world(ws){
 		logger.debug(init_data);
@@ -1163,114 +860,63 @@ if (!isMainThread){
         return [[xi, yi], [xi_prime, yi_prime]];
     }
 	
-	function isCollision(item1, item2){
-		return false;
-	  minDistance = (item1.size + item2.size);
-	  var posX1 = item1.position[0];
-	  var posY1 = item1.position[1];
-	  var posX2 = item2.position[0];
-	  var posY2 = item2.position[1];
-  
-	  if (Math.abs(posX1 - posX2) >= minDistance){
-	    return false;
-	  } else {
-	    if (Math.abs(posY1 - posY2) >= minDistance){
-	      return false;
-	    } else {
-	      return true;
-	    }
-	  }
-  
-	}
-	
-	
-	
-	function isCollision(item1, item2){
-		
-	}
-
-	function is_in_sight(item1, item2, range = 400){
+	function is_in_sight(item1, item2, range = GAME_CONSTANTS.SIGHT_RANGE){
 		return fast_dist_leq(item1.position, item2.position, range);
 	}
 
 
 	function get_sight_fast(){
-		const beamable_sq = min_beam**2;
+		const pewable_sq = min_beam**2;
 		const visible_sq = (2*min_beam)**2;
-		const low_range_sq = (250)**2;
-		const high_range_sq = (600)**2;
-		const pylon_range_sq = (400)**2;
-		const living_length = living_spirits.length;
+		const living_length = living_cats.length;
 
 		for (let h = 0; h < living_length; h++){
-		  living_spirits[h].sight = {
-				friends_beamable: [],
-				enemies_beamable: [],
+		  living_cats[h].sight = {
+				friends_pewable: [],
+				enemies_pewable: [],
 				friends: [],
 				enemies: [],
-				structures: [],
-			    fragments: []
 		  }
-		  living_spirits[h].qcollisions = [];
-		}
-		for (let m = 0; m < bases.length; m++){
-  		  	bases[m].sight = {
-				friends_beamable: [],
-				enemies_beamable: [],
-  				friends: [],
-  				enemies: [],
-  				structures: []
-		    }
-		}
-		for (let o = 0; o < outposts.length; o++){
-  		  	outposts[o].sight = {
-  				enemies: []
-		    }
-		}
-		for (let p = 0; p < pylons.length; p++){
-  		  	pylons[p].sight = {
-  				friends: []
-		    }
+		  living_cats[h].qcollisions = [];
 		}
 
 		function work(i, j){
-			//logger.debug('work ' + living_spirits[i].id + " " + living_spirits[j].id)
-			let pi = living_spirits[i].player_id;
-			let pj = living_spirits[j].player_id;
+			let pi = living_cats[i].player_id;
+			let pj = living_cats[j].player_id;
 			if (pi == pj){
 				// friend
-				living_spirits[i].sight.friends.push(living_spirits[j].id);
-				living_spirits[j].sight.friends.push(living_spirits[i].id);
+				living_cats[i].sight.friends.push(living_cats[j].id);
+				living_cats[j].sight.friends.push(living_cats[i].id);
 			}
 			else{
 				// enemy
-				living_spirits[i].sight.enemies.push(living_spirits[j].id);
-				living_spirits[j].sight.enemies.push(living_spirits[i].id);
+				living_cats[i].sight.enemies.push(living_cats[j].id);
+				living_cats[j].sight.enemies.push(living_cats[i].id);
 			}
 		}
 
-		function work_beamable(i, j){
-			let pi = living_spirits[i].player_id;
-			let pj = living_spirits[j].player_id;
+		function work_pewable(i, j){
+			let pi = living_cats[i].player_id;
+			let pj = living_cats[j].player_id;
 			if (pi == pj){
 				// friend
-				living_spirits[i].sight.friends_beamable.push(living_spirits[j].id);
-				living_spirits[j].sight.friends_beamable.push(living_spirits[i].id);
+				living_cats[i].sight.friends_pewable.push(living_cats[j].id);
+				living_cats[j].sight.friends_pewable.push(living_cats[i].id);
 			}
 			else{
 				// enemy
-				living_spirits[i].sight.enemies_beamable.push(living_spirits[j].id);
-				living_spirits[j].sight.enemies_beamable.push(living_spirits[i].id);
+				living_cats[i].sight.enemies_pewable.push(living_cats[j].id);
+				living_cats[j].sight.enemies_pewable.push(living_cats[i].id);
 			}
 		}
 
 		let hist = {};
-		// per spirit processing
+		// per cat processing
 		for (let i = 0; i < living_length; i++){
-			let spirit = living_spirits[i];
+			let cat = living_cats[i];
 			// ugh
-			if (spirit.hp == 0) continue;
-			let pos = spirit.position;
+			if (cat.hp == 0) continue;
+			let pos = cat.position;
 
 			// 1. init histogram
 
@@ -1282,132 +928,25 @@ if (!isMainThread){
 				hist[[xbin, ybin]] = [[xbin, ybin, -1]];
 			}
 			hist[[xbin, ybin]].push(i);
-
-			// 2. compute sight for structures
-			// (no need to use the histogram, there is only a few structs, so this is quick
-			// O(1) for each spirit
-			
-			//stars
-			for (let k = 0; k < stars.length; k++){
-				if (is_in_sight(spirit, stars[k])){
-					spirit.sight.structures.push(stars[k].id);
-				}
-			}
-			//bases
-			for (let b = 0; b < bases.length; b++){
-				let dsq = dist_sq(pos, bases[b].position);
-				// base sees spirit
-				if(dsq <= visible_sq){
-					let friend = bases[b].control == spirit.player_id;
-
-					if (friend){
-						bases[b].sight.friends.push(spirit.id);
-					} else {
-						bases[b].sight.enemies.push(spirit.id);
-					}
-
-					if (dsq <= beamable_sq){
-						if (friend){
-							bases[b].sight.friends_beamable.push(spirit.id);
-						}else{
-							bases[b].sight.enemies_beamable.push(spirit.id);
-						}
-						// spirit sees base
-						spirit.sight.structures.push(bases[b].id);
-					}
-				}
-			}
-			//outposts
-			for (let o = 0; o < outposts.length; o++){
-				let outpost = outposts[o];
-				let use_range = visible_sq;
-				let dsq = dist_sq(spirit.position, outpost.position);
-				
-				if (outpost.energy >= 500) use_range = high_range_sq;
-				
-				if (dsq <= use_range){
-					let friend = outpost.control == spirit.player_id;
-					if (friend){
-						//outposts[o].sight.friends.push(spirit.id);
-					}else{
-						outposts[o].sight.enemies.push(spirit.id);
-					}
-
-					if (dsq <= beamable_sq){
-						spirit.sight.structures.push(outpost.id);
-					}
-				}
-			}
-			
-			//pylons
-			for (let p = 0; p < pylons.length; p++){
-				let pylon = pylons[p];
-				let use_range = pylon_range_sq;
-				let dsq = dist_sq(spirit.position, pylon.position);
-				//let dsqq = is_in_sight(spirit, pylon)
-				
-				//if (outpost.energy >= 500) use_range = high_range_sq;
-				
-				if (dsq <= use_range){
-					let friend = pylon.control == spirit.player_id;
-					if (friend){
-						pylons[p].sight.friends.push(spirit.id);
-					}else{
-						//pylons[p].sight.enemies.push(spirit.id);
-					}
-
-					if (dsq <= beamable_sq){
-						spirit.sight.structures.push(pylon.id);
-					}
-				}
-			}
-			
-			//fragments
-			for (let f = 0; f < fragments.length; f++){
-				if (is_in_sight(spirit, fragments[f])){
-					spirit.sight.fragments.push(fragments[f]);
-				}
-			}
-			
-			//fragments
-			//for (let f = 0; f < fragments.length; f++){
-			//	let fragment = fragments[f];
-			//	let use_range = visible_sq;
-			//	let dsq = dist_sq(spirit.position, fragment.position)
-			//	
-			//	if (dsq <= use_range){
-			//		let friend = pylon.control == spirit.player_id;
-			//		if (friend){
-			//			pylons[p].sight.friends.push(spirit.id);
-			//		}else{
-			//			//pylons[p].sight.enemies.push(spirit.id);
-			//		}
-            //
-			//		if (dsq <= beamable_sq){
-			//			spirit.sight.fragments.push(fragment);
-			//		}
-			//	}
-			//	
-			//}
 			
 		}
 
 		// histogram, handle sights for all
-		// of the potentially O(N^2)-many spirit <> spirit pairs
+		// of the potentially O(N^2)-many cat <> cat pairs
 
 		Object.values(hist).forEach(function(bin){
-			// this bin, all are visible && beamable
+			// this bin, all are visible && pewable
 			// because of h_square size
 			for(let i = 1; i <bin.length;i++){
-				for(j = i+1; j <bin.length;j++){
-					work(bin[i],bin[j]);
-					work_beamable(bin[i],bin[j]);
-				}
+			for(let j = i+1; j <bin.length;j++){
+				work(bin[i],bin[j]);
+				work_pewable(bin[i],bin[j]);
+			}
 			}
 
 			// iterate neighboring bins
 			// a rectangle 7x4, the bin is at position [3, 0] (top row, center)
-			for(s = 3; s < 7*4-1 ; s++){
+			for(let s = 3; s < 7*4-1 ; s++){
 				// lower left corner, too far away
 				if(s==21) continue;
 
@@ -1420,189 +959,79 @@ if (!isMainThread){
 				if(nb == undefined)
 					continue;
 
-				//logger.debug("NB BIN: "+(bin[0][0]+dx)+ " " +(bin[0][1]+dy));
 				// O(N^2) part
 				for(let i = 1; i <bin.length;i++){
 					for(let j = 1; j <nb.length;j++){
 						let dsq = dist_sq(
-							living_spirits[bin[i]].position,
-							living_spirits[nb[j]].position,
+							living_cats[bin[i]].position,
+							living_cats[nb[j]].position,
 						);
 						if(dsq <= visible_sq)
 							work(bin[i],nb[j]);
-						if(dsq <= beamable_sq)
-							work_beamable(bin[i],nb[j]);
+						if(dsq <= pewable_sq)
+							work_pewable(bin[i],nb[j]);
 					}
 				}
 			}
 		});
 
-		//base set defend flag
-		for (let m = 0; m < bases.length; m++){
-			// convert bool to number
-			let trouble = 0 + (bases[m].sight.enemies.length > 0);
-
-			if (bases[m].control == players['p1']){
-				p1_defend = trouble;
-			} else {
-				p2_defend = trouble;
-			}
-		}
 	}
 
 
 	function get_sight(){
-		var living_length = living_spirits.length;
-		for (h = 0; h < living_length; h++){
-		  living_spirits[h].sight = {
-				friends_beamable: [],
+		const living_length = living_cats.length;
+		for (let h = 0; h < living_length; h++){
+		  living_cats[h].sight = {
+				friends_pewable: [],
 				friends: [],
 				enemies: [],
-				enemies_beamable: [],
-				structures: [],
-			    fragments: []
+				enemies_pewable: [],
 		  }
-		  living_spirits[h].qcollisions = [];
+		  living_cats[h].qcollisions = [];
 			
 		}
 	
-		//spirits root (it's longer than you think)
-		for (i = 0; i < living_length; i++){
-			for (j = i+1; j < living_length; j++){
-				if (living_spirits[j].hp == 0) continue;
-				//logger.debug(i + ', ' + j);
-				if (is_in_sight(living_spirits[i], living_spirits[j])){
+	//cats root (it's longer than you think)
+	for (let i = 0; i < living_length; i++){
+		for (let j = i+1; j < living_length; j++){
+				if (living_cats[j].hp == 0) continue;
+				if (is_in_sight(living_cats[i], living_cats[j])){
 					//maybe add distance stuff later
-					//distance_approx = distance_nonrooted(living_spirits[i].position, living_spirits[j].position);
-					//logger.debug('distance between ' + living_spirits[i].id + ' and ' + living_spirits[j].id + 'is ' + distance_approx);
-					if (living_spirits[j].player_id == players['p1']){
-						if (living_spirits[i].player_id == players['p1']){
+					//distance_approx = distance_nonrooted(living_cats[i].position, living_cats[j].position);
+					if (living_cats[j].player_id == players['p1']){
+						if (living_cats[i].player_id == players['p1']){
 							//is friend
-							living_spirits[i].sight.friends.push(living_spirits[j].id);
-							living_spirits[j].sight.friends.push(living_spirits[i].id);
+							living_cats[i].sight.friends.push(living_cats[j].id);
+							living_cats[j].sight.friends.push(living_cats[i].id);
 							//collision-sight
-							if (is_in_sight(living_spirits[i], living_spirits[j], 50)){
-								living_spirits[i].qcollisions.push(living_spirits[j].id);
-								living_spirits[j].qcollisions.push(living_spirits[i].id);
+							if (is_in_sight(living_cats[i], living_cats[j], 50)){
+								living_cats[i].qcollisions.push(living_cats[j].id);
+								living_cats[j].qcollisions.push(living_cats[i].id);
 							}
-						} else if (living_spirits[i].player_id == players['p2']){
+						} else if (living_cats[i].player_id == players['p2']){
 							//is enemy
-							living_spirits[i].sight.enemies.push(living_spirits[j].id);
-							living_spirits[j].sight.enemies.push(living_spirits[i].id);
+							living_cats[i].sight.enemies.push(living_cats[j].id);
+							living_cats[j].sight.enemies.push(living_cats[i].id);
 						}
 						
-					} else if (living_spirits[j].player_id == players['p2']){
-						if (living_spirits[i].player_id == players['p2']){
+					} else if (living_cats[j].player_id == players['p2']){
+						if (living_cats[i].player_id == players['p2']){
 							//is friend
-							living_spirits[i].sight.friends.push(living_spirits[j].id);
-							living_spirits[j].sight.friends.push(living_spirits[i].id);
-						} else if (living_spirits[i].player_id == players['p1']){
+							living_cats[i].sight.friends.push(living_cats[j].id);
+							living_cats[j].sight.friends.push(living_cats[i].id);
+						} else if (living_cats[i].player_id == players['p1']){
 							//is enemy
-							living_spirits[i].sight.enemies.push(living_spirits[j].id);
-							living_spirits[j].sight.enemies.push(living_spirits[i].id);
+							living_cats[i].sight.enemies.push(living_cats[j].id);
+							living_cats[j].sight.enemies.push(living_cats[i].id);
 						}
 					}
 				}
 			}
 		
-			//stars
-			for (k = 0; k < stars.length; k++){
-				if (is_in_sight(living_spirits[i], stars[k])){
-					living_spirits[i].sight.structures.push(stars[k].id);
-				}
-			}
-			
-			//bases
-			for (l = 0; l < bases.length; l++){
-				if (is_in_sight(living_spirits[i], bases[l])){
-					living_spirits[i].sight.structures.push(bases[l].id);
-				}
-			}
-			
-			//outposts
-			for (o = 0; o < outposts.length; o++){
-				if (is_in_sight(living_spirits[i], outposts[o])){
-					living_spirits[i].sight.structures.push(outposts[o].id);
-				}
-			}
-			
-			//pylons
-			for (p = 0; p < pylons.length; p++){
-				if (is_in_sight(living_spirits[i], pylons[p])){
-					living_spirits[i].sight.structures.push(pylons[p].id);
-				}
-			}
-			
-			//fragments
-			for (f = 0; f < fragments.length; f++){
-				if (is_in_sight(living_spirits[i], fragments[f])){
-					living_spirits[i].sight.fragments.push(fragments[f]);
-				}
-			}
-			
-			
-			//logger.debug('living_spirits[i].qcollisions');
-			//logger.debug(living_spirits[i].qcollisions);
-			
 		}
 		
-		//bases sight
-		for (m = 0; m < bases.length; m++){
-  		  bases[m].sight = {
-  				friends: [],
-  				enemies: [],
-  				structures: []
-		  }
-			  
-			for (n = 0; n < living_length; n++){
-				if (living_spirits[n].hp == 0) continue;
-				
-				if (is_in_sight(living_spirits[n], bases[m], 400)){
-					//logger.debug(bases[m].id + ' controlled by ' + bases[m].control);
-					if (bases[m].control == players['p1']){
-						if (living_spirits[n].player_id == players['p1']){
-							bases[m].sight.friends.push(living_spirits[n].id);
-						} else {
-							bases[m].sight.enemies.push(living_spirits[n].id);
-						}
-					} else if (bases[m].control == players['p2']){
-						if (living_spirits[n].player_id == players['p1']){
-							bases[m].sight.enemies.push(living_spirits[n].id);
-						} else {
-							bases[m].sight.friends.push(living_spirits[n].id);
-						}
-					} else {
-						bases[m].sight.enemies.push(living_spirits[n].id);
-					}
-				}
-			}
-			
-			//if (bases[m].sight.enemies.length > 0){
-			//	if (bases[m].control == players['p1']){
-			//		p1_defend = 1;
-			//	} else {
-			//		p2_defend = 1;
-			//	}
-			//} else {
-			//	if (bases[m].control == players['p1']){
-			//		p1_defend = 0;
-			//	} else {
-			//		p2_defend = 0;
-			//	}
-		    //}
-			
-		}
-	
 	}
 
-
-	function resolve_collision(){
-	
-	}
-
-	function jitter(scale){
-		return 2 * (Math.random() - 0.5) * scale;
-	}
 
 	function progress_tut(phase_done, log=false){
 		if(log)
@@ -1621,35 +1050,33 @@ if (!isMainThread){
 				}
 	}
 
-	function player_owns_spirit(id, name){
+	function player_owns_cat(id, name){
 		if(!id.startsWith(name))
 			return false;
 		// if the id does start with name, it is still not ok
 		// consider players "pepa" and "pepa_the_best"
-		let spirit_num = Number(id.slice(name.length + 1));
-		return id == (name + "_" + spirit_num);
+		let cat_num = Number(id.slice(name.length + 1));
+		return id == (name + "_" + cat_num);
 	}
 
 	function move_objects(){
 		const prev_position = {};
 		for (let player in all_commands){
-			let queue = all_commands[player].spirit;
+			let queue = all_commands[player].cat;
 
 			Object.keys(queue).forEach((id) => {
-				if(id == 'merge') return;
-				if(!id || !player_owns_spirit(id, player)){
+				if(!id || !player_owns_cat(id, player)){
 					logger.info("WTF: null or possible hack: player " + player + 
 						" calls "  + id + ".move()");
 					return;
 				}
 
-				const spirit = spirit_lookup[id];
-				if (spirit.hp == 0)
+				const cat = cat_lookup[id];
+				if (cat.hp == 0)
 					return;
-				if(spirit.locked) return;
 				const tpos = queue[id].move;
 				if(!tpos) return;
-				const pos = spirit.position;
+				const pos = cat.position;
 				prev_position[id] = pos;
 
 				//tutorial
@@ -1662,14 +1089,6 @@ if (!isMainThread){
 				}
 				
 				let incr = sub(tpos, pos);
-
-				/*
-				incr = incr.map((d) => d + jitter(100/70));
-				if (dist_sq(pos, tpos) < 0.6**2){
-					incr = [0, 0]
-				}
-				//*/
-
 				let len_sq = norm_sq(incr);
 				// work with data only if there is movement
 				if (len_sq > 0){
@@ -1678,29 +1097,20 @@ if (!isMainThread){
 						// norm the incr vector so that its len is base_speed
 						incr = mult(base_speed / Math.sqrt(len_sq), incr);
 					}
-					spirit.position = add(pos, incr).map((c) => round_to(c, 5));
+					cat.position = add(pos, incr).map((c) => round_to(c, 5));
 
-					let potential_structure_collisions = spirit.sight.structures;
-					for (let k = 0; k < potential_structure_collisions.length; k++){
-						//logger.debug(' ------------------------------- structure potential collisions');
-						//logger.debug(potential_structure_collisions[k]);
-						
-						let object_name = potential_structure_collisions[k];
-						// name prefix - safe (is structure)
-						let min_distance = structure_lookup[object_name].collision_radius;
-						let object_position = structure_lookup[object_name].position;
-						let spirit_before = pos;
-
-						if (fast_dist_lt(spirit.position, object_position, min_distance)){
-							let inter_coor = intersection(spirit_before[0], spirit_before[1], base_speed,
-															object_position[0], object_position[1], min_distance);
+					for (let k = 0; k < barricades.length; k++){
+						let object_position = barricades[k];
+						if (fast_dist_lt(cat.position, object_position, BARRICADE_COLLISION_RADIUS)){
+							let inter_coor = intersection(pos[0], pos[1], base_speed,
+															object_position[0], object_position[1], BARRICADE_COLLISION_RADIUS);
 							if (inter_coor == false) continue;
 							
 							let quick_dist1 = dist_sq(inter_coor[0], tpos);
 							let quick_dist2 = dist_sq(inter_coor[1], tpos);
 							
 							let pick_first = quick_dist1 < quick_dist2 || Math.abs(quick_dist1 - quick_dist2) <= 5;
-							spirit.position = inter_coor[pick_first ? 0 : 1];
+							cat.position = inter_coor[pick_first ? 0 : 1];
 						}
 					}
 				}
@@ -1710,106 +1120,26 @@ if (!isMainThread){
 		return prev_position;
 	}
 
-	function energize_objects(){
-		let energize_apply = [];
-		let energize_apply_star = [];
-		let energize_apply_fragment = [];
-		let energize_apply_outpost = [];
-		let energize_apply_base = [];
-		let energize_apply_pylon = [];
-		let low_range_sq = (200)**2;
+	function pew_objects(){
+		let pew_apply = [];
 		
-		for(let spirit of Object.values(spirit_lookup)){
-			spirit.last_energized = '';
-		}
-		
-		//explosions
-		for(let player in all_commands) {
-			let commands = all_commands[player].spirit;
-			for(let spirit in commands) {
-				if(spirit == 'merge') continue;
-				if(!player_owns_spirit(spirit, player)) continue;
-				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(spirit_lookup[spirit].shape != "triangles") continue;
-				if(!commands[spirit].explode) continue;
-				//logger.debug(spirit + ' is about to explode');
-				let explodee = spirit_lookup[spirit];
-				for (let j = 0; j < explodee.sight.enemies_beamable.length; j++){
-					let potential_target = spirit_lookup[explodee.sight.enemies_beamable[j]];
-					//logger.debug('boom check = ' + fast_dist_lt(explodee.position, potential_target.position, 100));
-					if (fast_dist_leq(explodee.position, potential_target.position, 160)){
-						energize_apply.push([potential_target, -10]);
-					}
-				}
-				energize_apply.push([explodee, -100]);
-				render_data3.s.push(['ex', spirit]);
-			}
-		}
-		
-		for (let i = 0; i < outposts.length; i++){
-			let outpost = outposts[i];
-			let enemies = outpost.sight.enemies;
-			if (enemies.length == 0 || outpost.control == '')
-				continue;
-
-			let beam_strength = outpost.energy >= 500 ? 4 : 1;
-			let enemy = spirit_lookup[enemies[Math.floor(enemies.length * Math.random())]];
-			
-			energize_apply.push([enemy, -2 * beam_strength]);
-			outpost.energy -= beam_strength;
-			render_data3.e.push([outpost.id, enemy.id, 2 * beam_strength]);
-		}
-		
-		for (let p = 0; p < pylons.length; p++){
-			let pylon = pylons[p];
-			let friends = pylons[p].sight.friends;
-			let friends_damaged = [];
-			let friends_final = [];
-			if (friends.length == 0 || pylon.control == '')
-				continue;
-			
-			for (let f = 0; f < friends.length; f++){
-				let friend_real = spirit_lookup[friends[f]];
-				if (friend_real.energy < (friend_real.energy_capacity)){
-					if (dist_sq(friend_real.position, pylon.position) > low_range_sq) friends_final.push(friend_real);
-				}
-				
-			}
-			
-			let beam_strength = 1;
-			let targets = pylon.energy;
-			if (friends_final.length < pylon.energy) targets = friends_final.length;
-			
-			//TODO: order friends array by energy from lowest to highest
-			
-			for (let t = 0; t < targets; t++){
-				energize_apply.push([friends_final[t], 1 * beam_strength]);
-				pylon.energy -= beam_strength;
-				render_data3.e.push([pylon.id, friends_final[t].id, 1 * beam_strength]);
-			}
-			 
+		for(let cat of Object.values(cat_lookup)){
+			cat.last_pewed = '';
 		}
 
 		let last_beam = {};
 		for (let player in all_commands){
-			let queue = all_commands[player].spirit;
+			let queue = all_commands[player].cat;
 
 			Object.keys(queue).forEach((from_id) => {
-				let temp_target_id = [];
-				
-				if (from_id == 'merge') return;
-				
-				//if ()
-				
-				const to_id = queue[from_id].energize;
+				const to_id = queue[from_id].pew;
 
 				if(!to_id){
-					//logger.debug('thisss happened');
 					return;
 				} 
-				if(!from_id || !player_owns_spirit(from_id, player) || !to_id){
+				if(!from_id || !player_owns_cat(from_id, player) || !to_id){
 					logger.info("WTF: null or possible hack player " + player + 
-						" calls "  + from_id + ".energize(" + to_id+")");
+						" calls "  + from_id + ".pew(" + to_id+")");
 					return;
 				}
 
@@ -1817,550 +1147,82 @@ if (!isMainThread){
 					return;
 				last_beam[from_id] = to_id;
 				
-				const from_obj = spirit_lookup[from_id] || structure_lookup[from_id];
-				var to_obj;
-				
-				if (Array.isArray(to_id) && to_id.length == 2){
-					logger.debug('to_id is a position array !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-					to_obj = to_id;
-				} else {
-					to_obj = spirit_lookup[to_id] || structure_lookup[to_id];
-				}
-				
-				
-				//logger.debug('from_obj.id = ' + from_obj.id);
-				//logger.debug('to_obj.id = ' + to_obj.id);
+				const from_obj = cat_lookup[from_id];
+				const to_obj = cat_lookup[to_id];
 
 				if(!from_obj || !to_obj || from_obj.hp == 0 || to_obj.hp == 0){
-					//logger.debug('tthis happened');
 					return;
 				}
-				
-				//logger.debug('from_obj.id = ' + from_obj.id);
-				//logger.debug('to_obj.id = ' + to_obj.id);
 
-				// harvest star or fragment (prioritize fragment)
 				if (from_id == to_id){
-					
-					let is_harving = 0;
-					
-					for (let f = 0; f < from_obj.sight.fragments.length; f++){
-						let fragment = from_obj.sight.fragments[f];
-						let fragment_close = fast_dist_leq(from_obj.position, fragment.position, from_obj.range);
-						if (!fragment_close) continue;
-						
-						from_obj.last_energized = to_id;
-						energize_apply_fragment.push([from_obj, energy_value * from_obj.size, fragment]);
-						is_harving = 1;
-					}
-					
-					if (is_harving == 1) return;
-					
-					for (let j = 0; j < from_obj.sight.structures.length; j++){
-						//logger.debug('ilook here');
-						let struc_name = from_obj.sight.structures[j];
-
-						// name prefix - safe (is structure)
-						if (!struc_name.startsWith('star'))
-							continue;
-
-						let star = structure_lookup[struc_name];
-						let star_close = fast_dist_leq(from_obj.position, star.position, from_obj.range);
-						if (!star_close)
-							continue;
-
-						from_obj.last_energized = to_id;
-						energize_apply_star.push([from_obj, energy_value * from_obj.size, star]);
-
-						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
-						// 						to nejde delat tutorial jako logged in user?
-						if (workerData[1] == 'tutorial' && from_obj.id == 'anonymous_1')
-							progress_tut(2);
-
-						// only harvest one star at once
-						break;
-					}
-					// no need to check other cases (outpost, friend, ...)
 					return;
 				}
 				
-				//logger.debug('to_obj is ' + to_obj);
-				
-				let to_check = to_obj.position;
-				if (Array.isArray(to_obj)) to_check = to_obj;
-
-				let target_close = fast_dist_leq(from_obj.position, to_check, from_obj.range);
+				let target_close = fast_dist_leq(from_obj.position, to_obj.position, from_obj.range);
 				if(! target_close){
-					//logger.debug('target not close enough');
 					return;
 				}
-					
 
-				let beam_strength = Math.min(energy_value * from_obj.size, from_obj.energy);
+				let beam_strength = Math.min(energy_value, from_obj.energy);
 				if(beam_strength <= 0)
 					return;
 
-				from_obj.last_energized = to_id;
+				from_obj.last_pewed = to_id;
 
 				let friendly_beam = from_obj.player_id == to_obj.player_id;
-				let is_star = (to_obj.structure_type != undefined && to_obj.structure_type == 'star');
-				let is_fragment = Array.isArray(to_id);
-				
-				
-				//fragment first
-				if (is_fragment){
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply.push([to_obj, beam_strength]);
-					render_data3.e.push([from_id, to_id, beam_strength]);
-				}
-				// name prefix - safe (is outpost)
-				else if (to_obj.id.startsWith('outpost') && outpost_lookup[to_id]){
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply_outpost.push([from_obj, beam_strength, to_obj]);
-					render_data3.e.push([from_id, to_id, beam_strength]);
-				} 
-				else if (to_obj.id.startsWith('base') && base_lookup[to_id]){
-					//logger.debug('energizing base---------------------------');
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply_base.push([from_obj, beam_strength, to_obj]);
-					render_data3.e.push([from_id, to_id, beam_strength]);
-				} 
-				// name prefix - safe (is pylon)
-				else if (to_obj.id.startsWith('pylon') && pylon_lookup[to_id]){
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply_pylon.push([from_obj, beam_strength, to_obj]);
-					render_data3.e.push([from_id, to_id, beam_strength]);
-				}
-				else if (!friendly_beam){
-					if (is_star){
-						energize_apply.push([from_obj, -beam_strength]);
-						energize_apply.push([to_obj, beam_strength]);
-						render_data3.e.push([from_id, to_id, beam_strength]);
-					} else {
-						energize_apply.push([from_obj, -beam_strength]);
-						energize_apply.push([to_obj, -2 * beam_strength]);
-						render_data3.e.push([from_id, to_id, 2 * beam_strength]);
+
+				if (!friendly_beam){
+					pew_apply.push([from_obj, -beam_strength]);
+					pew_apply.push([to_obj, -2 * beam_strength]);
+					render_data3.e.push([from_id, to_id, 2 * beam_strength]);
+
+					for (let i = 0; i < living_cats.length; i++){
+						let s = living_cats[i];
+						if (s.hp == 0 || s.id == to_id || s.id == from_id) continue;
+						if (s.player_id == from_obj.player_id) continue;
+						if (!fast_dist_leq(s.position, to_obj.position, aoe_radius)) continue;
+						pew_apply.push([s, -2 * beam_strength]);
+						render_data3.a.push([from_id, to_id, s.id, 2 * beam_strength]);
 					}
 				}
 				else {
-					//else: target is friend
-					energize_apply.push([from_obj, -beam_strength]);
-					energize_apply.push([to_obj, beam_strength]);
+					pew_apply.push([from_obj, -beam_strength]);
+					pew_apply.push([to_obj, beam_strength]);
 					render_data3.e.push([from_id, to_id, beam_strength]);
-
-					// JM TODO refactor tutorial player code elsewhere
-					if (workerData[1] == 'tutorial'){
-						// TODO VILEM CHECK - proc to tady delam jen kdyz je to anonymous?
-						// 						to nejde delat tutorial jako logged in user?
-						// name prefix - safe (is structure)
-						let to_base = to_id.startsWith('base') && structure_lookup[to_id];
-
-						if (to_base && from_obj.energy < 10 && from_id == 'anonymous_1'){
-							progress_tut(4, true);
-						}
-
-						// TODO VILEM CHECK - proc je tady anon2, kdyz jinde je anon1 ??
-						if (to_base && from_id == 'anonymous_2' && tutorial_flag1 == 1){
-							progress_tut(6, true);
-							sand2.setPlayerCode(botCodes['tutorial6']);
-						}
-					}
 				}
 			});
 		}
 
-		//
-		// apply 
-		//	
-
 		let applied_to = {};
 		let check = [];
 
-		// apply energize call
-		for (let i = energize_apply.length - 1; i >= 0; i--){
-			let target = energize_apply[i][0];
-			let is_fragment = (Array.isArray(target) && target.length == 2);
-			let amount = energize_apply[i][1];
+		for (let i = pew_apply.length - 1; i >= 0; i--){
+			let target = pew_apply[i][0];
+			let amount = pew_apply[i][1];
 			
-			if (is_fragment){
-				logger.debug('energizing fragmentTTTTTT!!!!!!!!!!');
-				let new_frag = 1;
-				let frag_target = {
-					'position': target,
-					'energy': 0
-				};
-				for (let f = 0; f < fragments.length; f++){
-					if (fast_dist_simp(target, fragments[f].position, 10)){
-						frag_target = fragments[f];
-						new_frag = 0;
-						break;
-					}
-				}
-				
-				frag_target.energy += amount;
-				
-				if (new_frag) fragments.push(frag_target);
-				
-			} else {
-				target.energy += amount;
+			target.energy += amount;
 
-				if(!applied_to[target.id]){
-					applied_to[target.id] = true;
-					check.push(target);
-				}
-			}
-			
-			
-		}
-
-		// TODO Vilem check - presunul jsem tezbu PRED energize apply vyhodnoceni / death queue, aby
-		//  spirity co zrovna tezi && zrovna na ne nekdo utoci nechcipli
-		//  (imo je nespravedlivy, kdyby chcipli); pokud je tohle zamer, tak minimalne
-		//  je imo potreba aby uz pak ty mrtvoly netezily (pze pak se ztraci energie hvezdy)
-
-		// JM TODO discuss: more simultaneous harvestors (& almost empty star) could be solved by all of them getting 
-		// 					some proportion
-		// now, it is first come, first served, probably also ok
-		shuffle_array(energize_apply_star);
-
-		// apply harvest
-		// harvest fragment
-		for (let i = energize_apply_fragment.length - 1; i >= 0; i--){
-			let spirit = energize_apply_fragment[i][0];
-			let amount = energize_apply_fragment[i][1];
-			let fragment = energize_apply_fragment[i][2];
-
-			let can_harvest = Math.min(amount, fragment.energy);
-			if (can_harvest <= 0) continue;
-
-			// 
-			
-			let to_full_capacity = Math.max(0, spirit.energy_capacity - spirit.energy);
-			let actually_harvested = Math.min(can_harvest, to_full_capacity);
-
-			spirit.energy += actually_harvested;
-			fragment.energy -= actually_harvested;
-			render_data3.e.push([fragment.position, spirit.id, actually_harvested]);
-
-			if(!applied_to[spirit.id]){
-				applied_to[spirit.id] = true;
-				check.push(spirit);
-			}
-		}
-		
-		// harvest star
-		for (let i = energize_apply_star.length - 1; i >= 0; i--){
-			let spirit = energize_apply_star[i][0];
-			let amount = energize_apply_star[i][1];
-			let star = energize_apply_star[i][2];
-
-			let can_harvest = Math.min(amount, star.energy);
-			if (can_harvest <= 0) continue;
-
-			// TODO Vilem check - predtim to bylo tak, ze spirit natezil vse co mohl
-			// a potom se energie nad capacity zahodila
-			// to je podle me hrozne nespravedlivy vuci ctvereckum (/spiritum s velkou size)
-			// kdyz ma hvezda malo energie (protoze si tim ubiraji vic z hvezdy, nez pouzijou,
-			// a navic nema hrac moznost, jak to ovladat).
-			// takze se to ted dela tak, ze vytezi max toho co muzou.
-
-			// max needed, so that to_full_capacity >= 0
-			// 	- in cases of overcharged spirits (energy > capacity after apply)
-			let to_full_capacity = Math.max(0, spirit.energy_capacity - spirit.energy);
-			let actually_harvested = Math.min(can_harvest, to_full_capacity);
-
-			spirit.energy += actually_harvested;
-			star.energy -= actually_harvested;
-			render_data3.e.push([star.id, spirit.id, actually_harvested]);
-
-			if(!applied_to[spirit.id]){
-				applied_to[spirit.id] = true;
-				check.push(spirit);
+			if(!applied_to[target.id]){
+				applied_to[target.id] = true;
+				check.push(target);
 			}
 		}
 
-		// check death & energy cap
 		for (let i = 0; i < check.length; i++){
 			let target = check[i];
 			target.energy = Math.min(target.energy, target.energy_capacity);
 
 			if (target.energy < 0){
-				
-				//if (target.structure_type == 'base' && target.hp > 1){
-				//	target.hp--;
-				//	target.energy = 0;
-				//	continue;
-				//}
-				
-				//if (target.structure_type == 'outpost' || target.structure_type == 'pylon'){
-				//	continue;
-				//}
-				
 				death_queue.push(target);
-
-				if (target.structure_type == 'base' && game_finished != 1){
-					
-					//logger.debug('find out whether player controls any other structures - otherwise end the game')
-					
-					//game_finished = 1;
-					//logger.debug(target.player_id + ' lost');
-                    //
-					//let p2won = target.player_id == players['p1'] ? 1 : 0;
-					//end_game(1 - p2won, p2won);
-				}
 			}
 		}
-		
-		
-		// energize_apply_outpost.push([from_obj, strength, to_obj]);
-		let incoming_p1 = {};
-		let incoming_p2 = {};
-
-		for (let i = energize_apply_outpost.length - 1; i >= 0; i--){
-			let spirit = energize_apply_outpost[i][0];
-			let amount = energize_apply_outpost[i][1];
-			let outpost = energize_apply_outpost[i][2];
-
-			if (spirit.player_id == players['p1']){
-				if (incoming_p1[outpost.id] == undefined) incoming_p1[outpost.id] = 0;
-				incoming_p1[outpost.id] += amount;
-			} else {
-				if (incoming_p2[outpost.id] == undefined) incoming_p2[outpost.id] = 0;
-				incoming_p2[outpost.id] += amount;
-			}
-		}
-		
-		for (let i = 0; i < outposts.length; i++){
-			let outpost = outposts[i];
-
-			let from_p1 = incoming_p1[outpost.id] || 0;
-			let from_p2 = incoming_p2[outpost.id] || 0;
-
-			if (outpost.control == ''){
-				// the case where from_p1 == from_p2 will have 0 energy and control '' set below
-				outpost.control = (from_p1 > from_p2) ? players['p1'] : players['p2'];
-				outpost.energy = Math.abs(from_p1 - from_p2);
-			} else {
-				let from_me = (outpost.control == players['p1']) ? from_p1 : from_p2;
-				let from_enemy = (outpost.control == players['p1']) ? from_p2 : from_p1;
-
-				outpost.energy += from_me;
-				outpost.energy -= 2 * from_enemy;
-			}
-
-			if (outpost.energy <= 0){
-				outpost.control = '';
-				check_structure_control();
-			}
-				
-			outpost.energy = Math.max(0, Math.min(outpost.energy, outpost.energy_capacity));
-			outpost.range = outpost.energy <= 500 ? 400 : 600;
-		}
-		
-		//-- same for pylon
-		
-		for (let i = energize_apply_pylon.length - 1; i >= 0; i--){
-			let spirit = energize_apply_pylon[i][0];
-			let amount = energize_apply_pylon[i][1];
-			let pylon = energize_apply_pylon[i][2];
-        
-			if (spirit.player_id == players['p1']){
-				if(incoming_p1[pylon.id] == undefined)
-					incoming_p1[pylon.id] = 0;
-				incoming_p1[pylon.id] += amount;
-				//logger.debug('incoming amount 1 = ' + incoming_p1[pylon.id]);
-			} else {
-				if(incoming_p2[pylon.id] == undefined)
-					incoming_p2[pylon.id] = 0;
-				incoming_p2[pylon.id] += amount;
-				//logger.debug('incoming amount 2 = ' + incoming_p2[pylon.id]);
-			}
-		}
-		
-		for (let i = 0; i < pylons.length; i++){
-			let pylon = pylons[i];
-        
-			let from_p1_pylon = incoming_p1[pylon.id] || 0;
-			let from_p2_pylon = incoming_p2[pylon.id] || 0;
-        
-			if(pylon.control == ''){
-				// the case where from_p1 == from_p2 will have 0 energy and control '' set below
-				pylon.control = (from_p1_pylon > from_p2_pylon) ? players['p1'] : players['p2'];
-				pylon.energy = Math.abs(from_p1_pylon - from_p2_pylon);
-			} else{
-				let from_me_pylon = (pylon.control == players['p1']) ? from_p1_pylon : from_p2_pylon;
-				let from_enemy_pylon = (pylon.control == players['p1']) ? from_p2_pylon : from_p1_pylon;
-        
-				pylon.energy += from_me_pylon;
-				pylon.energy -= 2 * from_enemy_pylon;
-			}
-        
-			if (pylon.energy <= 0){
-				pylon.control = '';
-				check_structure_control();
-			}
-				
-			pylon.energy = Math.max(0, Math.min(pylon.energy, pylon.energy_capacity));
-			//pylon.range = pylon.energy <= 500 ? 400 : 600;
-		}
-		
-		
-		// similar for bases
-		
-		for (let i = energize_apply_base.length - 1; i >= 0; i--){
-			let spirit = energize_apply_base[i][0];
-			let amount = energize_apply_base[i][1];
-			let base = energize_apply_base[i][2];
-
-			if (spirit.player_id == players['p1']){
-				if (incoming_p1[base.id] == undefined) incoming_p1[base.id] = 0;
-				incoming_p1[base.id] += amount;
-			} else {
-				if (incoming_p2[base.id] == undefined) incoming_p2[base.id] = 0;
-				incoming_p2[base.id] += amount;
-			}
-		}
-		
-		for (let i = 0; i < bases.length; i++){
-			let base = bases[i];
-
-			let from_p1 = incoming_p1[base.id] || 0;
-			let from_p2 = incoming_p2[base.id] || 0;
-			
-			if (from_p1 == 0 && from_p2 == 0) continue;
-
-			if (base.control == ''){
-				// the case where from_p1 == from_p2 will have 0 energy and control '' set below
-				if (from_p1 - from_p2 != 0){
-					base.control = (from_p1 > from_p2) ? players['p1'] : players['p2'];
-					let owner_shape = shapes['player1'];
-					if (players['p2'] == base.control) owner_shape = shapes['player2'];
-					base.shape = owner_shape;
-					
-					if (owner_shape == 'circles') base.energy_capacity = 400;
-					if (owner_shape == 'squares') base.energy_capacity = 1000;
-					if (owner_shape == 'triangles') base.energy_capacity = 600;
-					
-				}
-				base.energy = Math.abs(from_p1 - from_p2);
-			} else {
-				let from_me = (base.control == players['p1']) ? from_p1 : from_p2;
-				let from_enemy = (base.control == players['p1']) ? from_p2 : from_p1;
-
-				base.energy += from_me;
-				base.energy -= 2 * from_enemy;
-			}
-
-			if (base.energy < 0){
-				base.control = '';
-				base.shape = 'neutral';
-				logger.debug('find out whether player controls any other structures - otherwise end the game');
-				check_structure_control();
-			}
-			base.energy = Math.max(0, Math.min(base.energy, base.energy_capacity));
-			
-		}
-		
-		
-	}
-	
-	function check_structure_control(){
-		
-		let p1_ok = 0;
-		let p2_ok = 0;
-		
-		//bases
-		for (let b = 0; b < bases.length; b++){
-			if (bases[b].control == players['p1']) p1_ok = 1;
-			if (bases[b].control == players['p2']) p2_ok = 1;
-		}
-		if (p1_ok && p2_ok) return;
-		
-		//outpost
-		for (let ou = 0; ou < outposts.length; ou++){
-			if (outposts[ou].control == players['p1']) p1_ok = 1;
-			if (outposts[ou].control == players['p2']) p2_ok = 1;
-		}
-		if (p1_ok && p2_ok) return;
-		
-		//pylon
-		for (let py = 0; py < pylons.length; py++){
-			if (pylons[py].control == players['p1']) p1_ok = 1;
-			if (pylons[py].control == players['p2']) p2_ok = 1;
-		}
-		
-		if (!p1_ok) end_game(0, 1);
-		if (!p2_ok) end_game(1, 0);
 	}
 
 	function process_stuff(){
-
-		//
-		// objects birth
-		//
-		
-		//if (base_lookup['base_' + players['p1']].energy >= base_lookup['base_' + players['p1']].current_spirit_cost){
-		//	if (workerData[1] == 'tutorial' && top_s > 20){
-		//		//logger.debug('can not have more than 20 spirits in tutorial');
-		//	} else {
-		//		if (p1_defend != 1){
-		//			top_s++;
-		//			global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [-690, -520], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
-		//			base_lookup['base_' + players['p1']].energy -= base_lookup['base_' + players['p1']].current_spirit_cost;
-		//			//global[players['p1'] + top_s].move([-710, -540]);
-		//			//logger.debug('spirit was born!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-		//			if (workerData[1] == 'tutorial')
-		//				progress_tut(5, true);
-		//		}
-		//	}
-		//}
-		//if (base_lookup['base_' + players['p2']].energy >= base_lookup['base_' + players['p2']].current_spirit_cost){
-		//	if (p2_defend != 1){
-		//		top_q++;
-		//		global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [520, 690], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
-		//		base_lookup['base_' + players['p2']].energy -= base_lookup['base_' + players['p2']].current_spirit_cost;
-		//		//global[players['p2'] + top_q].move([540, 710]);
-		//		//logger.debug(top_q);
-		//	}
-		//}
-		
-		for (i = 0; i < bases.length; i++){
-			let bs = bases[i];
-			if (bs.energy < bs.current_spirit_cost) continue;
-			if (bs.sight.enemies.length > 0) continue;
-			let x_axis = 1;
-			let y_axis = 1;
-			if (bs.position[0] < 0) x_axis = -1;
-			if (bs.position[1] < 0) y_axis = -1;
-			
-			if (bs.control == players['p1']){
-				top_s++;
-				global[players['p1'] + top_s] = new Spirit(players['p1'] + '_' + top_s, [bs.position[0] + (x_axis * 40), bs.position[1] + (y_axis * 40)], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
-				bs.energy -= bs.current_spirit_cost;
-			}
-			
-			if (bs.control == players['p2']){
-				top_q++;
-				global[players['p2'] + top_q] = new Spirit(players['p2'] + '_' + top_q, [bs.position[0] + (x_axis * 40), bs.position[1] + (y_axis * 40)], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
-				bs.energy -= bs.current_spirit_cost;
-			}
-		}
-		
-		//for (i = 0; i < bases.length; i++){
-		//	let bs = bases[i];
-		//	if (bs.energy < spirit_cost[bs.control])
-		//
-		//}
-		
-		
-		
-			
-		
-		birthlings = birth_queue.length;
-		for (i = birthlings - 1; i >= 0; i--){
-			spt = birth_queue[i];	
-			//render_data2.birth.push(birth_queue[i]);
-			spirit_lookup[spt.id] = spt;
+	let birthlings = birth_queue.length;
+	for (let i = birthlings - 1; i >= 0; i--){
+		let spt = birth_queue[i];	
+			cat_lookup[spt.id] = spt;
 			birth_queue.splice(i, 1);
 		}
 	
@@ -2370,356 +1232,103 @@ if (!isMainThread){
 		//
 		
 		for(let player in all_commands) {
-			let commands = all_commands[player].spirit;
-			for(let spirit in commands) {
-				if(spirit == 'merge') continue;
-				if(!player_owns_spirit(spirit, player)) continue;
-				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(commands[spirit].shout) render_data3.s.push(['sh', spirit, commands[spirit].shout]);
-				if(commands[spirit].mark) spirit_lookup[spirit].mark = commands[spirit].mark;
+			let commands = all_commands[player].cat;
+			for(let cat in commands) {
+				if(!player_owns_cat(cat, player)) continue;
+				if(!(cat in cat_lookup) || cat_lookup[cat].hp == 0) continue;
+				if(commands[cat].shout) render_data3.s.push(['sh', cat, commands[cat].shout]);
+				if(commands[cat].mark) cat_lookup[cat].mark = commands[cat].mark;
 			}
 		}
 		//
-		// objects energize
+		// objects pew
 		//
 		
-		energize_objects();
+		pew_objects();
 
 		//
 		// objects move
 		//
 
 		let prev_position = move_objects();
-		
+
 		//
-		//objects sight
+		// death circle shrink + drain
 		//
-		
-		/*
-		var start = process.hrtime();
-		get_sight();
-		var diff = process.hrtime(start);
-		var took1 = (diff[0] * 1000000000 + diff[1]) / 1000000;
-		logger.debug('get_sight took = ' + took1);
-		*/
 
-
-
-		//logger.debug('TIME: get_sight_fast = ' + elapsed_ms_from(sight_t0));
-
-		//logger.debug('spirit_lookup[s1].sight');
-		//logger.debug(spirit_lookup['s1'].sight);
-		//logger.debug(spirit_lookup['sp1'].sight);
-		
-		
-		// stars energy update
-		
-		for (let i = 0; i < stars.length; i++){
-			stars[i].active_in = stars[i].active_at - game_duration;
-			if(game_duration >= stars[i].active_at) {
-				if (stars[i].id == 'star_nua'){
-					stars[i].energy += Math.round(3 + (stars[i].energy * 0.03));
-				} else {
-					stars[i].energy += Math.round(2 + (stars[i].energy * 0.02));
-					stars[i].active_in = 0;
+		circle_radius = Math.max(GAME_CONSTANTS.CIRCLE_MIN_RADIUS, circle_radius - GAME_CONSTANTS.CIRCLE_SHRINK_RATE);
+		const circle_radius_sq = circle_radius * circle_radius;
+		for (let i = 0; i < living_cats.length; i++){
+			let spt = living_cats[i];
+			if (spt.hp == 0) continue;
+			let dx = spt.position[0];
+			let dy = spt.position[1];
+			if (dx * dx + dy * dy > circle_radius_sq){
+				spt.energy -= GAME_CONSTANTS.CIRCLE_DRAIN;
+				if (spt.energy < 0){
+					death_queue.push(spt);
 				}
 			}
-			if (stars[i].energy >= stars[i].energy_capacity) stars[i].energy = stars[i].energy_capacity;
+		}
 
-			render_data3.st[i] = stars[i].energy;
+		for (let i = 0; i < living_cats.length; i++){
+			let spt = living_cats[i];
+			if (spt.hp == 0) continue;
+			for (let p = 0; p < pods.length; p++){
+				if (Math.abs(spt.position[0] - pods[p][0]) <= POD_HALF_SIZE &&
+					Math.abs(spt.position[1] - pods[p][1]) <= POD_HALF_SIZE){
+					spt.energy = Math.min(spt.energy + 1, spt.energy_capacity);
+					break;
+				}
+			}
 		}
+
 		
-		//fragments update
-		for (let f = fragments.length - 1; f >= 0; f--){
-			if (fragments[f].energy <= 0) fragments.splice(f, 1);
-		}
-		
-	
-		//objects death & vm sandbox objects update
 		for (let i = death_queue.length - 1; i >= 0; i--){
-			//logger.debug(death_queue[i].id + ' died');
 			if (workerData[1] == 'tutorial'){
 				if (death_queue[i].id == 'easy-bot_2')
 					progress_tut(8, true);
 			}
-			
-//			if (!death_queue[i].structure_type == 'outpost') 
-				death_queue[i].hp = 0;
-			//logger.debug(death_queue[i]);
-			//render_data2.death.push(death_queue[i].id);
-			
-			//delete spirit_lookup[suid];
-			//var index = living_spirits.findIndex(x => x.id == death_queue[i].id);
-			//living_spirits.splice(index);
-			
-		
+			death_queue[i].hp = 0;
 			death_queue.splice(i, 1);
 		}
 		
 		
 		
 		
-		//
-		// objects merge
-		//
-		let merged = {};
-		for(let player in all_commands) {
-			let commands = all_commands[player];
-			for(let [sid, tid] of commands.merge) {
-				if(!player_owns_spirit(sid, player)) continue;
-				if(!player_owns_spirit(tid, player)) continue;
-				if(!(sid in spirit_lookup)) continue;
-				if(!(tid in spirit_lookup)) continue;
-
-				if(merged[sid]) continue;
-
-				let s = spirit_lookup[sid];
-				let t = spirit_lookup[tid];
-
-				if(s.hp == 0 || t.hp == 0) continue;
-				if(s.shape != 'circles' || t.shape != 'circles') continue;
-				if(t.merged.length + s.merged.length + 2 > 100) continue;
-
-				if(dist_sq(t.position, s.position) > 10**2) continue;
-				if(s.hp == 0 || t.hp == 0) continue;
-				t.merged.push(s.id);
-				t.merged = t.merged.concat(s.merged);
-				s.merged = [];
-				t.size += s.size;
-				t.energy += s.energy;
-				t.energy_capacity += s.energy_capacity;
-				s.hp = 0;
-				s.size = 0;
-				s.energy = 0;
-				s.position = t.position;
-				merged[tid] = true;
-
-				render_data3.s.push(['m', s.id, t.id]);
-			}
-		}
-		
-		
-		//
-		// objects divide
-		//
-		
-		for(let player in all_commands) {
-			let commands = all_commands[player].spirit;
-			for(let spirit in commands) {
-				if(spirit == 'merge') continue;
-				if(!player_owns_spirit(spirit, player)) continue;
-				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(!commands[spirit].divide) continue;
-				
-				// we are dividing the orig spirit
-				// into orig.size spirits of size 1
-				
-				let orig = spirit_lookup[spirit];
-				let capacity_per_one = orig.energy_capacity / orig.size;
-				// right now, this holds:
-				// assert(capacity_per_one == 10);
-				
-				let energy_per_one = Math.floor(orig.energy / orig.size);
-				let energy_leftover = orig.energy % orig.size;
-
-				for(let did of orig.merged) {
-					var d = spirit_lookup[did];
-					d.hp = 1;
-					d.size = 1;
-					d.energy_capacity = capacity_per_one;
-					d.energy = energy_per_one;
-					if(energy_leftover > 0){
-						d.energy += 1;
-						energy_leftover -= 1;
-					}
-					// implied by orig.energy <= orig.energy_capacity
-					// assert(d.energy <= d.energy_capacity);
-
-					d.position = [orig.position[0], orig.position[1]];
-					let ang = Math.random() * Math.PI * 2;
-					let dist = Math.random() * 10;
-					d.position[0] += Math.sin(ang) * dist;
-					d.position[1] += Math.cos(ang) * dist;
-					for (let object_name in structure_lookup){
-						let s = structure_lookup[object_name];
-						let v = sub(d.position, s.position);
-						let len_sq = norm_sq(v);
-						if(len_sq < s.collision_radius**2) {
-							v = mult(s.collision_radius / Math.sqrt(len_sq), v);
-							d.position = add(s.position, v);
-						}
-					}
-				}
-				
-				orig.merged = [];
-				orig.size = 1;
-				// otw, the energy per_one could be increased by one
-				// assert(energy_leftover == 0);
-				orig.energy = energy_per_one;
-				orig.energy_capacity = capacity_per_one;
-
-				render_data3.s.push(['d', orig.id]);
-			}
-		}
-		
-		//
-		// objects jump
-		//
-		for(let player in all_commands) {
-			let commands = all_commands[player].spirit;
-			for(let spirit in commands) {
-				if(spirit == 'merge') continue;
-				if(!player_owns_spirit(spirit, player)) continue;
-				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(!commands[spirit].jump) continue;
-				if(spirit_lookup[spirit].locked) continue;
-				if(spirit_lookup[spirit].energy == 0) continue;
-
-				let s = spirit_lookup[spirit];
-
-				let tpos = commands[spirit].jump;
-				let incr = sub(tpos, s.position);
-
-				let dist = Math.sqrt(norm_sq(incr));
-				console.log('jump distanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceE = ' + dist);
-				let cost = dist/4 + (s.size**2) / 4;
-				console.log('cost distanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceEdistanceE = ' + cost);
-				if(cost > s.energy) {
-					let remainder = s.energy - (s.size**2)/4;
-					if (remainder <= 0) remainder = 20;
-					incr = mult((remainder * 5) / dist, incr);
-					tpos = add(s.position, incr);
-					dist = remainder * 5;
-					if (dist <= 0 && s.energy > 0) dist = 20;
-					cost = s.energy;
-				}
-
-				for (var object_name in structure_lookup){
-					//logger.debug(' ------------------------------- structure potential collisions');
-					//logger.debug(potential_structure_collisions[k]);
-					
-					// name prefix - safe (is structure)
-					let min_distance = structure_lookup[object_name].collision_radius;
-					let object_position = structure_lookup[object_name].position;
-
-					if (fast_dist_lt(tpos, object_position, min_distance)){
-						let inter_coor = intersection(s.position[0], s.position[1], dist,
-														object_position[0], object_position[1], min_distance);
-						if (inter_coor == false) continue;
-						
-						let quick_dist1 = dist_sq(inter_coor[0], tpos);
-						let quick_dist2 = dist_sq(inter_coor[1], tpos);
-						
-						let pick_first = quick_dist1 < quick_dist2 || Math.abs(quick_dist1 - quick_dist2) <= 5;
-						tpos = inter_coor[pick_first ? 0 : 1];
-					}
-				}
-				s.position = tpos;
-
-				s.energy -= Math.ceil(cost);
-
-				render_data3.s.push(['j', spirit]);
-			}
-		}
-
-		// update locked spirit ranges
-		for(let sid in spirit_lookup) {
-			let spirit = spirit_lookup[sid];
-			if(!spirit.locked) continue;
-			spirit.range += 25;
-			if(spirit.range > 300) {
-				spirit.range = 300;
-			}
-		}
-
-		// spirit lock
-		for(let player in all_commands) {
-			let commands = all_commands[player].spirit;
-			for(let spirit in commands) {
-				if(spirit == 'merge') continue;
-				if(!player_owns_spirit(spirit, player)) continue;
-				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(!commands[spirit].lock) continue;
-
-				let s = spirit_lookup[spirit];
-				
-				if(s.shape != 'squares') continue;
-
-				if(s.locked) continue;
-
-				s.locked = true;
-			}
-		}
-
-		// spirit unlock
-		for(let player in all_commands) {
-			let commands = all_commands[player].spirit;
-			for(let spirit in commands) {
-				if(spirit == 'merge') continue;
-				if(!player_owns_spirit(spirit, player)) continue;
-				if(!(spirit in spirit_lookup) || spirit_lookup[spirit].hp == 0) continue;
-				if(!commands[spirit].unlock) continue;
-
-				let s = spirit_lookup[spirit];
-				
-				if(s.shape != 'squares') continue;
-
-				if(!s.locked) continue;
-
-				s.locked = false;
-				s.range = min_beam;
-			}
-		}
-
 		let sight_t0 = process.hrtime();
 		get_sight_fast();
 
 	}
 
 	function update_vm_sandbox(){
+		let p1_living = 0;
+		let p2_living = 0;
 		if (temp_flag == 0){
-			var p1_living = 0;
-			var p2_living = 0;
-			for (i = 0; i < living_spirits.length; i++){
-				spt = living_spirits[i];
+		for (let i = 0; i < living_cats.length; i++){
+			let spt = living_cats[i];
 				let cutoff_parts = spt.id.split('_');
 				let cutoff_id = cutoff_parts.pop();
-				//logger.debug(spt);	
 				if (spt.player_id == players['p2']){
-					
-					//render3 part
-					render_data3.p2.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.size, spt.energy, spt.hp]);
+					render_data3.p2.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.energy, spt.hp]);
 
 					if (spt.hp == 1){
 						p2_living++;
-						if (spt.shape == 'circles' && spt.size > 1) p2_living += spt.size - 1;
 					}
 
 				} else if (spt.player_id == players['p1']) {
-					
-					//render3 part
-					render_data3.p1.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.size, spt.energy, spt.hp]);
+					render_data3.p1.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.energy, spt.hp]);
 
 					if (spt.hp == 1){
 						p1_living++;
-						if (spt.shape == 'circles' && spt.size > 1) p1_living += spt.size - 1;
 					}
 					
 				}
-				var tempJSON = JSON.stringify(spt);
-				rawSpirits[spt.id] = JSON.parse(tempJSON);
-
-				//what is this doing here? (maybe important)
-				//spt.move(spt.position);
+				const tempJSON = JSON.stringify(spt);
+				rawCats[spt.id] = JSON.parse(tempJSON);
 			}
-			//logger.debug('objects processing');
 			temp_flag = 0;
-			//logger.debug('my_spirits1.length = ' + my_spirits1.length);
-			//consolelogger.debug('living_spirits.length = ' + living_spirits.length + " p1 = " + p1_living + " p2 = " + p2_living );
-				spirit_cost(1, p1_living);
-				spirit_cost(2, p2_living);
-		} 
-		//logger.debug(bases[2].id + " control = " + bases[2].control)
+		}
 		
 		if (p1_living == 0) end_game(0, 1);
 		if (p2_living == 0) end_game(1, 0);
@@ -2737,26 +1346,17 @@ if (!isMainThread){
 		}
 
 		ticks['now'] = game_duration;
-		//logger.debug('game_duration = ' + game_duration);
-		//after everything is calculated
-			
-	//logger.debug(player2_code);
-	//logger.debug('player2_code');
-			//render_data = [[],[],[],[],[]];
 			
 			render_data3 = {
 				't': 0,
+				'pl1': players['p1'],
+				'pl2': players['p2'],
 				'p1': [],
 				'p2': [],
-				'b1': [],
-				'b2': [],
-				'b3': [],
-				'st': [],
-				'ou': [],
-				'py': [],
-				'ef': [],
 				'e': [],
 				's': [],
+				'a': [],
+				'cr': circle_radius,
 				'end': end_winner
 			};
 			
@@ -2765,22 +1365,17 @@ if (!isMainThread){
 				
 				render_data3 = {
 					't': 0,
+					'pl1': players['p1'],
+					'pl2': players['p2'],
 					'p1': [],
-					'p2': [],
-					'b1': [],
-					'b2': [],
-					'b3': [],
-					'st': [],
-					'ou': [],
-					'py': [],
-					'ef': [],
-					'e': [],
-					's': [],
-					'tutorial': [],
-					'end': end_winner
+				'p2': [],
+				'e': [],
+				's': [],
+				'a': [],
+				'cr': circle_radius,
+				'tutorial': [],
+				'end': end_winner
 				};
-				
-				//logger.debug(tutorial_phase);
 				
 				if (game_duration == 600){
 					if (tutorial_phase[0] == 0){
@@ -2808,15 +1403,11 @@ if (!isMainThread){
 					'pl2': players['p2'],
 					'p1': [],
 					'p2': [],
-					'b1': [],
-					'b2': [],
-					'b3': [],
 					'st': [],
-					'ou': [],
-					'py': [],
-					'ef': [],
 					'e': [],
 					's': [],
+					'a': [],
+					'cr': circle_radius,
 					'end': end_winner
 				};
 				if (game_duration == 2000){
@@ -2828,9 +1419,10 @@ if (!isMainThread){
 				}
 			}
 			
-			if(game_duration > 0) {
-				process_stuff();
-			}
+		if(game_duration > 0) {
+			process_stuff();
+		}
+		update_vm_sandbox();
 			
 			user_error1 = [];
 			user_error2 = [];
@@ -2841,54 +1433,15 @@ if (!isMainThread){
 			}
 		
 			render_data3.t = game_duration;
-			render_data3.b1 = [bases[0].energy, bases[0].current_spirit_cost, bases[0].sight.enemies.length, bases[0].control];
-			render_data3.b2 = [bases[1].energy, bases[1].current_spirit_cost, bases[1].sight.enemies.length, bases[1].control];
-			render_data3.b3 = [bases[2].energy, bases[2].current_spirit_cost, bases[2].sight.enemies.length, bases[2].control];
-			render_data3.b4 = [bases[3].energy, bases[3].current_spirit_cost, bases[3].sight.enemies.length, bases[3].control];
-			
-			render_data3.ou = [outposts[0].energy, outposts[0].control];
-			render_data3.py = [pylons[0].energy, pylons[0].control];
-			
-			for (let f = 0; f < fragments.length; f++){
-				render_data3.ef.push([fragments[f].position, fragments[f].energy]);
-			}
-		
-			//broadcast to clients
-			//logger.debug(JSON.stringify(render_data2))
-			//logger.debug(render_data2);
-			//parentPort.postMessage({data: JSON.stringify(render_data2), game_id: workerData[0], meta: ''});
-			//wss.broadcast();
-			
-			update_vm_sandbox();
 
 			let user_data = {};
 			user_data[players['p1']] = chan1;
 			user_data[players['p2']] = chan2;
 
-			// FIXME - ugly hack
-			// JM:
-			// this is here so that we report the compile error BEFORE the game starts
-			// so that user has at least some feedback on the err (and time to fix it).
-			// without this, on submitting code with compile error, the user does get no
-			// feedback && the countdown continues as if no Update code btn was pressed
-			if (game_duration < 0) {
-				if(sand1.last_compile_err){
-					user_data[players['p1']] = {"err": [to_html(sand1.last_compile_err)]};
-				}
-				if(sand2.last_compile_err){
-					user_data[players['p2']] = {"err": [to_html(sand2.last_compile_err)]};
-				}
-			}
-			
 			parentPort.postMessage({data: JSON.stringify(render_data3), user_data: user_data, game_id: workerData[0], meta: ''});
-			
-			if (game_duration < 0) {
-				return;
-			}
 
 			if (workerData[1] != 'tutorial' && game_duration != 0){
 				game_file.push(render_data3);
-				//logger.debug(render_data3);
 			}
 
 			log1 = [];
@@ -2898,136 +1451,33 @@ if (!isMainThread){
 			await user_code();
 			let update_total = elapsed_ms_from(update_t0);
 
-			//logger.debug('TIME: update_state = ' + update_no_players + " (" + update_total + " total)");
 			if (update_total > 1000) cancel_game();
 	}
 	
 	
 	
 	function game_start(){
-		//map creation
-		// -----------------
-		
-		
-		// --- if tutorial --- //
-		
-		 /*
+	const start_num_cats = GAME_CONSTANTS.START_NUM_KITTENS;
 
-		for (s = 1; s < 2; s++){
-			global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [1230+s*10,620], 5, 0, players['p1'], colors['player1']);
-			spirits.push(global[players['p1'] + s]);
-			top_s = s;
-		}
+	for (let s = 1; s <= start_num_cats; s++){
+		let y = GAME_CONSTANTS.KITTEN_START_Y_OFFSET + (s - 1) * GAME_CONSTANTS.KITTEN_SPACING;
+		global[players['p1'] + s] = new Cat(players['p1'] + '_' + s, [-GAME_CONSTANTS.KITTEN_START_X, y], players['p1'], colors['player1']);
+		top_s = s;
+	}
 
-		for (q = 1; q < 2; q++){
-			global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [2820+q*10,1820], 10, 0, players['p2'], colors['player2']);
-			spirits2.push(global[players['p2'] + q]);
-			top_q = q;
-		}
-		
-		 */
-		
-		// -- //
-		
-		
-		
-		// --- if real --- //
-		
-		///*
-				
-		var start_num_spirits = 12;
-		var start_num_adjust1 = 0;
-		var start_num_adjust2 = 0;
-		if (shapes['player1'] == 'squares') start_num_adjust1 = 9;
-		if (shapes['player2'] == 'squares') start_num_adjust2 = 9;
-		if (shapes['player1'] == 'triangles') start_num_adjust1 = 6;
-		if (shapes['player2'] == 'triangles') start_num_adjust2 = 6;
+	for (let q = 1; q <= start_num_cats; q++){
+		let y = GAME_CONSTANTS.KITTEN_START_Y_OFFSET + (q - 1) * GAME_CONSTANTS.KITTEN_SPACING;
+		global[players['p2'] + q] = new Cat(players['p2'] + '_' + q, [GAME_CONSTANTS.KITTEN_START_X, y], players['p2'], colors['player2']);
+	}
 
-		if(workerData[1] == 'tutorial'){
-			start_num_adjust1 = 11;
-			start_num_adjust2 = 10;
-		}
-
-		for (s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
-			if (s > 6){
-				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [-620-s*20,-600], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
-				spirits.push(global[players['p1'] + s]);
-				top_s = s;
-			} else {
-				global[players['p1'] + s] = new Spirit(players['p1'] + '_' + s, [-750-s*20,-580], get_def_size(shapes['player1']), get_def_size(shapes['player1']) * 10, players['p1'], colors['player1'], shapes['player1']);
-				spirits.push(global[players['p1'] + s]);
-				top_s = s;
-			}
-			
-		}
-
-		for (q = 1; q < 1+start_num_spirits-start_num_adjust2; q++){
-			if (q > 6){
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [450+q*20,770], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
-				spirits2.push(global[players['p2'] + q]);
-				top_q = q;
-			} else {
-				global[players['p2'] + q] = new Spirit(players['p2'] + '_' + q, [580+q*20,750], get_def_size(shapes['player2']), get_def_size(shapes['player2']) * 10, players['p2'], colors['player2'], shapes['player2']);
-				spirits2.push(global[players['p2'] + q]);
-				top_q = q;
-			}
-		}
-		
-		//*/
-		
-		// -- //
-	
-	
-		global['base_zxq'] = new Base('base_zxq', [-650, -480], players['p1'], colors['player1'], shapes['player1']);
-		global['base_a2c'] = new Base('base_a2c', [480, 650], players['p2'], colors['player2'], shapes['player2']);
-		global['base_p89'] = new Base('base_p89', [-800, 800], '', colors['neutral'], 'neutral');
-		global['base_nua'] = new Base('base_nua', [860, -860], '', colors['neutral'], 'neutral');
-
-	
-		base_lookup['base_zxq'] = global['base_zxq'];
-		base_lookup['base_a2c'] = global['base_a2c'];
-		base_lookup['base_p89'] = global['base_p89'];
-		base_lookup['base_nua'] = global['base_nua'];
-	
-		star_zxq = new Star('star_zxq', [-1200, -340], 100, 100, 0);
-		star_lookup['star_zxq'] = star_zxq;
-	
-		star_a2c = new Star('star_a2c', [340, 1200], 100, 100, 0);
-		star_lookup['star_a2c'] = star_a2c;
-		
-		star_p89 = new Star('star_p89', [-540, 540], 0, 100, 0);
-		star_lookup['star_p89'] = star_p89;
-		
-		star_nua = new Star('star_nua', [420, -420], 0, 300, 0);
-		star_lookup['star_nua'] = star_nua;
-		
-		outpost_mdo = new Outpost('outpost_mdo', [-230, 230]);
-		outpost_lookup['outpost_mdo'] = outpost_mdo;
-		
-		pylon_u3p = new Pylon('pylon_u3p', [232, -232]);
-		pylon_lookup['pylon_u3p'] = pylon_u3p;
-
-		structure_lookup['outpost_mdo'] = outpost_mdo;
-		structure_lookup['pylon_u3p'] = pylon_u3p;
-		structure_lookup['star_zxq'] = star_zxq;
-		structure_lookup['star_a2c'] = star_a2c;
-		structure_lookup['star_p89'] = star_p89;
-		structure_lookup['star_nua'] = star_nua;
-		structure_lookup['base_zxq'] = global['base_zxq'];
-		structure_lookup['base_a2c'] = global['base_a2c'];
-		structure_lookup['base_p89'] = global['base_p89'];
-		structure_lookup['base_nua'] = global['base_nua'];
-		//structure_lookup['base_p89'] = global['base_p89'];
 	
 		mainLoop();
 	}
 
 	async function mainLoop() {
 		const t1 = (+new Date());
-		//logger.debug("tick " + workerData[0]);
 		await update_state();
 		if(game_duration % 30 == 0){
-			//logger.debug("updating game " + workerData[0]);
 			Game.updateOne({game_id: workerData[0]}, {last_update: (+new Date())}).catch(err => {
 				logger.error(err)
 			});

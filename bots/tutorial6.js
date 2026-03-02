@@ -1,13 +1,10 @@
 
-my_spirits[0].move(star_a1c.position);
-my_spirits[0].energize(my_spirits[0]);
-if (my_spirits[0].energy == my_spirits[0].energy_capacity) {
-    my_spirits[0].move(base.position)
-    my_spirits[0].energize(base);
-}
+my_cats[0].move(barricade_b.position);
+my_cats[0].pew(my_cats[0]);
 
 if (!memory['attacker']){
-    memory['attacker'] = my_spirits[1];
+    memory['attacker'] = my_cats[1];
 }
 
-memory['attacker'].move(enemy_base.position);
+memory['attacker'].move(barricade_b.position);
+memory['attacker'].pew(memory['attacker']);

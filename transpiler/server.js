@@ -15,9 +15,20 @@ const logger = pino({
 
 logger.info("Starting transpiler server")
 
+const TRANSPILER_SECRET = process.env.TRANSPILER_SECRET || 'default-transpiler-secret'
+const MAX_CODE_SIZE = 512 * 1024 // 512KB
+
 const router = new express.Router()
 
-router.use(express.json())
+router.use(express.json({ limit: '512kb' }))
+
+router.use((req, res, next) => {
+  if (req.path === '/ping') return next()
+  if (req.headers['x-transpiler-secret'] !== TRANSPILER_SECRET) {
+    return res.status(403).send('Forbidden')
+  }
+  next()
+})
 
 router.post("/ping", (req, res, next)=>{
   res.status(200).send("I'm alive!")
@@ -33,6 +44,12 @@ router.post('/transpile', function (req, res) {
   }
   let code = req.body.code
   let language = req.body.language
+  if (typeof code !== 'string' || code.length > MAX_CODE_SIZE) {
+    return res.status(400).send("Code too large or invalid")
+  }
+  if (typeof language !== 'string') {
+    return res.status(400).send("Invalid language")
+  }
   if (fs.readdirSync(`./languages`).indexOf(language+".js") === -1) {
     return res.status(400).send("Language not found")
   }

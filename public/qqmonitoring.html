@@ -5,8 +5,6 @@
 	<style>
 	</style>
 	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./style.css">
   </head>
   <body>
@@ -69,15 +67,13 @@
 
 	    }).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
 		  if (response.data == 'basic'){
 			  fill_monitoring(response);
 		  } else {
-			  console.log('something wrong with monitoring');
 		  }
 	  })
 	  .catch(error => {
-		  console.log(error);
+		  console.error(error);
 	  })
 	  
 	  
@@ -95,15 +91,13 @@
 
 	  	    }).then(response => response.json())
 	  	      .then(response => {
-	  			  console.log(response);
 				  if (response.data == 'basic'){
 					  fill_monitoring(response);
 				  } else {
-					  console.log('something wrong with monitoring');
 				  }
 			  })
 			  .catch(error => {
-				  console.log(error);
+				  console.error(error);
 			  })
 		
 		}, 10000);

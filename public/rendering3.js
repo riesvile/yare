@@ -10,8 +10,8 @@ var pointer_originX = 0;
 var pointer_originY = 0;
 var pointer_offsetX = 0;
 var pointer_offsetY = 0;
-var current_offsetX = 800;
-var current_offsetY = 900;
+var current_offsetX = innerWidth / 2;
+var current_offsetY = innerHeight / 2;
 var panning = 0;
 var disableSelection = 0;
 
@@ -20,90 +20,35 @@ var board_y = 0;
 var pointing_at_x = 0;
 var pointing_at_y = 0;
 
-function baseOffsetUpdate(){
-	world_bases = bases.length;
-	for (i = 0; i < world_bases; i++){
-		c_base.clearRect(base_lookup[bases[i].id].position[0] - 40, base_lookup[bases[i].id].position[1] - 40, base_lookup[bases[i].id].position[0] + 40, base_lookup[bases[i].id].position[0] + 40);
-		base_lookup[bases[i].id].draw();
-	}
-	
-	//draw_grid();
-}
-
-
 function offsetUpdate(){
-	
-	//c_base.fillStyle = 'rgba(6,8,100,0.1)'
 	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
-	
-	//c.fillStyle = 'rgba(6,8,100,0.1)';
 	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
-	
-	//c.setTransform(1, 0, 0, 1, 0, 0);
-	c_base.setTransform(scale, 0, 0, scale, 0, 0);
+	c_base.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
 	c_base.translate(offsetX, offsetY);
-	//c.translate(offsetX, offsetY);
 	
-	//world_spirits = living_spirits.length;
-	//for (i = 0; i < world_spirits; i++){
-	//	spirits[living_spirits[i].id].draw();
-	//}
-	
-	if (live_render == 0) draw_boxsand_bg;
+	if (live_render == 0) draw_boxsand_bg();
 	if (live_render == 1) draw_bg_grad();
 	
-	world_stars = stars.length;
-	for (i = 0; i < world_stars; i++){
-		star_lookup[stars[i].id].draw();
+	for (i = 0; i < barricades.length; i++){
+		draw_barricade(barricades[i]);
 	}
-	
-	//world_bases = bases.length;
-	//for (i = 0; i < world_bases; i++){
-	//	base_lookup[bases[i].id].draw();
-	//}
-	
-	//draw_grid();
-	//if (live_render == 0) render_state();
-	
+	for (i = 0; i < pods.length; i++){
+		draw_pod(pods[i]);
+	}
 }
 
 function zoomUpdate(){
-	
-	//console.log('zooming');
-	
-	
-	//c.setTransform(1, 0, 0, 1, 0, 0);
-	c_base.setTransform(scale, 0, 0, scale, 0, 0);
+	c_base.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
 	c_base.translate(offsetX, offsetY);
 	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
-	//if (live_render == 0){
-	//	c.setTransform(scale, 0, 0, scale, 0, 0);
-	//	c.translate(offsetX, offsetY);
-	//	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
-	//}
-	
-	//draw_bg_grad();
-	//world_spirits = living_spirits.length;
-	//for (i = 0; i < world_spirits; i++){
-	//	spirits[living_spirits[i].id].draw();
-	//}
-	
-	world_stars = stars.length;
-	for (i = 0; i < world_stars; i++){
-		star_lookup[stars[i].id].draw();
+	for (i = 0; i < barricades.length; i++){
+		draw_barricade(barricades[i]);
 	}
-	
-	//world_bases = bases.length;
-	//for (i = 0; i < world_bases; i++){
-	//	base_lookup[bases[i].id].draw();
-	//}
-	
-	//draw_grid();
-	
-	//if (live_render == 0) render_state();
-	
+	for (i = 0; i < pods.length; i++){
+		draw_pod(pods[i]);
+	}
 }
 
 function rgb_to_hsl(r,g,b) {
@@ -161,7 +106,6 @@ function draw_boxsand_bg(){
 function draw_bg_grad(){
 	
 	//let corner1_parts
-	//console.log(corner1_parts);
 	
 	var grdddd = c.createLinearGradient(-650, -480, 480, 650);
 	//grdddd.addColorStop(0, "hsla(0, 50%, 20%, 1)");
@@ -174,6 +118,19 @@ function draw_bg_grad(){
 	//c.fillRect(-2000, -2000, 2000, 2000);
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 	
+}
+
+function draw_circle_zone(radius){
+	if (radius == null) return;
+	c.save();
+	c.beginPath();
+	var vw = main_canvas.width * multiplier * 1.2;
+	var vh = main_canvas.height * multiplier * 1.2;
+	c.rect(-offsetX, -offsetY, vw, vh);
+	c.arc(0, 0, radius, 0, Math.PI * 2, true);
+	c.fillStyle = 'hsla(1, 100%, 72%, 0.12)';
+	c.fill();
+	c.restore();
 }
 
 
@@ -196,7 +153,7 @@ function pinchMove(e){
 	    e.touches[0].pageY - e.touches[1].pageY) - dist_init
 		
 	scale = prevScale + (dist / 1000);
-	scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
+	scale = Math.round(Math.min(Math.max(.5, scale), 1.25) * 100) / 100;
 	multiplier = 1 / scale;
 	
     offsetX = prev_offsetX + (xxx * 1/scale) - (xxx * 1/prevScale);
@@ -215,30 +172,22 @@ function onPointerDown(e){
 		    pinchStart(e);
 		}
 	} catch (e) {
-		//console.log(e);
 	}
 	
-	//console.log(e);
 	if (scaling != true){
 		var el_id = (e.target || e.srcElement).id;
-		//console.log('down id= ' + el_id);
 	
-		//console.log('el_id = ' + el_id);
 		if (el_id == 'panel_dragger'){
 			disableSelection = 1;
 			panel_dragging = 1;
-			//console.log('panel_el.style = ');
-			//console.log(panel_el.getBoundingClientRect());
 			panel_el_widtho = panel_el.getBoundingClientRect().width;
 		} else if (el_id == 'replay_timeline'){
 			dragging_timeline = 1;
   	  	    percent_current = ((e.clientX - timeline_el_bound.left) / timeline_el_bound.width) * 100;
 			update_tick(e.clientX);
-  	        //console.log('You clicked to ', (e.clientX - bcr.left) / bcr.width);
 		} else if (el_id != 'base_canvas'){
 			return;
 		} else if (el_id == 'tutorial_wrap' || el_id == 'tut_helper'){
-			//console.log('thissisis');
 			disableSelection = 0;
 		} else {
 			disableSelection = 1;
@@ -259,7 +208,6 @@ function onPointerDown(e){
 		}
 	
 		hide_hover();
-		//console.log('mouse down');
 		pointer_originX = x;
 		pointer_originY = y;
 		current_offsetX = offsetX;
@@ -270,7 +218,6 @@ function onPointerDown(e){
 
 function onPointerMove(e){
 	e = e || window.event;
-	//console.log(panel_dragging);
 	
 	
 	
@@ -299,15 +246,11 @@ function onPointerMove(e){
 		
 	
 	
-		if (mousey == 1){
-			//console.log('mouse moving');
-			panning = 1;
-			//console.log(x + " / " + y);
-			
-			if (panel_dragging == 1){
-				//console.log('dragging panel');
-				//console.log('x delta = ' + (x - pointer_originX));
-				let panel_width_delta = x - pointer_originX;
+	if (mousey == 1){
+		panning = 1;
+		
+		if (panel_dragging == 1){
+			let panel_width_delta = x - pointer_originX;
 				let new_panel_width = panel_el_widtho + panel_width_delta;
 				
 				if (new_panel_width < 100){
@@ -335,8 +278,6 @@ function onPointerMove(e){
 		} else {
 			board_x = x*multiplier - offsetX;
 			board_y = y*multiplier - offsetY;
-			//console.log('x = ' + board_x);
-			//console.log('y = ' + board_y);
 		
 			pointing_at_x = x;
 			pointing_at_y = y;
@@ -346,12 +287,10 @@ function onPointerMove(e){
 		
 		}
 	}
-	//console.log(disableSelection);
 	
 }
 
 function onPointerUp(e){ 
-	//console.log('mouse up');
 	if (scaling) {
 	    //pinchEnd(e);
 	    scaling = false;
@@ -371,8 +310,6 @@ function getMousePos(e) {
 
 function fill_hover_thing(xx, yy, board_xx, board_yy){
 	if (live_render == 0){
-		//console.log('xx, yy = ' + xx + ', ' + yy);
-		//console.log('board_xx, board_yy = ' + board_xx + ', ' + board_yy);
 		//return;
 	}
 	
@@ -382,34 +319,16 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 		hoveroid.style.left = xx + 'px';
 		let hover_content = [];
 	
-		for (i = 0; i < living_spirits.length; i++){
-			if(living_spirits[i].hp == 0) continue;
-			if (Math.abs(living_spirits[i].position[0] - board_xx) <= 10 && Math.abs(living_spirits[i].position[1] - board_yy) <= 10){
-				hover_content.push(['spirit', living_spirits[i].id, Math.floor(living_spirits[i].energy)]);
+		for (i = 0; i < living_cats.length; i++){
+			if(living_cats[i].hp == 0) continue;
+			if (Math.abs(living_cats[i].position[0] - board_xx) <= 10 && Math.abs(living_cats[i].position[1] - board_yy) <= 10){
+				hover_content.push(['cat', living_cats[i].id, Math.floor(living_cats[i].energy)]);
 			}
 		}
 	
-		for (b = 0; b < bases.length; b++){
-			if (Math.abs(bases[b].position[0] - board_xx) <= 30 && Math.abs(bases[b].position[1] - board_yy) <= 30){
-				hover_content.push(['base', bases[b].id, Math.floor(bases[b].energy), bases[b].position, bases[b].def_status, bases[b].current_spirit_cost, bases[b].control]);
-			}
-		}
-	
-		for (s = 0; s < stars.length; s++){
-			if (Math.abs(stars[s].position[0] - board_xx) <= 50 && Math.abs(stars[s].position[1] - board_yy) <= 50){
-				hover_content.push(['star', stars[s].id, stars[s].energy]);
-			}
-		}
-	
-		for (o = 0; o < outposts.length; o++){
-			if (Math.abs(outposts[o].position[0] - board_xx) <= 50 && Math.abs(outposts[o].position[1] - board_yy) <= 50){
-				hover_content.push(['outpost', outposts[o].control, outposts[o].energy]);
-			}
-		}
-		
-		for (p = 0; p < pylons.length; p++){
-			if (Math.abs(pylons[p].position[0] - board_xx) <= 50 && Math.abs(pylons[p].position[1] - board_yy) <= 50){
-				hover_content.push(['pylon', pylons[p].control, pylons[p].energy]);
+		for (s = 0; s < barricades.length; s++){
+			if (Math.abs(barricades[s][0] - board_xx) <= 80 && Math.abs(barricades[s][1] - board_yy) <= 80){
+				hover_content.push(['barricade', 'barricade']);
 			}
 		}
 	
@@ -418,55 +337,29 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			hide_hover();
 		} else if (hover_content.length == 1){
 			show_hover();
-			if (hover_content[0][0] == 'spirit'){
-				hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + "</span><span class='spirit_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
-			} else if (hover_content[0][0] == 'base'){
-				let base_control = hover_content[0][6];
-				if (base_control == ''){
-					base_control = 'neutral';
-					hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + " · </span>" + base_control;
-				} else {
-					hoveroid.innerHTML = "<span class='base_id'><span class='lowlight'>" + hover_content[0][1] + " · </span>" + hover_content[0][6] + "<span class='base_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
-					hoveroid.innerHTML += "<span class='new_when'>new spirit at <span class='highlight'>" + hover_content[0][5] + "</span></span>"
-					if (hover_content[0][4] == 1){
-						hoveroid.innerHTML += "<span class='under_attack'>enemies in sight, production paused</span>"
-					}
-				}
-				hoveroid.style.bottom = window.innerHeight - yy - 20 + 'px';
-				hoveroid.style.left = xx + 50 + 'px';
-			} else if (hover_content[0][0] == 'star'){
-				hoveroid.innerHTML = "<span class='star_id'>" + hover_content[0][1] + "</span>";
-				hoveroid.innerHTML += "<span class='star_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
-				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
-				hoveroid.style.left = xx - 20 + 'px';
-			} else if (hover_content[0][0] == 'outpost'){
-				hoveroid.innerHTML = "<span class='outpost_control'>outpost_mdo <span class='lowlight'> " + hover_content[0][1] + "</span></span>";
-				hoveroid.innerHTML += "<span class='outpost_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
-				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
-				hoveroid.style.left = xx - 20 + 'px';
-			} else if (hover_content[0][0] == 'pylon'){
-				hoveroid.innerHTML = "<span class='pylon_control'>pylon_u3p <span class='lowlight'> " + hover_content[0][1] + "</span></span>";
-				hoveroid.innerHTML += "<span class='pylon_energy'>" + hover_content[0][2] + "<span class='lowlight'> energy</span></span>";
-				hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
-				hoveroid.style.left = xx - 20 + 'px';
-			}
+		if (hover_content[0][0] == 'cat'){
+			hoveroid.innerHTML = "<span class='cat_id'>" + hover_content[0][1] + "</span><span class='cat_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
+		} else if (hover_content[0][0] == 'barricade'){
+			hoveroid.innerHTML = "<span class='barricade_id'>" + hover_content[0][1] + "</span>";
+			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+			hoveroid.style.left = xx - 20 + 'px';
+		}
 		} else if (hover_content.length > 4){
 			show_hover();
 			var total_eng = 0;
 			for (j = 0; j < hover_content.length; j++){
 				total_eng += hover_content[j][2];
 			}
-			hoveroid.innerHTML = "<span class='spirit_id'>" + hover_content[0][1] + " + " + (hover_content.length - 1) + " spirits</span><span class='spirit_energy'>" + total_eng + " <span class='lowlight'>total energy</span></span>";
+			hoveroid.innerHTML = "<span class='cat_id'>" + hover_content[0][1] + " + " + (hover_content.length - 1) + " cats</span><span class='cat_energy'>" + total_eng + " <span class='lowlight'>total energy</span></span>";
 		} else {
 			show_hover();
 			var temp_fill = '';
 			for (j = 0; j < hover_content.length; j++){
-				temp_fill += "<span class='spirit_id'>" + hover_content[j][1] + "<span class='lowlight'> · " + hover_content[j][2] + "</span></span>"
+				temp_fill += "<span class='cat_id'>" + hover_content[j][1] + "<span class='lowlight'> · " + hover_content[j][2] + "</span></span>"
 			}
 			hoveroid.innerHTML = temp_fill;
 		}
 	} catch (e) {
-		console.log(e);
 	}
 	
 	
@@ -476,27 +369,11 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 function zoom(event) {
   event.preventDefault();
   prevScale = scale;
-  scale += event.deltaY * -0.005;
-  //multiplier += event.deltaY * 0.005;
+  scale += event.deltaY * -0.002;
 
   // Restrict scale
-  scale = Math.round(Math.min(Math.max(.5, scale), 2) * 100) / 100;
+  scale = Math.round(Math.min(Math.max(.5, scale), 1.25) * 100) / 100;
   multiplier = 1 / scale;
-  
-  if (scale > 1.7){
-	  document.getElementById('game_hover').style.fontSize = "15px";
-	  document.getElementById('game_hover').style.lineHeight = "20px";
-  } else if (scale > 1.3){
-	  document.getElementById('game_hover').style.fontSize = "13px";
-	  document.getElementById('game_hover').style.lineHeight = "18px";
-  } else {
-  	document.getElementById('game_hover').style.fontSize = "11px";
-  }
- 
-  //console.log('scale = ' + scale);
-  //console.log('prevscale = ' + prevScale);
-  //console.log('scale/prev = ' + (scale/prevScale));
-  //console.log('multiplier = ' + multiplier);
   
   
   
@@ -504,7 +381,6 @@ function zoom(event) {
   	
   } else {
 	  var mousePos = getMousePos(event);
-	  //console.log(mousePos.x);
 	  
 	  //(mousePos.x * scale) - (mousePos.x * prevScale)
   
@@ -589,7 +465,7 @@ try {
 
 	}, false);
 } catch (e) {
-	console.log(e)
+	console.error(e)
 }
 
 
@@ -598,25 +474,6 @@ try {
 
 
 // Console 
-
-//function console_toggle(){
-//	var console_content_height = document.getElementById("console_in").clientHeight;
-//	if (document.getElementById("console").classList.contains("collapsed")){
-//		console_expanding(console_content_height);
-//		cnsl_expanded = 1;
-//	} else {
-//		console_collapsing(console_content_height);
-//		cnsl_expanded = 0;
-//	}
-//	
-//	
-//	document.getElementById("console").classList.toggle("collapsed");
-//	
-//	
-//	
-//}
-//
-//document.getElementById("console_head").addEventListener("click", console_toggle, false);
 
 
 
@@ -628,20 +485,25 @@ const main_canvas = document.getElementById('main_canvas');
 const base_canvas = document.getElementById('base_canvas');
 const c = main_canvas.getContext('2d');
 const c_base = base_canvas.getContext('2d');
-main_canvas.width = innerWidth;
-main_canvas.height = innerHeight;
-base_canvas.width = innerWidth;
-base_canvas.height = innerHeight;
-c.scale (1, 1);
-c_base.scale (1, 1);
+var dpr = window.devicePixelRatio || 1;
+main_canvas.width = innerWidth * dpr;
+main_canvas.height = innerHeight * dpr;
+base_canvas.width = innerWidth * dpr;
+base_canvas.height = innerHeight * dpr;
+main_canvas.style.width = innerWidth + 'px';
+main_canvas.style.height = innerHeight + 'px';
+base_canvas.style.width = innerWidth + 'px';
+base_canvas.style.height = innerHeight + 'px';
+c.scale(dpr, dpr);
+c_base.scale(dpr, dpr);
 
 //c.globalCompositeOperation = 'screen';
 
 base_canvas.onwheel = zoom;
 //c.translate(800, 900);
 
-var offsetX = 0;
-var offsetY = 0;
+var offsetX = innerWidth / 2;
+var offsetY = innerHeight / 2;
 var scale = 1;
 var prev_scale = 1;
 var z_level = 1;
@@ -650,30 +512,20 @@ var multiplier = 1;
 
 var fps = 60;
 
-var living_spirits = [];
-var stars = [];
-var bases = [];
-var outposts = [];
-var pylons = [];
-var fragments = [];
-var spirits = {};
-var star_lookup = {};
-var base_lookup = {};
-var outpost_lookup = {};
-var pylon_lookup = {};
-var structure_lookup = {};
+var living_cats = [];
+var barricades = [[0, -200], [0, 200], [370, 0], [-370, 0]];
+var pods = [[-110, -300], [110, -300], [-260, 320], [260, 320], [-500, 84], [500, 84]];
+var cats = {};
+var barricade_lookup = {};
 
 var player1_color;
 var player2_color;
 
 var colors = {};
-var shapes = {};
 var players = {};
 colors['color1'] = 'rgba(128,140,255,1)';
 colors['color2'] = 'rgba(232,97,97,1)';
 colors['neutral'] = 'rgba(160, 168, 180, 1)';
-shapes['shape1'] = 'circles';
-shapes['shape2'] = 'circles';
 players['player1'] = 'pl1';
 players['player2'] = 'pl2';
 
@@ -714,29 +566,6 @@ function get_triangle(centerx, centery, radius){
 	
 	  return [sx1, sy1, sx2, sy2, sx3, sy3];
 }
-
-function draw_triangle(x, y, width, height, px1, py1, px2, py2, px3, py3, angle = 0){
-	
-  let triangle = get_triangle(x, y, 20);
-	
-	
-  
-  c.save();
-  c.translate(x+width/2, y+height/2 );
-  c.rotate(angle*Math.PI/180);
-  c.beginPath();
-  c.moveTo(triangle[0], triangle[1]);
-  c.lineTo(triangle[2], triangle[3]);
-  c.lineTo(triangle[4], triangle[5]);
-  c.lineTo(triangle[0], triangle[1]);
-  c.rect(-width/2, -height/2, width, height);
-  c.closePath();
-  c.lineWidth = 4;
-  c.stroke();
-  c.restore();
-  
-}
-
 
 function draw_polygon(centerX,centerY,sideCount,size,strokeWidth,strokeColor,fillColor,rotationDegrees){
     var radians=rotationDegrees*Math.PI/180;
@@ -800,11 +629,10 @@ function game_over(winner){
         .then(response => {
 		  p111_rating = response.p1_rating;
 		  p222_rating = response.p2_rating;
-  		  //console.log(response);
 	  	  //document.getElementById('player1_rating').innerHTML = p111_rating + "<span class='player_delta' id='player1_delta'>+10</span>";
 	  	  //document.getElementById('player2_rating').innerHTML = p222_rating + "<span class='player_delta' id='player1_delta'>-9</span>";
-	  	  document.getElementById('player1_shape').innerHTML = "<span class='ico_" + shapes['shape1'] + "' style='background-color: " + colors['color1'] + "'></span>";
-	  	  document.getElementById('player2_shape').innerHTML = "<span class='ico_" + shapes['shape2'] + "' style='background-color: " + colors['color2'] + "'></span>";
+	  	  document.getElementById('player1_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color1'] + "'></span>";
+	  	  document.getElementById('player2_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color2'] + "'></span>";
 		  
 		  setTimeout(function(){
 		  	
@@ -842,7 +670,7 @@ function game_over(winner){
   			  	  document.getElementById('player2_rating').innerHTML = p222_rating + p222_delta_string;
   	    	  })
   	          .catch(err => {
-  	    		  console.log(err);
+  	    		  console.error(err);
   	    	  });
 			
 		  }, 1000);
@@ -850,7 +678,7 @@ function game_over(winner){
 	    	
   	  })
         .catch(err => {
-  		  console.log(err);
+  		  console.error(err);
   	  });
 	
 	if (tutorial_phase > 1){
@@ -884,161 +712,99 @@ function game_over(winner){
 }
 
 
-function draw_grid(){
-	for (i = 0; i < 100; i++){
-		for (j = 0; j < 100; j++){
-			c_base.beginPath();
-			c_base.arc(i*100, j*100, 1, 0, Math.PI * 2, false);
-			c_base.fillStyle = "rgba(244, 246, 248, 0.16)";
-			c_base.fill();
-		}
-	}
-}
-
 function resolve_energy_point(energy_point){
 	if (Array.isArray(energy_point)){
-		//console.log('energy_point is array');
 		return energy_point;
-	} else if (energy_point.startsWith('base')){
-		return base_lookup[energy_point];
-	} else if (energy_point.startsWith('star')){
-		return star_lookup[energy_point];
-	} else if (energy_point.startsWith('outpost')){
-		return outpost_lookup[energy_point];
-	} else if (energy_point.startsWith('pylon')){
-		return pylon_lookup[energy_point];
 	} else {
-		return spirits[energy_point];
-		console.log(spirits[energy_point]);
+		return cats[energy_point];
 	}
 }
 
-function create_spirit_p1(spir_id){
+function create_cat_p1(spir_id){
 	
 	var spir_position = [game_blocks['t' + tick_counter].p1[spir_id][0][0], game_blocks['t' + tick_counter].p1[spir_id][0][1]];
-	if (shapes['shape1'] == 'circles') var spir_size = 1;
-	if (shapes['shape1'] == 'squares') var spir_size = 10;
-	if (shapes['shape1'] == 'triangles') var spir_size = 3;
-	var spir_energy = game_blocks['t' + tick_counter].p1[spir_id][2];
-	var spir_hp = game_blocks['t' + tick_counter].p1[spir_id][3];
+	var spir_energy = game_blocks['t' + tick_counter].p1[spir_id][1];
+	var spir_hp = game_blocks['t' + tick_counter].p1[spir_id][2];
 	var spir_player = pla1;
 	var spir_color = colors['color1'];
-	//console.log(spir_color);
-	var spir_shape = shapes['shape1'];
-	
-	if (game_type == 'tutorial'){
-		spir_size = 5;
-	}
 
-	/*
-	if (spir_id.startsWith(pla1)) {
-	 var spir_diff = spir_id.substring(pla1.length);
-	 if (/^\d+$/.test(spir_diff)){
-	 	 spir_player = pla1;
-		 spir_color = colors['color1'];
-	 } else {
-		 spir_player = pla2;
-		 spir_color = colors['color2'];
-	 }
-	} else {
-	 spir_player = pla2;
-	 spir_color = colors['color2'];
-	}
-	*/
-
-	//console.log('creating spirit ' + spir_id);
-	spirits[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
-	//console.log(spirits[spir_id]);
+	cats[spir_id] = new Cat(spir_id, spir_position, spir_energy, spir_player, spir_color, spir_hp);
 }
 
-function create_spirit_p2(spir_id){
-	
-	//console.log('creating spirit p2');
+function create_cat_p2(spir_id){
 	
 	var spir_position = [game_blocks['t' + tick_counter].p2[spir_id][0][0], game_blocks['t' + tick_counter].p2[spir_id][0][1]];
-	if (shapes['shape2'] == 'circles') var spir_size = 1;
-	if (shapes['shape2'] == 'squares') var spir_size = 10;
-	if (shapes['shape2'] == 'triangles') var spir_size = 3;
-	var spir_energy = game_blocks['t' + tick_counter].p2[spir_id][2];
-	var spir_hp = game_blocks['t' + tick_counter].p2[spir_id][3];
+	var spir_energy = game_blocks['t' + tick_counter].p2[spir_id][1];
+	var spir_hp = game_blocks['t' + tick_counter].p2[spir_id][2];
 	var spir_player = pla2;
 	var spir_color = colors['color2'];
-	var spir_shape = shapes['shape2'];
 
-	if (game_type == 'tutorial'){
-		spir_size = 5;
-	}
-
-	/*
-	if (spir_id.startsWith(pla1)) {
-	 var spir_diff = spir_id.substring(pla1.length);
-	 if (/^\d+$/.test(spir_diff)){
-	 	 spir_player = pla1;
-		 spir_color = colors['color1'];
-	 } else {
-		 spir_player = pla2;
-		 spir_color = colors['color2'];
-	 }
-	} else {
-	 spir_player = pla2;
-	 spir_color = colors['color2'];
-	}
-	*/
-
-	//console.log('creating spirit ' + spir_id);
-	spirits[spir_id] = new Spirit(spir_id, spir_position, spir_size, spir_energy, spir_player, spir_color, spir_shape, spir_hp);
-	
+	cats[spir_id] = new Cat(spir_id, spir_position, spir_energy, spir_player, spir_color, spir_hp);
 }
 
 
-class Spirit {
-	constructor(id, position, size, energy, player, color, shape, hp = 1){
-		this.shape = shape;
+var _catFillSvgTpl = '<svg width="21" height="21" viewBox="-0.5 -0.5 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.6445 5.17578C18.0479 6.74947 18.9023 8.82418 18.9023 11.0986C18.9019 16.0153 14.9158 20.002 9.99902 20.002C5.08227 20.0019 1.09616 16.0153 1.0957 11.0986C1.0957 9.09433 1.75828 7.24387 2.87598 5.75586V0L7.3623 2.5918C8.19545 2.33384 9.08111 2.19533 9.99902 2.19531C10.8001 2.19531 11.576 2.30259 12.3145 2.50098L16.6445 0V5.17578ZM7.3291 7.53711C6.34577 7.53711 5.54897 8.33408 5.54883 9.31738C5.54883 10.3008 6.34568 11.0986 7.3291 11.0986C8.31249 11.0986 9.10938 10.3008 9.10938 9.31738C9.10924 8.3341 8.31241 7.53714 7.3291 7.53711ZM12.6709 7.53711C11.6876 7.53714 10.8908 8.3341 10.8906 9.31738C10.8906 10.3008 11.6875 11.0986 12.6709 11.0986C13.6543 11.0986 14.4512 10.3008 14.4512 9.31738C14.451 8.33408 13.6542 7.53711 12.6709 7.53711Z" fill="FILL_COLOR"/></svg>';
+
+var _catOutlineSvgTpl = '<svg width="22" height="22" viewBox="-1 -1 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.6445 5.17578C18.048 6.7495 18.9023 8.82408 18.9023 11.0986C18.9022 16.0156 14.916 20.002 9.99902 20.002C5.08205 20.002 1.09589 16.0156 1.0957 11.0986C1.0957 9.09416 1.75811 7.24394 2.87598 5.75586V0.00195312L7.3623 2.5918C8.19549 2.33383 9.08106 2.19531 9.99902 2.19531C10.8001 2.19531 11.576 2.30259 12.3145 2.50098L16.6445 0.00195312V5.17578Z" fill="none" stroke="STROKE_COLOR" stroke-width="1"/></svg>';
+
+var _catImageCache = {};
+
+function getCatImages(colorStoreStr) {
+	if (_catImageCache[colorStoreStr]) return _catImageCache[colorStoreStr];
+
+	var parts = colorStoreStr.match(/[.?\d]+/g);
+	var rgb = 'rgb(' + parts[0] + ',' + parts[1] + ',' + parts[2] + ')';
+
+	var fillSvg = _catFillSvgTpl.replace('FILL_COLOR', rgb);
+	var outlineSvg = _catOutlineSvgTpl.replace('STROKE_COLOR', rgb);
+
+	var fillImg = new Image();
+	fillImg.src = 'data:image/svg+xml,' + encodeURIComponent(fillSvg);
+
+	var outlineImg = new Image();
+	outlineImg.src = 'data:image/svg+xml,' + encodeURIComponent(outlineSvg);
+
+	_catImageCache[colorStoreStr] = { fill: fillImg, outline: outlineImg };
+	return _catImageCache[colorStoreStr];
+}
+
+
+class Cat {
+	constructor(id, position, energy, player, color, hp = 1){
 		this.id = id
 		this.position = position;
-		this.size = size;
-		this.final_size = size;
 		this.energy = energy;
 		this.color = color;
 		this.color_store = color;
 		
 		//const properties
 		this.hp = hp;
-		this.energy_capacity = size * 10;
+		this.energy_capacity = 10;
 		this.player_id = player;
-		//this.player_id = player; set up later
-		living_spirits.push(this);
-		this.temp_size = size;
+		living_cats.push(this);
 		
 		this.shout = '';
-		this.tria = 0;
+		this.tria = -90;
 		this.exploding = 0;
+		this.dying = 0;
+		this.death_start = 0;
 	}
 
 	move(origin, incr) {
 		if (live_render == 0) return;
 		
-		if (Math.abs(incr[0]) >= 50 && Math.abs(incr[1]) >= 50){
-			//console.log('spirit jumping');
-			this.size = 1;
-		} else {
-			this.size = this.temp_size;
-		}
-		
 		this.position = origin;
 		this.position[0] = origin[0] + (incr[0] * (total_time / game_tick));
 		this.position[1] = origin[1] + (incr[1] * (total_time / game_tick));
 		
-		//console.log('total_time = ' + total_time);
-		//console.log('game_tick = ' + game_tick);
-		//console.log(total_time / game_tick);
-		
-		if (this.shape == 'triangles') this.tria = calcAngleDegrees(incr[0], incr[1]);
+		if (incr[0] !== 0 || incr[1] !== 0) {
+			this.tria = calcAngleDegrees(incr[0], incr[1]);
+		}
 		
 		
 	}
 	
-	energize(prev_energy, new_energy, hp){
+	pew(prev_energy, new_energy, hp){
 		if (live_render == 0) return;
 		if (this.exploding == 1){
 			setTimeout(function(){
@@ -1050,27 +816,13 @@ class Spirit {
 			this.energy = prev_energy;
 			this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / game_tick));
 		
-			if (hp == 0){
-				//console.log('death calling');
-				var that = this;
-				var counter_death = 0;
-				var alpha = 8;
-				var start_size = this.size;
-				var interval_death = setInterval(function() {
-				    if (counter_death > 8) {
-						//var index = living_spirits.findIndex(x => x.id == that.id);
-						//living_spirits.splice(index);
-				        clearInterval(interval_death);
-						that.hp = 0;
-				    }
-					that.size += 0.1 * start_size; //that.size + (0.1 * that.size);
-					that.color = that.color.replace(/[^,]+(?=\))/, alpha/8);
-					counter_death++;
-					alpha--;
-				}, 16);
+			if (hp == 0 && this.dying == 0){
+				this.dying = 1;
+				this.death_start = performance.now();
 			}
 		} else if (hp != 0){
 			this.hp = 1;
+			this.dying = 0;
 			this.energy = new_energy;
 			this.color = this.color_store;
 		}
@@ -1080,10 +832,7 @@ class Spirit {
 	merge(target) {
 		var that = this;
 		var counter_merge = 0;
-		var origin_size_decr = that.size/10;
-		var new_size = this.size + target.size;
 		var increment = [0, 0];
-		target.final_size += that.size;
 		
 		that.hp = 0;
 		
@@ -1096,23 +845,12 @@ class Spirit {
 		target.energy += that.energy;
 		
 		var interval_merge = setInterval(function() {
-		    
-			target.size += origin_size_decr; 
 			that.position[0] += increment[0];
 			that.position[1] += increment[1];
-			//console.log('dddd');
-			that.size -= origin_size_decr;
-			if (that.size <= 0) that.size = 0;
-			
 			
 		    if (counter_merge > 9) {
 		        clearInterval(interval_merge);
-				target.size = target.final_size;
-				//console.log('target.size final');
-				//console.log(target.size);
 				that.energy = 0;
-				//console.log('merged spirit');
-				//console.log('')
 		    }
 			
 			counter_merge++;
@@ -1121,56 +859,16 @@ class Spirit {
 		
 	}
 	
-	size_change(prev_size, new_size){
-		if (prev_size != new_size){
-			//console.log('changing size from ' + prev_size + ' to ' + new_size);
-			this.size = prev_size;
-			this.size = prev_size + ((new_size - prev_size) * (total_time / game_tick));
-			this.energy_capacity = (prev_size * 10) + ((new_size - prev_size) * 10) * (total_time / game_tick);
-		} else if (new_size != this.size){
-			this.size = new_size;
-		}
-	}
-	
-	
-	
 	divide(){
 		var that = this;
-		var color_parts = this.color.match(/[.?\d]+/g);
-		var counter_divide = 0;
 		var original_energy = that.energy;
-		var original_energy_capacity = that.energy_capacity
-		var original_size = that.size;
-		var size_decr = (original_size - 1)/10
 		
-		//console.log('size before divide')
-		//console.log(original_size);
-		
-		var interval_divide = setInterval(function() {
-			that.size -= size_decr;
-		    if (counter_divide > 10) {
-				that.size = 1;
-				that.final_size = 1;
-		        clearInterval(interval_divide);
-		    }
-			
-			counter_divide++;
-		}, 16);
-		
-		
-		that.energy = original_energy / original_size;
-		//console.log('that.original_energy_capacity = ' + original_energy_capacity);
-		//console.log('that.original_size = ' + original_size);
-		//console.log('that.energy_capacity = ' + that.energy_capacity);
-		that.energy_capacity = original_energy_capacity / original_size;
-		//console.log('that.energy_capacity = ' + that.energy_capacity);
-		//var spirit_percent_energy = this.energy / this.energy_capacity;
+		that.energy = original_energy / 2;
 	}
 	
 	explode(){
 		var color_parts = this.color.match(/[.?\d]+/g);
 		if (!explosions[this.id]) explosions[this.id] = 4;
-		//console.log(explosions[this.id]);
 		explosions[this.id] *= 1.1;
 		//let that = this;
 		//let counter_explosion = 0;
@@ -1183,7 +881,6 @@ class Spirit {
 		//	that.size += 1;
 		//	
 		//}, 16);
-		//console.log('calling explode')
 		var draw_alpha = color_parts[3] * (1 - explosions[this.id] / 100);
 		if (explosions[this.id] >= 100) draw_alpha = 0;
 		
@@ -1195,118 +892,96 @@ class Spirit {
 	
 	
 	death() {
-		var that = this;
-		var counter_death = 0;
-		var alpha = 8;
-		var start_size = this.size;
-		var interval_death = setInterval(function() {
-		    if (counter_death > 8) {
-				//var index = living_spirits.findIndex(x => x.id == that.id);
-				//living_spirits.splice(index);
-		        clearInterval(interval_death);
-				that.hp = 0;
-		    }
-			that.size += 0.1 * start_size //that.size + (0.1 * that.size);
-			that.color = that.color.replace(/[^,]+(?=\))/, alpha/8);
-			counter_death++;
-			alpha--;
-		}, 16);
-		
-		//this.hp = 0;
-		
+		if (this.dying == 0){
+			this.dying = 1;
+			this.death_start = performance.now();
+		}
 	}
 	
 	draw() {
-		
+		if (this.dying){
+			var dt = performance.now() - this.death_start;
+			var duration = 380;
+			if (dt >= duration){
+				this.hp = 0;
+				this.dying = 0;
+				return;
+			}
+			var t = dt / duration;
+			var cp = this.color_store.match(/[.?\d]+/g);
+			var r = Number(cp[0]);
+			var g = Number(cp[1]);
+			var b = Number(cp[2]);
+
+			var scale_factor = 1 + t * 1.05;
+			var fade = t < 0.08 ? 1 : 1 - Math.pow((t - 0.08) / 0.92, 0.6);
+			fade = Math.max(0, fade);
+			var flash_ramp = t < 0.1 ? t / 0.1 : 1;
+			var flash_decay = t < 0.25 ? 1 - (t / 0.25) : 0;
+			var flash = 1 + flash_ramp * flash_decay * 0.6;
+
+			var drawSize = 20 * scale_factor;
+			var halfSize = drawSize / 2;
+			var imgs = getCatImages(this.color_store);
+
+			c.save();
+			c.translate(this.position[0], this.position[1]);
+			c.rotate((this.tria + 90) * Math.PI / 180);
+
+			if (imgs.fill.complete && imgs.fill.naturalWidth > 0) {
+				c.globalAlpha = fade * 0.9;
+				c.drawImage(imgs.fill, -halfSize, -halfSize, drawSize, drawSize);
+			}
+			if (imgs.outline.complete && imgs.outline.naturalWidth > 0) {
+				c.globalAlpha = fade;
+				c.drawImage(imgs.outline, -halfSize, -halfSize, drawSize, drawSize);
+			}
+
+			c.globalAlpha = 1;
+			c.restore();
+
+			var ring_r = 10 + t * 33;
+			var ring_a = (1 - t) * 0.35 * flash;
+			var br = Math.min(255, Math.round(r * flash));
+			var bg = Math.min(255, Math.round(g * flash));
+			var bb = Math.min(255, Math.round(b * flash));
+			c.beginPath();
+			c.arc(this.position[0], this.position[1], ring_r, 0, Math.PI * 2, false);
+			c.strokeStyle = 'rgba(' + br + ',' + bg + ',' + bb + ',' + ring_a + ')';
+			c.lineWidth = 1.2 * (1 - t * 0.7);
+			c.stroke();
+
+			return;
+		}
+
 		if (this.hp != 0){
 			var color_parts = this.color.match(/[.?\d]+/g);
-			var spirit_percent_energy = this.energy / this.energy_capacity;
-			if (spirit_percent_energy > 1){
-				//console.log('spirit_percent_energy = ' + spirit_percent_energy);
-				spirit_percent_energy = 1;
+			var cat_percent_energy = this.energy / this.energy_capacity;
+			if (cat_percent_energy > 1) cat_percent_energy = 1;
+			if (cat_percent_energy < 0) cat_percent_energy = 0;
+
+			var imgs = getCatImages(this.color_store);
+			var drawSize = 20;
+			var halfSize = drawSize / 2;
+			var baseAlpha = parseFloat(color_parts[3]);
+
+			c.save();
+			c.translate(this.position[0], this.position[1]);
+			c.rotate((this.tria + 90) * Math.PI / 180);
+
+			if (imgs.fill.complete && imgs.fill.naturalWidth > 0) {
+				c.globalAlpha = baseAlpha * Math.max(cat_percent_energy, 0.08);
+				c.drawImage(imgs.fill, -halfSize, -halfSize, drawSize, drawSize);
 			}
-			var drawing_size = this.size / 2;
-			var gradient = this.color;
-			
-			
-		
-			if (this.size <= 0.1){
-				drawing_size = 0;
-			} else if (this.size < 4){
-				drawing_size = this.size + 1;
-			} else if (this.size < 12){
-				drawing_size = 4 + ((this.size - 3) / 2);
-			} else {
-				drawing_size = 8 + ((this.size - 11) / 4);
+
+			if (imgs.outline.complete && imgs.outline.naturalWidth > 0) {
+				c.globalAlpha = baseAlpha;
+				c.drawImage(imgs.outline, -halfSize, -halfSize, drawSize, drawSize);
 			}
-			
-			//console.log('this e = ' + this.energy);
-			//console.log('this e_c = ' + this.energy_capacity);
-			//console.log('spirit_%_en = ' + spirit_percent_energy);
-			
-			try {
-				gradient = c.createRadialGradient(this.position[0], this.position[1], drawing_size, this.position[0], this.position[1], drawing_size * 5);
-				gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3] * spirit_percent_energy) / 20 + ')');
-				gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0 + ')');
-			} catch (e) {
-				//console.log(this.position[0])
-				//console.log(e);
-			}
-			
-			if (spirit_percent_energy < 0) spirit_percent_energy = 0;
-			
-			if (this.shape == 'circles'){
-				c.beginPath();
-				c.arc(this.position[0], this.position[1], drawing_size, 0, Math.PI * 2, false);
-				if (this.size < 2){
-					c.lineWidth = 0.75;
-				} else if (this.size < 8){
-					c.lineWidth = 0.5 + ((this.size - 1) / 4);
-				} else {
-					c.lineWidth = 2;
-				}
-				c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.8) + ')';
-				//if (this.hp > 0){
-					c.stroke();
-				//}
-		
-				c.beginPath();
-				c.arc(this.position[0], this.position[1], drawing_size * (spirit_percent_energy), 0, Math.PI * 2, false);
-				c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
-				c.fill();
-			
-				c.beginPath();
-				c.arc(this.position[0], this.position[1], drawing_size * 5, 0, Math.PI * 2, false);
-				c.fillStyle = gradient;
-				c.fill();
-			} else if (this.shape == 'squares'){
-				c.lineWidth = 2;
-				c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
-				c.strokeRect((this.position[0] - this.size / 2), (this.position[1] - this.size / 2), this.size, this.size);
-				
-				c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.5) + ')';
-				c.fillRect((this.position[0] - (this.size * (spirit_percent_energy)) / 2), (this.position[1] - (this.size * (spirit_percent_energy)) / 2), this.size * (spirit_percent_energy), this.size * (spirit_percent_energy));
-			} else if (this.shape == 'triangles'){
-				let current_color = this.color;
-				var color_parts = this.color.match(/[.?\d]+/g);
-				let lineW = spirit_percent_energy;
-				if (lineW < 0.6) lineW = 0.6;
-				//if (spirit_percent_energy < 10){
-				//	c.lineWidth = 0.75;
-				//} else if (this.size < 8){
-				//	c.lineWidth = 0.5 + ((this.size - 1) / 4);
-				//} else {
-				//	c.lineWidth = 2;
-				//}
-				
-				//outer triangle
-				draw_polygon(this.position[0],this.position[1],3,this.size + 2,lineW,'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * (spirit_percent_energy/2 + 0.6) + ')',0,this.tria)
-				
-				//energy
-				draw_polygon(this.position[0],this.position[1],3,(this.size + 1) * spirit_percent_energy,1,0,current_color,this.tria)
-				
-			}
-			
+
+			c.globalAlpha = 1;
+			c.restore();
+
 			if (this.shout != ''){
 				if (shouting_helper[this.id] == null || shouting_helper[this.id] <= 0){
 					shouting_helper[this.id] = 180;
@@ -1316,769 +991,184 @@ class Spirit {
 				c.font = '13px sans-serif';
 				c.fillStyle = 'rgba(' + color_parts[0] * 1.4 + ', ' + color_parts[1] * 1.4 + ', ' + color_parts[2] * 1.4 + ', ' + color_parts[3] * (shouting_helper[this.id] / 180) + ')';
 				c.textAlign = 'center';
-				c.fillText(this.shout, this.position[0], this.position[1] - 8);
+				c.fillText(this.shout, this.position[0], this.position[1] - halfSize - 4);
 			}
-			
-		
-			
-			
-			//console.log('drawing size = ' + drawing_size);
 		}
 	}
 }
 
-class Star {
-	constructor(id, position, energy, size){
-		this.id = id
-		this.position = position;
-		this.size = size;
-		this.structure_type = 'star';
-		this.energy = energy;
-		stars.push(this);
-		structure_lookup[this.id] = this;
-	}
-	
-	draw() {
-		
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(255, 255, 255, " + (this.size / 100) + 0.1 + ")";
-		//c_base.fill();
-		
-		//c_base.beginPath();
-		//c_base.arc(this.position[0], this.position[1], 5, 0, Math.PI * 2, false);
-		//c_base.fillStyle = "rgba(248, 247, 255, 1)";
-		//c_base.fill();
-		
-		//c_base.beginPath();
-		//c_base.arc(this.position[0], this.position[1], 200 + this.size, 0, Math.PI * 2, false);
-		//c_base.fillStyle = "rgba(54, 195, 255, " + this.size / 10000 +")";
-		//c_base.fill();
-		
-		c_base.save();
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 6 + this.size, 0, Math.PI * 2, false);
-		c_base.clip();
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], 14 + this.size, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(254, 15, 25, " + (this.size / 100) + 0.1 + ")";
-		//c_base.fill();
-		c_base.strokeStyle = 'rgba(255,255,255,1)';
-		c_base.shadowColor='rgba(225, 250, 255, ' + this.size / 175 + ')';
-		c_base.shadowBlur = this.size / ((4 + (this.size / 130)) * (multiplier / 2.5));
-		c_base.lineWidth = 8;
-		c_base.stroke();
-		//c_base.stroke();
-		
-		c_base.shadowColor=null;
-		c_base.shadowBlur = null;
-		c_base.restore();
-		
-		
-		var teX = this.position[0];
-		var teY = this.position[1];
-		
-		//console.log(multiplier)
-		
-	}
-	
-	
-	draw_energy() {
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], 1 + Math.min(this.energy / 100, 20), 0, Math.PI * 2, false);
-		c.fillStyle = "rgba(248, 247, 255, 1)";
-		c.fill();
-	}
-	
-	
-	update_resource(new_energy){
-		this.energy = new_energy;
-	}
-	
-	
+function draw_barricade(pos){
+	c_base.save();
+	c_base.beginPath();
+	c_base.arc(pos[0], pos[1], 80, 0, Math.PI * 2, false);
+	c_base.clip();
+	c_base.beginPath();
+	c_base.arc(pos[0], pos[1], 88, 0, Math.PI * 2, false);
+	c_base.strokeStyle = 'rgba(255,255,255,1)';
+	c_base.shadowColor = 'rgba(225, 250, 255, 0.4)';
+	c_base.shadowBlur = 32 / (multiplier / 2.5);
+	c_base.lineWidth = 8;
+	c_base.stroke();
+	c_base.shadowColor = null;
+	c_base.shadowBlur = null;
+	c_base.restore();
 }
 
-class Fragment {
-	constructor(position, energy){
-		this.position = position;
-		this.energy = energy;
-		fragments.push(this);
-	}
-	
-	draw() {
-		
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-		c_base.fillStyle = "rgba(255, 255, 255, " + (this.size / 100) + 0.1 + ")";
-		//c_base.fill();
-		
-		//c_base.beginPath();
-		//c_base.arc(this.position[0], this.position[1], 5, 0, Math.PI * 2, false);
-		//c_base.fillStyle = "rgba(248, 247, 255, 1)";
-		//c_base.fill();
-		
-		//c_base.beginPath();
-		//c_base.arc(this.position[0], this.position[1], 200 + this.size, 0, Math.PI * 2, false);
-		//c_base.fillStyle = "rgba(54, 195, 255, " + this.size / 10000 +")";
-		//c_base.fill();
-		
-		//c_base.save();
-		//c_base.beginPath();
-		//c_base.arc(this.position[0], this.position[1], 6 + this.size, 0, Math.PI * 2, false);
-		//c_base.clip();
-		//c_base.beginPath();
-		//c_base.arc(this.position[0], this.position[1], 14 + this.size, 0, Math.PI * 2, false);
-		//c_base.fillStyle = "rgba(254, 15, 25, " + (this.size / 100) + 0.1 + ")";
-		////c_base.fill();
-		//c_base.strokeStyle = 'rgba(255,255,255,1)';
-		//c_base.shadowColor='rgba(225, 250, 255, ' + this.size / 175 + ')';
-		//c_base.shadowBlur= this.size / ((4 + (this.size / 130)) * (multiplier / 2.5));
-		//c_base.lineWidth = 8;
-		//c_base.stroke();
-		////c_base.stroke();
-		//
-		//
-		//
-		//c_base.shadowColor=null;
-		//c_base.shadowBlur = null;
-		//c_base.restore();
-		//
-		//
-		//var teX = this.position[0];
-		//var teY = this.position[1];
-		
-		//console.log(multiplier)
-		
-	}
-	
-	
-	draw_energy() {
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], 1 + this.energy / 100, 0, Math.PI * 2, false);
-		c.fillStyle = "rgba(248, 247, 255, 1)";
-		c.fill();
-	}
-	
-	
-	update_resource(new_energy){
-		this.energy = new_energy;
-	}
-	
-	
+function draw_pod(pos){
+	c_base.save();
+	c_base.fillStyle = 'hsla(130, 99%, 76%, 0.12)';
+	c_base.strokeStyle = 'hsla(130, 99%, 76%, 0.12)';
+	c_base.lineWidth = 2;
+	c_base.roundRect(pos[0] - 20, pos[1] - 20, 40, 40, 12);
+	c_base.fill();
+	c_base.stroke();
+	c_base.restore();
 }
 
 function mapValues(the_number, in_min, in_max, out_min, out_max) {
   return (the_number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-function drawRotated(x, y, width, height, degrees, color){
-        // first save the untranslated/unrotated context
-        c.save();
-        c.beginPath();
-        c.translate(x+width/2, y+height/2 );
-        c.rotate(degrees*Math.PI/180);
-        c.rect(-width/2, -height/2, width, height);
-		c.lineWidth = 2;
-        c.strokeStyle = color;
-        c.stroke();
-        c.restore();
+function _beam_points(ox, oy, tx, ty, segments, amplitude, time, seed, hash){
+	var dx = tx - ox;
+	var dy = ty - oy;
+	var len = Math.sqrt(dx * dx + dy * dy);
+	if (len === 0) return [[ox, oy], [tx, ty]];
+	var nx = -dy / len;
+	var ny = dx / len;
+	var freq1 = 2.4 + (hash % 17) * 0.12;
+	var freq2 = 4.3 + (hash % 13) * 0.15;
+	var pts = [[ox, oy]];
+	for (var s = 1; s < segments; s++){
+		var t = s / segments;
+		var taper = Math.sin(t * Math.PI);
+		var phase1 = seed * 7.3 + s * 2.1 + hash * 0.37;
+		var phase2 = seed * 3.7 + s * 4.3 + hash * 0.53;
+		var offset = amplitude * taper * (
+			Math.sin(time * freq1 + phase1) * 0.6 +
+			Math.sin(time * freq2 + phase2) * 0.4
+		);
+		pts.push([ox + dx * t + nx * offset, oy + dy * t + ny * offset]);
+	}
+	pts.push([tx, ty]);
+	return pts;
 }
 
-class Base {
-	constructor(id, position, energy, player, color, shape, def_status = 0){
-		this.shape = shape;
-		this.id = id
-		this.position = position;
-		this.size = 25;
-		this.structure_type = 'base';
-		this.energy = energy;
-		
-		this.hp = 1;
-		if (this.shape == 'circles') this.energy_capacity = 400;
-		if (this.shape == 'squares') this.energy_capacity = 1000;
-		if (this.shape == 'triangles') this.energy_capacity = 600;
-		this.control = player;
-		//this.color = color;
-		if (this.control == players['player1']) this.color = colors['color1'];
-		if (this.control == players['player2']) this.color = colors['color2'];
-		if (this.control == '') this.color = "rgba(155, 155, 155, 0.5)";
-		//console.log(this.color);
-		this.color_parts = color.match(/[.?\d]+/g);
-		this.color_hsl = rgb_to_hsl(this.color_parts[0], this.color_parts[1], this.color_parts[2]);
-		this.current_spirit_cost = 100;
-		
-		if (this.control == players['player1']) this.shape = shapes['shape1'];
-		if (this.control == players['player2']) this.shape = shapes['shape2'];
-		if (this.control == '') this.shape = 'neutral';
-		
-		
-		// 1 if under attack
-		this.def_status = def_status;
-		
-		bases.push(this);
-		structure_lookup[this.id] = this;
-		if (this.shape == 'triangles') this.base_points = get_triangle(this.position[0], this.position[1], 30);
-	}
-	
-	draw(cntrl = '') {
-		//console.log(this.control);
-		if (cntrl == players['player1']){
-			this.color = colors['color1'];
-			this.shape = shapes['shape1'];
-		}
-		if (cntrl == players['player2']){
-			this.color = colors['color2'];
-			this.shape = shapes['shape2'];
-		} 
-		if (cntrl == ''){
-			this.shape = 'neutral';
-			this.color = "rgba(155, 155, 155, 0.5)";
-		} 
-		
-		var color_parts = this.color.match(/[.?\d]+/g);
-		if (this.control != cntrl){
-			//console.log('control change');
-			this.control = cntrl;
-			this.color_hsl = rgb_to_hsl(color_parts[0], color_parts[1], color_parts[2]);
-		} 
-		
-		var production_percent = this.energy / this.current_spirit_cost;
-		var true_ratio = production_percent;
-		if (production_percent > 1) production_percent = 1;
-		if (production_percent < 0) production_percent = 0;
-		if (this.energy <= 0) this.energy = 0.1;
-		
-		if (this.shape == 'circles'){
-			
-			//base bg
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], 50, 0, Math.PI * 2, false);
-			c.closePath();
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
-			c.fill();
-			
-			//inner base
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], this.size, 0, Math.PI * 2, false);
-			c.closePath();
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
-			c.lineWidth = 10;
-			c.stroke();
-			c.setLineDash([]);
-			
-			//defense ring
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], this.size + 20, 0, Math.PI * 2, false);
-			c.closePath();
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 1) + ')';
-			c.lineWidth = 2 + (this.energy / 100);
-			c.setLineDash([2, 4]);
-			c.stroke();
-			c.setLineDash([]);
-			
-			let stroke_width = 10 * production_percent;
-			let stroke_offset = stroke_width / 2;
-			if (stroke_width < 1){
-				stroke_width = 0;
-				stroke_offset = 0;
-			}
-			
-			if (stroke_width > 1){
-				c.beginPath();
-				c.arc(this.position[0], this.position[1], (this.size - 5 + stroke_offset), Math.PI * 0, Math.PI * 2, false);
-				c.lineWidth = stroke_width;
-				c.strokeStyle = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
-				c.stroke();
-			}
-			
-			
-		} else if (this.shape == 'squares'){
-			
-			//base bg
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
-			c.fillRect((this.position[0] - 45), (this.position[1] - 45), this.size + 65, this.size + 65);
-			
-			
-			//inner base
-			c.lineWidth = 8;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
-			c.strokeRect((this.position[0] - 4 - (this.size / 2)), (this.position[1] - 4 - (this.size / 2)), this.size + 8, this.size + 8);
-			
-			//defense ring
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 1) + ')';
-			c.lineWidth = 2 + (this.energy / 100);
-			c.setLineDash([2, 4]);
-			c.strokeRect((this.position[0] - 35), (this.position[1] - 35), this.size + 45, this.size + 45);
-			c.setLineDash([]);
-			
-			
-			let stroke_width = 8 * production_percent;
-			let stroke_offset = stroke_width / 2;
-			if (stroke_width < 1){
-				stroke_width = 0;
-				stroke_offset = 0;
-			}
-			
-			if (stroke_width > 1){
-				c.beginPath();
-				c.arc(this.position[0], this.position[1], (this.size - 5 + stroke_offset), Math.PI * 0, Math.PI * 2, false);
-				c.lineWidth = stroke_width;
-				c.strokeStyle = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
-				c.strokeRect((this.position[0] - stroke_offset - (this.size / 2)), (this.position[1] - stroke_offset - (this.size / 2)), this.size + (stroke_offset * 2), this.size + (stroke_offset * 2));
-			}
-			
-			
-		} else if (this.shape == 'triangles'){
-			let current_color = this.color;
-			let L = 60;
-		  let side_a = L,
-		      side_b = L,
-		      side_c = L;
-
-		  let R = (L *.5) / Math.cos(Math.PI/6);
-		  
-		  //c.beginPath();
-		  //c.arc(this.position[0], this.position[1], this.size, Math.PI * 0, Math.PI * 3, false);
-		  //c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.86 + ')';
-		  //c.stroke();
-		  
-		  //base bg
-		  //c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
-		  //c.fillRect((this.position[0] - 45), (this.position[1] - 45), this.size + 65, this.size + 65);
-		  
-		  let tri_base_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.08 + (0.02 * true_ratio)) + ')';
-		  draw_polygon(this.position[0],this.position[1],3,40,40,tri_base_color,0,0)
-		  
-		  
-		  //let triangle = get_triangle(this.position[0], this.position[1], 20);
-		  //console.log(triangle);
-		  
-		  //outer triangle
-		  //draw_triangle(this.position[0], this.position[1], 30, 30, this.base_points[0], this.base_points[1], this.base_points[2], this.base_points[3], this.base_points[4], this.base_points[5], 90)
-		  
-		  let inc_angle = 0;
-		  
-		  //if (typeof incoming !== undefined){
-		  //	  inc_angle = incoming.t;
-		  //}
-		  
-		  let basic_base_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0.69, 1) + ')';
-		  draw_polygon(this.position[0],this.position[1],3,26,8,basic_base_color,0,inc_angle)
-		  
-		  
-		  //defense ring
-		  let tri_defense_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + mapValues(this.def_status, 0, 1, 0, 0.5) + ')';
-		  let defense_thickness = 2 + (this.energy / 100);
-		  let defense_overthick = 0;
-		  if (defense_thickness > 4){
-			  defense_overthick = defense_thickness - 4;
-			  defense_thickness = 4;
-		  } 
-			  
-		  draw_polygon(this.position[0],this.position[1],3,50,defense_thickness,tri_defense_color,0,inc_angle)
-		  
-		  if (defense_overthick > 0){
-		  	draw_polygon(this.position[0],this.position[1],3,64,defense_overthick,tri_defense_color,0,inc_angle)
-		  }
-		  
-		  
-		  
-		  //c.beginPath();
-		  //c.moveTo(this.base_points[0], this.base_points[1]);
-		  //c.lineTo(this.base_points[2], this.base_points[3]);
-		  //c.lineTo(this.base_points[4], this.base_points[5]);
-		  //c.lineTo(this.base_points[0], this.base_points[1]);
-		  //c.closePath();
-		  //c.lineWidth = 4;
-		  //c.stroke();
-		  
-		  //drawRotated(this.position[0], this.position[1], 30, 30, incoming.t, current_color);
-		  
-		  //console.log(incoming.t);
-		  
-		  //let progress_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + color_parts[3] * production_percent + ')';
-		  
-		  //draw_polygon(this.position[0],this.position[1],3,15,2,progress_color,0,inc_angle + 60)
-		  
-		  let progress_color = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
-		  
-		  let stroke_width = 8 * production_percent;
-		  let stroke_offset = stroke_width / 2;
-		  if (stroke_width < 1){
-		  	stroke_width = 0;
-		  	stroke_offset = 0;
-		  }
-		  
-		  if (stroke_width > 1){
-			draw_polygon(this.position[0],this.position[1],3,22 + stroke_offset,stroke_width,progress_color,0,inc_angle)
-		  }
-		  
-		  
-		  
-		} else if (this.shape == 'neutral'){
-			//console.log('neutral shape');
-			
-			
-			c.lineWidth = 1;
-			c.strokeStyle = 'hsla(' + this.color_hsl[0] + ', ' + this.color_hsl[1] + '%, ' + (this.color_hsl[2] + 12) + '%, ' + 1 + ')';
-			
-			c.roundRect((this.position[0] - 9 - (this.size / 2)), (this.position[1] - 9 - (this.size / 2)), this.size + 18, this.size + 18, 16);
-			c.stroke();
-			c.roundRect((this.position[0] - 2 - (this.size / 2)), (this.position[1] - 2 - (this.size / 2)), this.size + 4, this.size + 4, 10);
-			c.stroke();
-			
-			
-			
-			
-			//base bg
-			c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.03 + (0.02 * true_ratio)) + ')';
-			c.roundRect((this.position[0] - 45), (this.position[1] - 45), this.size + 65, this.size + 65, 24);
-			c.fill();
-			
-			
-		}
-		
-		
-	}
-	
-	charge(prev_energy, new_energy){
-		
-		let elapso = (total_time / game_tick)
-		
-		
-		if (new_energy < prev_energy){
-			//this.energy = prev_energy;
-			elapso = ((total_time * 4) / game_tick);
-			if (elapso > 1) elapso = 1;
-			this.energy = prev_energy + ((new_energy - prev_energy) * elapso);
-		} else {
-			this.energy = prev_energy;
-			this.energy = prev_energy + ((new_energy - prev_energy) * elapso);
-		}
-		
-		
-		//if (prev_energy > new_energy && (prev_energy - new_energy) > (this.current_spirit_cost/1.5)){
-		//	this.energy = new_energy * (total_time / game_tick);
-		//} else if (prev_energy >= new_energy){
-		//	this.energy = new_energy;
-		//} else if (prev_energy < new_energy){
-		//	this.energy = prev_energy;
-		//	this.energy = prev_energy + ((new_energy - prev_energy) * (total_time / game_tick));
-		//} 
-	}
-	
-	defend(new_status){
-		//def_status is number between 0 and 1 (0 and 1 values obvious, everything inbetween for animation purposes)
-		
-		if (new_status != this.def_status){
-			this.def_status = Math.abs((new_status * (total_time / game_tick)) + ((new_status - 1) * ((total_time / game_tick) - 1)));
-			if (Math.abs(this.def_status - new_status) < 0.05) this.def_status = new_status;
-			//console.log('this.def_status = ' + this.def_status);
-			//console.log('updating def status of ' + this.id + ' to ' + new_status);
-		}
-	}
-	
-	shield(current_hp){
-		//def_status is number between 0 and 1 (0 and 1 values obvious, everything inbetween for animation purposes)
-		this.hp = current_hp;
-	}
-	
-	/*
-	charge() {
-		var color_parts = this.color.match(/[.?\d]+/g);
-		//logic on slowing down production when amount of spirits > x
-		var new_when = 100;
-		if(1 == 1){
-			new_when = 100;
-		}
-		var production_percent = this.energy / new_when;
-		var new_angle = Math.PI * 2 * production_percent
-		
-		c_base.beginPath();
-		c_base.arc(this.position[0], this.position[1], (this.size + 10), Math.PI * 1.5 + (new_angle), Math.PI * 2 * production_percent, false);
-		console.log('production_percent');
-		console.log(production_percent);
-		c_base.lineWidth = 2;
-		c_base.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.5 + ')';
-		c_base.stroke();
-	}
-	*/
-}
-
-class Outpost {
-	constructor(id, position, energy, control = ''){
-		this.id = id
-		this.position = position;
-		this.size = 20;
-		this.structure_type = 'outpost';
-		this.energy = energy;
-		this.energy_capacity = 1000;
-		this.range = 400;
-		this.control = control;
-		
-		if (this.control == players['player1']) this.color = colors['color1'];
-		if (this.control == players['player2']) this.color = colors['color2'];
-		if (this.control == '') this.color = "rgba(89, 82, 108, 1)";
-		
-		
-		outposts.push(this);
-		structure_lookup[this.id] = this;
-	}
-	
-	draw(enrg, cntrl = '') {
-		if (cntrl == players['player1']) this.color = colors['color1'];
-		if (cntrl == players['player2']) this.color = colors['color2'];
-		if (cntrl == '') this.color = "rgba(89, 82, 108, 1)";
-		
-		this.energy = enrg;
-		this.control = cntrl;
-		
-		
-		
-		let energy_ratio = Math.round(this.energy / (this.energy_capacity / 10));
-		
-		//console.log('this.color = ' + this.color);
-		let current_color = this.color;
-		//c.lineWidth = 4;
-		//c.strokeStyle = this.color;
-		//c.strokeRect((this.position[0] - 12), (this.position[1] - 12), 24, 24);
-		var draw_angle = 45;
-		if (cntrl != ''){
-			if (this.energy < 500) {
-				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 135);
-				this.range = 400;
-			} else {
-				draw_angle = mapValues(dumb_cycler, 0, 60, 45, 225);
-				this.range = 600;
-			}
-			
-			var color_parts = this.color.match(/[.?\d]+/g);
-			// outer circle
-			
-			//c.save();
-			//c.beginPath();
-			//c.arc(this.position[0], this.position[1], this.range, 0, Math.PI * 2, false);
-			//c.clip();
-			//c.beginPath();
-			//c.arc(this.position[0], this.position[1], 12 + this.range, 0, Math.PI * 2, false);
-			//c.fillStyle = "rgba(254, 15, 25, " + (this.range / 100) + 0.1 + ")";
-			////c_base.fill();
-			//c.strokeStyle = 'rgba(255,255,255,1)';
-			//c.shadowColor='rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.1 + ')';
-			//c.shadowBlur = this.range / ((4 + (this.range / 130)) * (multiplier / 2.5));
-			//c.lineWidth = 12;
-			//c.stroke();
-			////c_base.stroke();
-		    //
-			//c.shadowColor=null;
-			//c.shadowBlur = null;
-			//c.restore();
-			
-			let range_gradient = c.createRadialGradient(this.position[0],this.position[1],200, this.position[0],this.position[1],400);
-			range_gradient.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.005 + (this.energy / 80000)) + ')');
-			range_gradient.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.03 + (this.energy / 30000)) + ')');
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
-			c.fillStyle = range_gradient;
-			c.fill();
-			
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
-			c.closePath();
-			c.lineWidth = 2;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.1 + ')';
-			c.stroke();
-		}
-		
-		// rotated square
-		drawRotated(this.position[0] - 12, this.position[1] - 12, 24, 24, draw_angle, current_color);
-
-		// inner-outer circle
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
-		c.closePath();
-		c.lineWidth = 2;
-		c.strokeStyle = this.color;
-		c.stroke();
-		
-		// inner-inner circle
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], energy_ratio, Math.PI * 0, Math.PI * 2, false);
-		c.closePath();
-		c.fillStyle = this.color;
-		c.fill();
-		
-	}
-}
-
-class Pylon {
-	constructor(id, position, energy, control = ''){
-		this.id = id
-		this.position = position;
-		this.size = 20;
-		this.structure_type = 'pylon';
-		this.energy = energy;
-		this.energy_capacity = 1000;
-		this.control = control;
-		
-		if (this.control == players['player1']) this.color = colors['color1'];
-		if (this.control == players['player2']) this.color = colors['color2'];
-		if (this.control == '') this.color = "rgba(89, 82, 108, 1)";
-		
-		
-		pylons.push(this);
-		structure_lookup[this.id] = this;
-	}
-	
-	draw(enrg, cntrl = '') {
-		if (cntrl == players['player1']) this.color = colors['color1'];
-		if (cntrl == players['player2']) this.color = colors['color2'];
-		if (cntrl == '') this.color = "rgba(89, 82, 108, 1)";
-		
-		this.energy = enrg;
-		this.control = cntrl;
-		
-		
-		
-		let energy_ratio = Math.round(this.energy / (this.energy_capacity / 10));
-		
-		//console.log('this.color = ' + this.color);
-		let current_color = this.color;
-		//c.lineWidth = 4;
-		//c.strokeStyle = this.color;
-		//c.strokeRect((this.position[0] - 12), (this.position[1] - 12), 24, 24);
-		var draw_angle = 45;
-		if (cntrl != ''){
-			draw_angle = mapValues(dumb_cycler, 0, 60, 45, 135);
-			this.range = 400;
-			var color_parts = this.color.match(/[.?\d]+/g);
-			// outer circle
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], this.range - 100, Math.PI * 0, Math.PI * 2, false);
-			c.closePath();
-			c.lineWidth = 200;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (0.02 + (this.energy / 20000)) + ')';
-			c.stroke();
-			
-			
-			c.lineWidth = 1;
-			c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.1 + ')';
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], 200, Math.PI * 0, Math.PI * 2, false);
-			c.closePath();
-			c.stroke();
-			c.beginPath();
-			c.arc(this.position[0], this.position[1], this.range, Math.PI * 0, Math.PI * 2, false);
-			c.closePath();
-			c.stroke();
-			
-			
-			
-		}
-		
-		// rotated square
-		//drawRotated(this.position[0] - 12, this.position[1] - 12, 24, 24, draw_angle, current_color);
-
-		// other circles (not center)
-		c.lineWidth = 1;
-		c.strokeStyle = this.color;
-		
-		c.beginPath();
-		c.arc(this.position[0] + 8, this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
-		c.moveTo(this.position[0], this.position[1]);
-		c.arc(this.position[0] - 8, this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
-		c.moveTo(this.position[0] + 8, this.position[1] + 8);
-		c.arc(this.position[0], this.position[1] + 8, 8, Math.PI * 0, Math.PI * 2, false);
-		c.moveTo(this.position[0] + 8, this.position[1] - 8);
-		c.arc(this.position[0], this.position[1] - 8, 8, Math.PI * 0, Math.PI * 2, false);
-		c.closePath();
-		
-		c.stroke();
-
-		
-		// inner-outer circle
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], 8, Math.PI * 0, Math.PI * 2, false);
-		c.closePath();
-		c.lineWidth = 1;
-		c.strokeStyle = this.color;
-		c.stroke();
-		
-		// inner-inner circle
-		c.beginPath();
-		c.arc(this.position[0], this.position[1], energy_ratio, Math.PI * 0, Math.PI * 2, false);
-		c.closePath();
-		c.fillStyle = this.color;
-		c.fill();
-		
-	}
-}
-
-
-
-function draw_energize(origin, target, energy_strength, color){
+function draw_splash_beam(origin, primary_target, splash_target, energy_strength, color, hash){
 	if (energy_strength == 0) return;
 	var color_parts = color.match(/[.?\d]+/g);
-	//console.log(Number(color_parts[0]) + 50)
-	try {
-		var grad = c.createLinearGradient(Math.round(origin[0]), Math.round(origin[1]), Math.round(target[0]), Math.round(target[1]));
-		grad.addColorStop(0, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
-		grad.addColorStop(0.06, 'rgba(' + (Number(color_parts[0]) + 80) + ', ' + (Number(color_parts[1]) + 50) + ', ' + (Number(color_parts[2]) + 50) + ', ' + color_parts[3] + ')');
-		grad.addColorStop(1, 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + (color_parts[3]/2) + ')');
-	} catch (e) {
-		console.log(e);
-		//console.log(origin, target);
-	}
-	
+	var r = Number(color_parts[0]);
+	var g = Number(color_parts[1]);
+	var b = Number(color_parts[2]);
+	var a = Number(color_parts[3]);
+
+	var mx = (origin[0] + primary_target[0]) * 0.5;
+	var my = (origin[1] + primary_target[1]) * 0.5;
+
+	var dx = splash_target[0] - mx;
+	var dy = splash_target[1] - my;
+	var dist = Math.sqrt(dx * dx + dy * dy);
+	var segments = Math.max(3, Math.round(dist / 15));
+	var amplitude = Math.min(dist * 0.06, 3);
+	var time = performance.now() / 1000;
+	if (!hash) hash = 0;
+
+	var br = Math.min(255, r + 80);
+	var bg = Math.min(255, g + 60);
+	var bb = Math.min(255, b + 60);
+
+	var pts = _beam_points(mx, my, splash_target[0], splash_target[1], segments, amplitude, time, 3, hash);
+
 	c.beginPath();
-	c.moveTo(origin[0], origin[1]);
-	c.lineTo(target[0], target[1]);
-	c.lineWidth = energy_strength/10 + 1;
-	c.strokeStyle = grad;
-	c.globalAlpha = energy_strength/10 + 0.2;
+	c.moveTo(pts[0][0], pts[0][1]);
+	for (var p = 1; p < pts.length; p++){
+		c.lineTo(pts[p][0], pts[p][1]);
+	}
+	c.lineWidth = 1.8;
+	c.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ',0.14)';
+	c.globalAlpha = 0.5;
+	c.stroke();
+
+	c.beginPath();
+	c.moveTo(pts[0][0], pts[0][1]);
+	for (var p = 1; p < pts.length; p++){
+		c.lineTo(pts[p][0], pts[p][1]);
+	}
+	c.lineWidth = 0.7;
+	c.strokeStyle = 'rgba(' + br + ',' + bg + ',' + bb + ',' + a + ')';
+	c.globalAlpha = 0.75;
 	c.stroke();
 	c.globalAlpha = 1;
-	
+}
+
+function draw_pew(origin, target, energy_strength, color, friendly, hash){
+	if (energy_strength == 0) return;
+	var color_parts = color.match(/[.?\d]+/g);
+	var r = Number(color_parts[0]);
+	var g = Number(color_parts[1]);
+	var b = Number(color_parts[2]);
+	var a = Number(color_parts[3]);
+
+	if (friendly){
+		c.beginPath();
+		c.moveTo(origin[0], origin[1]);
+		c.lineTo(target[0], target[1]);
+		c.lineWidth = 1.5;
+		c.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + Math.max(a, 0.35) + ')';
+		c.globalAlpha = 0.7;
+		c.stroke();
+		c.globalAlpha = 1;
+		return;
+	}
+
+	var dx = target[0] - origin[0];
+	var dy = target[1] - origin[1];
+	var dist = Math.sqrt(dx * dx + dy * dy);
+	var segments = Math.max(5, Math.round(dist / 20));
+	var amplitude = Math.min(dist * 0.04, 3);
+	var time = performance.now() / 1000;
+	if (!hash) hash = 0;
+
+	var br = Math.min(255, r + 80);
+	var bg = Math.min(255, g + 60);
+	var bb = Math.min(255, b + 60);
+
+	for (var bolt = 0; bolt < 2; bolt++){
+		var pts = _beam_points(origin[0], origin[1], target[0], target[1], segments, amplitude, time, bolt + 1, hash);
+
+		c.beginPath();
+		c.moveTo(pts[0][0], pts[0][1]);
+		for (var p = 1; p < pts.length; p++){
+			c.lineTo(pts[p][0], pts[p][1]);
+		}
+		c.lineWidth = 2.5 - bolt * 0.6;
+		c.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ',0.18)';
+		c.globalAlpha = 0.55;
+		c.stroke();
+
+		c.beginPath();
+		c.moveTo(pts[0][0], pts[0][1]);
+		for (var p = 1; p < pts.length; p++){
+			c.lineTo(pts[p][0], pts[p][1]);
+		}
+		c.lineWidth = 1.0 - bolt * 0.2;
+		c.strokeStyle = 'rgba(' + br + ',' + bg + ',' + bb + ',' + a + ')';
+		c.globalAlpha = 0.9;
+		c.stroke();
+	}
+	c.globalAlpha = 1;
 }
 
 function initiate_world(){
-	//console.log('rendering3');
 	offsetUpdate();
-	//spirits = {};
-	//star_lookup = {};
-	//base_lookup = {};
-	//living_spirits = [];
-	//stars = [];
-	//bases = [];
-	
-	
-	//You are rendering bases before the info arrives
-	world_bases = bases_queue.length;
-	for (i = 0; i < world_bases; i++){
-		base_lookup[bases_queue[i].id] = new Base(bases_queue[i].id, bases_queue[i].position, bases_queue[i].energy,  bases_queue[i].player_id, bases_queue[i].color, bases_queue[i].shape);
-		base_lookup[bases_queue[i].id].draw();
-		//console.log('base drawn ' + bases_queue[i].id);
+
+	for (var bi = 0; bi < barricades.length; bi++){
+		draw_barricade(barricades[bi]);
+	}
+	for (var pi = 0; pi < pods.length; pi++){
+		draw_pod(pods[pi]);
 	}
 	
-	star_lookup['star_zxq'] = new Star('star_zxq', [-1200, -340], 50, 140);
-	star_lookup['star_a2c'] = new Star('star_a2c', [340, 1200], 50, 140);	
-	star_lookup['star_p89'] = new Star('star_p89', [-540, 540], 50, 140);
-	star_lookup['star_nua'] = new Star('star_nua', [420, -420], 50, 690);
-	
-	outpost_lookup['outpost_mdo'] = new Outpost('outpost_mdo', [-230, 230], 0);	
-	pylon_lookup['pylon_u3p'] = new Pylon('pylon_u3p', [232, -232], 0);	
-	
-	//star_energy_lookup['star_zxq'] = new Star_energy('star_zxq', [1000, 1000], 50);
-	//star_energy_lookup['star_a1c'] = new Star_energy('star_a1c', [3200, 1400], 50);
-	
-	star_lookup['star_zxq'].draw();
-	star_lookup['star_a2c'].draw();
-	star_lookup['star_p89'].draw();
-	star_lookup['star_nua'].draw();
-	
-	//outpost_lookup['outpost_mdo'].draw();
-	
-	//draw_grid();
 	offsetUpdate();
 	
 	
@@ -2087,7 +1177,6 @@ function initiate_world(){
 
 	corner1_parts_hsl = rgb_to_hsl(corner1_parts[0], corner1_parts[1], corner1_parts[2]);
 	corner2_parts_hsl = rgb_to_hsl(corner2_parts[0], corner2_parts[1], corner2_parts[2]);
-	
 	
 	world_initiated = 1;
 }
@@ -2098,15 +1187,16 @@ function initiate_from_sandbox(){
 
 	corner1_parts_hsl = rgb_to_hsl(corner1_parts[0], corner1_parts[1], corner1_parts[2]);
 	corner2_parts_hsl = rgb_to_hsl(corner2_parts[0], corner2_parts[1], corner2_parts[2]);
+	
+	try { document.getElementById('modules_plate').style.display = 'block'; } catch(e){}
 }
 
 function handle_shout(spir_id, shout_msg){
-	//console.log(spir_id + ' is saying ' + shout_msg);
-	spirits[spir_id].shout = shout_msg;
+	cats[spir_id].shout = shout_msg;
 	
 	setTimeout(function(){
 		shouting[spir_id] = 0;
-		spirits[spir_id].shout = '';
+		cats[spir_id].shout = '';
 	}, 3000);
 	
 }
@@ -2141,8 +1231,6 @@ function drawgqueue(gqueue) {
 
 function render_state(timestamp){
 	
-	//console.log(incoming.t);
-	
 	if (isNaN(timestamp)){
 		
 	} else {
@@ -2150,15 +1238,9 @@ function render_state(timestamp){
 		if (elapsed > 100) elapsed = 16.6;
 		prev = timestamp;
 		dumb_cycler++;
-		//console.log(total_time);
 	
 		if (live_render == 1) total_time += elapsed;
 	}
-	
-	//console.log('total_time = ' + total_time);
-	//console.log('timestamp = ' + timestamp);
-	//console.log('elapsed = ' + elapsed);
-	//console.log('prev = ' + prev);
 	
 	if (dumb_cycler >= 60){
 		dumb_cycler = 0;		
@@ -2170,101 +1252,81 @@ function render_state(timestamp){
 	//c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 	
-	c.setTransform(scale, 0, 0, scale, 0, 0);
+	c.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
 	c.translate(offsetX, offsetY);
 	
-	if (live_render == 0) draw_boxsand_bg;
+	if (live_render == 0) draw_boxsand_bg();
 	if (live_render == 1) draw_bg_grad();
 	
 	if (panning == 1){
 		offsetUpdate();
 	}
 	
-	//world initiation (page refresh) (hopefully no need for this)
-	if (world_initiated == 0 && bases_queue.length > 0){
+	if (world_initiated == 0){
 		initiate_world();
 	}
 	
-	//all_living = living_spirits.length;
+	//all_living = living_cats.length;
 	
-	try {
-		all_spirits = game_blocks[active_block].units;
-	} catch (e) {
-		console.log(e);
+	var _gb = game_blocks[active_block];
+	if (_gb && _gb.units) {
+		all_cats = _gb.units;
 	}
 	
-	try {
+	var _active_ids = {};
+	for (var _ai = 0; _ai < all_cats.length; _ai++) _active_ids[all_cats[_ai]] = true;
 	
-	for (i = 0; i < all_spirits.length; i++){
-		if (spirits[all_spirits[i]].player_id == players['player1']){
-			try {
-				spirits[all_spirits[i]].move([game_blocks[active_block].p1[all_spirits[i]][0][4], game_blocks[active_block].p1[all_spirits[i]][0][5]], [game_blocks[active_block].p1[all_spirits[i]][0][2], game_blocks[active_block].p1[all_spirits[i]][0][3]]);
-				spirits[all_spirits[i]].energize(game_blocks[active_block].p1[all_spirits[i]][5], game_blocks[active_block].p1[all_spirits[i]][2], game_blocks[active_block].p1[all_spirits[i]][3]);
-				spirits[all_spirits[i]].size_change(game_blocks[active_block].p1[all_spirits[i]][4], game_blocks[active_block].p1[all_spirits[i]][1]);
-			} catch (e) {
-				console.log(e)
+	if (_gb) draw_circle_zone(_gb.cr);
+	
+	for (i = 0; i < all_cats.length; i++){
+		if (!cats[all_cats[i]]) continue;
+		if (_gb) {
+			if (cats[all_cats[i]].player_id == players['player1'] && _gb.p1 && _gb.p1[all_cats[i]]){
+				try {
+					cats[all_cats[i]].move([_gb.p1[all_cats[i]][0][4], _gb.p1[all_cats[i]][0][5]], [_gb.p1[all_cats[i]][0][2], _gb.p1[all_cats[i]][0][3]]);
+					cats[all_cats[i]].pew(_gb.p1[all_cats[i]][3], _gb.p1[all_cats[i]][1], _gb.p1[all_cats[i]][2]);
+				} catch (e) {
+				}
+			} else if (cats[all_cats[i]].player_id == players['player2'] && _gb.p2 && _gb.p2[all_cats[i]]){
+				try {
+					cats[all_cats[i]].move([_gb.p2[all_cats[i]][0][4], _gb.p2[all_cats[i]][0][5]], [_gb.p2[all_cats[i]][0][2], _gb.p2[all_cats[i]][0][3]]);
+					cats[all_cats[i]].pew(_gb.p2[all_cats[i]][3], _gb.p2[all_cats[i]][1], _gb.p2[all_cats[i]][2]);
+				} catch (e) {
+				}
 			}
-			
-		} else if (spirits[all_spirits[i]].player_id == players['player2']){
-			try {
-				spirits[all_spirits[i]].move([game_blocks[active_block].p2[all_spirits[i]][0][4], game_blocks[active_block].p2[all_spirits[i]][0][5]], [game_blocks[active_block].p2[all_spirits[i]][0][2], game_blocks[active_block].p2[all_spirits[i]][0][3]]);
-				spirits[all_spirits[i]].energize(game_blocks[active_block].p2[all_spirits[i]][5], game_blocks[active_block].p2[all_spirits[i]][2], game_blocks[active_block].p2[all_spirits[i]][3]);
-				spirits[all_spirits[i]].size_change(game_blocks[active_block].p2[all_spirits[i]][4], game_blocks[active_block].p2[all_spirits[i]][1]);
-			} catch (e) {
-				console.log(e)
-			}
-			
 		}
-		spirits[all_spirits[i]].draw();
+		cats[all_cats[i]].draw();
 	}
 	
-	} catch(e){
-		console.log(e);
+	for (var _lc = 0; _lc < living_cats.length; _lc++){
+		if (living_cats[_lc].dying && !_active_ids[living_cats[_lc].id]){
+			living_cats[_lc].draw();
+		}
 	}
 	
-	
-	//p1_spirs = game_blocks[active_block].p1;
-	//for (i = 0; i < p1_spirs.length; i++){
-	//	spirits[p1_spirs[i][0]]
-	//}
-	//
-	
-	
-	try {
-		var energy_blocks = game_blocks[active_block].e;
-	} catch (e) {
-		console.log(e);
-		try {
-			var energy_blocks = game_blocks[active_block - 1].e;
-			console.log('resynchronizing game state');
-			tick_local -= 1;
-		} catch (e2) {
-			console.log(e2);
-			//location.reload();
-			//setTimeout(function(){
-				//var energy_blocks = game_blocks[incoming.t].e;
-				//console.log('resync2');
-				//tick_local = incoming.t - 1;
-				//}, 30);
+	var energy_blocks;
+	if (_gb) {
+		energy_blocks = _gb.e;
+		if (!energy_blocks) {
+			try {
+				energy_blocks = game_blocks[active_block - 1].e;
+				tick_local -= 1;
+			} catch (e2) {
 				if (typeof replay_playing !== 'undefined') {
 					current_tick--;
 					if (replay_playing == 1){
 						play_pause();
 					}
-				    // the variable is defined
-				} else {
-					//location.reload();
 				}
-				
+			}
 		}
 	}
 	
+if (_gb) {
 try{
-	var energy_blocks = game_blocks[active_block].e;
+	if (energy_blocks) {
 	for (i = 0; i < energy_blocks.length; i++){
-		//console.log(energy_blocks[i]);
 		var energy_origin = resolve_energy_point(energy_blocks[i][0]);
-		//console.log(energy_blocks[i][0]);
 		var energy_target = resolve_energy_point(energy_blocks[i][1]);
 		var energy_color = energy_origin.color;
 		
@@ -2274,30 +1336,59 @@ try{
 		if (Array.isArray(energy_origin)){
 			energy_color = energy_target.color;
 			eori = energy_origin;
-		} else if (energy_origin.id.startsWith('star')){
-			energy_color = energy_target.color;
 		}
 		
 		if (Array.isArray(energy_target)) etar = energy_target;
 		
+		var is_friendly = !!(energy_origin.color && energy_target.color && energy_origin.color === energy_target.color);
 		
+		var _eid = '' + energy_blocks[i][0] + energy_blocks[i][1];
+		var _ehash = 0;
+		for (var _ec = 0; _ec < _eid.length; _ec++) _ehash = ((_ehash << 5) - _ehash + _eid.charCodeAt(_ec)) | 0;
+		_ehash = Math.abs(_ehash);
 		
 		if (energy_origin.hp != 0 && energy_target.hp != 0){
-			draw_energize(eori, etar, energy_blocks[i][2], energy_color);
+			draw_pew(eori, etar, energy_blocks[i][2], energy_color, is_friendly, _ehash);
 		}
 	}
+	}
+
+	var splash_beams = _gb.a;
+	if (splash_beams) {
+	for (i = 0; i < splash_beams.length; i++){
+		var sp_source = resolve_energy_point(splash_beams[i][0]);
+		var sp_primary = resolve_energy_point(splash_beams[i][1]);
+		var sp_splash = resolve_energy_point(splash_beams[i][2]);
+		if (!sp_source || !sp_primary || !sp_splash) continue;
+
+		var sp_ori = sp_source.position || sp_source;
+		var sp_pri = sp_primary.position || sp_primary;
+		var sp_spl = sp_splash.position || sp_splash;
+		var sp_color = sp_source.color;
+
+		var _spid = '' + splash_beams[i][0] + splash_beams[i][2];
+		var _sphash = 0;
+		for (var _spc = 0; _spc < _spid.length; _spc++) _sphash = ((_sphash << 5) - _sphash + _spid.charCodeAt(_spc)) | 0;
+		_sphash = Math.abs(_sphash);
+
+		if (sp_source.hp != 0 && sp_splash.hp != 0){
+			draw_splash_beam(sp_ori, sp_pri, sp_spl, splash_beams[i][3], sp_color, _sphash);
+		}
+	}
+	}
 	
-	var specials = game_blocks[active_block].s;
+	var specials = _gb.s;
+	if (specials) {
 	for (i = 0; i < specials.length; i++){
-		if (specials[i][0] == 'sh' && spirits[specials[i][1]].player_id == pla1 && shouting_count_p1 < 100){
-			//console.log(specials[i][2]);
+		if (!cats[specials[i][1]]) continue;
+		if (specials[i][0] == 'sh' && cats[specials[i][1]].player_id == pla1 && shouting_count_p1 < 100){
 			
 			if (shouting[specials[i][1]] == null || shouting[specials[i][1]] == 0){
 				shouting[specials[i][1]] = 3;
 				handle_shout(specials[i][1], specials[i][2]);
 			}
 			shouting_count_p1++;
-		} else if (specials[i][0] == 'sh' && spirits[specials[i][1]].player_id == pla2 && shouting_count_p2 < 100){
+		} else if (specials[i][0] == 'sh' && cats[specials[i][1]].player_id == pla2 && shouting_count_p2 < 100){
 			
 			if (shouting[specials[i][1]] == null || shouting[specials[i][1]] == 0){
 				shouting[specials[i][1]] = 3;
@@ -2306,142 +1397,29 @@ try{
 			shouting_count_p2++;
 			
 		} else if (specials[i][0] == 'ex'){
-			spirits[specials[i][1]].explode();
-			//console.log('exploding');
+			cats[specials[i][1]].explode();
 		}
+	}
 	}
 	
 	shouting_count_p1 = 0;
 	shouting_count_p2 = 0;
 } catch (e){
-	console.log(e);
 }
 	
-	//let b1_def_status = 0
-	//let b2_def_status = 0
-	//let b3_def_status = 0
-	//
-	//if (game_blocks[active_block].b1[2] > 0) b1_def_status = 1;
-	//if (game_blocks[active_block].b2[2] > 0) b2_def_status = 1;
-	//if (game_blocks[active_block].b3[2] > 0) b3_def_status = 1;
-	
-	let bases_def_status = [];
-	
-	for (let b = 0; b < bases.length; b++){
-		bases_def_status[b] = 0;
-		if (game_blocks[active_block]['b' + (b+1)][2] > 0) bases_def_status[b] = 1;
-		bases[b].charge(game_blocks[active_block]['b' + (b+1)][4], game_blocks[active_block]['b' + (b+1)][0]);
-		bases[b].defend(bases_def_status[b]);
-		bases[b].shield(game_blocks[active_block]['b' + (b+1)][3]);
-		bases[b].current_spirit_cost = game_blocks[active_block]['b' + (b+1)][1];
-		bases[b].draw(game_blocks[active_block]['b' + (b+1)][3]);
-	}
-	
-	
-	//bases[0].charge(game_blocks[active_block].b1[4], game_blocks[active_block].b1[0]);
-	//bases[1].charge(game_blocks[active_block].b2[4], game_blocks[active_block].b2[0]);
-	//bases[2].charge(game_blocks[active_block].b3[4], game_blocks[active_block].b3[0]);
-	//
-	//
-	//
-	//
-	//
-	//bases[0].defend(b1_def_status);
-	//bases[1].defend(b2_def_status);
-	//bases[2].defend(b3_def_status);
-	//bases[0].shield(game_blocks[active_block].b1[3]);
-	//bases[1].shield(game_blocks[active_block].b2[3]);
-	//bases[2].shield(game_blocks[active_block].b3[3]);
-	////console.log(b1_def_status);
-	////console.log(b2_def_status);
-	////console.log(b3_def_status);
-	////console.log('---');
-	////console.log(game_blocks[active_block].b1[3]);
-	////console.log(game_blocks[active_block].b2[3]);
-	////console.log(game_blocks[active_block].b3[3]);
-	////console.log('---');
-	//
-	//
-	//bases[0].current_spirit_cost = game_blocks[active_block].b1[1];
-	//bases[1].current_spirit_cost = game_blocks[active_block].b2[1];
-	//bases[2].current_spirit_cost = game_blocks[active_block].b3[1];
-	//bases[0].draw(game_blocks[active_block].b1[3]);
-	//bases[1].draw(game_blocks[active_block].b2[3]);
-	//bases[2].draw(game_blocks[active_block].b3[3]);
-	
-	outposts[0].draw(game_blocks[active_block].ou[0], game_blocks[active_block].ou[1]);
-	pylons[0].draw(game_blocks[active_block].py[0], game_blocks[active_block].py[1]);
-	
-	
-	// star is drawn on the other static canvas. Draw only the center?
-	//console.log(game_blocks[active_block].st[0]);
-	stars[0].update_resource(game_blocks[active_block].st[0]);
-	stars[1].update_resource(game_blocks[active_block].st[1]);
-	stars[2].update_resource(game_blocks[active_block].st[2]);
-	stars[3].update_resource(game_blocks[active_block].st[3]);
-	stars[0].draw_energy();
-	stars[1].draw_energy();
-	stars[2].draw_energy();
-	stars[3].draw_energy();
-	
-	for (let f = 0; f < game_blocks[active_block].ef.length; f++){
-		//fragments[f].update_resource(game_blocks[active_block].ef[f]);
-		//fragments[f].draw_energy();
-		
-		let fragment = game_blocks[active_block].ef[f];
-		
-		let frag_grd = c.createRadialGradient(fragment[0][0], fragment[0][1], 1, fragment[0][0], fragment[0][1], 12);
-		frag_grd.addColorStop(0, "rgba(248, 247, 255, 0)");
-		frag_grd.addColorStop(1, "rgba(248, 247, 255, " + (0.05 + Math.min(0.1 * fragment[1] / 100, 0.1) + fragment[1] / 1200) + ")");
-		
-		c.beginPath();
-		c.arc(fragment[0][0], fragment[0][1], 1 + Math.min(fragment[1] / 50, 8), 0, Math.PI * 2, false);
-		c.fillStyle = "rgba(248, 247, 255, 1)";
-		c.fill();
-		
-		c.beginPath();
-		c.arc(fragment[0][0], fragment[0][1], 12, 0, Math.PI * 2, false);
-		c.fillStyle = frag_grd;
-		c.fill();
-		
-		//c.save();
-		//c.beginPath();
-		//c.arc(fragment[0][0], fragment[0][1], 6, 0, Math.PI * 2, false);
-		//c.clip();
-		//c.beginPath();
-		//c.arc(fragment[0][0], fragment[0][1], 14, 0, Math.PI * 2, false);
-		//c.fillStyle = "rgba(254, 15, 25, " + 0.2 + ")";
-		////
-		//c.strokeStyle = 'rgba(255,255,255,1)';
-		//c.shadowColor='rgba(225, 250, 255, ' + '1' + ')';
-		//c.shadowBlur= 2 * (multiplier / 2.5);
-		//c.lineWidth = 8;
-		//c.stroke();
-	}
-	
-	
-	/*
-	world_bases = bases.length;
-	for (i = 0; i < world_bases; i++){
-		base_lookup[bases[i].id].charge()
-		base_lookup[bases[i].id].draw();
-	}
-	*/
 	
 	
 	try {
-		drawgqueue(game_blocks[active_block].graphics);
+		drawgqueue(_gb.graphics);
 	} catch (e) {
-		//console.log(e);
 	}
+}
 	
-	//draw stuff from modules
 	try {
 		for (draw_func in module_draw){
 			module_draw[draw_func]();
 		}
 	} catch (e) {
-		//console.log(e);
 	}
 
 	try {
@@ -2450,20 +1428,12 @@ try{
 	} catch (e) {
 
 	}
-	
-	
-	//if (live_render == 1){
-		setTimeout(() => {
-		    requestAnimationFrame(render_state);
-		}); //game_tick?
-	//}
+
+	setTimeout(() => {
+		requestAnimationFrame(render_state);
+	});
 	
 }
-
-
-
-// Start only when 2 blocks processed and ready?
-//render_state();
 
 
 
@@ -2478,7 +1448,7 @@ try{
 
 // hook into render function
 if (!window._move)
-	window._move = Spirit.prototype.move;
+	window._move = Cat.prototype.move;
 
 
 function lerp(a, b, t) {
@@ -2486,7 +1456,7 @@ function lerp(a, b, t) {
 };
 
 
-Spirit.prototype.move = function() {
+Cat.prototype.move = function() {
 	if (live_render == 0) return;
 	window._move.apply(this, arguments);
 	
@@ -2525,8 +1495,8 @@ Spirit.prototype.move = function() {
 	this.position[1] += lerp(this.noiseB[1], this.noiseA[1], tSmooth);
 }
 
-for (const spirit of Object.values(spirits))
-	spirit.move = Spirit.prototype.move;
+for (const cat of Object.values(cats))
+	cat.move = Cat.prototype.move;
 
 })();
 

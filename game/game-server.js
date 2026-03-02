@@ -122,19 +122,16 @@ function create_worker (game_id, game_type) {
   }
 
   function is_bot(id) {	
-	return id == "dumb-bot" || id == "medium-bot" || id == "will-bot" || id == "qual-bot" || id == "boom-bot" || id == "lego-bot" || id == "hard-bot" || id == "andersgee-bot"
+	return id == "dumb-bot" || id == "qual-bot"
   }
 
-  function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_shape = 0, pla2_shape = 0, pla1_color = 'color1', pla2_color = 'color2', game_type = 'tutorial'){
+  function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_color = 'color1', pla2_color = 'color2', game_type = 'tutorial'){
 	create_worker(game_id, game_type);
 	active_games[game_id] = [0, 0, 0, 0];
 	active_games[game_id][0] = 1;
 	active_games[game_id][1] = pla1;
 	active_games[game_id][2] = pla2;
 	active_games[game_id][3] = server_id;
-	//0=circle, 1=square, 2=triangle
-	active_games[game_id][4] = pla1_shape;
-	active_games[game_id][5] = pla2_shape;
 	active_games[game_id][6] = pla1_color;
 	active_games[game_id][7] = pla2_color;
 
@@ -156,7 +153,7 @@ function findAgain(req, res, g_id){
 		        	data: "no game found"
 		        });
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
-				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
 				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						logger.debug('game is ready');
@@ -185,7 +182,7 @@ function findAgain(req, res, g_id){
 function start_world(game_id){
 	//starts the game
 	try {
-		workers[game_id].postMessage({data: "start world", player1: active_games[game_id][1], player2: active_games[game_id][2], p1_shape: active_games[game_id][4], p2_shape: active_games[game_id][5], p1_color: active_games[game_id][6], p2_color: active_games[game_id][7]});
+		workers[game_id].postMessage({data: "start world", player1: active_games[game_id][1], player2: active_games[game_id][2], p1_color: active_games[game_id][6], p2_color: active_games[game_id][7]});
 	} catch (error) {
 	  logger.error(error);
 	}
@@ -305,10 +302,11 @@ wss.on('connection', function connection(ws, req) {
 			return;
 		}
 		
-		if (message == 'reinitiate'){
-			logger.debug('reinitiating the world for g_id = ' + g_id);
-			initiate_world(ws.client_id, g_id);
-		} else {
+	if (message == 'reinitiate'){
+		logger.debug('reinitiating the world for g_id = ' + g_id);
+		initiate_world(ws.client_id, g_id);
+		return;
+	} else {
 			try {
 				message = JSON.parse(message);
 			} catch (error) {
@@ -341,7 +339,7 @@ wss.on('connection', function connection(ws, req) {
 
 		// Transpile from whatever language to js
 		if (message['u_code_lang'] != undefined && message['u_code_lang'] != "javascript") {
-			let req = await fetch(config.frontendAddress + "/transpiler/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json'}});
+			let req = await fetch(config.frontendAddress + "/transpiler/transpile", {method: "POST", body: JSON.stringify({code: message['u_code'], language: message['u_code_lang']}), headers: {'Content-Type': 'application/json', 'X-Transpiler-Secret': config.transpilerSecret}});
 			// logger.debug(await req.text());
 			let res = await req.json();
 			if (res.result) message['u_code'] = res.result;
@@ -366,8 +364,9 @@ wss.on('connection', function connection(ws, req) {
 				return `${mod.server_script_location}/${mod.module_id}`
 			}).filter(loc=>loc!=="local" && loc!==null)
 		} else {
-			// If user doesn't exist, activate manual-ui module
-			active_module_code_locations = ["local/manual-ui"]
+			// manual-ui module disabled
+			// active_module_code_locations = ["local/manual-ui"]
+			active_module_code_locations = []
 		}
 
 		logger.debug(active_module_code_locations)
@@ -417,16 +416,16 @@ wss.on('connection', function connection(ws, req) {
 		  //logger.error(error);
 		}
 		/*if (message['session_id'] == player1_session){
-			player1_code = `all = spirits.length;
+			player1_code = `all = cats.length;
 			for (s = 0; s < all; s++){
-				global['s' + s] = spirits[s];
+				global['s' + s] = cats[s];
 			}` + message['u_code'];
 			send_code(ws.client_id, 'player1', player1_code, g_id, session_id);
 		}
 		if (message['session_id'] == player2_session){
-			player2_code = `all = spirits.length;
+			player2_code = `all = cats.length;
 			for (s = 0; s < all; s++){
-				global['s' + s] = spirits[s];
+				global['s' + s] = cats[s];
 			}` + message['u_code'];
 			send_code(ws.client_id, 'player2', player1_code, g_id);
 		}
@@ -452,7 +451,7 @@ app.post('/' + this_server + 'ns/:game_id', (req, res) => {
 			if (result.length == 0){
 				findAgain(req, res, g_id);
 			} else if (result[0]['active'] == 0.5 && result[0]['server'] == this_server){
-				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_shape'], result[0]['p2_shape'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
+				init_game(g_id, result[0]['player1'], result[0]['player2'], 1, result[0]['server'], result[0]['p1_color'], result[0]['p2_color'], this_server_type);
 				Game.updateOne({game_id: g_id}, {active: 1}, {upsert: true})
 					.then((qq) => {
 						logger.debug('game is ready');

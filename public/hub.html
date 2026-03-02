@@ -9,8 +9,6 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./style-mobile.css">
@@ -256,7 +254,7 @@
 			  }
 			  var gameDate = new Date(hub_data[i]['updatedAt']);
 			  
-			  tbl_data += "<a href='/replay/" + hub_data[i]['game_id'] + "' class='row'><div class='row_in'><span class='table_game_date'>" + timeSince(gameDate) + "</span><div class='table_game_players'><span class='table_player1'><span class='player1_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p1_color']) + "'></span></span>" + hub_data[i]['player1'] + "</span><span class='versus'>vs</span><span class='table_player2'><span class='player2_shape'><span class='ico_circle' style='background-color: " + get_color(hub_data[i]['p2_color']) + "'></span></span>" + hub_data[i]['player2'] + "</span></div><span class='table_game_duration'>30 min</span><span class='table_game_result" + resultString + "</span><span class='table_game_eloresult'>" + p_new_rating + "</span></div></a>"
+			  tbl_data += "<a href='/replay/" + hub_data[i]['game_id'] + "' class='row'><div class='row_in'><span class='table_game_date'>" + timeSince(gameDate) + "</span><div class='table_game_players'><span class='table_player1'><span class='player1_shape'><span class='ico_triangles' style='background-color: " + get_color(hub_data[i]['p1_color']) + "'></span></span>" + hub_data[i]['player1'] + "</span><span class='versus'>vs</span><span class='table_player2'><span class='player2_shape'><span class='ico_triangles' style='background-color: " + get_color(hub_data[i]['p2_color']) + "'></span></span>" + hub_data[i]['player2'] + "</span></div><span class='table_game_duration'>30 min</span><span class='table_game_result" + resultString + "</span><span class='table_game_eloresult'>" + p_new_rating + "</span></div></a>"
 			  
 			  
 			  
@@ -288,7 +286,7 @@
 		  }
 	  })
 	  .catch(error => {
-		  console.log(error);
+		  console.error(error);
 	  })
 	  
 	  
@@ -317,20 +315,17 @@
 				  eraseCookie('game_id');
 				  //TODO: show "CONTINUE" in the hub (+ maybe resign/end game)
 			  } else if (response2.data == 'game found'){
-				  console.log('game found');
-				  console.log(response2);
 				  document.getElementById('hub_new_game').style.display = 'none';
 				  document.getElementById('hub_resume_game').style.display = 'block';
 				  //document.getElementById('hub_resume_link').href = 'https://yare.io/' + response2.server + '/' + response2.game_id;
 				  document.getElementById('hub_resume_link').href = '/' + response2.server + '/' + response2.game_id;
-				  console.log('working?');
 				 // TODO: check if (response2.p1 == signed_in user) and make string in the right order
 				  document.getElementById('hub_resume_players').innerHTML = response2.p1 + " <span class='resume_lowlight'>vs</span> " + response2.p2;
 				  
 			  }
 		  })
 		  .catch(error => {
-			  console.log(error);
+			  console.error(error);
 		  })
 	  }
   

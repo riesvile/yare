@@ -1,4 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Open+Sans&display=swap");
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/asset/fonts/SuisseIntl-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/asset/fonts/SuisseIntl-Semibold.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
 * {
   box-sizing: border-box;
@@ -28,7 +42,7 @@ body,
   justify-content: center;
   background-color: var(--bg3);
   color: var(--fg);
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Suisse Intl', sans-serif;
   flex-direction: column;
 }
 
@@ -38,7 +52,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Suisse Intl', sans-serif;
   font-weight: 800;
 }
 

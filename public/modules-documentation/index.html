@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="/style.css">
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.27.0/prism.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism-themes@1.9.0/themes/prism-atom-dark.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
   <script src="/anime.min.js"></script>
   <script src="/modules-documentation/script.js" defer></script>
   <title>yare.io</title>
@@ -110,49 +109,26 @@
   		</div>
   		-->
 		
+  		<!--
   		<span class="pref_section_label">MODULES</span>
   		<div id="modules_section">
-			
   			<div id="create_new_module">
   				<span class="ico_new_module"></span>
   				<span class="new_module_label">Create Module</span>
   			</div>
-			
-  			<!--
   			<div class="module_card module_off" id="mdl_code-editor">
   				<div class="module_card_bg" id="bg_mdl_code-editor"></div>
   				<span class="module_main_tag">Essentials</span>
   				<div class="module_toggle" id="toggle_code-editor">
   					<div class="the_toggle" id="thetog"></div>
   				</div>
-  				<h3 class="module_name">Code editor <br>& Console</h3>
+  				<h3 class="module_name">Code editor & Console</h3>
   				<div class="module_ilu"></div>
   			</div>
-				
-  				-->
-			
-			
   		</div>
-		
   		<div id="modules_section_mine">
-  			<!--
-  			<div class="module_card_mine module_off" id="mdl_code_editor">
-  				<div class="module_card_bg" id="bg_mdl_mine"></div>
-  				<div class="module_options">
-  					<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
-  					<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
-  					<div class="delete_confirm" id="confirm_1234">
-  						<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
-  						<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
-  					</div>
-  				</div>
-  				<div class="module_toggle" id="toggle_1234">
-  					<div class="the_toggle" id="thetog"></div>
-  				</div>
-  				<h3 class="module_name">Module name</h3>
-  			</div>
-  			-->
   		</div>
+  		-->
 		
 		
 		
@@ -192,6 +168,7 @@
   
   
 
+  <!--
   <div class="content">
     <div class="p_intro" style="max-width: 769px">
       Modules are components that add specific features and enhancements to yare.
@@ -252,57 +229,17 @@
       </div>
       <div class="row_in_doc">
         <span class="table_doc_property">p1</span>
-        <span class="table_doc_value">[ [ id, position, size, energy, hp ], [...], ... ] – arrays of player 1 spirits data</span>
+        <span class="table_doc_value">[ [ id, position, size, energy, hp ], [...], ... ] – arrays of player 1 cats data</span>
         <span class="table_doc_type">array</span>
       </div>
       <div class="row_in_doc">
         <span class="table_doc_property">p2</span>
-        <span class="table_doc_value">arrays of array of player 2 spirits (same structure as p1)</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">b1</span>
-        <span class="table_doc_value">base_zxq data – [ energy, current_spirit_cost, sight.enemies.length, control ]</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">b2</span>
-        <span class="table_doc_value">base_a2c data (same structure as b1)</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">b3</span>
-        <span class="table_doc_value">base_p89 data (same structure as b1)</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">b4</span>
-        <span class="table_doc_value">base_nua data (same structure as b1)</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">st</span>
-        <span class="table_doc_value">[ star_zxq.energy, star_a2c.energy, star_p89.energy, star_nua.energy ]</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">ou</span>
-        <span class="table_doc_value">[ outpost.energy, outpost.control ]</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">py</span>
-        <span class="table_doc_value">[ pylon.energy, pylon.control ]</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">ef</span>
-        <span class="table_doc_value">[ [ fragment position, energy ], [ fragment position, energy ], ... ] – arrays of fragments data</span>
+        <span class="table_doc_value">arrays of array of player 2 cats (same structure as p1)</span>
         <span class="table_doc_type">array</span>
       </div>
       <div class="row_in_doc">
         <span class="table_doc_property">e</span>
-        <span class="table_doc_value">energize data – [ [ origin id, target id, beam strength ], [ ... ], ... ]</span>
+        <span class="table_doc_value">pew data – [ [ origin id, target id, beam strength ], [ ... ], ... ]</span>
         <span class="table_doc_type">array</span>
       </div>
     </div>
@@ -333,7 +270,7 @@
         <span class="table_doc_type">Type</span>
       </div>
         <div class="row_in_doc">
-          <span class="table_doc_property">p1[spirit_id]</span>
+          <span class="table_doc_property">p1[cat_id]</span>
           <span class="table_doc_value snowflake1">[<br>
             <p>[ new pos. x, new pos. y, direction x, direction y, prev pos. x, prev pos. y ],</p>
             <p>size,</p>
@@ -345,32 +282,12 @@
           <span class="table_doc_type">array</span>
         </div>
         <div class="row_in_doc">
-          <span class="table_doc_property">p2[spirit_id]</span>
+          <span class="table_doc_property">p2[cat_id]</span>
           <span class="table_doc_value">same structure as p1</span>
           <span class="table_doc_type">array</span>
         </div>
         <div class="row_in_doc">
-          <span class="table_doc_property">b1</span>
-          <span class="table_doc_value">base_zxq data – [ energy, current spirit cost, # enemies nearby, control, prev tick energy ]</span>
-          <span class="table_doc_type">array</span>
-        </div>
-        <div class="row_in_doc">
-          <span class="table_doc_property">b2</span>
-          <span class="table_doc_value">base_a2c data – same structure</span>
-          <span class="table_doc_type">array</span>
-        </div>
-        <div class="row_in_doc">
-          <span class="table_doc_property">b3</span>
-          <span class="table_doc_value">base_p89 data – same structure</span>
-          <span class="table_doc_type">array</span>
-        </div>
-        <div class="row_in_doc">
-          <span class="table_doc_property">b4</span>
-          <span class="table_doc_value">base_nua data – same structure</span>
-          <span class="table_doc_type">array</span>
-        </div>
-        <div class="row_in_doc">
-          <span class="table_doc_property">st, ou, py, ef, e</span>
+          <span class="table_doc_property">e</span>
           <span class="table_doc_value">same structure as websocket data (table above)</span>
           <span class="table_doc_type">array</span>
         </div>
@@ -389,38 +306,18 @@
         <span class="table_doc_type">Type</span>
       </div>
       <div class="row_in_doc">
-        <span class="table_doc_property">spirits</span>
-        <span class="table_doc_value">Object with all spirit objects. Access by their ids (e.g. <div class="inline monospace gray">spirits[‘jane_6’]</div>)</span>
+        <span class="table_doc_property">cats</span>
+        <span class="table_doc_value">Object with all cat objects. Access by their ids (e.g. <div class="inline monospace gray">cats[‘jane_6’]</div>)</span>
         <span class="table_doc_type">object</span>
       </div>
       <div class="row_in_doc">
-        <span class="table_doc_property">living_spirits</span>
-        <span class="table_doc_value">Array with all spirit objects. (contrary to the name... even the dead ones)</span>
+        <span class="table_doc_property">living_cats</span>
+        <span class="table_doc_value">Array with all cat objects. (contrary to the name... even the dead ones)</span>
         <span class="table_doc_type">array</span>
       </div>
       <div class="row_in_doc">
-        <span class="table_doc_property">stars</span>
-        <span class="table_doc_value">All star objects in this order – [ star_zxq, star_a2c, star_p89, star_nua ]</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">bases</span>
-        <span class="table_doc_value">All base objects in this order – [ base_zxq, base_a2c, base_p89, base_nua ]</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">outposts</span>
-        <span class="table_doc_value">All outpost objects (there is just one)</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">pylons</span>
-        <span class="table_doc_value">All pylon objects (there is just one)</span>
-        <span class="table_doc_type">array</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">fragments</span>
-        <span class="table_doc_value">Array of all fragments – [ [ position, energy ], [ position, energy ], [ ... ], ... ]</span>
+        <span class="table_doc_property">barricades</span>
+        <span class="table_doc_value">All barricade objects in this order – [ barricade_a, barricade_b, barricade_c, barricade_d ]</span>
         <span class="table_doc_type">array</span>
       </div>
     </div>
@@ -446,14 +343,6 @@
         <span class="table_doc_value">
           <div class="inline gray">color1: </div>rgb color,
           <div class="inline gray">color2: </div>rgb color
-        </span>
-        <span class="table_doc_type">object</span>
-      </div>
-      <div class="row_in_doc">
-        <span class="table_doc_property">shapes</span>
-        <span class="table_doc_value">
-          <div class="inline gray">shape1: </div>shape,
-          <div class="inline gray">shape2: </div>shape
         </span>
         <span class="table_doc_type">object</span>
       </div>
@@ -489,13 +378,13 @@ base_canvas
 		  <p>current zoom level – value between 0.5–2</p>
 		  <p>1 / scale</p>
 		  <p>by how much are the canvas coordinates offset relative to the game board coordinates</p>
-		  <p>contains only static stars and bases (unfortunate name). Context for it is <span class="inline purple">c_base</span></p>
+		  <p>contains only static barricades (unfortunate name). Context for it is <span class="inline purple">c_base</span></p>
 		  <p>all other game objects. Context for it is <span class="inline purple">c</span></p>
 	  </div>
     </div>
     <h2 class="h_sec_head" id="examples">Examples</h2>
     <div style="height: 2rem"></div>
-    <h4 class="doc_h4">1. Explode spirit on click (triangles only)</h4>
+    <h4 class="doc_h4">1. Explode cat on click (triangles only)</h4>
     <div style="height: 2rem"></div>
     <div class="codeExampleContainer">
       <div class="codeExample">
@@ -508,7 +397,7 @@ base_canvas
       </div>
     </div>
     <div style="height: 2rem"></div>
-    <h4 class="doc_h4">2. Show direction line in front of your spirits</h4>
+    <h4 class="doc_h4">2. Show direction line in front of your cats</h4>
     <div style="height: 2rem"></div>
     <div class="codeExampleContainer">
       <div class="codeExample" id="example-1">
@@ -522,6 +411,7 @@ base_canvas
     </div>
     <div style="height: 2rem"></div>
   </div>
+  -->
 </body>
 <script src="/animations.js"></script>
 <script src="/basics.js"></script>

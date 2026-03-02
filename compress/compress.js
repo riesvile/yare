@@ -1,26 +1,27 @@
 /*
 render_data3 = {
             't': 0,
+            'pl1': players['p1'],
+            'pl2': players['p2'],
             'p1': [],
             'p2': [],
-            'b1': [],
-            'b2': [],
             'st': [],
-            'ou': [],
             'e': [],
             's': [],
+            'a': [],
+            'cr': circle_radius,
             'end': end_winner
         };
 
-        render_data3.p1.push([spt.id, spt.position, spt.size, spt.energy, spt.hp]);
-        render_data3.e.push([outpost.id, enemy.id, 2 * beam_strength]);
-        render_data3.ou = [outposts[0].energy, outposts[0].control];
+        render_data3.p1.push([cutoff_id, [x, y], spt.energy, spt.hp]);
+        render_data3.e.push([from_id, to_id, strength]);
+        render_data3.a.push([from_id, to_id, splash_id, strength]);
 
-        render_data3.s.push(['sh', spirit, commands[spirit].shout]);
+        render_data3.s.push(['sh', cat, commands[cat].shout]);
         render_data3.s.push(['m', s.id, t.id]);
         render_data3.s.push(['d', orig.id]);
-        render_data3.s.push(['j', spirit]);
-        render_data3.s.push(['ex', spirit]);
+        render_data3.s.push(['j', cat]);
+        render_data3.s.push(['ex', cat]);
 */
 
 var round = n => Math.round(n * 100) / 100;
@@ -39,23 +40,18 @@ function compress(orig) {
         return namesToIDs[name];
     }
 
-    var filter_spirit = s => s[4] > 0.5;
-    var map_spirit = s => [mapName(s[0]), [round(s[1][0]), round(s[1][1])], s[2], s[3]];
+    var filter_cat = s => s[3] > 0.5;
+    var map_cat = s => [mapName(s[0]), [round(s[1][0]), round(s[1][1])], s[2], s[3]];
     var new_frames = [];
     var i = 0;
     for(let frame of orig) {
         let new_frame = {
             t: i++,
-            p1: frame.p1.filter(filter_spirit).map(map_spirit),
-            p2: frame.p2.filter(filter_spirit).map(map_spirit),
-            b1: frame.b1,
-            b2: frame.b2,
-            b3: frame.b3,
-            b4: frame.b4,
+            pl1: frame.pl1,
+            pl2: frame.pl2,
+            p1: frame.p1.filter(filter_cat).map(map_cat),
+            p2: frame.p2.filter(filter_cat).map(map_cat),
             st: frame.st,
-            ou: [frame.ou[0], mapName(frame.ou[1])],
-			py: [frame.py[0], mapName(frame.py[1])],
-			ef: frame.ef,
             e: frame.e.map(e => [mapName(e[0]), mapName(e[1]), e[2]]),
             s: frame.s.map(s => {
                 switch(s[0]) {   
@@ -65,11 +61,15 @@ function compress(orig) {
                         return ['m', mapName(s[1]), mapName(s[2])];
                     case 'd':
                     case 'j':
+                        return [s[0], mapName(s[1])];
                     case 'ex':
-                        return ['d', mapName(s[1])];
+                        return ['ex', mapName(s[1])];
                 }
                 throw new Error('Unknown special type: ' + s[0]);
             }),
+            a: (frame.a || []).map(a => [mapName(a[0]), mapName(a[1]), mapName(a[2]), a[3]]),
+            cr: frame.cr,
+            end: frame.end,
         };
         new_frames.push(new_frame);
     }
@@ -85,20 +85,15 @@ function decompress(comp) {
 
     let IDsToNames = dec.IDsToNames;
 
-    var map_spirit = s => [IDsToNames[s[0]], s[1], s[2], s[3], 1];
+    var map_cat = s => [IDsToNames[s[0]], s[1], s[2], s[3]];
     var frames = [];
     for(let frame of dec.frames) {
         let new_frame = {
-            p1: frame.p1.map(map_spirit),
-            p2: frame.p2.map(map_spirit),
-            b1: frame.b1,
-            b2: frame.b2,
-            b3: frame.b3,
-            b4: frame.b4,
+            pl1: frame.pl1,
+            pl2: frame.pl2,
+            p1: frame.p1.map(map_cat),
+            p2: frame.p2.map(map_cat),
             st: frame.st,
-            ou: frame.ou,
-			py: [frame.py[0], IDsToNames[frame.py[1]]],
-			ef: frame.ef,
             e: frame.e.map(e => [IDsToNames[e[0]], IDsToNames[e[1]], e[2]]),
             s: frame.s.map(s => {
                 switch(s[0]) {   
@@ -108,11 +103,15 @@ function decompress(comp) {
                         return ['m', IDsToNames[s[1]], IDsToNames[s[2]]];
                     case 'd':
                     case 'j':
+                        return [s[0], IDsToNames[s[1]]];
                     case 'ex':
-                        return ['d', IDsToNames[s[1]]];
+                        return ['ex', IDsToNames[s[1]]];
                 }
                 throw new Error('Unknown special type: ' + s[0]);
             }),
+            a: (frame.a || []).map(a => [IDsToNames[a[0]], IDsToNames[a[1]], IDsToNames[a[2]], a[3]]),
+            cr: frame.cr,
+            end: frame.end,
         };
         frames.push(new_frame);
     }

@@ -32,13 +32,11 @@ function start_engine(){
 		code_pl2: 'code2'
 	});
 	
-	//consume incoming data the same way as game.html?
 	boxsand_engine.onmessage = function(e) {
-		//console.log('engine data');
-		//console.log(e.data)
 		if (e.data.meta == 'rendering'){
 			live_render = 1;
 			render_world(e.data.incoming);
+			update_console(e.data.incoming, e.data.chan);
 		}
 	}
 }
@@ -65,182 +63,89 @@ function update_code(){
 }
 
 function render_world(dat){
-	elapsed = 0;
 	incoming = dat;
 	tick_counter = incoming.t;
-	//console.log(incoming);
-	//console.log('tick_counter = ' + tick_counter);
-	
-	if (tick_counter == 0){
-		game_blocks['t0'] = game_blocks[active_block];
-	}
-	
-    if (tick_counter > 1){
-	 //game_blocks['t' + tick_counter] = incoming;
-	 
-	 game_blocks['t' + tick_counter] = {
-		 'p1': {},
-		 'p2': {},
-		 'b1': [],
-		 'b2': [],
-		 'b3': [],
-		 'b4': [],
-		 'e': [],
-		 's': [],
-		 'units': [],
-		 'g1': [],
-		 'g2': []
-	 }
-	 
-	 //
-	 // Populating game_blocks
-	 //
-	 
-	 for (i = 0; i < incoming.p1.length; i++){
-		 var spir_id = incoming.pl1 + '_' + incoming.p1[i][0];
-		 game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3], incoming.p1[i][4]];
-		 game_blocks['t' + tick_counter].units.push(incoming.pl1 + '_' + incoming.p1[i][0]);
-		 //console.log('previous tick');
-		 if (game_blocks['t' + (tick_counter - 1)] != undefined){
-			 //console.log('location');
-			 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
-			 var oldLoc = [0, 0];
-			 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
-			 var oldEnergy = 0;
-			 var oldSize = 0;
-			 
-			 if (spirits[spir_id] == undefined && players['player1'] != undefined){
-				 create_spirit_p1(spir_id);
-			 }
-			 
-			 if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
-			 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
-				oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
-				oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
-				
-				game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
-				game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
-				game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
-				game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
-			 
-				game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
-				game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
-			 } else {
-				// new spirit instance
-				//console.log('spirit born (probably)');
-				 
-				game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
-				game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
-				game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
-				game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
-			 
-				game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
-				game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
-			 }
-			 
-		 }
-	 }
-	 
-	 for (j = 0; j < incoming.p2.length; j++){
-		 var spir_id = incoming.pl2 + '_' + incoming.p2[j][0];
-		 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3], incoming.p2[j][4]];
-		 game_blocks['t' + tick_counter].units.push(incoming.pl2 + '_' + incoming.p2[j][0]);
-		 
-		 if (game_blocks['t' + (tick_counter - 1)] != undefined){
-			 //console.log('location');
-			 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
-			 var oldLoc = [0, 0];
-			 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
-			 var oldEnergy = 0;
-			 var oldSize = 0;
-			 
-			 if (spirits[spir_id] == undefined && players['player2'] != undefined){
-				 create_spirit_p2(spir_id);
-				 //console.log('spirit created ' + spir_id);
-			 }
-			 
-			 if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
-			 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
-				oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
-				oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
-				
-				game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
-				game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
-				game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
-				game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
-			 
-				game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-				game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
-			 } else {
-				// new spirit instance
-				 //console.log('spirit born (probably)');
-				 
-				 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
-				 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
-				 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
-				 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
-			 
-				 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-				 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
-			 }
-		 }
-	 }
-	 
-	 game_blocks['t' + tick_counter]['e'] = incoming.e;
-	 game_blocks['t' + tick_counter]['s'] = incoming.s;
-	 game_blocks['t' + tick_counter]['b1'] = incoming.b1;
-	 game_blocks['t' + tick_counter]['b2'] = incoming.b2;
-	 game_blocks['t' + tick_counter]['b3'] = incoming.b3;
-	 game_blocks['t' + tick_counter]['b4'] = incoming.b4;
-	 
-	 //previous energy for animation purposes
-	 game_blocks['t' + tick_counter]['b1'][4] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
-	 game_blocks['t' + tick_counter]['b2'][4] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
-	 game_blocks['t' + tick_counter]['b3'][4] = game_blocks['t' + (tick_counter - 1)]['b3'][0];
-	 game_blocks['t' + tick_counter]['b4'][4] = game_blocks['t' + (tick_counter - 1)]['b4'][0];
-	 
-	 game_blocks['t' + tick_counter]['st'] = incoming.st;
-	 game_blocks['t' + tick_counter]['ef'] = incoming.ef;
-	 
-	 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
-	 game_blocks['t' + tick_counter]['py'] = incoming.py;
-	 //console.log(incoming.py);
-	 
-	 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
-	 //console.log(game_blocks);
-	 //console.log('t' + tick_counter + ' processed');
-	 run_it();
-	 
-     }
-}
 
-function run_it(){  
-  if (game_running == 0 && game_blocks['t' + (tick_counter - 1)] != undefined){
-	  game_running = 1;
-	  tick_local = tick_counter;
-	  active_block = 't' + (tick_local);
-	  //console.log('active block = ' + active_block);
-	  setInterval(function(){ 
-		  // change to tick_counter (not - 1)
-		  //console.log('local tick = ' + tick_local);
-		  //console.log('incoming.t = ' + incoming.t);
-		  
-		  
-		  active_block = 't' + (tick_local);
-		  //console.log('active block = ' + active_block);
-		  //console.log('incoming.t =   ' + incoming.t);
-		  total_time = 0;
-		  tick_local++;
-		  if (tick_local > incoming.t) tick_local--;
-		  if (incoming.t - tick_local > 4) tick_local = tick_counter - 1;
-	  }, game_tick);
-	  render_state();
-  }
+	if (tick_counter < 0) return;
+
+	game_blocks['t' + tick_counter] = {
+		'p1': {},
+		'p2': {},
+		'e': [],
+		's': [],
+		'a': [],
+		'units': [],
+		'g1': [],
+		'g2': []
+	}
+
+	for (var i = 0; i < incoming.p1.length; i++){
+		var spir_id = incoming.pl1 + '_' + incoming.p1[i][0];
+		game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3]];
+		game_blocks['t' + tick_counter].units.push(spir_id);
+
+		if (cats[spir_id] == undefined && players['player1'] != undefined){
+			create_cat_p1(spir_id);
+		}
+
+		var oldLoc = [0, 0];
+		var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
+		var oldEnergy = game_blocks['t' + tick_counter].p1[spir_id][1];
+
+		if (game_blocks['t' + (tick_counter - 1)] != undefined && game_blocks['t' + (tick_counter - 1)].p1 != undefined && game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
+			oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
+			oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
+		} else {
+			oldLoc = [newLoc[0], newLoc[1]];
+		}
+
+		game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
+		game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
+		game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
+		game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
+		game_blocks['t' + tick_counter].p1[spir_id][3] = oldEnergy;
+	}
+
+	for (var j = 0; j < incoming.p2.length; j++){
+		var spir_id = incoming.pl2 + '_' + incoming.p2[j][0];
+		game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3]];
+		game_blocks['t' + tick_counter].units.push(spir_id);
+
+		if (cats[spir_id] == undefined && players['player2'] != undefined){
+			create_cat_p2(spir_id);
+		}
+
+		var oldLoc = [0, 0];
+		var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
+		var oldEnergy = game_blocks['t' + tick_counter].p2[spir_id][1];
+
+		if (game_blocks['t' + (tick_counter - 1)] != undefined && game_blocks['t' + (tick_counter - 1)].p2 != undefined && game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
+			oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
+			oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
+		} else {
+			oldLoc = [newLoc[0], newLoc[1]];
+		}
+
+		game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
+		game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
+		game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
+		game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
+		game_blocks['t' + tick_counter].p2[spir_id][3] = oldEnergy;
+	}
+
+	game_blocks['t' + tick_counter]['e'] = incoming.e;
+	game_blocks['t' + tick_counter]['s'] = incoming.s;
+	game_blocks['t' + tick_counter]['a'] = incoming.a;
+	game_blocks['t' + tick_counter]['cr'] = incoming.cr;
+
+	active_block = 't' + tick_counter;
+	tick_local = tick_counter;
+	total_time = 0;
 }
 
 	  
 function set_stage(){
-  scale = 0.5;
+  scale = 1;
   prevScale = scale;
   multiplier = 1 / scale;
   
@@ -255,22 +160,15 @@ document.body.clientWidth;
 document.body.clientHeight;
 
 
-  offsetX = brow_width;
-  offsetY = brow_height;
+  offsetX = brow_width / 2;
+  offsetY = brow_height / 2;
   
   game_blocks[active_block] = {
 	 'p1': {},
 	 'p2': {},
-	 'b1': [0, 50, 0, 'pl1', 0],
-	 'b2': [0, 50, 0, 'pl2', 0],
-	 'b3': [0, 0, 0, '', 0],
-	 'b4': [0, 0, 0, '', 0],
 	 'e': [],
 	 's': [],
 	 'st': [100, 100, 100, 100],
-	 'ou': [0, ''],
-	 'py': [0, ''],
-	 'ef': [],
 	 'units': [],
 	 'g1': [],
 	 'g2': [],
@@ -283,8 +181,6 @@ document.body.clientHeight;
   
   players['player1'] = boxsanded['pl1'];
   players['player2'] = boxsanded['pl2'];
-  shapes['shape1'] = boxsanded['pl1_sh'];
-  shapes['shape2'] = boxsanded['pl2_sh'];
   colors['color1'] = col1;
   colors['color2'] = col2;
   
@@ -297,7 +193,7 @@ document.body.clientHeight;
 	  game_blocks[active_block]['p1'] = {};
 	  for (let s = 0; s<boxsanded['p1_units'].length; s++){
 		  let spi = boxsanded['p1_units'][s]; 
-		  game_blocks[active_block]['p1'][players['player1'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
+		  game_blocks[active_block]['p1'][players['player1'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], spi[2]];
 	  }
   }
   
@@ -307,60 +203,31 @@ document.body.clientHeight;
   	  game_blocks[active_block]['p2'] = {};
 	  for (let q = 0; q<boxsanded['p2_units'].length; q++){
 		  let spi = boxsanded['p2_units'][q]; 
-		  game_blocks[active_block]['p2'][players['player2'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
+		  game_blocks[active_block]['p2'][players['player2'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], spi[2]];
 	  }
   }
   
   
-  let bas = boxsanded['bases'];
-  let sta = boxsanded['stars'];
-  let out = boxsanded['outposts'];
-  let pyl = boxsanded['pylons'];
-  let frag = boxsanded['fragments'];
-  game_blocks[active_block]['ef'] = [];
+  barricades = boxsanded['barricades'] || [];
+  pods = boxsanded['pods'] || [];
+
   let all_sp1 = game_blocks[active_block]['p1'];
   let all_sp2 = game_blocks[active_block]['p2'];
   
-  for (let b of bas){
-	  if (b[3] == 'pl1'){
-	  	  b[3] = players['player1'];
-	  } else if (b[3] == 'pl2'){
-		  b[3] = players['player2'];
-	  }
-	  //console.log(b);
-	  base_lookup[b[0]] = new Base(b[0], b[1], b[2], b[3], b[4], b[5]);
-	  base_lookup[b[0]].draw(b[3]);
+  for (let bi = 0; bi < barricades.length; bi++){
+	  draw_barricade(barricades[bi]);
   }
-  
-  game_blocks[active_block]['b1'][3] = players['player1'];
-  game_blocks[active_block]['b2'][3] = players['player2'];
-  
-  for (let s of sta){
-	  star_lookup[s[0]] = new Star(s[0], s[1], s[2], s[3]);
-	  star_lookup[s[0]].draw();
-  }
-  
-  for (let o of out){
-	  outpost_lookup[o[0]] = new Outpost(o[0], o[1], o[2]);
-	  outpost_lookup[o[0]].draw();
-  }
-  
-  for (let py of pyl){
-	  pylon_lookup[py[0]] = new Pylon(py[0], py[1], py[2]);
-	  pylon_lookup[py[0]].draw();
-  }
-  
-  for (let ef of frag){
-	  game_blocks[active_block]['ef'].push([ef[0], ef[1]]);
+  for (let pi = 0; pi < pods.length; pi++){
+	  draw_pod(pods[pi]);
   }
   
   for (let sp_id of Object.keys(all_sp1)) {
-	  spirits[sp_id] = new Spirit(sp_id, all_sp1[sp_id][0], all_sp1[sp_id][1], all_sp1[sp_id][2], players['player1'], col1, boxsanded['pl1_sh'], all_sp1[sp_id][3]);
+	  cats[sp_id] = new Cat(sp_id, all_sp1[sp_id][0], all_sp1[sp_id][1], players['player1'], col1, all_sp1[sp_id][2]);
 	  game_blocks[active_block].units.push(sp_id);
   }
   
   for (let sp_id of Object.keys(all_sp2)) {
-	  spirits[sp_id] = new Spirit(sp_id, all_sp2[sp_id][0], all_sp2[sp_id][1], all_sp2[sp_id][2], players['player2'], col2, boxsanded['pl2_sh'], all_sp2[sp_id][3]);
+	  cats[sp_id] = new Cat(sp_id, all_sp2[sp_id][0], all_sp2[sp_id][1], players['player2'], col2, all_sp2[sp_id][2]);
 	  game_blocks[active_block].units.push(sp_id);
   }
   
@@ -370,16 +237,13 @@ document.body.clientHeight;
 }
 
 function update_stage(){
-  delete_all_spirits();
-  living_spirits = [];
+  delete_all_cats();
+  living_cats = [];
   players['player1'] = boxsanded['pl1'];
   players['player2'] = boxsanded['pl2'];
   if (players['player1'] == players['player2']) players['player2'] += '2';
   
-  game_blocks[active_block]['b1'][3] = players['player1'];
-  game_blocks[active_block]['b2'][3] = players['player2'];
-  boxsanded['bases'][0][3] = players['player1'];
-  boxsanded['bases'][1][3] = players['player2'];
+  
   
   if (boxsanded['p1_def']){
 	  fill_defaults(0);
@@ -387,7 +251,7 @@ function update_stage(){
 	  game_blocks[active_block]['p1'] = {};
 	  for (let s = 0; s<boxsanded['p1_units'].length; s++){
 		  let spi = boxsanded['p1_units'][s]; 
-		  game_blocks[active_block]['p1'][players['player1'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
+		  game_blocks[active_block]['p1'][players['player1'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], spi[2]];
 	  }
   }
   if (boxsanded['p2_def']){
@@ -396,160 +260,68 @@ function update_stage(){
   	  game_blocks[active_block]['p2'] = {};
 	  for (let q = 0; q<boxsanded['p2_units'].length; q++){
 		  let spi = boxsanded['p2_units'][q]; 
-		  game_blocks[active_block]['p2'][players['player2'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], 1, spi[2], spi[3]];
+		  game_blocks[active_block]['p2'][players['player2'] + '_' + spi[0]] = [spi[1], spi[2], spi[3], spi[2]];
 	  }
   }
   
-  //generate spirits objects
+  //generate cats objects
   
   let all_sp1 = game_blocks[active_block]['p1'];
   let all_sp2 = game_blocks[active_block]['p2'];
   
   for (let sp_id of Object.keys(all_sp1)) {
-  	  spirits[sp_id] = new Spirit(sp_id, all_sp1[sp_id][0], all_sp1[sp_id][1], all_sp1[sp_id][2], players['player1'], col1, boxsanded['pl1_sh'], all_sp1[sp_id][3]);
+  	  cats[sp_id] = new Cat(sp_id, all_sp1[sp_id][0], all_sp1[sp_id][1], players['player1'], col1, all_sp1[sp_id][2]);
   	  game_blocks[active_block].units.push(sp_id);
   }
   
   for (let sp_id of Object.keys(all_sp2)) {
-  	  spirits[sp_id] = new Spirit(sp_id, all_sp2[sp_id][0], all_sp2[sp_id][1], all_sp2[sp_id][2], players['player2'], col2, boxsanded['pl2_sh'], all_sp2[sp_id][3]);
+  	  cats[sp_id] = new Cat(sp_id, all_sp2[sp_id][0], all_sp2[sp_id][1], players['player2'], col2, all_sp2[sp_id][2]);
   	  game_blocks[active_block].units.push(sp_id);
   }
-  
-  //fragments
-  let frag = boxsanded['fragments'];
-  game_blocks[active_block]['ef'] = [];
-  for (let ef of frag){
-	  game_blocks[active_block]['ef'].push([ef[0], ef[1]]);
-  }
-  
-  
-  update_game_shapes(0)
-  update_game_shapes(1);
 }
 
-function delete_all_spirits(){
+function delete_all_cats(){
   game_blocks[active_block].units = [];
-  for (let ds in spirits){
-	  delete spirits[ds];
-  }
-}
-
-function get_def_size(pshape){
-if (pshape == 'circles') return 1;
-if (pshape == 'squares') return 10;
-if (pshape == 'triangles') return 3;
-}
-
-function get_def_cost(pshape){
-if (pshape == 'circles') return 25;
-if (pshape == 'squares') return 360;
-if (pshape == 'triangles') return 90;
-}
-
-function update_game_shapes(pl2 = 1){
-  if (pl2 == 0){
-  	  for (let sp_id of Object.keys(spirits)) {
-		  let sp = spirits[sp_id];
-		  if (sp.player_id != players['player1']) continue;
-		  sp.shape = boxsanded['pl1_sh'];
-		  sp.energy_capacity = get_def_size(boxsanded['pl1_sh']) * 10;
-		  sp.energy = get_def_size(boxsanded['pl1_sh']) * 10;
-		  game_blocks[active_block]['p1'][sp_id][1] = get_def_size(boxsanded['pl1_sh']);
-		  game_blocks[active_block]['p1'][sp_id][2] = get_def_size(boxsanded['pl1_sh']) * 10;
-		  game_blocks[active_block]['p1'][sp_id][4] = get_def_size(boxsanded['pl1_sh']);
-		  sp.size = get_def_size(boxsanded['pl1_sh']);
-		  sp.final_size = get_def_size(boxsanded['pl1_sh']);
-		  sp.temp_size = get_def_size(boxsanded['pl1_sh']);
-	  }
-	  for (let i = 0; i < boxsanded['p1_units'].length; i++){
-	  	boxsanded['p1_units'][i][2] = get_def_size(boxsanded['pl1_sh']);
-		boxsanded['p1_units'][i][3] = get_def_size(boxsanded['pl1_sh']) * 10;
-	  }
-	  shapes['shape1'] = boxsanded['pl1_sh'];
-	  bases[0].shape = boxsanded['pl1_sh'];
-	  game_blocks[active_block]['b1'][1] = get_def_cost(boxsanded['pl1_sh']);
-	  
-  } else if (pl2 == 1){
-  	  for (let sp_id of Object.keys(spirits)) {
-		  let sp = spirits[sp_id];
-		  if (sp.player_id != players['player2']) continue;
-		  sp.shape = boxsanded['pl2_sh'];
-		  sp.energy_capacity = get_def_size(boxsanded['pl2_sh']) * 10;
-		  sp.energy = get_def_size(boxsanded['pl2_sh']) * 10;
-		  game_blocks[active_block]['p2'][sp_id][1] = get_def_size(boxsanded['pl2_sh']);
-		  game_blocks[active_block]['p2'][sp_id][2] = get_def_size(boxsanded['pl2_sh']) * 10;
-		  game_blocks[active_block]['p2'][sp_id][4] = get_def_size(boxsanded['pl2_sh']);
-		  sp.size = get_def_size(boxsanded['pl2_sh']);
-		  sp.final_size = get_def_size(boxsanded['pl2_sh']);
-		  sp.temp_size = get_def_size(boxsanded['pl2_sh']);
-	  }
-	  for (let i = 0; i < boxsanded['p2_units'].length; i++){
-	  	boxsanded['p2_units'][i][2] = get_def_size(boxsanded['pl2_sh']);
-		boxsanded['p2_units'][i][3] = get_def_size(boxsanded['pl2_sh']) * 10;
-	  }
-	  shapes['shape2'] = boxsanded['pl2_sh'];
-	  bases[1].shape = boxsanded['pl2_sh'];
-	  game_blocks[active_block]['b2'][1] = get_def_cost(boxsanded['pl2_sh']);
+  for (let ds in cats){
+	  delete cats[ds];
   }
 }
 
 function fill_defaults(pl2 = 1){
-  let start_num_spirits = 12;
-  let start_num_adjust1 = 0;
-  let start_num_adjust2 = 0;
-  if (boxsanded['pl1_sh'] == 'squares') start_num_adjust1 = 9;
-  if (boxsanded['pl2_sh'] == 'squares') start_num_adjust2 = 9;
-  if (boxsanded['pl1_sh'] == 'triangles') start_num_adjust1 = 6;
-  if (boxsanded['pl2_sh'] == 'triangles') start_num_adjust2 = 6;
+  let start_num_cats = 9;
   
   if (pl2 == 0){
 	  boxsanded['p1_units'] = [];
 	  game_blocks[active_block]['p1'] = {};
-	  for (let s = 1; s < 1+start_num_spirits-start_num_adjust1; s++){
-		  if (s > 6){
-			  game_blocks[active_block]['p1'][players['player1'] + '_' + s] = [[-620-s*20,-600], get_def_size(boxsanded['pl1_sh']), get_def_size(boxsanded['pl1_sh']) * 10, 1, 1, 1];
-			  boxsanded['p1_units'].push([s, [-620-s*20,-600], get_def_size(boxsanded['pl1_sh']), get_def_size(boxsanded['pl1_sh'])*10, 1]);
-		  } else {
-		  	  game_blocks[active_block]['p1'][players['player1'] + '_' + s] = [[-750-s*20,-580], get_def_size(boxsanded['pl1_sh']), get_def_size(boxsanded['pl1_sh']) * 10, 1, 1, 1];
-			   boxsanded['p1_units'].push([s, [-750-s*20,-580], get_def_size(boxsanded['pl1_sh']), get_def_size(boxsanded['pl1_sh'])*10, 1]);
-		  }
+	  for (let s = 1; s <= start_num_cats; s++){
+		  let y = -100 + (s - 1) * 25;
+		  game_blocks[active_block]['p1'][players['player1'] + '_' + s] = [[-200, y], 10, 1, 10];
+		  boxsanded['p1_units'].push([s, [-200, y], 10, 1]);
 		  
-		  
-		  
-		  let oldLoc = [0, 0];
 		  let newLoc = game_blocks[active_block].p1[players['player1'] + '_' + s][0];
-		  let oldEnergy = game_blocks[active_block].p1[players['player1'] + '_' + s][2];
-		  let oldSize = game_blocks[active_block].p1[players['player1'] + '_' + s][1];
+		  let oldEnergy = game_blocks[active_block].p1[players['player1'] + '_' + s][1];
 		  game_blocks[active_block].p1[players['player1'] + '_' + s][0][2] = 0;
 		  game_blocks[active_block].p1[players['player1'] + '_' + s][0][3] = 0;
 		  game_blocks[active_block].p1[players['player1'] + '_' + s][0][4] = newLoc[0];
 		  game_blocks[active_block].p1[players['player1'] + '_' + s][0][5] = newLoc[1];
-		  game_blocks[active_block].p1[players['player1'] + '_' + s][4] = oldSize;
-		  game_blocks[active_block].p1[players['player1'] + '_' + s][5] = oldEnergy;
+		  game_blocks[active_block].p1[players['player1'] + '_' + s][3] = oldEnergy;
 		  
 	  }
   } else if (pl2 == 1){
 	  boxsanded['p2_units'] = [];
 	  game_blocks[active_block]['p2'] = {};
-	  for (let q = 1; q < 1+start_num_spirits-start_num_adjust2; q++){
-		  if (q > 6){
-			  game_blocks[active_block]['p2'][players['player2'] + '_' + q] = [[450+q*20,770], get_def_size(boxsanded['pl2_sh']), get_def_size(boxsanded['pl2_sh']) * 10, 1, 1, 1];
-			  boxsanded['p2_units'].push([q, [450+q*20,770], get_def_size(boxsanded['pl2_sh']), get_def_size(boxsanded['pl2_sh'])*10, 1]);
-		  } else {
-		  	  game_blocks[active_block]['p2'][players['player2'] + '_' + q] = [[580+q*20,750], get_def_size(boxsanded['pl2_sh']), get_def_size(boxsanded['pl2_sh']) * 10, 1, 1, 1];
-			  boxsanded['p2_units'].push([q, [580+q*20,750], get_def_size(boxsanded['pl2_sh']), get_def_size(boxsanded['pl2_sh'])*10, 1]);
-		  }
+	  for (let q = 1; q <= start_num_cats; q++){
+		  let y = -100 + (q - 1) * 25;
+		  game_blocks[active_block]['p2'][players['player2'] + '_' + q] = [[200, y], 10, 1, 10];
+		  boxsanded['p2_units'].push([q, [200, y], 10, 1]);
 		  
-		  let oldLoc = [0, 0];
 		  let newLoc = game_blocks[active_block].p2[players['player2'] + '_' + q][0];
-		  let oldEnergy = game_blocks[active_block].p2[players['player2'] + '_' + q][2];
-		  let oldSize = game_blocks[active_block].p2[players['player2'] + '_' + q][1];
+		  let oldEnergy = game_blocks[active_block].p2[players['player2'] + '_' + q][1];
 		  game_blocks[active_block].p2[players['player2'] + '_' + q][0][2] = 0;
 		  game_blocks[active_block].p2[players['player2'] + '_' + q][0][3] = 0;
 		  game_blocks[active_block].p2[players['player2'] + '_' + q][0][4] = newLoc[0];
 		  game_blocks[active_block].p2[players['player2'] + '_' + q][0][5] = newLoc[1];
-		  game_blocks[active_block].p2[players['player2'] + '_' + q][4] = oldSize;
-		  game_blocks[active_block].p2[players['player2'] + '_' + q][5] = oldEnergy;
+		  game_blocks[active_block].p2[players['player2'] + '_' + q][3] = oldEnergy;
 	  }
   }
 }
@@ -561,8 +333,7 @@ function store_state(){
 function reset_to_def(){
 	boxsanded['p1_def'] = 1;
 	boxsanded['p2_def'] = 1;
-	game_blocks[active_block]['ef'] = [];
-	boxsanded['fragments'] = [];
+	
 	update_stage();
 	document.getElementById('bs_load_prev').style.display = 'none';
 }
@@ -581,43 +352,12 @@ function pick_pl2(){
   get_pick_state('pl2');
 }
 
-function insert_shape(pl, shapename){
-  document.getElementById('bs_ico_' + pl).classList.remove('ico_circles');
-  document.getElementById('bs_ico_' + pl).classList.remove('ico_squares');
-  document.getElementById('bs_ico_' + pl).classList.remove('ico_triangles');
-  document.getElementById('bs_ele_' + pl).classList.remove('ico_circles');
-  document.getElementById('bs_ele_' + pl).classList.remove('ico_squares');
-  document.getElementById('bs_ele_' + pl).classList.remove('ico_triangles');
-  
-  document.getElementById('bs_ico_' + pl).classList.add('ico_' + shapename);
-  document.getElementById('bs_ele_' + pl).classList.add('ico_' + shapename);
-}
-
 function get_pick_state(pl){
   reset_pl_sel();
   reset_bot_sel();
-  reset_upload_shape_sel();
-  reset_live_shape_sel();
   reset_upload_name();
   
-  if (boxsanded[pl] == 'live-input'){
-	  document.getElementById('live_shape_' + live_bot_shape[pl]).parentNode.classList.add('ps_shape_active');
-  } else if (boxsanded[pl] == 'upload-bot'){
-	  document.getElementById('upload_shape_' + upload_bot_shape[pl]).parentNode.classList.add('ps_shape_active');
-  }
   set_sel(pl, 'ps_' + boxsanded[pl]);
-}
-
-function reset_live_shape_sel(){
-  document.getElementById('live_shape_circles').parentNode.classList.remove('ps_shape_active');
-  document.getElementById('live_shape_squares').parentNode.classList.remove('ps_shape_active');
-  document.getElementById('live_shape_triangles').parentNode.classList.remove('ps_shape_active');
-}
-
-function reset_upload_shape_sel(){
-  document.getElementById('upload_shape_circles').parentNode.classList.remove('ps_shape_active');
-  document.getElementById('upload_shape_squares').parentNode.classList.remove('ps_shape_active');
-  document.getElementById('upload_shape_triangles').parentNode.classList.remove('ps_shape_active');
 }
 
 function reset_pl_sel(){
@@ -648,19 +388,6 @@ function set_sel(pl, elname){
   //console.log('elopt ' + el_option);
   boxsanded[pl] = el_option;
   
-  let plshape = '';
-  if (el_option == 'live-input'){
-	  //console.log('gothere')
-	  plshape = live_bot_shape[pl];
-  } else if (el_option == 'upload-bot'){
-	  plshape = upload_bot_shape[pl];
-  } else {
-	  plshape = shape_match[el_option];
-  }
-  //console.log('plshape = ' + plshape)
-  insert_shape(pl, plshape);
-  boxsanded[pl + '_sh'] = plshape;
-  
   if (el_option == 'live-input') el_option = "You";
   let plnumtext = "Player 1";
   if (pl == 'pl2') plnumtext = "player 2"
@@ -682,7 +409,6 @@ function set_sel(pl, elname){
 function set_ele(ele){
   document.getElementById('bs_placing_pl1').classList.remove('ele_active');
   document.getElementById('bs_placing_pl2').classList.remove('ele_active');
-  document.getElementById('bs_placing_frag').classList.remove('ele_active');
   
   document.getElementById('bs_placing_' + ele).classList.add('ele_active');
 }
@@ -691,7 +417,6 @@ function set_ele(ele){
 function player_selection_crossroad(e){
   e = e || window.event;
   let el = (e.target || e.srcElement);
-  console.log(el.id)
   
   switch (el.id){
   	case 'ps_live-input':
@@ -703,42 +428,6 @@ function player_selection_crossroad(e){
 	case 'ps_lego-bot':
 		set_sel(currently_picking, el.id);
 		break;
-	case 'live_shape_circles':
-		reset_live_shape_sel();
-		document.getElementById('live_shape_circles').parentNode.classList.add('ps_shape_active');
-		live_bot_shape[currently_picking] = 'circles';
-		set_sel(currently_picking, 'ps_live-input');
-		break;
-	case 'live_shape_squares':
-		reset_live_shape_sel();
-		document.getElementById('live_shape_squares').parentNode.classList.add('ps_shape_active');
-		live_bot_shape[currently_picking] = 'squares';
-		set_sel(currently_picking, 'ps_live-input');
-		break;
-	case 'live_shape_triangles':
-		reset_live_shape_sel();
-		document.getElementById('live_shape_triangles').parentNode.classList.add('ps_shape_active');
-		live_bot_shape[currently_picking] = 'triangles';
-		set_sel(currently_picking, 'ps_live-input');
-		break;
-	case 'upload_shape_circles':
-		reset_upload_shape_sel();
-		document.getElementById('upload_shape_circles').parentNode.classList.add('ps_shape_active');
-		upload_bot_shape[currently_picking] = 'circles';
-		set_sel(currently_picking, 'ps_upload-bot');
-		break;
-	case 'upload_shape_squares':
-		reset_upload_shape_sel();
-		document.getElementById('upload_shape_squares').parentNode.classList.add('ps_shape_active');
-		upload_bot_shape[currently_picking] = 'squares';
-		set_sel(currently_picking, 'ps_upload-bot');
-		break;
-	case 'upload_shape_triangles':
-		reset_upload_shape_sel();
-		document.getElementById('upload_shape_triangles').parentNode.classList.add('ps_shape_active');
-		upload_bot_shape[currently_picking] = 'triangles';
-		set_sel(currently_picking, 'ps_upload-bot');
-		break;
 	case '':
 	case 'ps_bot_options':
 	case 'ps_main_options':
@@ -749,7 +438,6 @@ function player_selection_crossroad(e){
 	case 'upload_bot_box':
 		break;
 	default:
-		console.log('defaulted');
 		break;
   }
   
@@ -758,7 +446,6 @@ function player_selection_crossroad(e){
 function element_selection_crossroad(e){
   e = e || window.event;
   let el = (e.target || e.srcElement);
-  console.log(el.id)
   
   switch (el.id){
 	  case 'bs_placing_pl1':
@@ -771,13 +458,7 @@ function element_selection_crossroad(e){
 		  set_ele('pl2');
 		  currently_placing = 'pl2';
 		  break;
-	  case 'bs_placing_frag':
-	  case 'bs_ele_frag':
-		  set_ele('frag');
-		  currently_placing = 'frag';
-		  break;
 	  default:
-		  console.log('defaulted');
 		  break;
   }
 }
@@ -792,7 +473,6 @@ function canvas_down(e){
 	
 	mmmx = mouse_x;
 	mmmy = mouse_y;
-	console.log(gameboard_x + ', ' + gameboard_y);
 }
 
 function canvas_up(e){
@@ -815,70 +495,54 @@ function place_element(loc){
 		delete_element(loc);
 		return;
 	}
-	console.log("placing at " + loc);
 	
 	let pla_num = '1';
 	if (currently_placing == 'pl2') pla_num = '2';
-	if (currently_placing == 'frag'){
-		place_fragment(loc);
-		return;
-	}
 	
 	boxsanded['p' + pla_num + '_def'] = 0;
 	document.getElementById('bs_load_prev').style.display = 'block';
 	
 	let highest = 0;
-	highest = get_highest_spirit('p' + pla_num);
-	console.log('highest = ' + highest);
+	highest = get_highest_cat('p' + pla_num);
 	
 	let spnum = highest + 1;
 	let sp_id = players['player' + pla_num] + '_' + spnum;
 	
-    game_blocks[active_block]['p' + pla_num][sp_id] = [loc, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh']) * 10, 1, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh'])*10];
-    boxsanded['p' + pla_num + '_units'].push([spnum, loc, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh'])*10, 1]);
+    game_blocks[active_block]['p' + pla_num][sp_id] = [loc, 100, 1, 100];
+    boxsanded['p' + pla_num + '_units'].push([spnum, loc, 100, 1]);
 	
-	spirits[sp_id] = new Spirit(sp_id, loc, get_def_size(boxsanded['pl' + pla_num + '_sh']), get_def_size(boxsanded['pl' + pla_num + '_sh']) * 10, players['player' + pla_num], colors['color' + pla_num], boxsanded['pl' + pla_num + '_sh'], 1);
-	spirits[sp_id].position = [loc[0], loc[1], 0, 0, loc[0], loc[1]];
+	cats[sp_id] = new Cat(sp_id, loc, 100, players['player' + pla_num], colors['color' + pla_num], 1);
+	cats[sp_id].position = [loc[0], loc[1], 0, 0, loc[0], loc[1]];
 	game_blocks[active_block].units.push(sp_id);
-	
-	console.log(get_def_size(boxsanded['pl' + pla_num + '_sh']));
-	console.log(spirits[sp_id]);
-	console.log(spirits[players['player' + pla_num] + '_12']);
 	
 }
 
-function place_fragment(loc){
-	console.log('placing fragment');
-	boxsanded['fragments'].push([loc, 100]);
-	game_blocks[active_block].ef.push([loc, 100]);
-}
 
 function delete_element(loc){
 	boxsanded['p1_def'] = 0;
 	boxsanded['p2_def'] = 0;
-    let frag = boxsanded['fragments'];
     let all_sp1 = game_blocks[active_block]['p1'];
     let all_sp2 = game_blocks[active_block]['p2'];
 	
 	for (let sp_id of Object.keys(all_sp1)){
-		let sp = spirits[sp_id];
+		let sp = cats[sp_id];
 		if (max_abs_dist(sp.position, loc) <= 10) {
 			game_blocks[active_block]['units'] = game_blocks[active_block]['units'].filter(e => e != sp_id);
 			boxsanded['p1_units'] = boxsanded['p1_units'].filter(e => max_abs_dist(e[1], loc) > 10);
-			living_spirits = living_spirits.filter(e => max_abs_dist(e.position, loc) > 10);
+			living_cats = living_cats.filter(e => max_abs_dist(e.position, loc) > 10);
 			delete game_blocks[active_block]['p1'][sp_id];
-			delete spirits[sp_id];
+			delete cats[sp_id];
 		}
 	}
 	
 	for (let sp_id of Object.keys(all_sp2)){
-		let sp = spirits[sp_id];
+		let sp = cats[sp_id];
 		if (max_abs_dist(sp.position, loc) <= 10) {
 			game_blocks[active_block]['units'] = game_blocks[active_block]['units'].filter(e => e != sp_id);
 			boxsanded['p2_units'] = boxsanded['p2_units'].filter(e => max_abs_dist(e[1], loc) > 10);
-			living_spirits = living_spirits.filter(e => max_abs_dist(e.position, loc) > 10);
+			living_cats = living_cats.filter(e => max_abs_dist(e.position, loc) > 10);
 			delete game_blocks[active_block]['p2'][sp_id];
-			delete spirits[sp_id];
+			delete cats[sp_id];
 		}
 	}
 }
@@ -891,7 +555,7 @@ function max_abs_dist(loc1, loc2){
 	return Math.max(Math.abs(loc2[0] - loc1[0]), Math.abs(loc2[1] - loc1[1]));
 }
 
-function get_highest_spirit(pl_short){
+function get_highest_cat(pl_short){
 	let arr = boxsanded[pl_short + '_units'];
 	return arr[arr.length - 1][0];
 }
@@ -940,7 +604,6 @@ function tick_rate_select(e){
 			game_tick = '50';
 			break;
 		default:
-			console.log('defaulted');
 			break;
 	}
 }
@@ -971,6 +634,45 @@ function console_view_all(){
   document.getElementById('console2_all_in').style.display = "block";
 }
   
+var has_error = 0;
+
+function update_console(incoming_data, chan){
+  var cnsl_in = document.getElementById('console2_tick_in');
+  var cnsl_all_in = document.getElementById('console2_all_in');
+  cnsl_in.innerHTML = '';
+
+  var temp_group = document.createElement("div");
+  temp_group.classList.add('console_item_group');
+  temp_group.innerHTML = "<span class='console_item_tick'>" + incoming_data.t + "</span>";
+
+  if (chan && chan.err){
+    has_error = 1;
+    var err_lbl = chan.err.length == 1 ? "Error" : "Errors";
+    document.getElementById('console2_lbl').innerHTML = chan.err.length + " " + err_lbl;
+    document.getElementById('console2_lbl').classList.add('c2_lbl_error');
+    document.getElementById('console2_view_toggle').classList.add('c2_view_error');
+
+    for (var i = 0; i < chan.err.length; i++){
+      cnsl_in.innerHTML += "<p class='console_item console_error'>" + chan.err[i] + "</p>";
+      temp_group.innerHTML += "<p class='console_item console_error'>" + chan.err[i] + "</p>";
+    }
+  } else {
+    has_error = 0;
+    document.getElementById('console2_lbl').innerHTML = "Console";
+    document.getElementById('console2_lbl').classList.remove('c2_lbl_error');
+    document.getElementById('console2_view_toggle').classList.remove('c2_view_error');
+  }
+
+  if (chan && chan.log){
+    for (var i = 0; i < chan.log.length; i++){
+      cnsl_in.innerHTML += "<p class='console_item'>" + chan.log[i] + "</p>";
+      temp_group.innerHTML += "<p class='console_item'>" + chan.log[i] + "</p>";
+    }
+  }
+
+  cnsl_all_in.prepend(temp_group);
+}
+
 function bs_error(emsg){
   //TODO: create actual error handling
   alert(emsg);

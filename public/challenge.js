@@ -2,16 +2,13 @@
 var active_session = 0;
 var tempURLThing = document.URL.replace('#', '');
 var game_id = /[^/]*$/.exec(tempURLThing)[0];
-console.log('ggggame_id = ' + game_id);
 
 if (getCookie('session_id') != null && getCookie('user_id') != null){
 	if (getCookie('user_id') == "anonymous"){
 		active_session = 1;
 		//not sure what to do here yet
 	}
-	console.log('is this happening?');
 	if (active_session == 0){
-		console.log('yes');
 		fetch('/validate-challenge/' + game_id, {
 		        method: "POST",
 		        headers: {
@@ -25,16 +22,12 @@ if (getCookie('session_id') != null && getCookie('user_id') != null){
 
 	    }).then(response => response.json())
 	      .then(response => {
-			  console.log(response);
 			  if (response.data == "own challenge"){
-				  console.log("Can't accept your own challenge");
-		  	
 			  } else if (response.data == "accepted"){
-			  	  console.log("Challenge accepted");
 			  }
 		  })
 	      .catch(err => {
-			  console.log(err);
+			  console.error(err);
 		  });
 		  
 		  active_session = 1;
@@ -61,16 +54,13 @@ function p2_ready(){
 
     }).then(response => response.json())
       .then(response => {
-		  console.log(response);
 		  if (response.data == "own challenge"){
-			  console.log("Can't accept your own challenge");
 	  	
 		  } else if (response.data == "accepted"){
-		  	  console.log("Challenge accepted");
 		  }
 	  })
       .catch(err => {
-		  console.log(err);
+		  console.error(err);
 	  });
 	  
 }

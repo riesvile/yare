@@ -1,3 +1,35 @@
+@font-face {
+	font-family: 'Suisse Intl';
+	src: url('/asset/fonts/SuisseIntl-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Suisse Intl';
+	src: url('/asset/fonts/SuisseIntl-RegularIt.woff2') format('woff2');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Suisse Intl';
+	src: url('/asset/fonts/SuisseIntl-Semibold.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Suisse Intl';
+	src: url('/asset/fonts/SuisseIntl-SemiboldIt.woff2') format('woff2');
+	font-weight: 500;
+	font-style: italic;
+	font-display: swap;
+}
+
 * {
 	padding: 0;
 	margin: 0;
@@ -28,7 +60,8 @@
 body {
 	/*background-color: #06080a;*/
 	background-color: #000;
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Suisse Intl', sans-serif;
+	-webkit-font-smoothing: antialiased;
 	color: #fff;
 	overscroll-behavior-y: contain;
 	overscroll-behavior-x: contain;
@@ -206,17 +239,13 @@ input:focus {
 	opacity: 0;
 }
 
-.spirit_id, .spirit_energy, .base_id, .base_energy, .star_id, .under_attack, .star_energy, .outpost_control, .outpost_energy, .pylon_control, .pylon_energy {
+.cat_id, .cat_energy, .barricade_id, .under_attack {
 	display: block;
 	max-width: 160px;
 }
 
-.star_id {
+.barricade_id {
 	font-size:16px;
-}
-
-.star_energy {
-	font-size:12px;
 }
 
 .new_when {
@@ -1124,7 +1153,7 @@ h1#logo {
 	}
 	
 	#module_name_input {
-		font-family: 'Montserrat', sans-serif;
+		font-family: 'Suisse Intl', sans-serif;
 		font-weight: 500;
 		line-height: 44px;
 		font-size: 13px;
@@ -1224,7 +1253,7 @@ h1#logo {
 }
 
 #new_user_name, #new_user_password, #user_name, #user_password {
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Suisse Intl', sans-serif;
 	font-weight: 500;
 	line-height: 68px;
 	font-size: 16px;
@@ -1269,7 +1298,7 @@ h1#logo {
 }
 
 input[type=submit] {
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Suisse Intl', sans-serif;
 	background-color: transparent;
 	line-height: 48px;
 	font-size: 20px;
@@ -2250,9 +2279,6 @@ span#hub_logout:hover {
 }
 
 
-#choose_shape_block {
-	margin-top: 28px;
-}
 
 
 
@@ -2749,52 +2775,25 @@ a.index_link:hover {
 .ico_triangle, .ico_triangles, .bs_ico_triangles {
 	position: relative;
 	background-color: rgba(204, 174, 220, 1);
-	text-align: left;
 	display: block;
-	width: 15px;
-	height: 15px;
+	width: 14px;
+	height: 14px;
 	float: left;
 	margin-top: 13px;
 	margin-right: 10px;
-}
-.ico_triangle:before,
-.ico_triangle:after,
-.ico_triangles:before,
-.ico_triangles:after,
-.bs_ico_triangles:before,
-.bs_ico_triangles:after
- {
-	content: '';
-	position: absolute;
-	background-color: inherit;
-}
-.ico_triangle,
-.ico_triangle:before,
-.ico_triangle:after,
-.ico_triangles,
-.ico_triangles:before,
-.ico_triangles:after,
-.bs_ico_triangles,
-.bs_ico_triangles:before,
-.bs_ico_triangles:after  {
-	width:  8px;
-	height: 8px;
-	border-top-right-radius: 30%;
+	-webkit-mask-image: url('asset/cat_shape.svg');
+	mask-image: url('asset/cat_shape.svg');
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
 }
 
 .bs_ico_triangles {
 	margin-top: 0;
 	margin-right: 0;
-}
-
-.ico_triangle, .ico_triangles, .bs_ico_triangles {
-	transform: rotate(-60deg) skewX(-30deg) scale(1,.866) !important;
-}
-.ico_triangle:before, .ico_triangles:before, .bs_ico_triangles:before {
-	transform: rotate(-135deg) skewX(-45deg) scale(1.414,.707) translate(0,-50%) !important;
-}
-.ico_triangle:after, .ico_triangles:after, .bs_ico_triangels:after {
-	transform: rotate(135deg) skewY(-45deg) scale(.707,1.414) translate(50%) !important;
 }
 
 
@@ -2819,9 +2818,6 @@ a.index_link:hover {
 	opacity: 0.4;
 }
 
-.ps_shape_active span {
-	opacity: 1;
-}
 
 
 
@@ -3295,6 +3291,7 @@ a.index_link:hover {
 	left: 0;
 	z-index: 9997;
 	pointer-events: none;
+	display: none;
 }
 
 #modules_plate * {
@@ -3367,7 +3364,7 @@ a.index_link:hover {
 	top: 176px;
 }
 
-.bs_player_ico, .bs_fragment_ico {
+.bs_player_ico {
 	display: block;
 	background-color: #500;
 	position: absolute;
@@ -3384,18 +3381,11 @@ a.index_link:hover {
 }
 
 .bs_player_ico.ico_triangles {
-	margin-top: -4px;
+	margin-top: 0;
 }
 
 #bs_ele_pl1.bs_player_ico.ico_triangles, #bs_ele_pl2.bs_player_ico.ico_triangles {
-	margin-left: -4px;
-}
-
-.bs_fragment_ico {
-	width: 20px;
-	height: 20px;
-	background: url(./asset/ico_fragment.png);
-	background-size: cover;
+	margin-left: 0;
 }
 
 .bs_player_name {
@@ -3661,13 +3651,6 @@ h3.bs_heading {
 	position: relative;
 }
 
-.ps_shape_option:hover {
-	background-color: rgba(242, 246, 250, 0.2);
-}
-
-.ps_shape_active {
-	background-color: rgba(242, 246, 250, 0.32) !important;
-}
 
 .ps_bot_shape {
 	background-color: rgba(242, 246, 250, 0);

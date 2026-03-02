@@ -9,7 +9,6 @@ function play_background_music(){
 		    music_playing = 0;
 		});
 		
-		console.log('sdfosifj oifsdjg oi jgiodfj giodfj gij dfigj diofjg iodfj igoj dfiogj diofgj iodfgj ioj');
 	}
 	
 }

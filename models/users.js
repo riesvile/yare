@@ -20,7 +20,7 @@ const user_schema = new Schema({
 		type: String,
 		index: true
 	},
-	qualified_shape: String, 
+
 	goodenough: Number,
 	email: String,
 	marker: Number,

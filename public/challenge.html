@@ -5,8 +5,6 @@
 	<style>
 	</style>
 	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="../colors.css">
 	<link rel="stylesheet" href="../style.css">
 	<link rel="stylesheet" href="../style-mobile.css">
@@ -70,67 +68,6 @@
 		
 			<div class="sep_medium"></div>
 		
-			<!--
-			<div id="module_expanded">
-				<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
-				<span class='module_main_tag'>Data visualization</span>
-				<div class="module_toggle" id="toggle_basic_info_graphs">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
-				<div class="module_expanded_buttons">
-					<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
-					<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
-				</div>
-				<div class="module_ilu"></div>
-				<div class="sep_medium"></div>
-				<div class="sep_medium"></div>
-			</div>
-			-->
-		
-			<span class="pref_section_label">MODULES</span>
-			<div id="modules_section">
-			
-				<div id="create_new_module">
-					<span class="ico_new_module"></span>
-					<span class="new_module_label">Create Module</span>
-				</div>
-			
-				<!--
-				<div class="module_card module_off" id="mdl_code-editor">
-					<div class="module_card_bg" id="bg_mdl_code-editor"></div>
-					<span class="module_main_tag">Essentials</span>
-					<div class="module_toggle" id="toggle_code-editor">
-						<div class="the_toggle" id="thetog"></div>
-					</div>
-					<h3 class="module_name">Code editor <br>& Console</h3>
-					<div class="module_ilu"></div>
-				</div>
-				
-					-->
-			
-			
-			</div>
-		
-			<div id="modules_section_mine">
-				<!--
-				<div class="module_card_mine module_off" id="mdl_code_editor">
-					<div class="module_card_bg" id="bg_mdl_mine"></div>
-					<div class="module_options">
-						<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
-						<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
-						<div class="delete_confirm" id="confirm_1234">
-							<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
-							<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
-						</div>
-					</div>
-					<div class="module_toggle" id="toggle_1234">
-						<div class="the_toggle" id="thetog"></div>
-					</div>
-					<h3 class="module_name">Module name</h3>
-				</div>
-				-->
-			</div>
 		
 		
 		
@@ -165,21 +102,6 @@
 		  
 		  <h1 id="challenge_head">Challenge · <span id="challenge_p1">player 1</span> vs <span id="challenge_p2">player 2</span>
 		  
-		  <div id="choose_shape_block">
-			  
-			  <h2 class="deer_h">Choose a shape</h2>
-			  <p class="deer_p">See the <a href="#">docs</a> for differences</p>
-			  
-			  <div class="shape_block" id="shape_circles">
-				  <span class="shape_name" id="shape_name_circles">Circles</span>
-			  </div>
-			  <div class="shape_block" id="shape_squares">
-				  <span class="shape_name" id="shape_name_squares">Squares</span>
-			  </div>
-			  <div class="shape_block" id="shape_triangles">
-				  <span class="shape_name" id="shape_name_triangles">Triangles</span>
-			  </div>
-		  </div>
 		
 		  <div id="choose_color_block">
 			    <h2 class="deer_h">Choose a color</h2>
@@ -337,7 +259,7 @@
 		      var msg = successful ? 'successful' : 'unsuccessful';
 		      code_copy_success(target);
 		    } catch (err) {
-		      console.log('Oops, unable to copy');
+		      console.error(err);
 		    }
 		
 		  document.body.removeChild(copyTextArea);
@@ -347,7 +269,6 @@
 	  for (ce = 0; ce < copy_elements.length; ce++){
 	  	copy_elements[ce].addEventListener('click', function(){
 			code_to_copy = this.getAttribute('code');
-			console.log('code_to_copy = ' + code_to_copy);
 			copyTextToClipboard(code_to_copy, this);
 	    }, false);
 	  }
@@ -358,7 +279,6 @@
 		  let this_user = getCookie('user_id');
 		  for (link of buy_links){
 			  link.href += this_user;
-			  console.log(link.href);
 		  }
 	  }
 
@@ -372,21 +292,6 @@
 		  
 		  ele.style.borderWidth = '2px';
 		  ele.style.borderColor = color_table[chosen_color][0];
-		  
-		   console.log('it wasss ' + chosen_color);
-		  
-		  if (chosen_shape == 'circles') {
-			  circles_el.style.borderColor = color_table[chosen_color][0];
-			  document.getElementById('shape_name_circles').style.color = color_table[chosen_color][1];
-		  }
-		  if (chosen_shape == 'squares') {
-			  squares_el.style.borderColor = color_table[chosen_color][0];
-			  document.getElementById('shape_name_squares').style.color = color_table[chosen_color][1];
-		  }
-		  if (chosen_shape == 'triangles') {
-			  triangles_el.style.borderColor = color_table[chosen_color][0];
-			  document.getElementById('shape_name_triangles').style.color = color_table[chosen_color][1];
-		  }
 		  
 	  }
 	  
@@ -431,39 +336,8 @@
 		  
 	  }
 	  
-	  function shape_selection(ch_shape){
-		  document.getElementById('start_area').style.opacity = 1;
-		  document.getElementById('start_area').style.cursor = 'default';
-		  document.getElementById('start_game_btn').style.cursor = 'pointer';
-		  //document.getElementById('bot_game_btn').style.cursor = 'pointer';
-		  //document.getElementById('challenge_friend_btn').style.cursor = 'pointer';
-		  //document.getElementById('play_bot_btn').style.cursor = 'pointer';
-		  
-		  console.log('chosen shape = ' + ch_shape);
-		  
-		  
-		  let changing_el = document.getElementById('shape_' + ch_shape);
-		  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
-		  chosen_shape = ch_shape;
-		  
-		  circles_el.style.opacity = 0.48; 
-		  circles_el.style.borderColor = 'transparent';
-		  document.getElementById('shape_name_circles').style.color = 'rgba(242, 246, 250, 1)';
-		  squares_el.style.opacity = 0.48; 
-		  squares_el.style.borderColor = 'transparent';
-		  document.getElementById('shape_name_squares').style.color = 'rgba(242, 246, 250, 1)';
-		  triangles_el.style.opacity = 0.48; 
-		  triangles_el.style.borderColor = 'transparent';
-		  document.getElementById('shape_name_triangles').style.color = 'rgba(242, 246, 250, 1)';
-		  
-		  changing_el.style.opacity = 1;
-		  
-		  draw_borders(current_color_el)
-
-	  }
 	  
 	  function pre_select_bot(){
-		  console.log('selecting bot type');
 		  expand_bot_selection();
 	  }
 	  
@@ -483,16 +357,10 @@
 
 	      }).then(response => response.json())
 	        .then(response => {
-	  		  //console.log(response);
 	  		  if (response.data == "no user found"){
-	  			  console.log('no such user');
 	  		  } else if (response.data == "something went wrong"){
-				  console.log('hmmm, something went wrong, not sure what')
 			  } else {
-				  console.log(response.data);
 				  let clr_arr = response.data;
-				  //let clr_arr = [1, 2, 3, 4, 5, 6, 8];
-				  //console.log(temp_clr_arr);
 				  
 				  for (clr_code of clr_arr){
 					  if (clr_code > 4) {
@@ -514,7 +382,7 @@
 	  		  }
 	  	  })
 	        .catch(err => {
-	  		  console.log(err);
+	  		  console.error(err);
 	  	  });
 	  }
 	  
@@ -538,12 +406,8 @@
   		if (getCookie('user_id') == undefined || getCookie('user_id') == "anonymous"){
   			alert('please login first!');
   			return;
-  		} else if (chosen_shape == ''){
-  			alert('choose a shape, please');
-  			return;
-  		}
+	  	}
 		
-		console.log('start game');
 		wait_opponent_view();
 		  
 	  	fetch('/new-game', {
@@ -554,15 +418,12 @@
 	          },
 	          body: JSON.stringify({
 	  	        user_id: getCookie('user_id'),
-				user_shape: chosen_shape,
 			    user_color: chosen_color,
 	  	        session_id: getCookie('session_id'),
 	  			type: type
 	  	    })
 	  	}).then(response => response.json())
 	        .then(response => {
-	  		  //redirect to game id
-	  		  console.log(response);
 	  		  game_id = response.g_id;
 	  		  if (response.meta == 'easy-bot'){
 	  			 setCookie('game_id', game_id);
@@ -575,15 +436,12 @@
 		 
 	  	  })
 	        .catch(err => {
-	  		  console.log(err);
+	  		  console.error(err);
 	  	  });
-	  	  console.log(getCookie('user_id'));
-		  
 	  }
 	  
 	  
 	  function p2_ready(){
-        console.log('challenge accepted');
 		wait_start_view();
 		  
 	  	fetch('/confirm-challenge/' + game_id, {
@@ -594,26 +452,20 @@
 	  	        },
 	  	        body: JSON.stringify({
 	  		        user_id: getCookie('user_id'),
-					user_shape: chosen_shape,
 			   	 	user_color: chosen_color,
 	  		        session_id: getCookie('session_id'),
 	  		    })
 
 	      }).then(response => response.json())
 	        .then(response => {
-	  		  console.log(response);
 	  		  if (response.data == "own challenge"){
-	  			  console.log("Can't accept your own challenge");
-	  	
 	  		  } else if (response.data == "accepted"){
-	  		  	  console.log("Challenge accepted");
-							window.location = '/' + response.server + 'n/' + game_id
+	  		  	  window.location = '/' + response.server + 'n/' + game_id
 	  		  } else if (response.data == "waiting for p1 to start"){
-				  console.log('start in five sec');
 	  		  }
 	  	  })
 	        .catch(err => {
-	  		  console.log(err);
+	  		  console.error(err);
 	  	  });
 	  
 	  }
@@ -623,7 +475,6 @@
 	  
 	  
 	  function challenge_friend(){
-		  console.log('challenge friend');	  	
 	  }
 	  
 	  function get_in(){
@@ -640,22 +491,17 @@
 
 	      }).then(response => response.json())
 	        .then(response => {
-	  		  console.log(response);
 	  		  if (response.data == "start"){
 	  			  window.location = './' + response.server + 'n/' + game_id;
 	  			  //location.reload();
 	  	
-	  		  } else {
-	  		  	  console.log("Something went wrong " + response.data);
 	  		  }
 	  	  })
 	        .catch(err => {
-	  		  console.log(err);
+	  		  console.error(err);
 	  	  });
 	  }
 	  
-	  
-	  var chosen_shape = '';
 	  
 	  var gblue_el = document.getElementById('color_gblue_border');
 	  var purply_el = document.getElementById('color_purply_border');
@@ -685,10 +531,6 @@
 	  document.getElementById('color_skyblue').style.backgroundColor = color_table['skyblue'][0];
 	  document.getElementById('color_toored').style.backgroundColor = color_table['toored'][0];
 	  
-	  var circles_el = document.getElementById('shape_circles');
-	  var squares_el = document.getElementById('shape_squares');
-	  var triangles_el = document.getElementById('shape_triangles');
-	  
 	  
 	  //document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
 	  
@@ -707,10 +549,6 @@
 	  mmmsalmon_el.addEventListener('click', color_selection.bind(null, 'mmmsalmon'), false);
 	  skyblue_el.addEventListener('click', color_selection.bind(null, 'skyblue'), false);
 	  toored_el.addEventListener('click', color_selection.bind(null, 'toored'), false);
-	  
-	  circles_el.addEventListener('click', shape_selection.bind(null, 'circles'), false);
-	  squares_el.addEventListener('click', shape_selection.bind(null, 'squares'), false);
-	  triangles_el.addEventListener('click', shape_selection.bind(null, 'triangles'), false);
 	  
 	  var chosen_color = 'purply';
 	  if(localStorage.getItem('chosen_color') != null){

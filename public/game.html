@@ -10,8 +10,6 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="a/colors.css">
 	<link rel="stylesheet" href="a/man-control.css">
 	<link rel="stylesheet" href="a/style.css">
@@ -111,67 +109,6 @@
 		
 		<div class="sep_medium"></div>
 		
-		<!--
-		<div id="module_expanded">
-			<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
-			<span class='module_main_tag'>Data visualization</span>
-			<div class="module_toggle" id="toggle_basic_info_graphs">
-				<div class="the_toggle" id="thetog"></div>
-			</div>
-			<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
-			<div class="module_expanded_buttons">
-				<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
-				<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
-			</div>
-			<div class="module_ilu"></div>
-			<div class="sep_medium"></div>
-			<div class="sep_medium"></div>
-		</div>
-		-->
-		
-		<span class="pref_section_label">MODULES</span>
-		<div id="modules_section">
-			
-			<div id="create_new_module">
-				<span class="ico_new_module"></span>
-				<span class="new_module_label">Create Module</span>
-			</div>
-			
-			<!--
-			<div class="module_card module_off" id="mdl_code-editor">
-				<div class="module_card_bg" id="bg_mdl_code-editor"></div>
-				<span class="module_main_tag">Essentials</span>
-				<div class="module_toggle" id="toggle_code-editor">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Code editor <br>& Console</h3>
-				<div class="module_ilu"></div>
-			</div>
-				
-				-->
-			
-			
-		</div>
-		
-		<div id="modules_section_mine">
-			<!--
-			<div class="module_card_mine module_off" id="mdl_code_editor">
-				<div class="module_card_bg" id="bg_mdl_mine"></div>
-				<div class="module_options">
-					<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
-					<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
-					<div class="delete_confirm" id="confirm_1234">
-						<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
-						<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
-					</div>
-				</div>
-				<div class="module_toggle" id="toggle_1234">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name">Module name</h3>
-			</div>
-			-->
-		</div>
 		
 		
 		
@@ -212,15 +149,15 @@
   
   
   <div id="tutorial_infobox">
-		  <p class="info_h">Reference to your spirit (an object).</p>
+		  <p class="info_h">Reference to your cat (an object).</p>
 		  <p class="info_p">In the ‘real game’ (outside of this tutorial), this will be your username + #. E.g. arnold4.move...</p>
   </div>
   
   <div id="game_info_panel">
 	 <div id="game_info_panel_in">
-	  <div id="info_player1_shape"><span class="ico_circle"></span></div>
+	  <div id="info_player1_shape"><span class="ico_triangles"></span></div>
 	  <p id="info_player1_name">levmiseri</p>
-	  <div id="info_player2_shape"><span class="ico_circle"></span></div>
+	  <div id="info_player2_shape"><span class="ico_triangles"></span></div>
 	  <p id="info_player2_name">levmiseri</p>
      </div>
   </div>
@@ -235,8 +172,8 @@
   -->
   
   <div id="game_hover">
-  	<span class="spirit_id">haha1 · <span class="lowlight">24</span></span>
-	<span class="spirit_energy">24 <span class="lowlight">energy</span></span>
+  	<span class="cat_id">haha1 · <span class="lowlight">24</span></span>
+	<span class="cat_energy">24 <span class="lowlight">energy</span></span>
   </div>
   
   <div id="overlay"></div>
@@ -283,7 +220,7 @@
   
   <div id="tutorial">
 	  <div id="tutorial_wrap">
-		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="spirit_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="star_property_position">star_zxq.position</span>)</code><span class="copy_code" code="s1.move(star_zxq.position)">COPY</span> into the code block below and press <span id="send_intro">SEND CODE</span>.</p>
+		<p id="tut_helper" class="tutorial_text">To start, type <code><span class="tut_label" id="cat_reference">s1</span><span class="tut_label" id="move_method">.move</span>(<span class="tut_label" id="barricade_property_position">barricade_a.position</span>)</code><span class="copy_code" code="s1.move(barricade_a.position)">COPY</span> into the code block below and press <span id="send_intro">SEND CODE</span>.</p>
 		<!-- <p id="tut_helper" class="tutorial_text">You can hover over the code snippet above for more information about each part</p> -->
 	  </div>
   </div>
@@ -306,16 +243,8 @@
 			<span id="c2_close">Close</span>
 		</div>
 		<div id="console2_tick_in">
-			<p class="console_item console_error">ReferenceError:&nbsp;meow&nbsp;is&nbsp;not&nbsp;defined<br>&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;~sandbox/user.js:48:1</p>
-			<p class="console_item">{"friends":[]}</p>
-			<p class="console_item">-230,230</p>
-			<p class="console_item">-800,800</p>
 		</div>
 		<div id="console2_all_in">
-			<div class="console_item_group">
-				<span class="console_item_tick tick_error">145</span>
-				<p class="console_item">itemmmm</p>
-			</div>
 		</div>
 	</div>
   </div>
@@ -400,7 +329,6 @@
 	  editor.setShowPrintMargin(false);
 	  editor.focus(); //To focus the ace editor
 	  var nqq = editor.getSession().getValue().split("\n").length; // To count total no. of lines
-	  //editor.gotoLine(nqq); //Go to end
 	  
 	  editor.setOptions({
 	      enableBasicAutocompletion: true,
@@ -422,7 +350,7 @@
 	      getCompletions: function(editor, session, pos, prefix, callback) {
 	          var completions = [];
 	          // we can use session and pos here to decide what we are going to show
-	          ["energize()", "move()", "merge()", "explode()", "jump()", "divide()", "shout()", "structure_type", "range", "control", "size", "id", "active_in", "energy", "energy_capacity", "memory", "position", "base_zxq", "base_a2c", "base_p89", "base_nua", "star_zxq", "star_p89", "star_nua", "star_a2c", "outpost", "pylon", "fragments", "my_spirits", "spirits", "tick", "ttick", "hp", "sight", "enemies", "friends", "structures", "enemies_beamable", "friends_beamable"].forEach(function(w) {
+	          ["pew()", "move()", "shout()", "range", "id", "energy", "energy_capacity", "memory", "position", "barricade_a", "barricade_c", "barricade_d", "barricade_b", "my_cats", "cats", "tick", "ttick", "hp", "sight", "enemies", "friends", "enemies_pewable", "friends_pewable"].forEach(function(w) {
 	              completions.push({
 	                  value: w,
 	                  meta: "keyword",
@@ -434,7 +362,7 @@
 	  });
 	  
 var basic_code = 
-"\n// The following code should help you start things off. Learn more \n// in the Documentation   \n\n// ---------- ---------- ---------- ---------- ---------- \n// ---------- ---------- ---------- ---------- ---------- \n\n// Simple function for comparing distances  \nfunction dist_sq(coor1, coor2){\n    let a = coor1[0] - coor2[0];\n    let b = coor1[1] - coor2[1];\n    return a*a + b*b;\n}\n\n// Marking whether my base is at the top starting position or bottom\nvar my_base = base_zxq;\nvar enemy_base = base_a2c;\nvar my_star = star_zxq;\nvar enemy_star = star_a2c;\n\nif (base_a2c.control == this_player_id){\n	my_base = base_a2c;\n	enemy_base = base_zxq;\n}\n\nif (dist_sq(star_a2c.position, my_base.position) < dist_sq(star_zxq.position, my_base.position)){\n    my_star = star_a2c;\n    enemy_star = star_zxq;\n}\n\n// Loop through all my spirits and making a state machine — if the\n// spirit is empty, go harvest energy. If full, give it to the base\nfor (let spirit of my_spirits){\n    if (spirit.energy == spirit.energy_capacity)\n        spirit.set_mark('charging');\n    if (spirit.energy == 0)\n        spirit.set_mark('harvesting');\n  \n    if (spirit.mark == 'charging'){\n        spirit.move(my_base.position);\n        spirit.energize(my_base);\n    }\n    if (spirit.mark == 'harvesting'){\n        spirit.move(my_star.position);\n        spirit.energize(spirit);\n    }\n\n    // Rather bad code to deal with attackers. Improve it!\n    if (my_base.sight.enemies.length > 0){\n        //spirit objects are accessed by spirits['id']\n        let enemy = spirits[my_base.sight.enemies[0]];\n        spirit.move(enemy.position);\n        spirit.energize(enemy);\n    }\n    \n    // the last action (move, energize, ...) will overwrite any previous ones\n    // in the same tick\n}"
+"\n// The following code should help you start things off. Learn more \n// in the Documentation   \n\n// ---------- ---------- ---------- ---------- ---------- \n// ---------- ---------- ---------- ---------- ---------- \n\n// Simple function for comparing distances  \nfunction dist_sq(coor1, coor2){\n    let a = coor1[0] - coor2[0];\n    let b = coor1[1] - coor2[1];\n    return a*a + b*b;\n}\n\n// Determine which barricade is closer to my starting position\nvar my_barricade = barricade_a;\nvar enemy_barricade = barricade_b;\n\nif (my_cats.length > 0){\n    if (dist_sq(barricade_b.position, my_cats[0].position) < dist_sq(barricade_a.position, my_cats[0].position)){\n        my_barricade = barricade_b;\n        enemy_barricade = barricade_a;\n    }\n}\n\n// Loop through all my cats — if the cat is full, attack.\n// If empty, go harvest energy from the barricade.\nfor (let cat of my_cats){\n    if (cat.energy == cat.energy_capacity)\n        cat.set_mark('attacking');\n    if (cat.energy == 0)\n        cat.set_mark('harvesting');\n  \n    if (cat.mark == 'attacking'){\n        if (cat.sight.enemies.length > 0){\n            let enemy = cats[cat.sight.enemies[0]];\n            cat.move(enemy.position);\n            cat.pew(enemy);\n        } else {\n            cat.move(enemy_barricade.position);\n        }\n    }\n    if (cat.mark == 'harvesting'){\n        cat.move(my_barricade.position);\n        cat.pew(cat);\n    }\n    \n    // the last action (move, pew, ...) will overwrite any previous ones\n    // in the same tick\n}"
 	  
 	  if (localStorage.getItem("code_code") != null){
 		  let code_code = localStorage.getItem("code_code");
@@ -451,16 +379,11 @@ var basic_code =
 			  game_running = 1;
 			  tick_local = tick_counter;
 			  active_block = 't' + (tick_local);
-			  //console.log('active block = ' + active_block);
 			  setInterval(function(){ 
 				  // change to tick_counter (not - 1)
-				  //console.log('local tick = ' + tick_local);
-				  //console.log('incoming.t = ' + incoming.t);
 				  
 				  
 				  active_block = 't' + (tick_local);
-				  //console.log('active block = ' + active_block);
-				  //console.log('incoming.t =   ' + incoming.t);
 				  total_time = 0;
 				  tick_local++;
 				  if (tick_local > incoming.t) tick_local--;
@@ -480,7 +403,6 @@ var basic_code =
 			  tickering_block = 0;
 		  } else {
   		  	  setTimeout(function(){
-				  //console.log('buffering');
 		  		  buffer += 40;
 				  tick_adjust += 40;
   		  		  draw_it2();
@@ -490,24 +412,21 @@ var basic_code =
 	  }
 	  
 	  function draw_it(){
-		  //console.log('hooked');
 		  let last_ready = ready_blocks[ready_blocks.length - 1];
-		  //console.log('last_ready = ' + last_ready); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   		  if (last_ready >= last_rendered + 1){
   		  	  active_block = 't' + last_ready;
 		  	  last_rendered = last_ready;
 			  total_time = 0;
-			  ask_temp = performance.now();
-			  ask_diff = ask_temp - socket_log[active_block][0];
-			  if (monitor_flag) console.log('ask diff = ' + ask_diff);
 			  tick_adjust = 0;
-			  if (ask_diff < 100 + avg_diff) tick_adjust = 10;
-			  if (ask_diff < 50 + avg_diff) tick_adjust = 20;
-			  if (ask_diff < 10 + avg_diff) tick_adjust = 50;
-			  if (ask_diff > 200 + avg_diff) tick_adjust = 0;
-			  if (ask_diff > 250 + avg_diff) tick_adjust = -5;
-			  //console.log('ask_diff = ' + ask_diff);
-			  //console.log('avg_diff = ' + avg_diff);
+			  if (socket_log[active_block]) {
+				  ask_temp = performance.now();
+				  ask_diff = ask_temp - socket_log[active_block][0];
+				  if (ask_diff < 100 + avg_diff) tick_adjust = 10;
+				  if (ask_diff < 50 + avg_diff) tick_adjust = 20;
+				  if (ask_diff < 10 + avg_diff) tick_adjust = 50;
+				  if (ask_diff > 200 + avg_diff) tick_adjust = 0;
+				  if (ask_diff > 250 + avg_diff) tick_adjust = -5;
+			  }
 			  tickering_block = 0;
   		  } else if (last_ready == 0){
 			  buffer = 200;
@@ -516,7 +435,6 @@ var basic_code =
   		  } else {
 			  //TODO: check if game over - then don't buffer
   		  	  setTimeout(function(){
-				  //console.log('buffering');
 		  		  buffer += 40;
 				  tick_adjust += 40;
   		  		  draw_it2();
@@ -527,8 +445,12 @@ var basic_code =
 	  
 	  function tickering_loop(){
   	  	  setTimeout(function(){
-  	  		  draw_it();
-			  tickering_loop();
+			  try {
+  	  		  	draw_it();
+			  } catch(e) {
+				console.error('draw_it error:', e);
+			  }
+		  	  tickering_loop();
   	  	  }, game_tick + tick_adjust);
 	  }
 	  
@@ -540,7 +462,6 @@ var basic_code =
 	  }
 	  
 	  function run_tick(){
-		  //console.log('ioiofdjsiofjiosd');
 		  if (buffer == 0){
 			  buffer = 200;
 			  setTimeout(function(){
@@ -550,7 +471,6 @@ var basic_code =
 	  }
 	  
 	  function taylor_UI(){
-		  //console.log('pla1 = ' + pla1);
 		  var cookie_user = getCookie('user_id');
 		  
 		  if (view_set == 0){
@@ -558,37 +478,11 @@ var basic_code =
 			  var temp_availWidth = window.innerWidth;
 			  var temp_availHeight = window.innerHeight;
 			  
-			  if (pla1 == cookie_user){
-				  if (temp_availWidth > 1800){
-					  offsetX = 650 + (window.innerWidth / 2);
-					  offsetY = 480 + (window.innerHeight / 2);
-				  } else if (temp_availWidth < 600) {
-					  offsetX = 650 + (window.innerWidth / 2);
-					  offsetY = 480 + (window.innerHeight / 2);
-					  scale = 0.6;
-					  multiplier = 1/scale;
-					  //console.log(scale + 'scale');
-				  } else {
-					  offsetX = 650 + (window.innerWidth / 2);
-					  offsetY = 480 + (window.innerHeight / 2);
-				  }
-				  
-			  } else if (pla2 == cookie_user){
-				  
-				  if (temp_availWidth > 1800){
-					  offsetX = -480 + (window.innerWidth / 2);
-					  offsetY = -650 + (window.innerHeight / 2);
-					  scale = 1;
-				  } else if (temp_availWidth < 600) {
-					  offsetX = -480 + (window.innerWidth / 2);
-					  offsetY = -650 + (window.innerHeight / 2);
-					  scale = 0.6;
-					  multiplier = 1/scale;
-				  } else {
-					  offsetX = -480 + (window.innerWidth / 2);
-					  offsetY = -650 + (window.innerHeight / 2);
-					  scale = 1;
-				  }
+			  offsetX = window.innerWidth / 2;
+			  offsetY = window.innerHeight / 2;
+			  if (temp_availWidth < 600) {
+				  scale = 0.6;
+				  multiplier = 1/scale;
 			  }
 		  }
 		  
@@ -598,10 +492,11 @@ var basic_code =
 			 }
 		 } else {
 			 document.getElementById('game_info_panel').style.display = "block";
+			 document.getElementById('modules_plate').style.display = 'block';
 			 document.getElementById('info_player1_name').innerHTML = pla1;
 			 document.getElementById('info_player2_name').innerHTML = pla2;
-			 document.getElementById('info_player1_shape').innerHTML = "<span class='ico_" + shapes['shape1'] + "' style='background-color: " + colors['color1'] + "'></span>";
-			 document.getElementById('info_player2_shape').innerHTML = "<span class='ico_" + shapes['shape2'] + "' style='background-color: " + colors['color2'] + "'></span>";
+			 document.getElementById('info_player1_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color1'] + "'></span>";
+			 document.getElementById('info_player2_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color2'] + "'></span>";
 			 
 			 if (pla1 == cookie_user || pla2 == getCookie('user_id')){
 				 user_role = 'player';
@@ -622,33 +517,17 @@ var basic_code =
 		 }
 	  }
 	  
-	  var client = {};
-	  
 	  var dragging_timeline = 0;
 	  
-	  //var tick_rate = 500;
-	  
-	  var x = 0;
-	  var y = 0;
-	  var move_queue = [];
-	  var birth_queue = [];
-	  var units_queue = [];
-	  var energize_queue = [];
-	  var merge_queue = [];
-	  var divide_queue = [];
-	  var death_queue = [];
-	  var stars_queue = [];
-	  var bases_queue = [];
-	  var logs = [];
 	  var tempURLThing = new URL(document.URL).pathname;
 	  var [_, this_server, this_game_id] = /([^/]*)\/([^/]*)$/.exec(tempURLThing);
 	  var from_gameserver = 'a/';
-	  //console.log(this_game_id);
 	  
 	  var pla1 = '';
 	  var pla2 = '';
 	  var pla1_rating = 0;
 	  var pla2_rating = 0;
+	  var initiated = false;
 	  
 	  var client_role = 'observer';
 	  var game_ended = 0;
@@ -661,15 +540,7 @@ var basic_code =
 	  var tut_helper_id = '';
 	  var tut_helper_phase = 0;
 	  
-	  var energy_processed = {};
-	  var base_drawn = {};
 	  var game_blocks = {};
-	  game_blocks['t-1'] = {
-		  b1: [0, 0, 0, 0, 0],
-		  b2: [0, 0, 0, 0, 0],
-		  b3: [0, 0, 0, 0, 0],
-		  b4: [0, 0, 0, 0, 0]
-	  }
 	  var active_block = 0;
 	  var game_running = 0;
 	  var tick_counter = 0;
@@ -692,9 +563,7 @@ var basic_code =
 	  var ask_temp = 0;
 	  var ask_diff = 0;
 	  var tickering_block = 0;
-	  var monitor_flag = 0;
 	  
-	  var cnsl = [];
 	  var has_error = 0;
 	  var cnsl_length = 0;
 	  var cnsl_expanded = 0;
@@ -719,50 +588,46 @@ var basic_code =
 	  
 	  const socket = new WebSocket(location.origin.replace(/^http/, 'ws') + '/' + this_server + '/' + this_game_id); // wss://yare.io:443
 	  
-	  //function connectSocket(){
-		  
-		//  socket = new WebSocket('ws://localhost:5000/' + this_server + '/' + this_game_id); // wss://yare.io:443
-		  
-		  //socket.binaryType = "arraybuffer";
 		  socket.addEventListener('open', function(event){
 			  socket.send(JSON.stringify({'meta': 'connect', 'session_id': getCookie('session_id')}));
-			  //console.log('Connected to wsws server');
 		  })
 	  
 		  socket.addEventListener('message', function(event){
-		  
-			  energy_processed = {};
-			  base_drawn = {};
-		  
+			  x = Date.now();
 			  elapsed = 0;
 			  
 			  document.getElementById('console2_tick_in').innerHTML = '';
 		  
 			  try {
 				 let message = JSON.parse(event.data);
-				if(message.meta == 'initiate'){
-					initiate(message.data);
+		if(message.meta == 'initiate'){
+				initiate(message.data);
+				initiated = true;
+				return;
+			}
+				if(message.meta == 'connected'){
 					return;
 				}
-				
-				
+			if(!message.render){
+				return;
+			}
+			if(!initiated){
+				return;
+			}
 
-				 incoming = message.render;
+			 incoming = message.render;
 				 chan = message.chan || {};
 
 				 var chanEvent = new CustomEvent('chan', {detail: chan});
 				 document.dispatchEvent(chanEvent);
-				 //console.log(incoming);
 				 tick_counter = incoming.t;
 		 
 				 if (incoming.t < -5){
-					 //document.getElementById('console').style.display = 'none';
 					 document.getElementById('countdown_num').innerHTML = (incoming.t * -1);
 				 } else if (incoming.t < 0){
-				 	 document.getElementById('waiting_for_what').style.display = 'none';
+					 document.getElementById('waiting_for_what').style.display = 'none';
 					 document.getElementById('countdown_num').innerHTML = (incoming.t * -1);
 				 } else if (incoming.t > 0){
-				 	 //document.getElementById('console').style.display = 'block';
 					 document.getElementById('countdown').style.display = 'none';
 				 } else if (incoming.t == 0 && code_sent == 1){
 					 document.getElementById('waitingo').style.display = 'block';
@@ -771,12 +636,7 @@ var basic_code =
 				 
 				 
 				 if (tick_counter >= 0){
-					 if (monitor_flag) console.log(ready_blocks[ready_blocks.length - 1]);
-					 if (monitor_flag) console.log(active_block);
-					 //game_blocks['t' + tick_counter] = incoming;
-					 
 					 socket_time = performance.now();
-					 if (monitor_flag) console.log('socket_time = ' + socket_time);
 					 if (temp_tick_time == 0){
 						 temp_tick_time = socket_time;
 					 } else {
@@ -784,7 +644,6 @@ var basic_code =
 						 diff_log.push(Math.abs(game_tick - incoming_diff));
 						 socket_log['t' + incoming.t] = [socket_time, incoming_diff]
 					 	 temp_tick_time = socket_time;
-						 //console.log('incoming_diff = ' + incoming_diff);
 					 }
 					 
 					 let diff_temp_total = 0;
@@ -796,8 +655,6 @@ var basic_code =
 					 	 }
 					 
 					 	 avg_diff = diff_temp_total / 20;
-					 	 if (monitor_flag) console.log('avg_diff = ' + avg_diff);
-					 	 //console.log('ccc = ' + ccc);
 					 }
 					 
 					 
@@ -805,12 +662,9 @@ var basic_code =
 					 game_blocks['t' + tick_counter] = {
 						 'p1': {},
 						 'p2': {},
-						 'b1': [],
-						 'b2': [],
-						 'b3': [],
-						 'b4': [],
 						 'e': [],
 						 's': [],
+						 'a': [],
 						 'units': [],
 						 'g1': [],
 						 'g2': []
@@ -821,154 +675,68 @@ var basic_code =
 					 // Populating game_blocks
 					 //
 					 
-					 for (i = 0; i < incoming.p1.length; i++){
-						 var spir_id = incoming.pl1 + '_' + incoming.p1[i][0];
-						 game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3], incoming.p1[i][4]];
-						 game_blocks['t' + tick_counter].units.push(incoming.pl1 + '_' + incoming.p1[i][0]);
-						 //console.log('previous tick');
-						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
-							 //console.log('location');
-							 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
-							 var oldLoc = [0, 0];
-							 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
-							 var oldEnergy = 10;
-							 var oldSize = 1;
-							 
-							 if (spirits[spir_id] == undefined && pla1 != undefined){
-								 create_spirit_p1(spir_id);
-							 }
-							 
-							 if (game_blocks['t' + (tick_counter - 1)].p1 == undefined){
-								if (shapes['shape1'] == 'squares'){
-									oldSize = 10;
-									oldEnergy = 100;
-								}
-								if (shapes['shape1'] == 'triangles'){
-									oldSize = 3;
-									oldEnergy = 30;
-								}
-  	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
-  	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
-  	   							game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
-  	   							game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
-							 
-  	   							game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
-  	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
-							 } else if (game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
-							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
-								oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][2];
-								oldSize = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
-								
-	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
-	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
-	   							game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
-	   							game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
-							 
-	   							game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
-	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
-							 } else {
-								// new spirit instance
-								//console.log('spirit born (probably)');
-								 
- 	   							game_blocks['t' + tick_counter].p1[spir_id][0][2] = 0;
- 	   							game_blocks['t' + tick_counter].p1[spir_id][0][3] = 0;
- 	   							game_blocks['t' + tick_counter].p1[spir_id][0][4] = newLoc[0];
- 	   							game_blocks['t' + tick_counter].p1[spir_id][0][5] = newLoc[1];
-							 
- 	   							game_blocks['t' + tick_counter].p1[spir_id][4] = oldSize;
- 	   							game_blocks['t' + tick_counter].p1[spir_id][5] = oldEnergy;
-							 }
-							 
-						 }
-					 }
-					 
-					 
-					 for (j = 0; j < incoming.p2.length; j++){
-						 var spir_id = incoming.pl2 + '_' + incoming.p2[j][0];
-						 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3], incoming.p2[j][4]];
-						 game_blocks['t' + tick_counter].units.push(incoming.pl2 + '_' + incoming.p2[j][0]);
-						 
-						 if (game_blocks['t' + (tick_counter - 1)] != undefined){
-							 //console.log('location');
-							 //console.log(game_blocks['t' + tick_counter].p1[spir_id][0]);
-							 var oldLoc = [0, 0];
-							 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
-							 var oldEnergy = 10;
-							 var oldSize = 1;
-							 
-							 if (spirits[spir_id] == undefined && pla2 != undefined){
-								 create_spirit_p2(spir_id);
-								 //console.log('spirit created ' + spir_id);
-							 }
-							 
-							 if (game_blocks['t' + (tick_counter - 1)].p2 == undefined){
- 								if (shapes['shape2'] == 'squares'){
- 									oldSize = 10;
- 									oldEnergy = 100;
- 								}
- 								if (shapes['shape2'] == 'triangles'){
- 									oldSize = 3;
- 									oldEnergy = 30;
- 								}
-								 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
-								 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
-								 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
-								 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
-							 
-								 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-								 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
-							 } else if (game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
-							 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
-								oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][2];
-								oldSize = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
-								
-	   							game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
-	   							game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
-	   							game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
-	   							game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
-							 
-	   							game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-	   							game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
-							 } else {
-								// new spirit instance
-								 //console.log('spirit born (probably)');
-								 
-								 game_blocks['t' + tick_counter].p2[spir_id][0][2] = 0;
-								 game_blocks['t' + tick_counter].p2[spir_id][0][3] = 0;
-								 game_blocks['t' + tick_counter].p2[spir_id][0][4] = newLoc[0];
-								 game_blocks['t' + tick_counter].p2[spir_id][0][5] = newLoc[1];
-							 
-								 game_blocks['t' + tick_counter].p2[spir_id][4] = oldSize;
-								 game_blocks['t' + tick_counter].p2[spir_id][5] = oldEnergy;
-							 }
-						 }
-					 }
-					 
-					 game_blocks['t' + tick_counter]['e'] = incoming.e;
-					 game_blocks['t' + tick_counter]['s'] = incoming.s;
-					 game_blocks['t' + tick_counter]['b1'] = incoming.b1;
-					 game_blocks['t' + tick_counter]['b2'] = incoming.b2;
-					 game_blocks['t' + tick_counter]['b3'] = incoming.b3;
-					 game_blocks['t' + tick_counter]['b4'] = incoming.b4;
-					 
-					 //previous energy for animation purposes
-					 game_blocks['t' + tick_counter]['b1'][4] = game_blocks['t' + (tick_counter - 1)]['b1'][0];
-					 game_blocks['t' + tick_counter]['b2'][4] = game_blocks['t' + (tick_counter - 1)]['b2'][0];
-					 game_blocks['t' + tick_counter]['b3'][4] = game_blocks['t' + (tick_counter - 1)]['b3'][0];
-					 game_blocks['t' + tick_counter]['b4'][4] = game_blocks['t' + (tick_counter - 1)]['b4'][0];
-					 
-					 game_blocks['t' + tick_counter]['st'] = incoming.st;
-					 game_blocks['t' + tick_counter]['ef'] = incoming.ef;
-					 
-					 game_blocks['t' + tick_counter]['ou'] = incoming.ou;
-					 game_blocks['t' + tick_counter]['py'] = incoming.py;
-					 //console.log(incoming.py);
+				 for (i = 0; i < incoming.p1.length; i++){
+					 var spir_id = incoming.pl1 + '_' + incoming.p1[i][0];
+					 game_blocks['t' + tick_counter].p1[spir_id] = [incoming.p1[i][1], incoming.p1[i][2], incoming.p1[i][3]];
+					 game_blocks['t' + tick_counter].units.push(incoming.pl1 + '_' + incoming.p1[i][0]);
 
+					 if (cats[spir_id] == undefined && pla1 != undefined){
+						 create_cat_p1(spir_id);
+					 }
+
+					 var oldLoc = [0, 0];
+					 var newLoc = game_blocks['t' + tick_counter].p1[spir_id][0];
+					 var oldEnergy = game_blocks['t' + tick_counter].p1[spir_id][1];
+
+					 if (game_blocks['t' + (tick_counter - 1)] != undefined && game_blocks['t' + (tick_counter - 1)].p1 != undefined && game_blocks['t' + (tick_counter - 1)].p1[spir_id] != undefined){
+						 	oldLoc = game_blocks['t' + (tick_counter - 1)].p1[spir_id][0];
+							oldEnergy = game_blocks['t' + (tick_counter - 1)].p1[spir_id][1];
+					 } else {
+							oldLoc = [newLoc[0], newLoc[1]];
+					 }
+
+					 game_blocks['t' + tick_counter].p1[spir_id][0][2] = newLoc[0] - oldLoc[0];
+					 game_blocks['t' + tick_counter].p1[spir_id][0][3] = newLoc[1] - oldLoc[1];
+					 game_blocks['t' + tick_counter].p1[spir_id][0][4] = oldLoc[0];
+					 game_blocks['t' + tick_counter].p1[spir_id][0][5] = oldLoc[1];
+					 game_blocks['t' + tick_counter].p1[spir_id][3] = oldEnergy;
+				 }
+					 
+					 
+				 for (j = 0; j < incoming.p2.length; j++){
+					 var spir_id = incoming.pl2 + '_' + incoming.p2[j][0];
+					 game_blocks['t' + tick_counter].p2[spir_id] = [incoming.p2[j][1], incoming.p2[j][2], incoming.p2[j][3]];
+					 game_blocks['t' + tick_counter].units.push(incoming.pl2 + '_' + incoming.p2[j][0]);
+
+					 if (cats[spir_id] == undefined && pla2 != undefined){
+						 create_cat_p2(spir_id);
+					 }
+
+					 var oldLoc = [0, 0];
+					 var newLoc = game_blocks['t' + tick_counter].p2[spir_id][0];
+					 var oldEnergy = game_blocks['t' + tick_counter].p2[spir_id][1];
+
+					 if (game_blocks['t' + (tick_counter - 1)] != undefined && game_blocks['t' + (tick_counter - 1)].p2 != undefined && game_blocks['t' + (tick_counter - 1)].p2[spir_id] != undefined){
+						 	oldLoc = game_blocks['t' + (tick_counter - 1)].p2[spir_id][0];
+							oldEnergy = game_blocks['t' + (tick_counter - 1)].p2[spir_id][1];
+					 } else {
+							oldLoc = [newLoc[0], newLoc[1]];
+					 }
+
+					 game_blocks['t' + tick_counter].p2[spir_id][0][2] = newLoc[0] - oldLoc[0];
+					 game_blocks['t' + tick_counter].p2[spir_id][0][3] = newLoc[1] - oldLoc[1];
+					 game_blocks['t' + tick_counter].p2[spir_id][0][4] = oldLoc[0];
+					 game_blocks['t' + tick_counter].p2[spir_id][0][5] = oldLoc[1];
+					 game_blocks['t' + tick_counter].p2[spir_id][3] = oldEnergy;
+				 }
+					 
+				 game_blocks['t' + tick_counter]['e'] = incoming.e;
+				 game_blocks['t' + tick_counter]['s'] = incoming.s;
+				 game_blocks['t' + tick_counter]['a'] = incoming.a;
+				 game_blocks['t' + tick_counter]['cr'] = incoming.cr;
+				 
 					 game_blocks['t' + tick_counter].graphics = (chan || {}).graphics;
 					 
-					 //console.log('base 2 defend state = ' + game_blocks['t' + tick_counter]['b2'][2]);
-					 //console.log(game_blocks);
-					 //console.log('t' + tick_counter + ' processed');
 					 run_tick();
 					 ready_blocks.push(tick_counter);
 					 
@@ -976,32 +744,6 @@ var basic_code =
 				 
 				 
 				 
-				 //if (game_blocks.length > 1){
-					 
-					 
-					 //position changes
-					 //var p1_units = game_blocks['t' + tick_counter - 1].p1.length;
-					 //console.log('p1 units = ' + p1_units);
-					 //var p2_units = game_blocks['t' + tick_counter - 1].p2.length;
-					 //console.log('p2 units = ' + p2_units);
-					 //for (i = 0; i < )
-					 
-					 
-					 
-					 
-				 	//game_blocks['t' + tick_counter]
-				 //} else {
-					 //game_blocks.push(incoming)
-				 //}
-				 
-				 //block[incoming.t] = 
-			 
-				 //birthLen = incoming.birth.length;
-				 //for (i = 0; i < birthLen; i++){
-				 //	birth_queue.push(incoming.birth[i]);
-				 //}
-			 
-				//let cnsl_open = 0;
 				let cnsl_in = document.getElementById('console2_tick_in');
 				let cnsl_all_in = document.getElementById('console2_all_in');
 				let temp_group = document.createElement("div");
@@ -1010,7 +752,6 @@ var basic_code =
 			 
 				if(chan.err){
 					has_error = 1;
-					//error_console();
 					var err_lbl = "Errors";
 					if (chan.err.length == 1) err_lbl = "Error";
 					document.getElementById('console2_lbl').innerHTML = chan.err.length + " " + err_lbl;
@@ -1022,12 +763,9 @@ var basic_code =
 					for (let err of chan.err){
 						cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item console_error'>" + err + "</p>";
 						temp_group.innerHTML += "<p class='console_item console_error'>" + err + "</p>";
-						//cnsl_all_in.insertAdjacentHTML("afterbegin", "<div class='console_item_group'><span class='console_item_tick tick_error'>" + incoming.t + "</span><p class='console_item console_error'>" + err + "</p></div>");
-						//console.error(incoming.err1[cns]);
 					}
 				} else {
 					has_error = 0;
-					//clean_console();
 					document.getElementById('console2_lbl').innerHTML = "Console"; 
 					document.getElementById('console2_lbl').classList.remove('c2_lbl_error');
 					document.getElementById('console2_view_toggle').classList.remove('c2_view_error');
@@ -1037,24 +775,13 @@ var basic_code =
 					for (let log of chan.log){
 						cnsl_in.innerHTML = cnsl_in.innerHTML + "<p class='console_item'>" + log + "</p>";
 						temp_group.innerHTML += "<p class='console_item'>" + log + "</p>";
-						//cnsl_all_in.insertAdjacentHTML("afterbegin", "<div class='console_item_group'><span class='console_item_tick'>" + incoming.t + "</span><p class='console_item'>" + log + "</p></div>");
-						//console.log(incoming.console1[cns]);
 					}
 				}
 				
 				cnsl_all_in.prepend(temp_group);
 				
 				 
-				 //if (cnsl_expanded == 1){
-				 //	 var console_content_height = document.getElementById("console_in").clientHeight;
-				 //	 update_console_height(console_content_height);	
-				 //}
-				 
-				 //console.log('incoming.end');
-				 //console.log(incoming.end);
 				 if (incoming.end != 0 && incoming.end != undefined){
-					 //console.log('incoming.end');
-					 //console.log(incoming.end);
 				 	game_over(incoming.end)
 				 }
 				 
@@ -1063,27 +790,6 @@ var basic_code =
 				 
 				 
 			 
-				 //if (incoming.tutorial.length > 0){
-				 //	 //console.log('tutorial !!!!!!!!!!!!!!!!!!!');
-				 //	 //console.log(incoming.tutorial[0]);
-				 //	 if (incoming.tutorial[0][0] == 'end'){
-				 //		 
-				 //	 	setTimeout(function(){
-				 //	 		location.reload()
-				 //	 	}, 3000);
-				 //	 }
-				 //	 
-				 //	 for (t = 0; t < incoming.tutorial[0].length; t++){
-				 //		 if (incoming.tutorial[0][t] == 1){
-				 //			 tutorial_phase = t + 1;
-				 //			 //console.log('tutorial phase = ' + tutorial_phase);
-				 //		 }
-				 //	 }
-				 //}
-			 
-				 if (tutorial_started == 0){
-			 	
-				 }
 			 
 				 if (tut_helper_phase != tutorial_phase){
 					 taylor_UI();
@@ -1145,12 +851,10 @@ var basic_code =
 							 alert('tut ended');
 							 break;
 						 default:
-							 //console.log('tutorial defaulted');
 					 }
 				 
 				 	 setTimeout(function(){
 						 tut_wrap_edge = document.getElementById('tutorial_wrap').getBoundingClientRect().bottom;
-						 //document.getElementById('editor_container').style.top = tut_wrap_edge - 300 + "px";
 				 	 }, 100);
 				 
 				 
@@ -1164,7 +868,6 @@ var basic_code =
 				   	 for (ce = 0; ce < copy_elements.length; ce++){
 				   	  	copy_elements[ce].addEventListener('click', function(){
 				   			code_to_copy = this.getAttribute('code');
-				   			//console.log('code_to_copy = ' + code_to_copy);
 				   			copyTextToClipboard(code_to_copy, this);
 				   	    }, false);
 				   	 }
@@ -1177,7 +880,7 @@ var basic_code =
 				 
 				 
 			  } catch (e) {
-				  console.log(e);
+				  console.error(e);
 			  }
 		  
 			  
@@ -1185,11 +888,9 @@ var basic_code =
 		  
 			 
 		  
-  		 
+		  
 	  		  y = Date.now();
 	  		  z = y - x;
-	  		  //console.log('roundtrip: ');
-	  		  //console.log(z);
 		  
 		  });
 		  
@@ -1199,10 +900,6 @@ var basic_code =
 			  }, 1000);
 		      
 		  }
-		  
-		  //}
-	  
-	  //connectSocket();
 	  
 	  //Concat an array of data onto a channel in the server.
 	  //Essentially does a `channel = channel.concat(Array.isArray(data) ? data : [data])`
@@ -1214,7 +911,7 @@ var basic_code =
 		  //world_initiation
 		try {
 			
-			if (data.bases.length > 0) bases_queue = data.bases;
+			// bases removed from game
 					
 			if (data.tut == 1){
 				game_type = 'tutorial';
@@ -1232,27 +929,35 @@ var basic_code =
 				document.getElementById('tutorial').style.display = 'none';
 				document.getElementById('editor_container').style.position = 'fixed';
 				document.getElementById('editor_container').style.top = '20px';
-				//document.getElementById('console').style.display = 'block';
 			
 				document.getElementById('panel').classList.remove("panel_start");
 			}
 		
-			//console.log('incoming =======================================');
-			//console.log(incoming);
-			//console.log('here is initiation');
 			pla1 = data.players[0];
 			pla2 = data.players[1];
 			colors['color1'] = data.colors[0];
 			colors['color2'] = data.colors[1];
-			shapes['shape1'] = data.shapes[0];
-			shapes['shape2'] = data.shapes[1];
 			players['player1'] = data.players[0];
 			players['player2'] = data.players[1];
 			
-			taylor_UI();
+			var pre_ids = [];
+			var start_num = 9;
+			for (var si = 1; si <= start_num; si++) {
+				var sy = -100 + (si - 1) * 25;
+				var p1_id = pla1 + '_' + si;
+				cats[p1_id] = new Cat(p1_id, [-200, sy], 10, pla1, colors['color1'], 1);
+				pre_ids.push(p1_id);
+				var p2_id = pla2 + '_' + si;
+				cats[p2_id] = new Cat(p2_id, [200, sy], 10, pla2, colors['color2'], 1);
+				pre_ids.push(p2_id);
+			}
+			all_cats = pre_ids;
+			render_state();
+			
+			try { taylor_UI(); } catch(e) {}
 		
 		} catch (e) {
-			//console.log(e);
+			console.error('initiate error:', e);
 		}
 	  }
 	  
@@ -1268,7 +973,6 @@ var basic_code =
 	  }
 	  
 	  function tutorial_signup(nick) {
-		  //console.log('this_game_id = ' + this_game_id);
 	  	fetch('/' + this_server + '/tutorial-signup', {
 	  	        method: "POST",
 	  	        headers: {
@@ -1282,20 +986,13 @@ var basic_code =
 
 	      }).then(response => response.json())
 	        .then(response => {
-	  		  //console.log(response);
 	  		  if (response.data == "no game found"){
-	  			  //console.log('no game found');
 	  		  } else if (response.data == "updated"){
-	  			  ////console.log('user exists already');
-	  			  //console.log('anonymous updated')
 	  		  } else if (response.data == "something went wrong"){
-	  			  //console.log('something went wrong');
 	  		  } else {
-				  //console.log('strange case');
 	  		  }
 	  	  })
 	        .catch(err => {
-	  		  //console.log(err);
 	  	  });
 	  }
 	  
@@ -1315,18 +1012,9 @@ var basic_code =
 	  function resign_game(){
 		  user_code = editor.getValue();
 		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id'), meta: 'resign'}));
-		  console.log('i am resigning');
-		  //dont_resign();
-		  //var temp_winner = '';
 		  var temp_winner = players['player1'];
 		  if (getCookie('user_id') == players['player1']) temp_winner = players['player2'];
 		  game_over(temp_winner);
-	  }
-	  
-	  function update_client_object(){
-		  socket.send(JSON.stringify({u_code: user_code, u_id: getCookie('user_id'), session_id: getCookie('session_id'), meta: 'resign'}));
-		  //var temp_winner = '';
-		  //game_over()
 	  }
 	  
 	  document.getElementById('update_code').addEventListener("click",function(e){
@@ -1356,7 +1044,6 @@ var basic_code =
 		      var msg = successful ? 'successful' : 'unsuccessful';
 		      code_copy_success(target);
 		    } catch (err) {
-		      //console.log('Oops, unable to copy');
 		    }
 		
 		  document.body.removeChild(copyTextArea);
@@ -1366,7 +1053,6 @@ var basic_code =
 		  e = e || window.event;
 		  var el_id = (e.target || e.srcElement).id;
 		  var infoboxo = document.getElementById('tutorial_infobox');
-		  //console.log('over id= ' + el_id);
 		  
 		  if (tutorial_info_view == 0 && mousey != 1){
 			  tutorial_info_view = 1;
@@ -1426,7 +1112,6 @@ var basic_code =
 	  for (ce = 0; ce < copy_elements.length; ce++){
 	  	copy_elements[ce].addEventListener('click', function(){
 			code_to_copy = this.getAttribute('code');
-			//console.log('code_to_copy = ' + code_to_copy);
 			copyTextToClipboard(code_to_copy, this);
 	    }, false);
 	  }
@@ -1493,7 +1178,6 @@ var basic_code =
 	  
 	  document.addEventListener("visibilitychange", function() {
 	        if (document.hidden) {
-	          //console.log("Hidden");
 	        }
 	        else {
 				if (incoming.t - tick_local > 2) tick_local = incoming.t - 1;
@@ -1505,24 +1189,21 @@ var basic_code =
 	  {
 	      var canvas1 = document.getElementById('main_canvas');
 		  var canvas2 = document.getElementById('base_canvas');
-	      canvas1.width = window.innerWidth;
-	      canvas1.style.width = window.innerWidth;
-	      canvas1.height = window.innerHeight;
-	      canvas1.style.height = window.innerHeight;
-	      canvas2.width = window.innerWidth;
-	      canvas2.style.width = window.innerWidth;
-	      canvas2.height = window.innerHeight;
-	      canvas2.style.height = window.innerHeight;
+		  var _dpr = window.devicePixelRatio || 1;
+	      canvas1.width = window.innerWidth * _dpr;
+	      canvas1.style.width = window.innerWidth + 'px';
+	      canvas1.height = window.innerHeight * _dpr;
+	      canvas1.style.height = window.innerHeight + 'px';
+	      canvas2.width = window.innerWidth * _dpr;
+	      canvas2.style.width = window.innerWidth + 'px';
+	      canvas2.height = window.innerHeight * _dpr;
+	      canvas2.style.height = window.innerHeight + 'px';
+		  if (typeof dpr !== 'undefined') dpr = _dpr;
+		  if (typeof offsetUpdate === 'function') offsetUpdate();
 	  }
 	  
 	  
 	  //var script_name = 'user_script';
-	  //var script_insert = document.createElement('script');
-	  //script_insert.src = "https://yare.sfo3.digitaloceanspaces.com/modules/client/aNg182b242as0.js";
-	  //document.head.appendChild(script_insert);
-	  
-	  
-	  
   </script>
   <script src="a/tutorial_texts.js"></script>
   <script src="a/rendering3.js"></script>

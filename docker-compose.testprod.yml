@@ -3,6 +3,7 @@ services:
   main:
     build:
       context: .
+    env_file: .env
     environment:
       - NODE_ENV=testprod
     depends_on:
@@ -15,6 +16,7 @@ services:
     build:
       context: .
       dockerfile: game/Dockerfile
+    env_file: .env
     environment:
       - NODE_ENV=testprod
     depends_on:
@@ -27,6 +29,7 @@ services:
     build:
       context: .
       dockerfile: game/Dockerfile
+    env_file: .env
     environment:
       - SERVER=d2
       - NODE_ENV=testprod
@@ -40,6 +43,7 @@ services:
     build:
       context: .
       dockerfile: game/Dockerfile
+    env_file: .env
     environment:
       - NODE_ENV=testprod
       - SERVER=t2
@@ -62,7 +66,7 @@ services:
       - tutorial
       - minio
   minio:
-    image: "minio/minio"
+    image: "minio/minio:RELEASE.2024-01-01T16-36-33Z"
     ports:
       - "9000"
       - "9001"

@@ -8,7 +8,9 @@ module.exports = javascripthon
 function javascripthon(code) {
   let output = execSync(
     `python3 -m metapensiero.pj --inline-map --source-name "~sandbox/user.py" -s - -o -`, {
-      input: code
+      input: code,
+      timeout: 15000,
+      maxBuffer: 5 * 1024 * 1024
     }
   )
   return output.toString()

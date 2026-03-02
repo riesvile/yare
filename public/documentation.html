@@ -1,1362 +1,288 @@
 <!doctype html>
 <html>
   <head>
-    <title>yare.io</title>
-	<style>
-	</style>
-	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+    <title>yare.io – Documentation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./documentation.css">
-	<link rel="stylesheet" href="./index_style.css">
 	<link rel="stylesheet" href="./style-mobile.css">
-	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="./anime.min.js"></script>
   </head>
   <body>
-	  
-	  <div id="new_account_wrap">
-		  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
-		  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
-			  <span id="user_err_message">Something's wrong</span>
-		  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
-			  <span id="password_err_message">Something's wrong</span>
-			  <br>
-			   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
-		  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
-		  </form>
-	  </div>
-  
-	  <div id="login_wrap">
-		  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
-		  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
-		  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
-			  <span id="login_err_message">Something's wrong</span>
-			  <br>
-		  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
-		  </form>
-	  </div>
-	  
-	  <div id="module_edit_mode">
-		<input type="text" id="module_name_input" placeholder="Module name">
-	
-		<div id="file_uploads_wrap">
-			<label class="file_upload_label">
-				<input type="file" id="file_script_client" class="file_upload" accept=".js">
-				<span class="lbl_type">Client</span>
-				<span class="lbl_name" id="client_file_name">Upload script</span>
-			</label>
-	
-			<label class="file_upload_label">
-				<input type="file" id="file_script_server" class="file_upload" accept=".js">
-				<span class="lbl_type">Server</span>
-				<span class="lbl_name" id="server_file_name">Upload script</span>
-			</label>
-		</div>
-	
-		<span id="modules_server_message" class="srv_ok">Module updated. Check browser console for errors.</span>
-		<span id="modules_server_message_loader"></span>
-	
-		<div id="create_module_btn">Create module</div>
-		<div id="update_module_btn">Update module</div>
-		<a id="close_module_edit" href="#">Close</a>
-	  </div>
-  
-	  <div id="profile_links"> 
-		    <div id="acc_basics"> 
-				<div class="basics_bg"></div>
-		  		<span class="acc_info"><span id="acc_info_name">levmiseri · </span><span id="acc_info_elo">1954</span></span>
-		  		<a href="/hub" class="profile_link" id="hub_link">Game history</a>
-		  		<a href="#" class="profile_link" id="log_out">Log out</a>
-		    </div>
-		
-			<div id="audio_settings">
-				<div id="music_slider_wrap" class="pref_slider_item">
-					<div id="music_value" class="slider_value"></div>
-					<span class="set_label" id="set_label_music">Music</span><span class="set_value" id="set_value_music">68%</span>
-				</div>
-		
-				<div id="sound_slider_wrap" class="pref_slider_item">
-					<div id="sound_value" class="slider_value"></div>
-					<span class="set_label" id="set_label_sound">Sound</span><span class="set_value" id="set_value_sound">32%</span>
-				</div>
-			</div>
-		
-			<!--<span class="pref_section_label">LANGUAGE</span>-->
-		
-			<div id="language_settings">
-				<div class="lang_chip lang_on" id="lang_js">JavaScript</div>
-				<div class="lang_chip" id="lang_ts">TypeScript</div>
-				<div class="lang_chip" id="lang_py">Python</div>
-			</div>
-		
-			<div class="sep_medium"></div>
-		
-			<!--
-			<div id="module_expanded">
-				<div class="module_card_bg" id="bg_mdl_basic_info_graphs_expanded"></div>
-				<span class='module_main_tag'>Data visualization</span>
-				<div class="module_toggle" id="toggle_basic_info_graphs">
-					<div class="the_toggle" id="thetog"></div>
-				</div>
-				<h3 class="module_name_expanded">Basic info <br>& energy graphs</h3>
-				<div class="module_expanded_buttons">
-					<div id="btn_expanded_activate" class="btn_expanded">Activate module</div>
-					<div id="btn_expanded_download_client" class="btn_expanded">Client script</div>
-				</div>
-				<div class="module_ilu"></div>
-				<div class="sep_medium"></div>
-				<div class="sep_medium"></div>
-			</div>
-			-->
-		
-			<span class="pref_section_label">MODULES</span>
-			<div id="modules_section">
-			
-				<div id="create_new_module">
-					<span class="ico_new_module"></span>
-					<span class="new_module_label">Create Module</span>
-				</div>
-			
-				<!--
-				<div class="module_card module_off" id="mdl_code-editor">
-					<div class="module_card_bg" id="bg_mdl_code-editor"></div>
-					<span class="module_main_tag">Essentials</span>
-					<div class="module_toggle" id="toggle_code-editor">
-						<div class="the_toggle" id="thetog"></div>
-					</div>
-					<h3 class="module_name">Code editor <br>& Console</h3>
-					<div class="module_ilu"></div>
-				</div>
-				
-					-->
-			
-			
-			</div>
-		
-			<div id="modules_section_mine">
-				<!--
-				<div class="module_card_mine module_off" id="mdl_code_editor">
-					<div class="module_card_bg" id="bg_mdl_mine"></div>
-					<div class="module_options">
-						<a href="#" class="module_options_btn btn_edit" id="edit_1234">Edit</a>
-						<a href="#" class="module_options_btn btn_pre_delete_module" id="predel_1234">Delete</a>
-						<div class="delete_confirm" id="confirm_1234">
-							<a href="#" class="module_options_btn delete_module" id="del_1234">Yes, delete</a>
-							<a href="#" class="module_options_btn cancel_delete" id="cancel_1234">Cancel</a>
-						</div>
-					</div>
-					<div class="module_toggle" id="toggle_1234">
-						<div class="the_toggle" id="thetog"></div>
-					</div>
-					<h3 class="module_name">Module name</h3>
-				</div>
-				-->
-			</div>
-		
-		
-		
-			<div class="sep_medium" id="dismiss"></div>
-			<div class="sep_medium" id="dismiss"></div>
-		
-		
-			<!--
-		
-				-->
-	  </div>
-  
-  
-	  <div id="hector">
-		  <h1 id="logo"><a href="/">yare <span class="logo_lowlight">2</span><span class='beta_badge'>BETA</span></a></h1>
-		  <div id="doc_sections">
-				  <a href="#doc_intro" id="doc_sec_link_intro" class="doc_sec_link">Intro</a>
-				  <a href="#doc_spirit" id="doc_sec_link_spirit" class="doc_sec_link doc_sec_active">Spirit</a>
-				  <a href="#doc_base" id="doc_sec_link_base" class="doc_sec_link">Base</a>
-				  <a href="#doc_outpost" id="doc_sec_link_outpost" class="doc_sec_link">Outpost & Pylon</a>
-				  <a href="#doc_energy" id="doc_sec_link_energy" class="doc_sec_link">Energy</a>
-				  <a href="#doc_credits" id="doc_sec_link_credits" class="doc_sec_link">Credits</a>
-				  <div class="menu_line line2"></div>
-				  <a href="/modules-documentation" class="doc_sec_link" id="mod_doc">Modules</a>
-		  </div>
-		  <div class="menu">
-			  <a href="/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
-			  <a href="/newgame" class="menu_link new_g" id="new_g">New game</a>
-			  <div class="menu_line desktop_only"></div>
-			  <div class="menu_link new_acc" id="new_account">New account</div>
-			  <div class="menu_link" id="login">Log in</div>
-			  <div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
-		  </div>
-	  </div>
-	  
-	  <div id="modules_plate"></div>
-	  
-	  
-	  <div id="overlay"></div>
-	  <div id="grad_top2"></div>
-	  
-	  <div id="info_box">
-	  	<div id="info_box_content">
-			
-		</div>
-	  </div>
-	  
-	  
-	  
-	  
-	  <div id="doc_content">
-		  
-		<section id="doc_intro">
-		  <p class="p_intro">yare.io is a real-time 2-player (1v1) strategy game where you control units with any input method you want.<br><br><span class='lowlight'>The default built-in methods are JavaScript/Python or a traditional Mouse/Touch interface, but you can create your own UI and modalities using the <a href='/modules-documentation'>modules system</a>.</span></p>
-		  
-		  <div id='mechanics_button' style='margin-top: 0px;'><span class='mechanics_button_lbl'>Game mechanics</span><span class='ico_mechplus'></span></div>
-  		<div id='mechanics_block' style='transform: translateX(-50%) scale(0.8)'>
-  			<div id='mechanics_close_btn'><span class='ico_close'></span></div>
-			
-  			<h4 id='mechanics_h' class='gradiented_h'>Game mechanics</h4>
-  			<p class='mech_p'>There is one resource — energy. You extract energy from stars and use it to attack, defend and produce new units. The only thing you can control is the movement of your units and where they transfer the energy. </p>
-			
-  			<h5 id='mech_win_conditions' class='allcapi'>End game conditions</h5>
-  			<span class='lowlight t_small mech_num'>1</span><p class='t_small'>Player with 0 remaining units loses</p>
-  			<span class='lowlight t_small mech_num'>2</span><p class='t_small'>Player with 0 structures (bases, pylon, outpost) under their control loses</p>
-			
-  			<h5 id='mech_factions' class='allcapi desktop_only'>Factions</h5>
-  			<div class='mech_faction_wrap_all desktop_only'>
-  				<span class='mech_unique_lbl'>Unique ability</span>
-  				<div class='mech_faction_wrap'>
-  					<span class='mech_faction_icon ico_sh_circles'></span>
-  					<p class='mech_faction_desc'>Small and weak, but their power lies in numbers.</p>
-  					<p class='mech_ability_name'>merge/divide</p>
-  					<p class='mech_ability_desc'>Combines spirits into one stronger unit</p>
-  				</div>
-  				<div class='mech_faction_wrap'>
-  					<span class='mech_faction_icon ico_sh_squares'></span>
-  					<p class='mech_faction_desc'>Large and strong, but expensive to produce and small in numbers.</p>
-  					<p class='mech_ability_name'>lock/unlock</p>
-  					<p class='mech_ability_desc'>Can’t move, but increases energize range</p>
-  				</div>
-  				<div class='mech_faction_wrap'>
-  					<span class='mech_faction_icon ico_sh_triangles'></span>
-  					<p class='mech_faction_desc'>Neither too strong, nor too weak, but most difficult to play right.</p>
-  					<p class='mech_ability_name'>explode</p>
-  					<p class='mech_ability_desc'>Damages all enemies in surrounding area</p>
-  				</div>
-  			</div>
-  			<div class='mech_spacer'></div>
-  			<img id='mech_ilu' class='desktop_only' src='asset/mech_ilu.svg'>
-  			<img id='mech_lights' src='asset/mech_lights.png'>
-			
-			
-  		</div>
-		
-		  <div class="sep_large"></div>
-		  <div class="sep_large"></div>
-		  
-		  <div class="sep_medium"></div>
-		  <h4 class="doc_h4">Game's global variables</h4>
-		  <div class="sep_small"></div>
-		  
-		  <div class="table_doc">
-				<div class="row_in_doc_head">
-					<span class="table_doc_property">Variable</span>
-					<span class="table_doc_type">Type</span>
-					<span class="table_doc_value">Description</span>
-				</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">memory</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Empty object. Use it to store values across ticks</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">base_zxq</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Top-left base (Player 1 start position)</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">base_a2c</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Bottom-right base (Player 2 start position)</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">base_p89</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Bottom-left base (neutral)</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">base_nua</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">top-right base (neutral)</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">star_zxq</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Top-left star</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">star_a2c</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Bottom-right star</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">star_p89</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Bottom-left star</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">star_nua</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Top-right star</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">outpost_mdo <span class='lowlight'>and</span> outpost</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Outpost</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">pylon_u3p <span class='lowlight'>and</span> pylon</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Pylon</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">my_spirits</span>
-					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">Contains only your spirits</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">spirits</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value">Contains all spirits. Access them by their id – spirits[‘jane_7’]</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">tick</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">Current game tick (e.g. 75). 1 tick = 600ms</span>
-				</div>
-			</div>
-		  	
-		  </div>
-		  
-	    </section>
-		  
-	  	<section id="doc_spirit">
-		  <h2 class="h_sec_head">Spirit</h2>
-		  <p class="p_sec_intro">Spirits are the game’s units. They are JavaScript objects with various properties and methods listed below.</p>
-		  <div class="sep_medium"></div>
-		  
-		  <div class="sep_medium"></div>
-		  <h5 class="doc_h5">2 ways to access the spirit object</h5>
-		  <div class="sep_small"></div>
-		  <div class="side_side">
-			  <p class="access_h">spirits[<span class='lowlight'>id</span>]</p>
-			  <code class="access_type">object</code>
-			  <div class="sep_small"></div>
-			  <p class="access_p">The <span class="highlight">spirits</span> object contains all of the game’s spirits. E.g. spirits[‘jane2’] returns the spirit with id = ‘jane2’</p>
-		  </div>
-		  <div class="side_side side_adj">
-			  <p class="access_h">my_spirits[<span class='lowlight'>index</span>]</p>
-			  <code class="access_type">array</code>
-			  <div class="sep_small"></div>
-			  <p class="access_p"><span class="highlight">my_spirits</span> array contains only your spirits (including dead spirits). E.g. my_spirits[0] is your oldest spirit.</p>
-		  </div>
-		 
-		 <div class="sep_small"></div>
-		 <p class="p_normal" style="max-width: 69%"><span class="lowlight">You can also access your own spirits by their id. E.g. jane2.position, but that’s highly impractical in the real game outside of the tutorial.</span></p>
-		  
-		  
-		  
-		  <div class="sep_medium"></div>
-		  <h4 class="doc_h4">Properties</h4>
-		  <div class="sep_small"></div>
-		  
-		  <div class="table_doc">
-				<div class="row_in_doc_head">
-					<span class="table_doc_property">Property</span>
-					<span class="table_doc_type">Type</span>
-					<span class="table_doc_value">Value</span>
-				</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">id</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">username + _ + #. E.g. jane_7</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">position</span>
-					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">spirit’s [x, y] coordinates, e.g. [750, 900]</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">size</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value has_expando">
-						<span class="g_con"><span class="ico_circle"></span> 1–100</span>
-						<span class="g_con"><span class="ico_square"></span> 10</span>
-						<span class="g_con"><span class="ico_triangle"></span> 3</span>
-					</span>
-					<span id="info_spirit_size" class="expando_info">?</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy_capacity</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value has_expando">
-						<span class="g_con"><span class="ico_circle"></span> 10–1000</span>
-						<span class="g_con"><span class="ico_square"></span> 100</span>
-						<span class="g_con"><span class="ico_triangle"></span> 30</span>
-					</span>
-					<span id="info_spirit_energy_capacity" class="expando_info">?</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">spirit’s current energy – <a href="#doc_energy">more about energy</a></span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">hp</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">1 when spirit is alive, 0 when it’s dead</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">mark</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">custom string assignable via <code>set_mark()</code> method.</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">last_energized</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">id of most recently energized object</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">shape</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">'circles'<span class='lowlight'>, </span>'squares' <span class='lowlight'>or</span> 'triangles'</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">player_id</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">username</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">sight</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
-					<span id="info_spirit_sight" class="expando_info">?</span>
-				</div>
-			</div>
-		  </div>
-		  
-		  
-		  <div id="methods_ent" class="sep_large"></div>
-		  <h4 class="doc_h4">Methods</h4>
-		  <div class="sep_small"></div>
-		  
-		  <div class="table_doc">
-				<div class="row_in_doc_head">
-					<span class="table_doc_method">Method</span>
-					<span class="table_doc_argument">Argument</span>
-					<span class="table_doc_usedby">Can be used by</span>
-				</div>
-		  	<div id="exp_energize_method_wrap" class="row_doc">
-				<div id="exp_energize_method" class="row_in_doc">
-					<span class="table_doc_method">energize(<span class="target_lowlight">target</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an object</span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span><span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span><span class="shapo">Squares</span></span>
-						<span class="g_con"><span class="ico_triangle"></span><span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_energize" class="expando_more"><span class="ico_expand"></span></span>
-					
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Transfers (1 × spirit's size) energy unit from itself into <span class="target_lowlight">target</span>. Max distance of the energy transfer is 200 units.</p>
-						<div class="sep_small"></div>
-						<p class="p_method_desc">If <span class="target_lowlight">target</span> is an enemy spirit or a base, the <span class="target_lowlight">target</span> takes damage (loses energy) equivalent to (2 × attacking spirit's size)</p>
-						
-						<div class="sep_small"></div>
-						
-						<p class="p_method_desc">If <span class="target_lowlight">target</span> is the same spirit as origin, the spirit will attempt harvesting energy from a star.</p>
-						<p class="p_method_desc">If <span class="target_lowlight">target</span> is a location (e.g. <code>[450, 380]</code>) the spirit will create an <a href='#doc_energy'>energy fragment</a> at that point.</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<div class="method_gif_example">
-							<div id="gif_energize1" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].energize(my_spirits[1]);</code>
-						</div>
-						<div class="sep_small"></div>
-						<div class="method_gif_example">
-							<div id="gif_energize2" class="gif_in"></div>
-							<pre class="example_code">var enemy = spirits['jane7']; &#10;my_spirits[0].energize(enemy);&#10;my_spirits[1].energize(enemy);</pre>
-						</div>
-						
-						<div class="sep_small"></div>
-						<p class="p_normal">If a spirit or base has negative energy at the end of a tick, it will die.</p>
-					</div>
-					
-				</div>
-			</div>	
-		  	<div id="exp_move_method_wrap" class="row_doc">
-				<div id="exp_move_method" class="row_in_doc">
-					<span class="table_doc_method">move(<span class="target_lowlight">target</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_move" class="expando_more"><span class="ico_expand"></span></span>
-						
-					
-					
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Moves spirit to <span class="target_lowlight">target</span> with a speed of 20 units per tick</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].move([800, 900]);</code>
-						</div>
-					</div>
-					
-					
-				</div>
-			</div>
-		  	<div id="exp_jump_method_wrap" class="row_doc">
-				<div id="exp_jump_method" class="row_in_doc">
-					<span class="table_doc_method">jump(<span class="target_lowlight">target</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">target</span> is an [x, y] array</span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_jump" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Teleports a spirit into a new location. Energy cost of the jump is equal to distance/5. <span class="lowlight">Target can not be within a 50 unit distance from any base, outpost or pylon, or 100 unit distance from a star. If target is not a valid location, the jump will land in the nearest valid location from <code>target</code></span></p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<!--
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].jump([800, 900])</code>
-						</div>
-						-->
-					</div>
-				</div>
-			</div>
-		  	<div id="exp_merge_method_wrap" class="row_doc">
-				<div id="exp_merge_method" class="row_in_doc">
-					<span class="table_doc_method">merge(<span class="target_lowlight">target</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">target</span> is a friendly spirit</span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con method_nouse"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con method_nouse"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_merge" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Merges a spirit into another friendly spirit. <span class="target_lowlight">Target</span> needs to be within 10 units radius.</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<div class="method_gif_example">
-							<div id="gif_merge" class="gif_in"></div>
-							<pre class="example_code">for (i = 0; i < 5; i++){ &#10;  my_spirits[i].move(my_spirits[6].position);&#10;  my_spirits[i].merge(my_spirits[6]);&#10;}</pre>
-						</div>
-						<div class="sep_small"></div>
-					</div>
-					
-				</div>
-			</div>
-		  	<div id="exp_divide_method_wrap" class="row_doc">
-				<div id="exp_divide_method" class="row_in_doc">
-					<span class="table_doc_method">divide()</span>
-					<span class="table_doc_argument"><span class="target_lowlight">no argument</span></span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con method_nouse"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con method_nouse"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_divide" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Divides spirit back into all the spirits that were merged into it.</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<div class="method_gif_example">
-							<div id="gif_divide" class="gif_in"></div>
-							<code class="example_code">my_spirits[9].divide()</code>
-						</div>
-					</div>
-					
-				</div>
-			</div>
-		  	<div id="exp_lock_method_wrap" class="row_doc">
-				<div id="exp_lock_method" class="row_in_doc">
-					<span class="table_doc_method">lock()</span>
-					<span class="table_doc_argument"><span class="target_lowlight">no argument</span></span>
-					<span class="table_doc_usedby">
-						<span class="g_con method_nouse"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con method_nouse"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_lock" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Spirit locks itself — cannot move anymore, but every tick its range increases by 25 units until it reaches 300 (4 ticks).</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<!--
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].lock([800, 900])</code>
-						</div>
-						-->
-					</div>
-				</div>
-			</div>
-			
-		  	<div id="exp_unlock_method_wrap" class="row_doc">
-				<div id="exp_unlock_method" class="row_in_doc">
-					<span class="table_doc_method">unlock()</span>
-					<span class="table_doc_argument"><span class="target_lowlight">no argument</span></span>
-					<span class="table_doc_usedby">
-						<span class="g_con method_nouse"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con method_nouse"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_unlock" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Unlocks the spirit, returning its energize range back to 200. The spirit can move again.</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<!--
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].unlock([800, 900])</code>
-						</div>
-						-->
-					</div>
-				</div>
-			</div>
-			
-		  	<div id="exp_explode_method_wrap" class="row_doc">
-				<div id="exp_explode_method" class="row_in_doc">
-					<span class="table_doc_method">explode()</span>
-					<span class="table_doc_argument"><span class="target_lowlight">no argument</span></span>
-					<span class="table_doc_usedby">
-						<span class="g_con method_nouse"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con method_nouse"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_explode" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Spirit explodes, killing itself and dealing 10 damage to all enemy spirits within 160 radius.</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-						<!--
-						<div class="method_gif_example">
-							<div id="gif_move" class="gif_in"></div>
-							<code class="example_code">my_spirits[0].explode([800, 900])</code>
-						</div>
-						-->
-					</div>
-				</div>
-			</div>
-			
-			<div class="sep_mini"></div>
-			
-		  	<div id="exp_shout_method_wrap" class="row_doc">
-				<div id="exp_shout_method" class="row_in_doc" style="border-top: 1px solid rgba(242, 246, 250, 0.12);">
-					<span class="table_doc_method">shout(<span class="target_lowlight">message</span>)</span>
-					<span class="table_doc_argument">max. 20 char string</span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_shout" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Shows a message above the spirit as a light-weight in-game communication. Useful for some debugging as well.</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-					</div>
-					
-				</div>
-			</div>
-		  	<div id="exp_mark_method_wrap" class="row_doc">
-				<div id="exp_mark_method" class="row_in_doc" style="border-top: 1px solid rgba(242, 246, 250, 0.12);">
-					<span class="table_doc_method">set_mark(<span class="target_lowlight">label</span>)</span>
-					<span class="table_doc_argument"><span class="target_lowlight">label</span> is a string (max. 60 char)</span>
-					<span class="table_doc_usedby">
-						<span class="g_con"><span class="ico_circle"></span> <span class="shapo">Circles</span></span>
-						<span class="g_con"><span class="ico_square"></span> <span class="shapo">Squares</span></span>
-						<span class="g_con"><span class="ico_triangle"></span> <span class="shapo">Triangles</span></span>
-					</span>
-					<span id="expand_for_mark" class="expando_more"><span class="ico_expand"></span></span>
-						
-					<div class="exp_content">
-						<div class="sep_small"></div>
-						<p class="p_method_desc">Updates the mark property of the spirit. That can be useful for e.g. marking which spirit is doing what</p>
-						
-						<div class="sep_small"></div>
-						<div class="sep_small"></div>
-						
-					</div>
-					
-				</div>
-			</div>
-			
-			
-		  </div>
-		  
-		  <div class="sep_medium"></div>
-		  
-		  <p class="p_intro" style="max-width: 800px">All instances of a method are executed together for both players every tick on the server in the same order as the table above.</p>
-		  <div class="sep_medium_negative"></div>
-		  <p class="p_somewhat_important"><span class="lowlightish">First, all energize() methods are calculated, then all movements, then all merge() and so on. Except for explode() that happens together with energize().</span></p>
-		  <p class="p_somewhat_important"><span class="lowlightish">E.g. if two spirits of the same size and with the same amount of energy are attacking each other, they will die at the same moment.</span></p>
-		  
-		  
-		  
-		</section>
-	  
-	  	<div class="sep_medium"></div>
-	  	<section id="doc_base">
-		  <h2 class="h_sec_head">Base</h2>
-		  <p class="p_sec_intro">Base is the birth-place for new spirits, automatically generating new spirits when it has enough energy. If there is an enemy in its sight, the base stops producing new spirits, keeping all energy to defend itself.</p>
-		  
-		  <div class="sep_medium"></div>
-		  <p class="p_somewhat_important">Energy needed to generate a new spirit <span class="lowlight">(happens automatically </span>once per tick<span class="lowlight">)</span></p>
-		  <span class="energy_needed">
-			<span class="g_con"><span class="ico_circle"></span> 25-150</span>
-			<span class="g_con"><span class="ico_square"></span> 360–700</span>
-			<span class="g_con"><span class="ico_triangle"></span> 90–300</span>
-			<span id="info_birth" class="expando_info">?</span>
-		  </span>
-		  
-		  <div class="sep_medium"></div>
-		  <div class="full_full">
-			  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">The base won’t generate new spirits if there is an enemy in its sight (400 radius). It will keep all incoming energy from friendly spirits <span class="lowlight">(until it reaches its energy_capacity)</span> to defend itself.</span></p>
-		  </div>
-		  
-		  
-		  
-		  <div class="sep_medium"></div>
-		  <div class="sep_medium"></div>
-		  <h4 class="doc_h4">Properties</h4>
-		  <div class="sep_small"></div>
-		  
-		  <div class="table_doc">
-				<div class="row_in_doc_head">
-					<span class="table_doc_property">Property</span>
-					<span class="table_doc_type">Type</span>
-					<span class="table_doc_value">Value</span>
-				</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">id</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“base_zxq“<span class='lowlight'>, </span>"base_a2c"<span class='lowlight'>, </span>"base_p89"<span class='lowlight'> or  </span>"base_nua"</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">structure_type</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“base“</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">position</span>
-					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">[x, y] coordinates of the base</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy_capacity</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">
-						<span class="g_con"><span class="ico_circle"></span> 400</span>
-						<span class="g_con"><span class="ico_square"></span> 1000</span>
-						<span class="g_con"><span class="ico_triangle"></span> 600</span>
-					</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">base’s current energy – <a href="#doc_energy">more about energy</a></span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">current_spirit_cost</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">energy cost per new spirit</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">control</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">id of the player controlling the base</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">sight</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
-					<span id="info_base_sight" class="expando_info">?</span>
-				</div>
-			</div>
-		  </div>
-		  
-		  <div class="sep_medium"></div>
-		  <p class="p_somewhat_important">If a base is in a neutral state, the player that pours more energy into it in the next tick claims control.</p>
-		  <p class="p_somewhat_important">When a non-neutral base's energy would have gone below 0 (i.e. while under attack), the base becomes neutral.</p>
-		  
-		</section>
-		
-		
-	  	<div class="sep_medium"></div>
-	  	<section id="doc_outpost">
-		  <h2 class="h_sec_head">Outpost</h2>
-		  <p class="p_sec_intro">Neutral structure that provides strategic advantage for whoever controls it by automatically shooting at enemy targets within its range.</p>
-		  
-		  <div class="sep_medium"></div>
 
-		  <h4 class="doc_h4">Properties</h4>
-		  <div class="sep_small"></div>
-		  
-		  <div class="table_doc">
-				<div class="row_in_doc_head">
-					<span class="table_doc_property">Property</span>
-					<span class="table_doc_type">Type</span>
-					<span class="table_doc_value">Value</span>
-				</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">id</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">"outpost_mdo"</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">structure_type</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“outpost“</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">position</span>
-					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">[-230, 230]</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy_capacity</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">1000</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">outpost’s current energy</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">range</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">400 (600 if outpost's energy >= 500)</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">control</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">player's id (e.g. "jane")</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">sight</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
-					<span id="info_outpost_sight" class="expando_info">?</span>
-				</div>
-			</div>
-		  </div>
-		  
-		  <div class="sep_medium"></div>
-		  
-		  <p class="p_normal">Outpost deals 2 damage (costing 1 energy, same as a spirit) when it has less then 500 energy and 8 damage (costing 4 energy) when it has over 500 energy.</p>
-		  <div class="sep_medium"></div>
-		  <div class="sep_medium"></div>
-		  
-		  
-		  <h2 class="h_sec_head">Pylon</h2>
-		  <p class="p_sec_intro">Neutral structure that provides strategic advantage for whoever controls it by automatically healing all friendly spirits within its range.</p>
-		  
-		  <div class="sep_medium"></div>
+	<div id="new_account_wrap">
+		<form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+			<input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+			<span id="user_err_message">Something's wrong</span>
+			<input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+			<span id="password_err_message">Something's wrong</span>
+			<br>
+			<p id="email_snippet"><span class="par_highlight">We don't want your email.</span> Just bear in mind that if you forget your password, you'll need to create a new account</p>
+			<input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+		</form>
+	</div>
 
-		  <h4 class="doc_h4">Properties</h4>
-		  <div class="sep_small"></div>
-		  
-		  <div class="table_doc">
-				<div class="row_in_doc_head">
-					<span class="table_doc_property">Property</span>
-					<span class="table_doc_type">Type</span>
-					<span class="table_doc_value">Value</span>
-				</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">id</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">"pylon_u3p"</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">structure_type</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“pylon“</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">position</span>
-					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">[228, -228]</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy_capacity</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">1000</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">pylon’s current energy</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">control</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">player's id (e.g. "jane")</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">sight</span>
-					<span class="table_doc_type">object</span>
-					<span class="table_doc_value has_expando"><span id="sight_example_lbl">show example</span></span>
-					<span id="info_pylon_sight" class="expando_info">?</span>
-				</div>
-			</div>
-		  </div>
-		  
-		  <div class="sep_medium"></div>
-		  
-		  <p class="p_normal">Pylon heals all friendly spirits that are inside the annulus area where the smaller circle has radius 200 and the larger one 400 units. The healing rate is 1 energy per tick per spirit.</p>
-		  <div class="sep_medium"></div>
-		  
-		  
-		  
-		  
-		  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">Who controls the outpost / pylon / neutral base</span></p>
-		  <p class="p_normal" style="max-width: max-content;">The player that first sends energy into the neutral structure takes over its control. If both players are energizing neutral structure at the same time, the player who pours more energy in that tick takes control (structure remains neutral if both energize it with the same amount). Energizing a structure controlled by an enemy deals 2 damage — same as attacking a spirit.</p>
-		  
-		  <p class="p_normal" style="max-width: max-content;">Once the structure's energy reaches 0 (either by using up all of its energy to attack/heal or by the enemy damaging it), it becomes neutral again, available for any player to take control over it. Base remains under the player's control until its energy would have gone below 0.</p>
-		  
-		</section>
+	<div id="login_wrap">
+		<form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+			<input type="text" id="user_name" name="user[name]" placeholder="Username">
+			<input type="password" id="user_password" name="user[password]" placeholder="Password">
+			<span id="login_err_message">Something's wrong</span>
+			<br>
+			<input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+		</form>
+	</div>
+
+	<div id="profile_links">
+		<div id="acc_basics">
+			<div class="basics_bg"></div>
+			<span class="acc_info"><span id="acc_info_name"></span><span id="acc_info_elo"></span></span>
+			<a href="/hub" class="profile_link" id="hub_link">Game history</a>
+			<a href="#" class="profile_link" id="log_out">Log out</a>
+		</div>
+	</div>
+
+	<div id="hector">
+		<h1 id="logo"><a href="/" style="font-size: 14px; font-weight: 500; color: rgba(255, 255, 255, 0.86);">yare</a></h1>
+		<div class="menu">
+			<a href="/newgame" class="menu_link new_g" id="new_g">New game</a>
+			<div class="menu_line desktop_only"></div>
+			<div class="menu_link new_acc" id="new_account">New account</div>
+			<div class="menu_link" id="login">Log in</div>
+			<div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
+		</div>
+	</div>
+
+	<div id="overlay"></div>
+
+	<div id="doc_content">
+
+		<div class="spacer-l"></div>
+
+		<h1 class="doc_h1">Kill all enemy cats to win. With JavaScript or Python.</h1>
+
+		<div class="spacer-l"></div>
+
+		<p class="desc">You control 9 cats via two methods: move() and pew(). The map has barricades (collision obstacles) and pods (areas where you can replenish energy). There is a death_circle that slowly shrinks, forcing cats to engage in a fight.</p>
+
+		<p class="desc">Energy is the only resource of the game. You attack and defend yourself with it &ndash; see details below.</p>
+
+		<div class="spacer-l"></div>
+
 		
-		
-		  
-		<div class="sep_medium"></div>
-		<section id="doc_energy">
-		  <h2 class="h_sec_head">Energy</h2>
-		  <p class="p_sec_intro">Energy is the only resource in the game. Spirits harvest it from the stars, use it to create new spirits, transfer energy between themselves and attack with it.</p>
-		  <div class="sep_medium"></div>
-		  <p class="p_intro">Stars are the source of energy. <span class="lowlight">Every tick (1 tick = 500ms), a star generates 2 energy + 2% of its current energy (rounded to a nearest integer). Except for <code>star_nua</code> that generates 3 energy + 3%.</span></p>
-			  
-		  <div class="star_ilu">
-		  	<div class="star_large"></div>
-			<div class="star_shadow"></div>
-			<div class="star_small"></div>
-		  </div>
-		  
-		  <div class="sep_small"></div>
-		  <h4 class="doc_h4">Star properties</h4>
-		  <div class="sep_small"></div>
-		  
-		  <div class="table_doc">
-				<div class="row_in_doc_head">
-					<span class="table_doc_property">Property</span>
-					<span class="table_doc_type">Type</span>
-					<span class="table_doc_value">Value</span>
-				</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">id</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“star_zxq“, “star_a2c”, "star_p89" and "star_nua"</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">structure_type</span>
-					<span class="table_doc_type">string</span>
-					<span class="table_doc_value">“star“</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">star's current energy</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">energy_capacity</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">1000 (3000 for star_nua)</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">regeneration</span>
-					<span class="table_doc_type">number</span>
-					<span class="table_doc_value">Star's regeneration rate</span>
-				</div>
-			</div>
-		  	<div class="row_doc">
-				<div class="row_in_doc">
-					<span class="table_doc_property">position</span>
-					<span class="table_doc_type">array</span>
-					<span class="table_doc_value">[x, y] coordinates</span>
-				</div>
-			</div>
-		  </div>
-		  
-		  <div class="sep_medium"></div>
-		  
-		  <p class="p_normal">All “movement” of energy in the game is done via the energize(<span class="lowlight">target</span>) method. See the <a href="#methods_ent">Spirit methods</a> section.</p>
-		  
-		  <div class="sep_medium"></div>
-		  <p class="p_somewhat_important" style="max-width: max-content;"><span class="highlight">Energy fragments</span></p>
-		  <p class="p_normal">Energizing a location (e.g. <code>spirit.energize([450, 500])</code>) will create an energy fragment at that point. Fragments can then be harvested by any player in the same way as stars (spirit energizing itself). If a spirit can harvest from a star or from a fragment, it will prioritize the fragment.</p>
-		  
-		  
-		  
-		  
-		  
-		</section>
-		  
+		<img src="asset/game_map.png" alt="Game map" style="width: 100%; max-width: 700px; border-radius: 12px; margin-top: 0px;">
+
+		<div class="spacer-l"></div>
+
+		<p class="semi-headline" style='max-width: 400px;'>Apart from cats, there are two other objects on the map. <span class="text-bright">Barricades and Pods</span>:</p>
+
+		<table>
+			<thead>
+				<tr>
+					<th class="col-var">Variable</th>
+					<th class="col-type">Type</th>
+					<th class="col-desc">Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="cell-primary">barricades</td>
+					<td class="cell-secondary">array</td>
+					<td class="cell-secondary col-last"><strong>Array of [x, y] coordinates of the barricade's center.</strong> Barricade is an obstacle with a radius 100 units from its center that cats have to walk around.</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">pods</td>
+					<td class="cell-secondary">array</td>
+					<td class="cell-secondary col-last"><strong>Array of [x, y] coordinates of the pod's center.</strong> Pod is an area of 40x40 unit. Any cat inside this area gets 1 energy per tick.</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="spacer-xl"></div>
+
+		<p class="semi-headline">Game's global variables:</p>
+
+		<table>
+			<thead>
+				<tr>
+					<th class="col-var">Variable</th>
+					<th class="col-type">Type</th>
+					<th class="col-desc">Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="cell-primary">memory</td>
+					<td class="cell-secondary">object</td>
+					<td class="cell-secondary col-last">Empty object. Use it to store values across ticks.</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">my_cats</td>
+					<td class="cell-secondary">array</td>
+					<td class="cell-secondary col-last">Array of your units (all, even dead ones)</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">cats</td>
+					<td class="cell-secondary">object</td>
+					<td class="cell-secondary col-last">Object containing all cat objects in the game</td>
+				</tr>
+			<tr>
+				<td class="cell-primary">tick</td>
+				<td class="cell-secondary">number</td>
+				<td class="cell-secondary col-last">Current game tick (e.g. 75). 1 tick = 500ms</td>
+			</tr>
+			<tr>
+				<td class="cell-primary">death_circle</td>
+				<td class="cell-secondary">number</td>
+				<td class="cell-secondary col-last">Shrinking circle centered on the map. Cats outside it lose 1 energy per tick. Starts at 1200 radius, shrinks by 2/tick, stops at 50.</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<div class="spacer-xl"></div>
+
+		<p class="semi-headline"><span class="text-bright">Cats are the game's units.</span> These are their properties:</p>
+
+		<table>
+			<thead>
+				<tr>
+					<th class="col-var">Variable</th>
+					<th class="col-type">Type</th>
+					<th class="col-desc">Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="cell-primary">id</td>
+					<td class="cell-secondary">string</td>
+					<td class="cell-secondary col-last">username + _ + number. E.g. 'jane_7'</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">position</td>
+					<td class="cell-secondary">array</td>
+					<td class="cell-secondary col-last">cat's [x, y] coordinates, e.g. [750, 900]</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">energy_capacity</td>
+					<td class="cell-secondary">number</td>
+					<td class="cell-secondary col-last">10</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">energy</td>
+					<td class="cell-secondary">number</td>
+					<td class="cell-secondary col-last">current energy (starts at 10)</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">hp</td>
+					<td class="cell-secondary">number</td>
+					<td class="cell-secondary col-last">1 when alive, 0 when dead</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">mark</td>
+					<td class="cell-secondary">string</td>
+					<td class="cell-secondary col-last">custom label assignable via set_mark()</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">last_pewed</td>
+					<td class="cell-secondary">string</td>
+					<td class="cell-secondary col-last">id of the last pewed target</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">player_id</td>
+					<td class="cell-secondary">string</td>
+					<td class="cell-secondary col-last">username of the owner</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">sight</td>
+					<td class="cell-secondary">object</td>
+					<td class="cell-secondary col-last"><span id="sight_toggle" class="sight-toggle">show example</span></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div id="sight_example" class="sight-example">
+<pre>my_cats[1].sight = {
+  friends: ['jane_2', 'jane_3', 'jane_4'],
+  enemies: ['karl_4'],
+  friends_pewable: ['jane_2'],
+  enemies_pewable: []
+}</pre>
+			<p>There are 3 friendly and 1 enemy cat within sight range. 1 friendly cat is within pew() distance.</p>
+		</div>
+
+		<div class="spacer-l"></div>
+
+		<p class="semi-headline">And the <span class="text-bright">available methods:</span></p>
+
+		<table>
+			<thead>
+				<tr>
+					<th class="col-method">Method</th>
+					<th class="col-arg">Argument</th>
+					<th class="col-example">Example</th>
+				</tr>
+			</thead>
+			<tbody>
+			<tr class="no-border-bottom">
+				<td class="cell-primary">move(<span class="arg">target</span>)</td>
+				<td class="cell-secondary"><span class="arg">target</span> is [x, y] array</td>
+				<td class="cell-code col-last">my_cats[0].move([100,100])</td>
+			</tr>
+			<tr class="method-detail-row">
+				<td colspan="3">
+					<p>Cats move by max. 20 units per tick</p>
+				</td>
+			</tr>
+		<tr class="no-border-bottom">
+			<td class="cell-primary">pew(<span class="arg">target</span>)</td>
+			<td class="cell-secondary"><span class="arg">target</span> is a cat object within 200 units</td>
+			<td class="cell-code col-last">my_cats[0].pew(cats['jane_7'])</td>
+		</tr>
+			<tr class="pew-detail-row">
+				<td colspan="3">
+					<p>Costs 1 energy per tick. When an enemy cat is hit, it loses 2 energy. When a friendly cat is hit, it restores 1 energy.</p>
+					<p class="pew-highlight">If there are other enemy cats within 20 units radius of the target, they are hit as well <span class="pew-highlight-dim">(all lose 2 energy per tick)</span></p>
+				</td>
+			</tr>
+			<tr class="double-border-row">
+				<td class="cell-primary">shout(<span class="arg">message</span>)</td>
+					<td class="cell-secondary">message max 20 characters</td>
+					<td class="cell-code col-last">my_cats[0].shout('meow')</td>
+				</tr>
+				<tr>
+					<td class="cell-primary">set_mark(<span class="arg">label</span>)</td>
+					<td class="cell-secondary">label max 60 characters</td>
+					<td class="cell-code col-last">my_cats[0].set_mark('purring')</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<p class='desc_small'>This is also the order of operations. Cats first move, then pew (within the cycle of one tick)</p>
+
+		<div class="spacer-xl"></div>
+
 		<section id="doc_credits">
-		  <h2 class="h_sec_head">Credits</h2>
-		   <p class="p_sec_intro">Author: <a href="http://ries.cz">Vilem Ries</a></p>
-		   <p class="p_sec_intro">Key contributors: <a href="https://github.com/andyleap">Vendan</a>, <a href="https://mobile.twitter.com/mcudrc">jm</a> and <a href="http://swz.works">swz</a>
-		   <div class="sep_large"></div>
-		   <div class="sep_large"></div>
-		   <div class="sep_large"></div>
+			<p class="semi-headline"><span class="text-bright">Credits</span></p>
+			<p class="desc">Author: <a href="http://ries.cz">Vilem Ries</a></p>
+			<p class="desc">Key contributors: <a href="https://github.com/andyleap">Vendan</a>, <a href="https://mobile.twitter.com/mcudrc">jm</a> and <a href="http://swz.works">swz</a></p>
 		</section>
-	  
-	  
-  	  </div>
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-		
-		
-		
-	  
-	  
-	  
+
+		<div class="spacer-xl"></div>
+
+	</div>
+
+	<script>
+	document.getElementById('sight_toggle').addEventListener('click', function() {
+		var ex = document.getElementById('sight_example');
+		var isOpen = ex.classList.toggle('open');
+		this.textContent = isOpen ? 'hide example' : 'show example';
+	});
+	</script>
+
+	<script src="./basics.js"></script>
+
   </body>
-  <script src="./animations.js"></script>
-  <script>
-	  var prevActive;
-	  var currentActive;
-	  
-	  function getCookie(name){
-	      var nameEQ = name + "=";
-	      var ca = document.cookie.split(';');
-	      for(var i=0;i < ca.length;i++) {
-	          var c = ca[i];
-	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
-	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	      }
-	      return null;
-	  }
-	  
-	  function eraseCookie(name){   
-	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-	  }
-	  
-	  function updateActive(elid){
-		  //console.log(elid)
-		  var sec_links = document.getElementsByClassName('doc_sec_link');
-		  for (i = 0; i < sec_links.length; i++){
-			  sec_links[i].classList.remove('doc_sec_active');
-		  }
-		  
-		  switch (elid){
-			  case 'doc_intro':
-				  document.getElementById('doc_sec_link_intro').classList.add('doc_sec_active');
-				  break;
-			  case 'doc_spirit':
-				  document.getElementById('doc_sec_link_spirit').classList.add('doc_sec_active');
-				  break;
-			  case 'doc_base':
-				  document.getElementById('doc_sec_link_base').classList.add('doc_sec_active');
-				  break;
-			  case 'doc_outpost':
-				  document.getElementById('doc_sec_link_outpost').classList.add('doc_sec_active');
-				  break;
-			  case 'doc_energy':
-				  document.getElementById('doc_sec_link_energy').classList.add('doc_sec_active');
-				  break;
-			  case 'doc_credits':
-				  document.getElementById('doc_sec_link_credits').classList.add('doc_sec_active');
-				  break;
-		  }
-		  
-	  }
-	  
-	  
-	  function isElementInViewport2 (el){
-
-	      var rect = el.getBoundingClientRect();
-
-	      return (
-	          rect.top >= 0 &&
-	          rect.bottom <= (window.innerHeight/2 || document.documentElement.clientHeight/2) /* or $(window).height() */
-	      );
-	  }
-	  
-	  function isElementInViewport (el, percentVisible) {
-	    let
-	      rect = el.getBoundingClientRect(),
-	      windowHeight = (window.innerHeight || document.documentElement.clientHeight);
-
-	    return !(
-	      Math.floor(100 - (((rect.top >= 0 ? 0 : rect.top) / +-rect.height) * 100)) < percentVisible ||
-	      Math.floor(100 - ((rect.bottom - windowHeight) / rect.height) * 100) < percentVisible
-	    )
-	  };
-	  
-	  function activeSection(){
-	      /* Your code go here */
-		  if (isElementInViewport(doc_intro_el, 36)) currentActive = doc_intro_el;
-		  if (isElementInViewport(doc_spirit_el, 36)) currentActive = doc_spirit_el;
-		  if (isElementInViewport(doc_base_el, 36)) currentActive = doc_base_el;
-		  if (isElementInViewport(doc_outpost_el, 36)) currentActive = doc_outpost_el;
-		  if (isElementInViewport(doc_energy_el, 36)) currentActive = doc_energy_el;
-		  if (isElementInViewport(doc_credits_el, 36)) currentActive = doc_credits_el;
-		  
-		  if (currentActive != prevActive){
-			  prevActive = currentActive;
-			  updateActive(currentActive.id)
-		  }
-		  //console.clear();
-		  //console.log(isElementInViewport2(doc_intro_el, 50));
-		  //console.log(isElementInViewport2(doc_spirit_el, 50));
-		  //console.log(isElementInViewport2(doc_base_el, 50));
-		  
-	  }
-	  
-	  var doc_intro_el = document.getElementById('doc_intro');
-	  var doc_spirit_el = document.getElementById('doc_spirit');
-	  var doc_base_el = document.getElementById('doc_base');
-	  var doc_outpost_el = document.getElementById('doc_outpost');
-	  var doc_energy_el = document.getElementById('doc_energy');
-	  var doc_credits_el = document.getElementById('doc_credits');
-	  
-	  
-	  addEventListener('DOMContentLoaded', activeSection, false);
-	  addEventListener('load', activeSection, false);
-	  addEventListener('scroll', activeSection, false);
-	  
-	  
-	  
-	  function doc_show_info(e){
-		  //console.log(this.id);
-		  //console.log(this.getBoundingClientRect());
-		  //console.log(Math.round(this.getBoundingClientRect().top) + window.scrollY);
-		  //console.log(window.scrollY);
-		  
-		  show_info_snippet(this.id, Math.round(this.getBoundingClientRect().left), Math.round(this.getBoundingClientRect().top) + window.scrollY)
-	  }
-	  
-	  function doc_hide_info(e){
-		  //console.log(this.id);
-		  hide_info_snippet();
-	  }
-	  
-	  function expanding_row(e){
-		  console.log(this.id);
-		  switch (this.id){
-		  case 'expand_for_move':
-			  expand_documentation('exp_move_method', this.id)
-			  break;
-		  case 'expand_for_energize':
-			  expand_documentation('exp_energize_method', this.id)
-			  break;
-		  case 'expand_for_merge':
-			  expand_documentation('exp_merge_method', this.id)
-			  break;
-		  case 'expand_for_divide':
-			  expand_documentation('exp_divide_method', this.id)
-			  break;
-		  case 'expand_for_lock':
-			  expand_documentation('exp_lock_method', this.id)
-			  break;
-		  case 'expand_for_unlock':
-			  expand_documentation('exp_unlock_method', this.id)
-			  break;
-		  case 'expand_for_jump':
-			  expand_documentation('exp_jump_method', this.id)
-			  break;
-		  case 'expand_for_explode':
-			  expand_documentation('exp_explode_method', this.id)
-			  break;
-		  case 'expand_for_mark':
-			  expand_documentation('exp_mark_method', this.id)
-			  break;
-		  case 'expand_for_shout':
-			  expand_documentation('exp_shout_method', this.id)
-			  break;
-		  }
-		  
-	  }
-	  
-  
-  	  
-	  var expandos_info = document.getElementsByClassName('expando_info');
-	  for (i = 0; i < expandos_info.length; i++){
-		  expandos_info[i].addEventListener('mouseover', doc_show_info, false);
-		  expandos_info[i].addEventListener('mouseleave', doc_hide_info, false);
-	  }
-  
-  	  var expandos = document.getElementsByClassName('expando_more');
-	  for (i = 0; i < expandos.length; i++){
-		  expandos[i].addEventListener('click', expanding_row, false);
-	  }
-	  
-	  document.getElementById('mechanics_button').addEventListener('click', show_mechanics, false);
-	  document.getElementById('mechanics_close_btn').addEventListener('click', hide_mechanics, false);
-  
-  
-  </script>
-  
-  <script src="./basics.js"></script>
-  <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
-  </html>
+</html>

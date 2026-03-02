@@ -1,7 +1,6 @@
 function module_edit_mode_on(m, mod_id = 0){
     //e = e || window.event;
     //let el = (e.target || e.srcElement);
-	//console.log('edit div id = ' + el.id);
 	
 	
 	document.getElementById('module_edit_mode').style.top = '0vh';
@@ -20,7 +19,6 @@ function module_edit_mode_on(m, mod_id = 0){
 		document.getElementById('update_module_btn').style.display = 'block';
 		document.getElementById('module_name_input').value = modules_local['mod_' + mod_id].name;
 		currently_editing = mod_id;
-		console.log('editing module ' + mod_id);
 	}
 	
 	anime({
@@ -243,17 +241,12 @@ function dismissals(){
 			collapse_bot_selection();
 		}
 	} catch (e){
-		//console.log('whatever');
 	}
 	
 	module_edit_mode_off();
 	
 	set_lang();
 	
-	if (something_changed == 1) {
-		something_changed = 0;
-		set_active_modules();
-	}
 	
 	
 	try {
@@ -423,7 +416,7 @@ function new_account(){
 	try {
 		if (from_nongame) temp_from_nongame = 1;
 	} catch (e){
-		console.log(e)
+		console.error(e)
 	}
 	
 	
@@ -468,7 +461,7 @@ function login(){
 	try {
 		if (from_nongame) temp_from_nongame = 1;
 	} catch (e){
-		console.log(e)
+		console.error(e)
 	}
 	
 	document.getElementById("user_name").focus();
@@ -599,25 +592,21 @@ function un_error(){
 }
 
 function login_success(user_name){
-	//console.log('login success');
-	
 	try {
 		document.getElementById('new_account').style.display = 'none';	
 		document.getElementById('login').style.display = 'none';
 	} catch (error) {
-	  //console.error(error);
 	}
 	
 	try {
 		document.getElementById('new_g').style.display = 'block';
 	} catch (error){
-		console.log(error);
+		console.error(error);
 	}
 	
 	document.getElementById('the_name').innerHTML = user_name;
 	document.getElementById('acc_info_name').innerHTML = user_name + ' · ';
 	document.getElementById('signed_in').style.display = 'block';
-	//console.log('iodsjfoidsjf');
 	
 	if (account_creation == 1){
 		dismissals();
@@ -637,15 +626,8 @@ function login_success(user_name){
 		});
 	}
 	
-	try {
+	if (typeof game_window_setup === 'function') {
 		game_window_setup();
-		setTimeout(function(){
-	  		
-		}, 600);
-		
-		//if (temp_from_nongame) window.location = 'https://yare.io/hub';
-	} catch (e){
-		console.log(e);
 	}
 	
 	
@@ -654,7 +636,6 @@ function login_success(user_name){
 			 //window.location = './';
 		}
 	} catch (error) {
-	  //console.error(error);
 	}
 	
 	//document.getElementById('input').blur();
@@ -729,7 +710,6 @@ function logout() {
 }
 
 function user_links(){
-	//console.log('userlinko !!!!!');
 	anime({
 		targets: '#profile_links',
 		//translateY: [0, 10],
@@ -755,7 +735,6 @@ function resizing(){
 	try {
 		new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
 	} catch (error) {
-	  //console.error(error);
 	}
 	
 }
@@ -1202,7 +1181,6 @@ function dont_resign(){
 
 
 function expand_bot_selection(){
-	console.log('connected');
 	bot_sel_open = 1;
 	
 	document.getElementById('bot_selection_wrap').style.display = 'block';
@@ -1297,8 +1275,6 @@ function collapse_bot_selection(){
 
 
 function update_console_height(hght){
-	//console.log('was triggered');
-	//console.log(hght);
 	if (hght == 0){
 		hght = 20;
 	}
@@ -1587,32 +1563,24 @@ function show_hover(){
 }
 
 function show_info_snippet(elid, leftPos, topPos){
-	console.log(elid)
 	var info_el = document.getElementById("info_box");
 	var info_content = document.getElementById("info_box_content");
 	var el_height = 0;
 	var el_width = 0;
 	switch (elid){
-		case "info_spirit_size":
-			info_content.innerHTML = "<span class='g_con'><span class='ico_circle'></span> Circles</span><div class='sep_mini'></div><table class='info_table'><tr><td>1</td><td>Default size</td></tr><tr><td>100</td><td>Max size (100 spirits merged together)</td></tr></table><div class='sep_mini'></div><div class='sep_small'></div>";
+		case "info_cat_size":
 			break;
-		case "info_spirit_energy_capacity":
+		case "info_cat_energy_capacity":
 			info_content.innerHTML = "<p class='p_normal'>energy_capacity = 10 × size</p><div class='sep_mini'></div>";
 			break;
-		case "info_spirit_sight":
-			info_content.innerHTML = "<pre class='code_sample'>my_spirits[1].sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>structures:</span> [‘star_zxq’],&#10;  <span class='lowlight'>friends_beamable:</span> [‘jane2’],&#10;  <span class='lowlight'>enemies_beamable:</span> []&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy spirit and a star within 400 radius around the spirit. 1 friendly spirit is within <code>energize()</code> distance</p>			<pre class='code_sample'>my_spirits[1].sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
+		case "info_cat_sight":
+			info_content.innerHTML = "<pre class='code_sample'>my_cats[1].sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>friends_pewable:</span> [‘jane2’],&#10;  <span class='lowlight'>enemies_pewable:</span> []&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy cat within 400 radius around the cat. 1 friendly cat is within <code>pew()</code> distance</p>			<pre class='code_sample'>my_cats[1].sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
 			break;
 		case "info_base_sight":
-			info_content.innerHTML = "<pre class='code_sample'>base.sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’],&#10;  <span class='lowlight'>enemies:</span> [‘karl4’],&#10;  <span class='lowlight'>structures:</span> []&#10;}</pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly and 1 enemy spirit within 400 radius around the base</p>			<pre class='code_sample'>base.sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'karl4'</pre>			<div class='sep_medium'></div>";
-			break;
-		case "info_outpost_sight":
-			info_content.innerHTML = "<pre class='code_sample'>outpost.sight = &#10;{&#10;  <span class='lowlight'>enemies:</span> [‘jane2’, ‘jane3’, ‘jane4’]&#10;}<span class='lowlight'></pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 enemy spirits within outpost's range</p>			<pre class='code_sample'>outpost.sight.enemies[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'jane2'</pre>			<div class='sep_medium'></div>";
-			break;
-		case "info_pylon_sight":
-			info_content.innerHTML = "<pre class='code_sample'>pylon.sight = &#10;{&#10;  <span class='lowlight'>friends:</span> [‘jane2’, ‘jane3’, ‘jane4’]&#10;}<span class='lowlight'></pre>			<div class='sep_small'></div>			<p class='p_normal' style='width: 400px; line-height: 26px'>there are 3 friendly spirits within pylon's sight (not range)</p>			<pre class='code_sample'>pylon.sight.friends[0];</pre>			<pre class='code_sample'><span class='lowlight'>output:</span> 'jane2'</pre>			<div class='sep_medium'></div>";
+			info_content.innerHTML = "";
 			break;
 		case "info_birth":
-			info_content.innerHTML = "<span class='g_con'><span class='ico_circle'></span> Circles new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–50 spirits</td><td>25 energy</td></tr><tr><td>51–100</td><td>50 energy</td></tr><tr><td>101–200</td><td>90 energy</td></tr><tr><td>201+</td><td>150 energy</td></tr></table><div class='sep_small'></div><span class='g_con'><span class='ico_square'></span> Squares new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–10 spirits</td><td>360 energy</td></tr><tr><td>11–16 spirits</td><td>500 energy</td></tr><tr><td>17+ spirits</td><td>700 energy</td></tr></table><div class='sep_small'></div><span class='g_con'><span class='ico_triangle'></span> Triangles new spirit cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–30 spirits</td><td>90 energy</td></tr><tr><td>31-120 spirits</td><td>160 energy</td></tr><tr><td>121+ spirits</td><td>300 energy</td></tr></table><div class='sep_mini'></div><div class='sep_small'></div>";
+			info_content.innerHTML = "<span class='g_con'><span class='ico_triangle'></span> Triangles new cat cost</span><div class='sep_mini'></div><table class='info_table'><tr><td>1–30 cats</td><td>90 energy</td></tr><tr><td>31-120 cats</td><td>160 energy</td></tr><tr><td>121+ cats</td><td>300 energy</td></tr></table><div class='sep_mini'></div><div class='sep_small'></div>";
 			break;
 	}
 	
@@ -1655,7 +1623,6 @@ function expand_documentation(elid, rotator){
 	
 	
 	if (exp_row.classList.contains("row_expanded")){
-		console.log('collapsing');
 		exp_row.classList.remove('row_expanded');
 		anime({
 	  		targets: '#' + elid,
@@ -1676,7 +1643,6 @@ function expand_documentation(elid, rotator){
 	  		duration: 200
 		});
 	} else {
-		console.log('expanding')
 		exp_row.classList.add('row_expanded');
 		anime({
 	  		targets: '#' + elid,
@@ -1697,8 +1663,6 @@ function expand_documentation(elid, rotator){
 	  		duration: 200
 		});
 	}
-	
-	console.log(exp_el.height);
 	
 }
 
@@ -1844,7 +1808,6 @@ try {
 	var new_acc_pos = document.getElementById('new_account').getBoundingClientRect();
 	var login_pos = document.getElementById('login').getBoundingClientRect();
 } catch (error) {
-  //console.error(error);
 }
 
 //var new_acc_rect = document.getElementById('new_account').getBoundingClientRect();
@@ -1864,7 +1827,6 @@ try {
 	document.getElementById('login').addEventListener('click', login, false);
 	
 } catch (error) {
-  //console.error(error);
 }
 
 try {
@@ -1876,7 +1838,6 @@ try {
 try {
 	document.getElementById('log_out').addEventListener('click', logout, false);
 } catch (error) {
-  //console.error(error);
 }
 
 
@@ -1887,7 +1848,6 @@ try {
 	document.getElementById('over_new_account').addEventListener('click', new_account, false);
 	document.getElementById('over_login').addEventListener('click', login, false);
 } catch (error) {
-  //console.error(error);
 }
 
 

@@ -19,8 +19,6 @@ const game_schema = new Schema({
 	server: String,
 	p1_session_id: String,
 	p2_session_id: String,
-	p1_shape: String,
-	p2_shape: String,
 	p1_color: String,
 	p2_color: String,
 	p1_rating: Number,

@@ -5,8 +5,6 @@
 	<style>
 	</style>
 	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="/colors.css">
 	<link rel="stylesheet" href="/style.css">
   </head>
@@ -17,15 +15,8 @@
 		<div id="tr_loader"></div>
 	</div>
 	  
-	  
-	  
   </body>
-  
-  
-  
-  
-  
-  
+
   <script>
 	  
 	  function getCookie(name) {
@@ -39,14 +30,9 @@
 	      return null;
 	  }
 	  
-	  
-	  console.log('pathname');
-	  console.log(window.location.pathname); 
 	  var pathParts = (window.location.pathname).split('/');
 	  var g_id = pathParts[pathParts.length - 1];
 	  var this_server = pathParts[pathParts.length - 2];
-	  console.log(this_server);
-	  console.log(g_id);
 	  
 	fetch('/' + this_server + 's/' + g_id, {
 	        method: "POST",
@@ -61,22 +47,17 @@
 
     }).then(response => response.json())
       .then(response => {
-		  console.log(response);
 		  if (response.data == 'does not exist'){
-		  	console.log('Game does not exist')
+		  	document.getElementById('load_para').innerHTML = 'Game does not exist';
 		  } else if (response.data == 'game ready'){
-			  console.log('game is ready');
 			  setTimeout(function(){ window.location.href = '../' + response.server + '/' + g_id }, 200);
 		  } else if (response.data == 'game already active'){
-			  console.log('game is already active, redirect to it');
 			  window.location.href = '../' + response.server + '/' + g_id;
-		  } else {
-		  	  console.log('something is wrong');
 		  }
 	  })
-	  .catch(error => {		
-		  console.log(error);
-			window.location.reload()
+	  .catch(error => {
+		  console.error(error);
+		  window.location.reload()
 	  })
   </script>
 </html>

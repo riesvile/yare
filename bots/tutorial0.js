@@ -1,11 +1,7 @@
 
-my_spirits[0].move(star_a1c.position);
-my_spirits[0].energize(my_spirits[0]);
-if (my_spirits[0].energy == my_spirits[0].energy_capacity) {
-    my_spirits[0].move(base.position)
-    my_spirits[0].energize(base);
-}
+my_cats[0].move(barricade_b.position);
+my_cats[0].pew(my_cats[0]);
 
-if (spirits['anonymous_2'].energy == 0){
-    my_spirits[1].move(enemy_base.position);
+if (cats['anonymous_2'].energy == 0){
+    my_cats[1].move(cats['anonymous_2'].position);
 }

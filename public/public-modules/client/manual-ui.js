@@ -7,8 +7,8 @@ let manual_css = " .ico_man_bolt {background: url(../asset/ico_manui_bolt.png);b
 document.head.insertAdjacentHTML("beforeend", "<style>" + manual_css + "</style>");
 
 
-let manual_html = "<div id='man_ui_module'> <div id='man_protection_gradient_soft'></div><p id='tut_help_selection_desktop' class='tut_text'>Hold <span class='keyboard_btn'>CTRL</span> and move mouse to select units</p><p id='tut_help_selection_mobile' class='tut_text'>Tap on units to select them</p><p id='tut_help_move_desktop' class='tut_text'><span class='keyboard_btn'>RIGHT-CLICK</span> to move</p><p id='tut_help_move_mobile' class='tut_text'>Tap anywhere to move</p><p id='tut_help_attack_desktop' class='tut_text'>Attack enemy when you have enough units. Good luck!</p><div id='man_ui_wrap'> <div id='man_select_count' class='man_square_btn'> <div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div><span id='man_f1'>9</span> <div id='man_select_slider_expand'><div id='man_select_slider_expand_val'></div></div><div id='man_select_slider_val'><span id='man_count_current'>8</span></div><div id='man_select_slider_lbls'> <span id='man_count_max'>9</span> <span id='man_count_half'>5</span> <span id='man_count_one'>1</span> </div></div><div id='man_action_group1'> <div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p><p id='tut_help_harv'>Get energy from star to base<span id='tut_arrow' class='ico_right_arrow'></span></p></div><div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div><div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div><div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div><div id='man_action_special_unlock' class='man_square_btn'><span class='ico_man_unlock'></span><p class='btn_label'>unlock</p></div><div id='man_action_special_explode' class='man_square_btn'><span class='ico_man_explode'></span><p class='btn_label'>explode</p></div><div id='man_action_special_jump' class='man_square_btn'><span class='ico_man_jump'></span><p class='btn_label'>jump</p></div></div><div id='man_action_group2'> <div id='man_action_group_behaviour' class='man_square_btn'><span class='ico_man_chip'></span><p class='btn_label'>behaviour</p></div></div><div id='man_action_done' class='man_square_btn'><span class='ico_man_done'></span></div></div>" 
-+ "<div id='man_protection_full_sliding'></div><div id='man_protection_full'><div id='man_protection_gradient'></div></div><div id='man_layer2'> <h3 class='man_head3'>Attitude towards enemies</h3> <div class='man_layer_section' id='man_attitude'> <div id='man_attitude_chase' class='man_layer_option man_option_right'>Chase</div><div id='man_attitude_keepdist' class='man_layer_option man_option_mid man_option_active'>Keep distance</div><div id='man_attitude_nothing' class='man_layer_option man_option_left'>Nothing</div></div><div id='man_attitude_jump' class='man_layer_option man_option_secondary'>Use jump to stay out of range</div><div class='sep_medium'></div><h3 class='man_head3'>Energize enemy targets</h3> <div class='man_layer_section' id='man_targets'> <div id='man_targetting_lowest' class='man_layer_option man_option_right'>Lowest energy</div><div id='man_targetting_nearest' class='man_layer_option man_option_mid'>Nearest</div><div id='man_targetting_nothing' class='man_layer_option man_option_left man_option_active'>Nothing</div></div><div class='sep_medium'></div><h3 class='man_head3'>Move priority</h3> <div class='man_layer_section' id='man_priority'> <div id='man_priority_attitude' class='man_layer_option man_option_right'>Attitude setting</div><div id='man_priority_manual' class='man_layer_option man_option_left man_option_active'>Touch/Mouse</div></div><p class='man_layer_section_desc'>Manual actions overwrite 'Keep distance' attitude</p></div><div id='man_layer2_base'> <h3 class='man_head3'>Newborn's behaviour</h3> <div class='man_layer_section' id='man_newborn'> <div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest star</div><div id='man_newborn_goto' class='man_layer_option man_option_left'>Go to position</div></div><div id='man_newborn_where' class='man_layer_option man_option_secondary'>Choose point on board</div></div><h2 class='man_head2' id='man_newborn_point'>Choose point for newborn spirits</h2> <div id='man_layer3'> <div id='man_energize_pairing'> <h2 class='man_head2'>Select a <span id='e_pair_star'>star</span> and <span id='e_pair_structure'>structure</span></h2> <div id='man_action_ui_close' class='man_square_btn'><span class='ico_man_close'></span></div></div></div></div>";
+let manual_html = "<div id='man_ui_module'> <div id='man_protection_gradient_soft'></div><p id='tut_help_selection_desktop' class='tut_text'>Hold <span class='keyboard_btn'>CTRL</span> and move mouse to select units</p><p id='tut_help_selection_mobile' class='tut_text'>Tap on units to select them</p><p id='tut_help_move_desktop' class='tut_text'><span class='keyboard_btn'>RIGHT-CLICK</span> to move</p><p id='tut_help_move_mobile' class='tut_text'>Tap anywhere to move</p><p id='tut_help_attack_desktop' class='tut_text'>Attack enemy when you have enough units. Good luck!</p><div id='man_ui_wrap'> <div id='man_select_count' class='man_square_btn'> <div id='man_select_count_swap' class='man_square_btn'><span id='man_f2'>2</span></div><span id='man_f1'>9</span> <div id='man_select_slider_expand'><div id='man_select_slider_expand_val'></div></div><div id='man_select_slider_val'><span id='man_count_current'>8</span></div><div id='man_select_slider_lbls'> <span id='man_count_max'>9</span> <span id='man_count_half'>5</span> <span id='man_count_one'>1</span> </div></div><div id='man_action_group1'> <div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p><p id='tut_help_harv'>Get energy from barricade to base<span id='tut_arrow' class='ico_right_arrow'></span></p></div><div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div><div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div><div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div><div id='man_action_special_unlock' class='man_square_btn'><span class='ico_man_unlock'></span><p class='btn_label'>unlock</p></div><div id='man_action_special_explode' class='man_square_btn'><span class='ico_man_explode'></span><p class='btn_label'>explode</p></div><div id='man_action_special_jump' class='man_square_btn'><span class='ico_man_jump'></span><p class='btn_label'>jump</p></div></div><div id='man_action_group2'> <div id='man_action_group_behaviour' class='man_square_btn'><span class='ico_man_chip'></span><p class='btn_label'>behaviour</p></div></div><div id='man_action_done' class='man_square_btn'><span class='ico_man_done'></span></div></div>" 
++ "<div id='man_protection_full_sliding'></div><div id='man_protection_full'><div id='man_protection_gradient'></div></div><div id='man_layer2'> <h3 class='man_head3'>Attitude towards enemies</h3> <div class='man_layer_section' id='man_attitude'> <div id='man_attitude_chase' class='man_layer_option man_option_right'>Chase</div><div id='man_attitude_keepdist' class='man_layer_option man_option_mid man_option_active'>Keep distance</div><div id='man_attitude_nothing' class='man_layer_option man_option_left'>Nothing</div></div><div id='man_attitude_jump' class='man_layer_option man_option_secondary'>Use jump to stay out of range</div><div class='sep_medium'></div><h3 class='man_head3'>Pew enemy targets</h3> <div class='man_layer_section' id='man_targets'> <div id='man_targetting_lowest' class='man_layer_option man_option_right'>Lowest energy</div><div id='man_targetting_nearest' class='man_layer_option man_option_mid'>Nearest</div><div id='man_targetting_nothing' class='man_layer_option man_option_left man_option_active'>Nothing</div></div><div class='sep_medium'></div><h3 class='man_head3'>Move priority</h3> <div class='man_layer_section' id='man_priority'> <div id='man_priority_attitude' class='man_layer_option man_option_right'>Attitude setting</div><div id='man_priority_manual' class='man_layer_option man_option_left man_option_active'>Touch/Mouse</div></div><p class='man_layer_section_desc'>Manual actions overwrite 'Keep distance' attitude</p></div><div id='man_layer2_base'> <h3 class='man_head3'>Newborn's behaviour</h3> <div class='man_layer_section' id='man_newborn'> <div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest barricade</div><div id='man_newborn_goto' class='man_layer_option man_option_left'>Go to position</div></div><div id='man_newborn_where' class='man_layer_option man_option_secondary'>Choose point on board</div></div><h2 class='man_head2' id='man_newborn_point'>Choose point for newborn cats</h2> <div id='man_layer3'> <div id='man_pew_pairing'> <h2 class='man_head2'>Select a <span id='e_pair_barricade'>barricade</span> and <span id='e_pair_structure'>structure</span></h2> <div id='man_action_ui_close' class='man_square_btn'><span class='ico_man_close'></span></div></div></div></div>";
 document.getElementById("modules_plate").insertAdjacentHTML('beforeend', manual_html);
 
 //
@@ -32,7 +32,7 @@ function man_ui_crossroad(e){
 		show_group_options();
 		break;
 	case 'man_action_harvest':
-		energize_pair_selecting();
+		pew_pair_selecting();
 		break;
 	case 'man_protection_full':
 		if (base_selection){
@@ -42,7 +42,7 @@ function man_ui_crossroad(e){
 		}
 		break;
 	case 'man_action_ui_close':
-		energize_pair_cancelled();
+		pew_pair_cancelled();
 		break;
 	case 'man_action_done':
 		selection_done();
@@ -98,7 +98,7 @@ function man_ui_crossroad(e){
 		break;
 	case 'man_action_special_divide':
 		assign_behaviour(selected_group, 'merge', '');
-		//TODO: update local_memory of mergees (now it's only updating the one big spirit);
+		//TODO: update local_memory of mergees (now it's only updating the one big cat);
 		document.getElementById('man_action_special_merge').style.display = 'block';
 		document.getElementById('man_action_special_divide').style.display = 'none';
 		break;
@@ -123,7 +123,7 @@ function man_ui_crossroad(e){
 	
 }
 
-// mapping values from one scale to another (used for spirit-select slider)
+// mapping values from one scale to another (used for cat-select slider)
 function map_values(the_number, in_min, in_max, out_min, out_max) {
   return (the_number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
@@ -155,20 +155,20 @@ function man_distance_within_square(point1, point2, dist){
 	return (Math.abs(point1[0] - point2[0]) < dist && Math.abs(point1[1] - point2[1]) < dist)
 }
 
-function get_group_center(spirit_group){
+function get_group_center(cat_group){
 	let temp_sum_x = 0;
 	let temp_sum_y = 0;
-	for (let spi of spirit_group){
+	for (let spi of cat_group){
 		temp_sum_x += spi.position[0];
 		temp_sum_y += spi.position[1];
 	}
-	return [Math.round(temp_sum_x/spirit_group.length), Math.round(temp_sum_y/spirit_group.length)]
+	return [Math.round(temp_sum_x/cat_group.length), Math.round(temp_sum_y/cat_group.length)]
 }
 
-function get_closest_spirit_id(spirit_group, the_point){
+function get_closest_cat_id(cat_group, the_point){
 	let spi_closest = '';
 	let spi_distance = 100000000;
-	for (let spi of spirit_group){
+	for (let spi of cat_group){
 		let temp_distance = man_get_distance_fast(spi.position, the_point)
 		if (temp_distance <= spi_distance){
 			spi_distance = temp_distance;
@@ -182,21 +182,13 @@ function get_structure_at_position(pos){
 	let clicked_structure = false;
 	for (let ob in structure_lookup){
 		let structure = structure_lookup[ob];
-		if (man_distance_within_square(pos, structure.position, 20) && structure.structure_type != 'star') clicked_structure = structure.id;
+		if (man_distance_within_square(pos, structure.position, 20) && structure.structure_type != 'barricade') clicked_structure = structure.id;
 	}
 	return clicked_structure;
 }
 
 // ------
 
-function get_shape_buttons(){
-	let wtf_player_num = (players['player1'] == this_player || players['player1'] == 'live-input') ? 1 : 2 // this is really stupid, will rewrite later - used only for getting player's shape
-	this_player_shape = shapes['shape' + wtf_player_num];
-	//this_player_shape = 'squares';
-	//if (this_player_shape == 'circles')	document.getElementById('man_action_special_merge').style.display = 'block';
-	//if (this_player_shape == 'squares')	document.getElementById('man_action_special_lock').style.display = 'block';
-	//if (this_player_shape == 'triangles') document.getElementById('man_action_special_explode').style.display = 'block';
-}
 
 
 
@@ -321,8 +313,8 @@ function newborn_point(){
 	document.getElementById('man_protection_full').style.pointerEvents = 'none';
 }
 
-function energize_pair_selecting(){
-	energize_pair_selection = true;
+function pew_pair_selecting(){
+	pew_pair_selection = true;
 	hide_main_options();
 	anime({
 		targets: '#man_layer3',
@@ -335,11 +327,11 @@ function energize_pair_selecting(){
 	document.getElementById('man_layer3').style.pointerEvents = 'auto';
 }
 
-function energize_pair_cancelled(){
-	energize_pair_selection = false;
-	energize_pair = {
+function pew_pair_cancelled(){
+	pew_pair_selection = false;
+	pew_pair = {
 		structure: '',
-		star: ''
+		barricade: ''
 	}
 	anime({
 		targets: '#man_layer3',
@@ -389,28 +381,9 @@ function update_labels(){
 
 function update_ability_buttons(){
 	document.getElementById('man_action_special_jump').style.display = 'none';
-	if (this_player_shape == 'circles'){
-		if (selected_group.length > 1) document.getElementById('man_action_special_merge').style.display = 'block';
-		let merged_spirit_part_of_selection = false;
-		let moving_spirit_part_of_selection = false;
-		for (let spi of selected_group){
-			if (local_memory['behaviour'][spi.id] == undefined) set_default_behaviour([spi]);
-			if (spi.size > 1 || local_memory['behaviour'][spi.id]['merge'] != '') merged_spirit_part_of_selection = true;
-			if (!man_distance_within_square(local_memory['behaviour'][spi.id]['move'], spi.position, 20) && spi.energy != 0) moving_spirit_part_of_selection = true;
-		}
-		if (merged_spirit_part_of_selection) document.getElementById('man_action_special_divide').style.display = 'block';	
-		if (moving_spirit_part_of_selection) document.getElementById('man_action_special_jump').style.display = 'block';
-	} else if (this_player_shape == 'squares'){
-		for (let spi of selected_group){
-			if (local_memory['behaviour'][spi.id] == undefined) set_default_behaviour([spi]);
-			if (!local_memory['behaviour'][spi.id]['lock']) document.getElementById('man_action_special_lock').style.display = 'block';
-			if (local_memory['behaviour'][spi.id]['lock']) document.getElementById('man_action_special_unlock').style.display = 'block';
-		}
-	} else if (this_player_shape == 'triangles'){
-		for (let spi of selected_group){
-			if (local_memory['behaviour'][spi.id] == undefined) set_default_behaviour([spi]);
-			document.getElementById('man_action_special_explode').style.display = 'block';
-		}
+	for (let spi of selected_group){
+		if (local_memory['behaviour'][spi.id] == undefined) set_default_behaviour([spi]);
+		document.getElementById('man_action_special_explode').style.display = 'block';
 	}
 	
 	
@@ -607,7 +580,7 @@ function slider_finished(){
 function expand_select_radius(over){
 	slider_val_over_el.style.height = over + 'px';
 	over_radius = 80 + over*3;
-	man_mobile_spirit_selection(touch_point[0], touch_point[1], over_radius);
+	man_mobile_cat_selection(touch_point[0], touch_point[1], over_radius);
 }
 
 function get_slider_bounding_box(){
@@ -616,20 +589,8 @@ function get_slider_bounding_box(){
 	slider_y_0 = slider_el_box.bottom;
 }
 
-function is_base_click(p_x, p_y){
-	let clicked_base = false;
-	for (let ba of bases){
-		if (ba.control != this_player && ba.control != 'live-input') continue;
-		let ba_x = ba.position[0];
-		let ba_y = ba.position[1];
-		if (Math.abs(p_x - ba_x) <= 40 && Math.abs(p_y - ba_y) <= 40){
-			clicked_base = ba.id;
-			//base_selection = ba.id;
-			//get_newborn_behaviour(ba.id);
-			//show_newborn_options();
-		}
-	}
-	return clicked_base;
+function is_base_click(p_x, p_y){ //bases removed
+	return false;
 }
 
 function man_canvas_click(e){
@@ -648,7 +609,7 @@ function man_canvas_click(e){
 	
 	base_selection = false;
 	let temp_base = is_base_click(gameboard_x, gameboard_y);
-	if (temp_base && !(energize_pair_selection)) {
+	if (temp_base && !(pew_pair_selection)) {
 		base_selection = temp_base;
 		get_newborn_behaviour(temp_base);
 		show_newborn_options();
@@ -656,7 +617,7 @@ function man_canvas_click(e){
 		selection_done();
 	}
 	
-	if (energize_pair_selection) man_select_energize_pair(gameboard_x, gameboard_y);
+	if (pew_pair_selection) man_select_pew_pair(gameboard_x, gameboard_y);
 	
 	
 	//for (let ba of bases){
@@ -683,9 +644,9 @@ function man_canvas_rightclick(e){
 		assign_behaviour(selected_group, 'move', [Math.round(gameboard_x), Math.round(gameboard_y)]);
 		let structure_clicked = get_structure_at_position([Math.round(gameboard_x), Math.round(gameboard_y)])
 		if (structure_clicked == false) {
-			for (let sp of selected_group) local_memory['behaviour'][sp.id]['obj_energize'] = '';
+			for (let sp of selected_group) local_memory['behaviour'][sp.id]['obj_pew'] = '';
 		} else {
-			for (let sp of selected_group) local_memory['behaviour'][sp.id]['obj_energize'] = structure_clicked;
+			for (let sp of selected_group) local_memory['behaviour'][sp.id]['obj_pew'] = structure_clicked;
 		}
 		
 		if (guidance_shown[3] == 0 && guidance_shown[2] == 1){
@@ -694,11 +655,10 @@ function man_canvas_rightclick(e){
 	}
 }
 
-function man_desktop_spirit_selection(e){
+function man_desktop_cat_selection(e){
 	if (!(e.metaKey || e.ctrlKey)) return;
 	if (behaviour_selection) return;
-	if (this_player_shape == '') get_shape_buttons();
-	//if (energize_pair_selection) return;
+	//if (pew_pair_selection) return;
 	let mouse_x = e.clientX;
 	let mouse_y = e.clientY;
 	let gameboard_x = mouse_x*multiplier - offsetX;
@@ -713,8 +673,8 @@ function man_desktop_spirit_selection(e){
 	selection_corners[2] = Math.round(gameboard_x);
 	selection_corners[3] = Math.round(gameboard_y);
 	
-	for (let man_sp of Object.keys(spirits)){
-		let mm_sp = spirits[man_sp];
+	for (let man_sp of Object.keys(cats)){
+		let mm_sp = cats[man_sp];
 		if (mm_sp.hp == 0) continue;
 		if (mm_sp.player_id != this_player && mm_sp.player_id != 'live-input') continue;
 		if ( number_between(mm_sp.position[0], selection_corners[0], selection_corners[2])
@@ -775,19 +735,18 @@ function man_mobile_touchend(e){
 				show_guidance(5);
 			}
 		} else {
-			man_mobile_spirit_selection(touch_point[0], touch_point[1], 80);
+			man_mobile_cat_selection(touch_point[0], touch_point[1], 80);
 		}
 		
 	}
 }
 
-function man_mobile_spirit_selection(man_t_x, man_t_y, t_rad = 20){
-	if (energize_pair_selection) return;
+function man_mobile_cat_selection(man_t_x, man_t_y, t_rad = 20){
+	if (pew_pair_selection) return;
 	if (behaviour_selection) return;
-	if (this_player_shape == '') get_shape_buttons();
 	let temp_selected_group = [];
-	for (let man_sp of Object.keys(spirits)){
-		let mm_sp = spirits[man_sp];
+	for (let man_sp of Object.keys(cats)){
+		let mm_sp = cats[man_sp];
 		if (mm_sp.hp == 0) continue;
 		if (mm_sp.player_id != this_player && mm_sp.player_id != 'live-input') continue;
 		if (Math.abs(man_t_x - mm_sp.position[0]) > t_rad) continue;
@@ -822,7 +781,7 @@ function man_desktop_selection_finish(e){
 	selection_corners = [0, 0, 0, 0];
 	cmd_ctrl_down = false;
 	if (e.key != 'Escape' && e.key != "Control") return;
-	if (energize_pair_selection) energize_pair_cancelled();
+	if (pew_pair_selection) pew_pair_cancelled();
 	if (selected_group.length > 0) get_behaviour_selection(selected_group);
 	
 	if (guidance_shown[2] == 0 && guidance_shown[0] != 0 && guidance_shown[1] != 0){
@@ -833,8 +792,8 @@ function man_desktop_selection_finish(e){
 
 function man_desktop_keydown(e){
 	if (e.key == 'Escape'){
-		if (energize_pair_selection){
-			energize_pair_cancelled();
+		if (pew_pair_selection){
+			pew_pair_cancelled();
 		} else if (behaviour_selection) {
 			hide_group_options();
 		} else if (base_selection){
@@ -848,51 +807,36 @@ function man_desktop_keydown(e){
 	}
 }
 
-function fill_energize_pair(man_type, man_thing){
+function fill_pew_pair(man_type, man_thing){
 	if (man_type == 'structure'){
-		energize_pair.structure == man_thing ? energize_pair.structure = '' : energize_pair.structure = man_thing;
+		pew_pair.structure == man_thing ? pew_pair.structure = '' : pew_pair.structure = man_thing;
 	}
 }
 
-function man_select_energize_pair(man_x, man_y){
-	for (let e_b of bases){
-		if (Math.abs(man_x - e_b.position[0]) <= 70 && Math.abs(man_y - e_b.position[1]) <= 70){
-			energize_pair.structure == e_b ? energize_pair.structure = '' : energize_pair.structure = e_b;
-		}
-	}
-	for (let e_o of outposts){
-		if (Math.abs(man_x - e_o.position[0]) <= 70 && Math.abs(man_y - e_o.position[1]) <= 70){
-			energize_pair.structure == e_o ? energize_pair.structure = '' : energize_pair.structure = e_o;
-		}
-	}
-	for (let e_p of pylons){
-		if (Math.abs(man_x - e_p.position[0]) <= 70 && Math.abs(man_y - e_p.position[1]) <= 70){
-			energize_pair.structure == e_p ? energize_pair.structure = '' : energize_pair.structure = e_p;
-		}
-	}
-	for (let e_s of stars){
+function man_select_pew_pair(man_x, man_y){
+	for (let e_s of barricades){
 		if (Math.abs(man_x - e_s.position[0]) <= 70 && Math.abs(man_y - e_s.position[1]) <= 70){
-			energize_pair.star == e_s ? energize_pair.star = '' : energize_pair.star = e_s;
+			pew_pair.barricade == e_s ? pew_pair.barricade = '' : pew_pair.barricade = e_s;
 		}
 	}
 	
 	let e_structure_lbl = document.getElementById('e_pair_structure');
-	let e_star_lbl = document.getElementById('e_pair_star');
+	let e_barricade_lbl = document.getElementById('e_pair_barricade');
 	
-	energize_pair.structure == '' ? e_structure_lbl.style.opacity = 1 : e_structure_lbl.style.opacity = 0.49;
-	energize_pair.star == '' ? e_star_lbl.style.opacity = 1 : e_star_lbl.style.opacity = 0.49;
+	pew_pair.structure == '' ? e_structure_lbl.style.opacity = 1 : e_structure_lbl.style.opacity = 0.49;
+	pew_pair.barricade == '' ? e_barricade_lbl.style.opacity = 1 : e_barricade_lbl.style.opacity = 0.49;
 	
-	if (energize_pair.structure != '' && energize_pair.star != ''){
-		assign_behaviour(selected_group, 'energize_chain', [energize_pair.structure.id, energize_pair.star.id]);
-		energize_pair_cancelled();
+	if (pew_pair.structure != '' && pew_pair.barricade != ''){
+		assign_behaviour(selected_group, 'pew_chain', [pew_pair.structure.id, pew_pair.barricade.id]);
+		pew_pair_cancelled();
 		if (guidance_shown[1] == 0){
 			guidance_shown[1] = 1;
 			show_guidance(3);
 		}
 		
-		energize_pair = {
+		pew_pair = {
 			structure: '',
-			star: ''
+			barricade: ''
 		}
 	}
 	
@@ -904,20 +848,20 @@ function man_plate_click(e){
     let el = (e.target || e.srcElement);
 	//console.log(el.id);
 	if (el.id == 'man_attack_base'){
-		man_attack(man_selected_spirits);
+		man_attack(man_selected_cats);
 	}
 }
 
-//function man_select_spirit(x_point, y_point){
-//	for (i = 0; i < living_spirits.length; i++){
-//		if (living_spirits[i].hp == 0) continue;
-//		if (Math.abs(living_spirits[i].position[0] - x_point) <= 5 && Math.abs(living_spirits[i].position[1] - y_point) <= 5){
-//			//man_selected_spirits = [living_spirits[i].id];
+//function man_select_cat(x_point, y_point){
+//	for (i = 0; i < living_cats.length; i++){
+//		if (living_cats[i].hp == 0) continue;
+//		if (Math.abs(living_cats[i].position[0] - x_point) <= 5 && Math.abs(living_cats[i].position[1] - y_point) <= 5){
+//			//man_selected_cats = [living_cats[i].id];
 //		}
 //	}
 //}
 
-function set_default_behaviour(sp_group = living_spirits){
+function set_default_behaviour(sp_group = living_cats){
 	for (let sp of sp_group){
 		if (sp.hp == 0) continue;
 		if (sp.player_id != this_player && sp.player_id != 'live-input') continue;
@@ -928,8 +872,8 @@ function set_default_behaviour(sp_group = living_spirits){
 			action_priority: 'manual',
 			merge: '',
 			move: sp.position,
-			energize_chain: [],
-			obj_energize: ''
+			pew_chain: [],
+			obj_pew: ''
 		}
 	}
 }
@@ -978,12 +922,6 @@ function get_behaviour_selection(sp_group){
 }
 
 function set_newborn_default(){
-	for (let ba of bases){
-		local_memory['newborn_' + ba.id] = {
-			role: 'goto',
-			position: []
-		};
-	}
 }
 
 function get_newborn_behaviour(base_id){
@@ -1014,8 +952,8 @@ function man_attitude(selected_val){
 }
 
 
-function assign_behaviour(spirit_group, beh_type, beh_value){
-	//spirit_group is an array of ids
+function assign_behaviour(cat_group, beh_type, beh_value){
+	//cat_group is an array of ids
 	if (assignment_tick == active_block){
 		
 	} else {
@@ -1023,9 +961,9 @@ function assign_behaviour(spirit_group, beh_type, beh_value){
 		client['behaviour'] = [];
 	}
 	
-	if (beh_type == 'attitude_jump') beh_value = beh_value - local_memory['behaviour'][spirit_group[0].id]['attitude_jump'];
+	if (beh_type == 'attitude_jump') beh_value = beh_value - local_memory['behaviour'][cat_group[0].id]['attitude_jump'];
 	
-	for (let sp of spirit_group){
+	for (let sp of cat_group){
 		if (local_memory['behaviour'][sp.id] === undefined) local_memory['behaviour'][sp.id] = {};
 		local_memory['behaviour'][sp.id][beh_type] = beh_value;
 		client['behaviour'].push([sp.id, beh_type, beh_value]);
@@ -1035,10 +973,10 @@ function assign_behaviour(spirit_group, beh_type, beh_value){
 			} else {
 				document.getElementById('man_action_special_jump').style.display = 'none';
 			}
-			local_memory['behaviour'][sp.id]['energize_chain'] = [];
+			local_memory['behaviour'][sp.id]['pew_chain'] = [];
 		}
 		if (beh_type == 'jump') local_memory['behaviour'][sp.id]['jump'] = 0;
-		if (beh_type == 'energize_chain'){
+		if (beh_type == 'pew_chain'){
 			local_memory['behaviour'][sp.id]['move'] = [];
 		}
 		if (beh_type == 'merge' && beh_value == ''){
@@ -1081,7 +1019,7 @@ function choose_newborn_point(){
 function man_attack(attackers){
 	//console.log('attackers = ');
 	//console.log(attackers);
-	//client['attacking'] = man_selected_spirits;
+	//client['attacking'] = man_selected_cats;
 	// update_code(); not needed, using channels now
 	try {
 		sendData("MANUALUI", client)
@@ -1092,11 +1030,9 @@ function man_attack(attackers){
 }
 
 
-// Special shape abilities
-
 function merge_group(grp){
 	let center_point = get_group_center(grp);
-	let the_one = get_closest_spirit_id(grp, center_point);
+	let the_one = get_closest_cat_id(grp, center_point);
 	assign_behaviour(grp, 'merge', the_one);
 	assign_behaviour(grp, 'move', center_point);
 }
@@ -1160,15 +1096,15 @@ function show_guidance(guide_num){
 
 
 
-//module_draw['man_selected_spirits'] = function() {
-//	for (let i = 0; i < man_selected_spirits.length; i++){
-//		//console.log('rendering around spirit ' + man_selected_spirits[i]);
-//		let spirit_x = spirits[man_selected_spirits[i]].position[0];
-//		let spirit_y = spirits[man_selected_spirits[i]].position[1];
-//		let spirit_size = spirits[man_selected_spirits[i]].size;
-//		let color_parts = spirits[man_selected_spirits[i]].color.match(/[.?\d]+/g);
+//module_draw['man_selected_cats'] = function() {
+//	for (let i = 0; i < man_selected_cats.length; i++){
+//		//console.log('rendering around cat ' + man_selected_cats[i]);
+//		let cat_x = cats[man_selected_cats[i]].position[0];
+//		let cat_y = cats[man_selected_cats[i]].position[1];
+//		let cat_size = cats[man_selected_cats[i]].size;
+//		let color_parts = cats[man_selected_cats[i]].color.match(/[.?\d]+/g);
 //		c.beginPath();
-//		c.arc(spirit_x, spirit_y, spirit_size + 5, Math.PI * 0, Math.PI * 2, false);
+//		c.arc(cat_x, cat_y, cat_size + 5, Math.PI * 0, Math.PI * 2, false);
 //		c.closePath();
 //		c.lineWidth = 1;
 //		c.strokeStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.6 + ')';
@@ -1216,17 +1152,16 @@ function man_draw_cross(center_point, cross_color){
 module_draw['selected_group'] = function() {
 	for (let i = 0; i < selected_group.length; i++){
 		if (selected_group[i].hp == 0) continue;
-		//console.log('rendering around spirit ' + selected_group[i]);	
+		//console.log('rendering around cat ' + selected_group[i]);	
 		let move_dest = local_memory['behaviour'][selected_group[i].id]['move'];
 		
 		
-		let spirit_size = selected_group[i].size;
 		let color_parts = selected_group[i].color.match(/[.?\d]+/g);
 		let stroke_color = cmd_ctrl_down ? 'rgba(94, 245, 255, 0.89)' : 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.72 + ')';
-		let move_color = 'rgba(94, 245, 255, ' + (0.24 + spirit_size/100) + ')';
+		let move_color = 'rgba(94, 245, 255, 0.44)';
 		let charge_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.20 + ')';
 		let line_dash_ptrn = 2 + Math.abs(-3 + Math.floor(dumb_cycler / 10));
-		man_draw_circle(selected_group[i].position, spirit_size + 5, 1, stroke_color);
+		man_draw_circle(selected_group[i].position, 25, 1, stroke_color);
 		if (move_dest.length > 0){
 			man_draw_line(selected_group[i].position, move_dest, move_color, line_dash_ptrn);
 			man_draw_cross(move_dest, move_color);
@@ -1234,8 +1169,8 @@ module_draw['selected_group'] = function() {
 		
 	}	
 	if (selected_group.length > 0){
-		let chained = local_memory['behaviour'][selected_group[0].id]['energize_chain'];
-		let target_structure = local_memory['behaviour'][selected_group[0].id]['obj_energize'];
+		let chained = local_memory['behaviour'][selected_group[0].id]['pew_chain'];
+		let target_structure = local_memory['behaviour'][selected_group[0].id]['obj_pew'];
 		let color_parts = selected_group[i].color.match(/[.?\d]+/g);
 		let charge_color = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + 0.48 + ')';
 		let target_color = 'rgba(94, 245, 255, 0.48)';
@@ -1269,30 +1204,19 @@ module_draw['man_selection_circle'] = function() {
 	man_draw_circle(touch_point, over_radius, 1, 'rgba(94, 245, 255, 0.69)', 'rgba(94, 245, 255, 0.08)', true);
 }
 
-module_draw['man_energize_pair_selection'] = function () {
-	if (!energize_pair_selection) return;
+module_draw['man_pew_pair_selection'] = function () {
+	if (!pew_pair_selection) return;
 	
-	for (let man_b of bases){
-		man_draw_circle(man_b.position, 50, 2, 'rgba(144, 118, 255, 0.49)', 'rgba(144, 118, 255, 0.04)', true);
-	}
-	for (let man_s of stars){
+	for (let man_s of barricades){
 		man_draw_circle(man_s.position, 50, 2, 'rgba(144, 118, 255, 0.49)', 'rgba(144, 118, 255, 0.04)', true);
 	}
-	for (let man_o of outposts){
-		man_draw_circle(man_o.position, 50, 2, 'rgba(144, 118, 255, 0.49)', 'rgba(144, 118, 255, 0.04)', true);
-	}
-	for (let man_p of pylons){
-		man_draw_circle(man_p.position, 50, 2, 'rgba(144, 118, 255, 0.49)', 'rgba(144, 118, 255, 0.04)', true);
-	}
 	
-	if (energize_pair.structure != '') man_draw_circle(energize_pair.structure.position, 50, 2, 'rgba(164, 138, 255, 0.96)', 'rgba(164, 138, 255, 0.08)', true);
-	if (energize_pair.star != '') man_draw_circle(energize_pair.star.position, 50, 2, 'rgba(164, 138, 255, 0.96)', 'rgba(164, 138, 255, 0.08)', true);
+	if (pew_pair.structure != '') man_draw_circle(pew_pair.structure.position, 50, 2, 'rgba(164, 138, 255, 0.96)', 'rgba(164, 138, 255, 0.08)', true);
+	if (pew_pair.barricade != '') man_draw_circle(pew_pair.barricade.position, 50, 2, 'rgba(164, 138, 255, 0.96)', 'rgba(164, 138, 255, 0.08)', true);
 }
 
 module_draw['man_base_selection'] = function() {
-	if (!base_selection) return;
-	
-	man_draw_circle(base_lookup[base_selection].position, 50, 2, 'rgba(144, 118, 255, 0.89)', 'rgba(144, 118, 255, 0.14)', true)
+	return;
 }
 
 
@@ -1302,17 +1226,15 @@ let local_memory = {
 	behaviour: {},
 };
 
+if (typeof client === 'undefined') var client = {};
 client['behaviour'] = [];
-client['newborn_base_zxq'] = [];
-client['newborn_base_a2c'] = [];
-client['newborn_base_p89'] = [];
-client['newborn_base_nua'] = [];
+// newborn base data removed (bases removed from game)
 
 
 //local_memory['behaviour']['sp_id'] = {
 //	move: [],
 //  jump: [],
-//	energize_chain: [],
+//	pew_chain: [],
 //	attitude: 'nothing',
 //	targetting: 'nearest',
 //	action_priority: 'manual',
@@ -1320,12 +1242,12 @@ client['newborn_base_nua'] = [];
 //	divide: 0,
 //	explode: 0,
 //	lock: 0,
-//  obj_energize: ''	
+//  obj_pew: ''	
 //}
 
 const touch_input = matchMedia('(hover: none)').matches;
 
-let man_selected_spirits = [];
+let man_selected_cats = [];
 let slider_el = document.getElementById('man_select_count');
 let slider_val_el = document.getElementById('man_select_slider_val');
 let slider_val_over_el = document.getElementById('man_select_slider_expand_val');
@@ -1333,13 +1255,13 @@ let slider_y_100 = 0;
 let slider_y_0 = 0;
 let sliding = false;
 
-//currently selected spirits
+//currently selected cats
 let select_current_amount = 0;
 let selected_group = [];
 let temp_selected_group = []; //used during sliding
 let selected_sub_group = [];
 
-//spirits in the swap group
+//cats in the swap group
 let swap_group = [];
 let temp_swap_group = []; //used during sliding
 
@@ -1348,7 +1270,7 @@ let slider_changing_amount = 0;
 let bg_helper = false; //not important, just a visual thing for slider over max
 let over_radius = 0; //rendering selection circle
 
-//total amount of selectable spirits within the current group (TODO: better explanation)
+//total amount of selectable cats within the current group (TODO: better explanation)
 let total_group = []
 let slider_total_amount = 0;
 
@@ -1368,24 +1290,23 @@ let cmd_ctrl_down = false;
 //tracking touch point on mobile
 let touch_point = [];
 
-//4 corner coordinates for spirit selection ([x1, y1, x2, y2])
+//4 corner coordinates for cat selection ([x1, y1, x2, y2])
 let selection_corners = [0, 0, 0, 0]
 
 //other useful flags and vars
 let this_player = getCookie('user_id');
-let this_player_shape = '';
-let energize_pair_selection = false;
-let energize_pair = {
+let pew_pair_selection = false;
+let pew_pair = {
 	structure: '',
-	star: '',
+	barricade: '',
 };
 let behaviour_selection = false;
 let base_selection = false;
-let newborn_point_selection = false; //selecting a point on map where newborn spirits should go
+let newborn_point_selection = false; //selecting a point on map where newborn cats should go
 let assignment_tick = 0; //for stacking multiple commands in the same tick
 let guidance_shown = [0, 0, 0, 0, 0] //prepared as flags for onboarding/tutorial guidance
 
-//set base and spirit default behaviour - change this to better suit your playing style
+//set base and cat default behaviour - change this to better suit your playing style
 set_default_behaviour();
 set_newborn_default();
 
@@ -1405,7 +1326,7 @@ setTimeout(() => {
 //event handlers
 document.getElementById('base_canvas').addEventListener("click", man_canvas_click, false);
 document.getElementById('base_canvas').addEventListener("contextmenu", man_canvas_rightclick, false);
-document.getElementById('base_canvas').addEventListener("mousemove", man_desktop_spirit_selection, false);
+document.getElementById('base_canvas').addEventListener("mousemove", man_desktop_cat_selection, false);
 document.getElementById('base_canvas').addEventListener("touchstart", man_mobile_touchstart, false);
 document.getElementById('base_canvas').addEventListener("touchend", man_mobile_touchend, false);
 
@@ -1468,7 +1389,7 @@ try {
   			</div>
   		</div>
   		<div id='man_action_group1'>
-  			<div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p><p id='tut_help_harv'>Start harvesting from the star to the base <span id='tut_arrow' class='ico_right_arrow'></span></p></div>
+  			<div id='man_action_harvest' class='man_square_btn'><span class='ico_man_bolt'></span><p class='btn_label'>harvest</p><p id='tut_help_harv'>Start harvesting from the barricade to the base <span id='tut_arrow' class='ico_right_arrow'></span></p></div>
   			<div id='man_action_special_merge' class='man_square_btn'><span class='ico_man_merge'></span><p class='btn_label'>merge</p></div>
   			<div id='man_action_special_divide' class='man_square_btn'><span class='ico_man_divide'></span><p class='btn_label'>divide</p></div>
   			<div id='man_action_special_lock' class='man_square_btn'><span class='ico_man_lock'></span><p class='btn_label'>lock</p></div>
@@ -1494,7 +1415,7 @@ try {
 		
   		<div class='sep_medium'></div>
 		
-  		<h3 class='man_head3'>Energize enemy targets</h3>
+  		<h3 class='man_head3'>Pew enemy targets</h3>
   		<div class='man_layer_section' id='man_targets'>
   			<div id='man_targetting_lowest' class='man_layer_option man_option_right'>Lowest energy</div>
   			<div id='man_targetting_nearest' class='man_layer_option man_option_mid'>Nearest</div>
@@ -1513,15 +1434,15 @@ try {
   	<div id='man_layer2_base'>
   		<h3 class='man_head3'>Newborn's behaviour</h3>
   		<div class='man_layer_section' id='man_newborn'>
-  			<div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest star</div>
+  			<div id='man_newborn_harvest' class='man_layer_option man_option_right'>Harvest from nearest barricade</div>
   			<div id='man_newborn_goto' class='man_layer_option man_option_left'>Go to position</div>
   		</div>
   		<div id='man_newborn_where' class='man_layer_option man_option_secondary'>Choose point on board</div>
   	</div>
-  	<h2 class='man_head2' id='man_newborn_point'>Choose point for newborn spirits</h2>
+  	<h2 class='man_head2' id='man_newborn_point'>Choose point for newborn cats</h2>
   	<div id='man_layer3'>
-  		<div id='man_energize_pairing'>
-  			<h2 class='man_head2'>Select a <span id='e_pair_star'>star</span> and <span id='e_pair_structure'>structure</span></h2>
+  		<div id='man_pew_pairing'>
+  			<h2 class='man_head2'>Select a <span id='e_pair_barricade'>barricade</span> and <span id='e_pair_structure'>structure</span></h2>
   			<div id='man_action_ui_close' class='man_square_btn'><span class='ico_man_close'></span></div>
   		</div>
   	</div>

@@ -1,15 +1,11 @@
 var yd = {};
-global.spirits = {};
-global.my_spirits = [];
-global.stars = {};
-global.bases = {};
-global.outposts = {};
-global.pylons = {};
-global.fragments = [];
+global.cats = {};
+global.my_cats = [];
+global.barricades = [];
+global.pods = [];
 
 yd.commands = {
-    merge: new Map(),
-    spirit: {},
+    cat: {},
     channels: {},
 };
 
@@ -27,10 +23,10 @@ yd.channel_in = function(name, data) {
 }
 
 function command(id) {
-    if (!(id in yd.commands.spirit)) {
-        yd.commands.spirit[id] = {};
+    if (!(id in yd.commands.cat)) {
+        yd.commands.cat[id] = {};
     }
-    return yd.commands.spirit[id];
+    return yd.commands.cat[id];
 }
 
 class Channel {
@@ -83,20 +79,20 @@ function deprecate(id, msg) {
     }
 }
 
-/** Spirits are your mobile units 
+/** Cats are your mobile units 
  * @hideconstructor
 */
-class Spirit {
+class Cat {
     constructor(id){
         this.id = id;
     }
 
-    /** Moves spirit to target with a speed of 20 units per tick
+    /** Moves cat to target with a speed of 20 units per tick
      * @param {number[]} target - Position to move to/towards
      */
     move(target) {
         if (!Array.isArray(target) || target.length != 2){
-            soft_error('.move() argument must be an array of 2 numbers.\n > E.g. my_spirits[0].move([100, 100]) or my_spirits[0].move(my_spirits[1].position).\n > Received: ' + target);
+            soft_error('.move() argument must be an array of 2 numbers.\n > E.g. my_cats[0].move([100, 100]) or my_cats[0].move(my_cats[1].position).\n > Received: ' + target);
             return;
         }
 
@@ -112,137 +108,26 @@ class Spirit {
     }
 
     /**
-     * Transfers (1 × spirit's size) energy unit from itself into target. Max distance of the energy transfer is 200 units.
-     * If target is an enemy spirit or a base, the target takes damage (loses energy) equivalent to (2 × attacking spirit's size)
-     * If target is the same spirit as origin, the spirit will attempt harvesting energy from a star.
-     * @param {(Spirit|Base|Outpost)} target - target to energize
+     * Transfers 1 energy unit from itself into target. Max distance of the energy transfer is 200 units.
+     * If target is an enemy cat, the target takes damage of 2 energy. Nearby enemies within 10 units of the target also take splash damage.
+     * @param {Cat} target - target to pew
      */
-    energize(target) {		
+    pew(target) {		
         let target_id = null;
-		if (Array.isArray(target) && target.length == 2){
-			target_id = target;
-		} else if (typeof target == 'object'){
+		if (typeof target == 'object' && target !== null){
             target_id = target.id;
         } else if (typeof target == 'string'){
             target_id = target;
-        } 
-		
-		
-		//console.log(typeof target);
+        }
 
-        let bad = target_id == null || target == null;
-        if(bad){
+        if(target_id == null){
             let example_id = this.player_id + "_2";
-            soft_error(".energize() argument must be a game object (e.g. spirit) with id or a position (e.g. [250, 350]).\n > E.g. my_spirits[0].energize(my_spirits[0])\n > or my_spirits[0].energize(spirits['" + example_id + "'])\n > or my_spirits[0].energize('" + example_id + "')\n > Received: " + target);
+            soft_error(".pew() argument must be a cat object.\n > E.g. my_cats[0].pew(my_cats[1])\n > or my_cats[0].pew(cats['" + example_id + "'])\n > Received: " + target);
             return;
         }
         
-        command(this.id).energize = target_id;
+        command(this.id).pew = target_id;
     }
-    
-    merge(target){
-        if (target.id == this.id){
-            soft_error("You can't merge spirit into itself");
-            return;
-        } else if (this.shape != 'circles'){
-            soft_error("Only circles can use merge(). See Documentation for available methods.");
-            return;
-        }
-        
-        try {
-            if (Array.isArray(target) == true){
-                soft_error(".merge() argument must be a friendly spirit object, not an array. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target);
-                return;
-            } else if (typeof target !== 'object' || target === null){
-                soft_error(".merge() argument must be a friendly spirit object. E.g. my_spirits[0].merge(my_spirits[1]). Received: " + target);
-                return;
-            }
-        
-            if (Math.abs(target.position[0] - this.position[0]) < 12 && Math.abs(target.position[1] - this.position[1]) < 12 && this.player_id == target.player_id){
-            
-            } else {
-                return;
-            }
-        } catch (error){
-            yd.errors.push(error);
-            return;
-        }
-        
-        if (target.hp != 0 && this.hp != 0){
-            yd.commands.merge.set(this.id, target.id);
-        }
-        
-    }
-    
-    divide(){
-        
-        if (this.shape != 'circles'){
-            soft_error("Only circles can use divide(). See Documentation for available methods.");
-            return;
-        }
-        
-        if (this.hp != 0 && this.merged.length > 0){
-            command(this.id).divide = true;
-        }
-        
-    }
-    
-    jump(target){
-        if (Array.isArray(target) == false){
-            soft_error('.jump() argument must be an array. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
-            return;
-        } else if (target.length != 2){
-            soft_error('.jump() argument must be an array of length 2. E.g. my_spirits[0].jump([100, 100]). Received: ' + target);
-            return;
-        } else if (isNaN(target[0]) || isNaN(target[1])){
-            soft_error('.jump() argument array contains NaN. Received: ' + target);
-            return;
-        }
-
-        if (this.hp != 0){
-            command(this.id).jump = [Number(target[0]), Number(target[1])];
-        }
-    }
-
-    explode(){
-        if (this.shape != 'triangles'){
-            soft_error("Only triangles can use explode(). See Documentation for available methods.");
-            return;
-        }
-        
-        if (this.hp != 0){
-            command(this.id).explode = true;
-        }
-    }
-
-    lock(){
-        if (this.shape != 'squares'){
-            soft_error("Only squares can use lock(). See Documentation for available methods.");
-            return;
-        }
-        if (this.hp != 0){
-            command(this.id).lock = true;
-        }
-    }
-
-    unlock(){
-        if (this.shape != 'squares'){
-            soft_error("Only squares can use unlock(). See Documentation for available methods.");
-            return;
-        }
-        if (this.hp != 0){
-            command(this.id).unlock = true;
-        }
-    }
-    
-    //kill() { }???????
-    /*
-    kill(suid){
-        delete spirit_lookup[suid];
-        var index = living_spirits.findIndex(x => x.id == suid);
-        living_spirits.splice(index);
-    }
-    */
     
     set_mark(mrk){
         if (typeof mrk !== 'string'){
@@ -275,97 +160,35 @@ class Spirit {
     }
 }
 
-class Star {
-    constructor(id){
-        this.id = id;
-    }
-}
-
-class Outpost {
-    constructor(id){
-        this.id = id
-    }
-}
-
-class Pylon {
-    constructor(id){
-        this.id = id
-    }
-}
-
-class Base {
-    constructor(id){
-        this.id = id;
-    }
-}
-
 yd.init = function(playerID) {
     global.this_player_id = playerID;
 };
 
 yd.loadData = function(data) {
-    var sd = data.spirits;
+    var sd = data.cats;
     for(var id in sd) {
-        if(!(id in global.spirits)) {
-            global.spirits[id] = new Spirit(id);
+        if(!(id in global.cats)) {
+            global.cats[id] = new Cat(id);
             if(sd[id].player_id == global.this_player_id) {
-                global.my_spirits.push(global.spirits[id]);
+                global.my_cats.push(global.cats[id]);
                 if(sd[id].player_id == "anonymous") {
-                    global["s" + (global.my_spirits.length)] = global.spirits[id];
+                    global["s" + (global.my_cats.length)] = global.cats[id];
                 }
             }
-            global[id] = global.spirits[id];
+            global[id] = global.cats[id];
         }
-        Object.assign(global.spirits[id], sd[id]);
+        Object.assign(global.cats[id], sd[id]);
     }
-    var sd = data.stars;
-    for(var id in sd) {
-        if(!(id in global.stars)) {
-            global.stars[id] = new Star(id);
-            global[id] = global.stars[id];
-        }
-        Object.assign(global.stars[id], sd[id]);
+    if (data.barricades) {
+        global.barricades = data.barricades;
     }
-    var od = data.outposts;
-    for(var id in od) {
-        if(!(id in global.outposts)) {
-            global.outposts[id] = new Outpost(id);
-            global[id] = global.outposts[id];
-            global.outpost = global.outposts[id];
-        }
-        Object.assign(global.outposts[id], od[id]);
-    }
-    var py = data.pylons;
-    for(var id in py) {
-        if(!(id in global.pylons)) {
-            global.pylons[id] = new Pylon(id);
-            global[id] = global.pylons[id];
-            global.pylon = global.pylons[id];
-        }
-        Object.assign(global.pylons[id], py[id]);
-    }
-	var ef = data.fragments;
-	global.fragments = [];
-	for (let fgm of ef){
-		global.fragments.push(fgm)
-	}
-	
-    var bd = data.bases;
-    for(var id in bd) {
-        if(!(id in global.bases)) {
-            global.bases[id] = new Base(id);
-			global[id] = global.bases[id];
-            if (bd[id].player_id == global.this_player_id) {
-                //global.base = global.bases[id];
-            } else {
-                //global.enemy_base = global.bases[id];
-            }
-        }
-        Object.assign(global.bases[id], bd[id]);
+    if (data.pods) {
+        global.pods = data.pods;
     }
     global.players = data.players;
     global.tick = data.tick;
 	global.ttick = 't' + data.tick;
+	global.death_circle = data.death_circle;
 };
 
 yd.getOutput = function() {
@@ -376,8 +199,7 @@ yd.getOutput = function() {
         channels: yd.channels
     };
     yd.commands = {
-        merge: new Map(),
-        spirit: {},
+        cat: {},
     };
     yd.logs = [];
     yd.errors = [];
