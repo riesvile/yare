@@ -1,10 +1,16 @@
 #!/bin/sh
 set -e
 
+ENV_FILE="${ENV_FILE:-/root/.env}"
+ENV_FILE_FLAG=""
+if [ -f "$ENV_FILE" ]; then
+    ENV_FILE_FLAG="--env-file $ENV_FILE"
+fi
+
 pull_and_run() {
     docker pull "$2"
     docker rm -f "$1"
-    docker run -d $3 -p "$4":5000 --restart always --name "$1" "$2"
+    docker run -d $ENV_FILE_FLAG $3 -p "$4":5000 --restart always --name "$1" "$2"
 }
 
 CONTAINER_NAME="main"
