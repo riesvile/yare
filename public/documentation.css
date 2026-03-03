@@ -220,6 +220,56 @@ h1.doc_h1 {
 }
 
 
+/* ---- Code examples ---- */
+
+.code-tabs {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 0;
+}
+
+.code-tab {
+	font-size: 13px;
+	font-weight: 400;
+	color: rgba(242, 246, 250, 0.44);
+	padding: 8px 16px;
+	border-radius: 8px 8px 0 0;
+	cursor: pointer;
+	background-color: rgba(242, 246, 250, 0.04);
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.code-tab:hover {
+	color: rgba(242, 246, 250, 0.68);
+	background-color: rgba(242, 246, 250, 0.06);
+}
+
+.code-tab.active {
+	color: rgba(242, 246, 250, 0.86);
+	background-color: rgba(242, 246, 250, 0.08);
+}
+
+.code-panel {
+	display: none;
+	background-color: rgba(242, 246, 250, 0.04);
+	border-radius: 0 8px 8px 8px;
+	padding: 20px 24px;
+}
+
+.code-panel.active {
+	display: block;
+}
+
+.code-panel pre {
+	font-family: 'Lucida Console', 'Monaco', 'Courier New', monospace;
+	font-size: 13px;
+	line-height: 22px;
+	color: rgba(242, 246, 250, 0.68);
+	white-space: pre;
+	margin: 0;
+}
+
+
 /* ---- Credits ---- */
 
 #doc_credits .desc {

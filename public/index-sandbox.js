@@ -103,6 +103,9 @@ editor.completers.push({
 
 if (localStorage.getItem("code_code") != null){
 	editor.setValue(localStorage.getItem("code_code"), 1);
+} else {
+	var starterCode = "// This is an example code to help you get started.\n// First challenge: create a function to calculate distances\n// so that you move towards and pew only the closest cats.\n\n// ======================================================\n\n// Learn more details in the Documentation/How to play.\n\n\nfor (let cat of my_cats) {\n    if (cat.sight.enemies.length == 0) continue;\n\n    let enemy = cats[cat.sight.enemies[0]];\n    cat.move(enemy.position);\n    cat.pew(enemy);\n}";
+	editor.setValue(starterCode, 1);
 }
 
 var isMac = navigator.platform.indexOf('Mac') !== -1;

@@ -180,8 +180,22 @@
   <div id="panel" class="" style="display: none;">
   	<div id="panel_dragger"><div id="drag_line1"></div><div id="drag_line2"></div></div>
     <div id="editor_container" class="tutorial_editor">
-		<div id="editor">// Your code goes here
+		<div id="editor">// This is an example code to help you get started.
+// First challenge: create a function to calculate distances
+// so that you move towards and pew only the closest cats.
 
+// ======================================================
+
+// Learn more details in the Documentation/How to play.
+
+
+for (let cat of my_cats) {
+    if (cat.sight.enemies.length == 0) continue;
+
+    let enemy = cats[cat.sight.enemies[0]];
+    cat.move(enemy.position);
+    cat.pew(enemy);
+}
 		</div>
     </div>
     <div id="console2">
