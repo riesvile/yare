@@ -213,8 +213,10 @@ const aoe_radius = GAME_CONSTANTS.AOE_RADIUS;
 const h_square = min_beam / Math.sqrt(2);
 
 function setBotCode(name, sand) {
-	if (name == 'dumb-bot'){
-		sand.setPlayerCode(botCodes['dumb-bot']);
+	if (name == 'muffin-bot'){
+		sand.setPlayerCode(botCodes['muffin-bot']);
+	} else if (name == 'cleo-bot'){
+		sand.setPlayerCode(botCodes['cleo-bot']);
 	}
 }
 
@@ -475,7 +477,11 @@ async function user_code(){
 		// log compile err first, as that corresponds to the latest
 		// user submitted code
 		if(sand1.last_compile_err){
-			fill_error(player, to_html(sand1.last_compile_err));
+			if(sand1.last_compile_err instanceof Error){
+				await handle_error(sand1.last_compile_err, player, sand1.currentCode);
+			} else {
+				fill_error(player, to_html(sand1.last_compile_err));
+			}
 		}
 		if(run_err) {
 			handle_error(run_err, player, sand1.currentCode);
@@ -504,7 +510,11 @@ async function user_code(){
 		chan2 = out.channels;
 
 		if(sand2.last_compile_err){
-			fill_error(player, to_html(sand2.last_compile_err));
+			if(sand2.last_compile_err instanceof Error){
+				await handle_error(sand2.last_compile_err, player, sand2.currentCode);
+			} else {
+				fill_error(player, to_html(sand2.last_compile_err));
+			}
 		}
 		if(run_err) {
 			handle_error(run_err, player, sand2.currentCode);

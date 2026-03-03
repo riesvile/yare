@@ -453,11 +453,20 @@ function bot_game(data, botinfo){
 	}
 }
 
-function dumb_bot_game(data){
+function muffin_bot_game(data){
 	return bot_game(data, {
-		id: 'dumb-bot',
+		id: 'muffin-bot',
 		session_id: 'bot',
 		rating: 500,
+		color: 'color2'
+	});
+}
+
+function cleo_bot_game(data){
+	return bot_game(data, {
+		id: 'cleo-bot',
+		session_id: 'bot',
+		rating: 700,
 		color: 'color2'
 	});
 }
@@ -881,7 +890,7 @@ app.post('/get_replay', async (req, res) => {
 
 
 
-app.get('/set-dumb', (req, res) => {
+app.get('/set-muffin', (req, res) => {
 	if (check_limiter(req.ip)){
 		res.status(200).send({
 			data: 'no!'
@@ -892,10 +901,10 @@ app.get('/set-dumb', (req, res) => {
 	User.updateMany({}, {"$set":{"goodenough": 0}}, {upsert: true})
 		.then((result) => {
 			//res.send(result);
-			logger.debug('set dumb bot beaten?');
+			logger.debug('set muffin bot beaten?');
 			
 			res.status(200).send({
-	        	data: "done dumb?"
+	        	data: "done muffin?"
 	        });
 			
 		})
@@ -1432,8 +1441,18 @@ async function newGame(data, socket){
 				meta: "ok",
 			}
 			break;
-		case "dumb-bot":
-			response = dumb_bot_game(data)
+		case "muffin-bot":
+			response = muffin_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "cleo-bot":
+			response = cleo_bot_game(data)
 			socket.send(JSON.stringify({
 				type: "match-found",
 				data: {

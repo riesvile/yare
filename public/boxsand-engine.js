@@ -761,7 +761,9 @@ function run_code(){
 		);
 		all_commands[players['p1']] = yd.commands;
 	} catch (e){
-		yd.errors.push(e.message + "\n    at " + (e.stack || '').split('\n')[1]);
+		var trace = (e.stack || '').split('\n')[1] || '';
+		var fixed = trace.replace(/:(\d+):(\d+)\)$/, function(m, line, col) { return ':' + (line - 2) + ':' + col + ')'; });
+		yd.errors.push(e.message + ' ' + fixed.trim());
 	}
 	
 	
@@ -772,7 +774,9 @@ function run_code(){
 		);
 		all_commands[players['p2']] = yd.commands;
 	} catch (e){
-		yd.errors.push(e.message + "\n    at " + (e.stack || '').split('\n')[1]);
+		var trace = (e.stack || '').split('\n')[1] || '';
+		var fixed = trace.replace(/:(\d+):(\d+)\)$/, function(m, line, col) { return ':' + (line - 2) + ':' + col + ')'; });
+		yd.errors.push(e.message + ' ' + fixed.trim());
 	}
 	
 }

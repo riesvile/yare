@@ -44,8 +44,8 @@ function player_selection_crossroad(e){
 	switch (el.id){
 	    case 'ps_live-input':
 	  	case 'ps_upload-bot':
-	  	case 'ps_dumb-bot':
-	    case 'ps_medium-bot':
+	  	case 'ps_muffin-bot':
+	    case 'ps_cleo-bot':
 	  	case 'ps_hard-bot':
 	  	case 'ps_lego-bot':
 		case 'ps_andersgee-bot':
@@ -150,8 +150,8 @@ document.getElementById('ps_friend').classList.remove('card_active');
 }
 
 function reset_bot_sel(){
-document.getElementById('ps_dumb-bot').classList.remove('card_active');
-document.getElementById('ps_medium-bot').classList.remove('card_active');
+document.getElementById('ps_muffin-bot').classList.remove('card_active');
+document.getElementById('ps_cleo-bot').classList.remove('card_active');
 document.getElementById('ps_hard-bot').classList.remove('card_active');
 document.getElementById('ps_lego-bot').classList.remove('card_active');
 document.getElementById('ps_andersgee-bot').classList.remove('card_active');
@@ -289,7 +289,7 @@ function start_game(e){
 	if (selected_versus == 'ps_friend') game_type = 'challenge';
 	if (game_type == 'challenge'){
 		wait_challenge_view();
-	} else if (["easy-bot", "dumb-bot", "medium-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot", "andersgee-bot"].includes(game_type)){
+	} else if (["easy-bot", "muffin-bot", "cleo-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot", "andersgee-bot"].includes(game_type)){
 		//document.getElementById("game_selections").classList.add("hidden")
 		//document.getElementById("choose_playstyle_block").classList.add("hidden")
 		//document.getElementById("choose_color_block").classList.add("hidden")
@@ -389,7 +389,7 @@ function copyTextToClipboard(text, target) {
 
 
 var from_nongame = 1;
-var selected_versus = 'ps_dumb-bot';
+var selected_versus = 'ps_muffin-bot';
 var selected_color = 'default';
 var selected_playstyle = 'manual';
 var friendly = 0;

@@ -108,7 +108,7 @@
   
   
 	  <div id="hector">
-		  <h1 id="logo"><a href="/">yare<span class="logo_lowlight">.io</span></a></h1>
+		  <h1 id="logo"><a href="/">yare</a></h1>
 		  <div class="menu">
 			  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
 			  <div class="menu_line desktop_only"></div>
@@ -219,12 +219,12 @@
 				  
 				  <div id="bot_game_btn"><span id="bot_sel_lbl">Play against a bot</span> <p class="btn_desc" id="btn_desc_bot">Test and build your scripts</p>
 				  	<div id="bot_selection_wrap">
-				  		<div class="select_bot_block" id="sel_dumb_bot">
-				  			<p class="bot_name">dumb-bot</p>
+				  		<div class="select_bot_block" id="sel_muffin_bot">
+				  			<p class="bot_name">muffin-bot</p>
 							<p class="bot_desc">Peaceful bot that doesn’t attack. Only defends itself.</p>
 				  		</div>
-				  		<div class="select_bot_block" id="sel_medium_bot">
-				  			<p class="bot_name">medium-bot</p>
+				  		<div class="select_bot_block" id="sel_cleo_bot">
+				  			<p class="bot_name">cleo-bot</p>
 							<p class="bot_desc">Beat it and you might be ready to play against humans.</p>
 				  		</div>
 				  		<div class="select_bot_block" id="sel_will_bot">
@@ -535,7 +535,7 @@
 		
 		if (type == 'challenge'){
 			wait_challenge_view();
-		} else if (["easy-bot", "dumb-bot", "medium-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot"].includes(type)){
+		} else if (["easy-bot", "muffin-bot", "cleo-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot"].includes(type)){
 			document.getElementById("start_area").classList.add("hidden")
 			document.getElementById("user_selections").classList.add("hidden")
 			document.getElementById("overlay").classList.add("hidden")
@@ -616,11 +616,11 @@
 	  document.getElementById('start_game_btn').addEventListener('click', start_game.bind(null, 'automatch'), false);
 	  document.getElementById('bot_game_btn').addEventListener('click', pre_select_bot, false);
 	  document.getElementById('challenge_friend_btn').addEventListener('click', start_game.bind(null, 'challenge'), false);
-	  //document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
+	  //document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'cleo-bot'), false);
 	  
 	  //bots
-	  document.getElementById('sel_dumb_bot').addEventListener('click', start_game.bind(null, 'dumb-bot'), false);
-	  document.getElementById('sel_medium_bot').addEventListener('click', start_game.bind(null, 'medium-bot'), false);
+	  document.getElementById('sel_muffin_bot').addEventListener('click', start_game.bind(null, 'muffin-bot'), false);
+	  document.getElementById('sel_cleo_bot').addEventListener('click', start_game.bind(null, 'cleo-bot'), false);
 	  document.getElementById('sel_will_bot').addEventListener('click', start_game.bind(null, 'will-bot'), false);
 	  document.getElementById('sel_boom_bot').addEventListener('click', start_game.bind(null, 'boom-bot'), false);
 	  

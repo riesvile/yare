@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./documentation.css">
 	<link rel="stylesheet" href="./style-mobile.css">
+	<script src="./anime.min.js"></script>
   </head>
   <body>
 
@@ -36,6 +37,25 @@
 		</form>
 	</div>
 
+	<div id="module_edit_mode" style="display:none;">
+		<input type="text" id="module_name_input" placeholder="Module name">
+		<div id="file_uploads_wrap">
+			<label class="file_upload_label">
+				<input type="file" id="file_script_client" class="file_upload" accept=".js">
+				<span class="lbl_name" id="client_file_name">Upload script</span>
+			</label>
+			<label class="file_upload_label">
+				<input type="file" id="file_script_server" class="file_upload" accept=".js">
+				<span class="lbl_name" id="server_file_name">Upload script</span>
+			</label>
+		</div>
+		<span id="modules_server_message" class="srv_ok"></span>
+		<span id="modules_server_message_loader"></span>
+		<div id="create_module_btn">Create module</div>
+		<div id="update_module_btn">Update module</div>
+		<a id="close_module_edit" href="#">Close</a>
+	</div>
+
 	<div id="profile_links">
 		<div id="acc_basics">
 			<div class="basics_bg"></div>
@@ -43,26 +63,48 @@
 			<a href="/hub" class="profile_link" id="hub_link">Game history</a>
 			<a href="#" class="profile_link" id="log_out">Log out</a>
 		</div>
+		<div id="audio_settings" style="display:none;"></div>
+		<div id="language_settings" style="display:none;">
+			<div class="lang_chip lang_on" id="lang_js">JavaScript</div>
+			<div class="lang_chip" id="lang_ts">TypeScript</div>
+			<div class="lang_chip" id="lang_py">Python</div>
+		</div>
+		<div class="sep_medium" id="dismiss"></div>
 	</div>
 
 	<div id="hector">
-		<h1 id="logo"><a href="/" style="font-size: 14px; font-weight: 500; color: rgba(255, 255, 255, 0.86);">yare</a></h1>
+		<h1 id="logo"><a href="/">yare</a></h1>
 		<div class="menu">
-			<a href="/newgame" class="menu_link new_g" id="new_g">New game</a>
-			<div class="menu_line desktop_only"></div>
-			<div class="menu_link new_acc" id="new_account">New account</div>
-			<div class="menu_link" id="login">Log in</div>
-			<div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
+			<a href="/documentation" class="menu_link" id="link_howtoplay">How to play</a>
+			<div class="menu_link" id="login">Sign in</div>
+			<div class="menu_link new_acc" id="new_account">Create account</div>
+			<div class="menu_link" id="signed_in"><span id="the_name">username</span></div>
 		</div>
 	</div>
 
+	<div id="modules_plate" style="display:none;"></div>
+
 	<div id="overlay"></div>
+
+	<div id="account_overlay">
+		<div id="account_overlay_content">
+			<div id="account_header">
+				<a href="#" id="account_logout">Log out</a>
+				<span id="account_username">username</span>
+				<span id="account_rating">1500</span>
+			</div>
+			<div id="account_history">
+				<span id="account_history_label">Game history</span>
+				<div id="account_history_table"></div>
+			</div>
+		</div>
+	</div>
 
 	<div id="doc_content">
 
 		<div class="spacer-l"></div>
 
-		<h1 class="doc_h1">Kill all enemy cats to win. With JavaScript or Python.</h1>
+		<h1 class="doc_h1">Kill all enemy cats to win. With JavaScript.</h1>
 
 		<div class="spacer-l"></div>
 
@@ -210,7 +252,7 @@
   friends_pewable: ['jane_2'],
   enemies_pewable: []
 }</pre>
-			<p>There are 3 friendly and 1 enemy cat within sight range. 1 friendly cat is within pew() distance.</p>
+			<p>Cats see other cats within 400 radius. There are 3 friendly and 1 enemy cat within sight range. 1 friendly cat is within pew() distance.</p>
 		</div>
 
 		<div class="spacer-l"></div>
@@ -267,7 +309,12 @@
 		<section id="doc_credits">
 			<p class="semi-headline"><span class="text-bright">Credits</span></p>
 			<p class="desc">Author: <a href="http://ries.cz">Vilem Ries</a></p>
-			<p class="desc">Key contributors: <a href="https://github.com/andyleap">Vendan</a>, <a href="https://mobile.twitter.com/mcudrc">jm</a> and <a href="http://swz.works">swz</a></p>
+			<p class="desc">Special thanks:
+			<span class="credit-name"><a href="https://github.com/andyleap">Vendan</a><span class="credit-tooltip">Lots of infra work and backend optimization on the 'v1' of Yare that is still in use in this version</span></span>,
+			<span class="credit-name"><a href="https://mobile.twitter.com/mcudrc">jm</a><span class="credit-tooltip">Helped with optimizations around game logic</span></span>,
+			<span class="credit-name"><a href="http://swz.works">swz</a><span class="credit-tooltip">Python transpiler and other help (Python not ready yet in this version of Yare, but coming soon!)</span></span> and
+			<span class="credit-name"><a href="https://rozbrajacz.futbol">roz</a><span class="credit-tooltip">Lots of help with testing</span></span>
+		</p>
 		</section>
 
 		<div class="spacer-xl"></div>
@@ -282,7 +329,8 @@
 	});
 	</script>
 
-	<script src="./basics.js"></script>
+	<script src="../animations.js"></script>
+	<script src="../basics.js"></script>
 
   </body>
 </html>

@@ -607,6 +607,7 @@ function login_success(user_name){
 	document.getElementById('the_name').innerHTML = user_name;
 	document.getElementById('acc_info_name').innerHTML = user_name + ' · ';
 	document.getElementById('signed_in').style.display = 'block';
+	document.getElementById('account_username').textContent = user_name;
 	
 	if (account_creation == 1){
 		dismissals();
@@ -710,25 +711,93 @@ function logout() {
 }
 
 function user_links(){
+	var username = getCookie('user_id') || 'username';
+	document.getElementById('account_username').textContent = username;
+
+	fetch_game_history();
+
 	anime({
-		targets: '#profile_links',
-		//translateY: [0, 10],
+		targets: '#account_overlay',
 		opacity: [0, 1],
 		easing: 'easeOutQuad',
 		duration: 300
 	});
-	
+
+	document.getElementById('account_overlay').style.pointerEvents = 'auto';
+}
+
+function close_account_overlay(){
 	anime({
-		targets: '#overlay',
-		backgroundColor: 'rgba(0, 0, 0, 0.39)',
-		backdropFilter: 'blur(12px)',
-		"-webkit-backdrop-filter": 'blur(12px)',
+		targets: '#account_overlay',
+		opacity: [1, 0],
 		easing: 'easeOutQuad',
-		duration: 300
+		duration: 200
 	});
 
-	document.getElementById('overlay').style.pointerEvents = 'auto';	
-	document.getElementById('profile_links').style.pointerEvents = 'auto';
+	document.getElementById('account_overlay').style.pointerEvents = 'none';
+}
+
+function fetch_game_history(){
+	var user_id = getCookie('user_id');
+	if (!user_id || user_id === 'anonymous') return;
+
+	fetch('/populate-hub', {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({ user_id: user_id })
+	}).then(function(response){ return response.json(); })
+	  .then(function(response){
+		if (response.data === 'no results') return;
+		render_account_history(response.stream);
+	}).catch(function(err){ console.error(err); });
+}
+
+function timeSinceShort(date) {
+	var seconds = Math.floor((new Date() - date) / 1000);
+	var interval = Math.floor(seconds / 31536000);
+	if (interval >= 1) return interval + "y ago";
+	interval = Math.floor(seconds / 2592000);
+	if (interval >= 1) return interval + "mo ago";
+	interval = Math.floor(seconds / 86400);
+	if (interval >= 1) return interval + "d ago";
+	interval = Math.floor(seconds / 3600);
+	if (interval >= 1) return interval + "h ago";
+	interval = Math.floor(seconds / 60);
+	if (interval >= 1) return interval + "m ago";
+	return Math.floor(seconds) + "s ago";
+}
+
+function render_account_history(games){
+	var tbl = document.getElementById('account_history_table');
+	var this_player = getCookie('user_id');
+	var html = '';
+
+	for (var i = 0; i < games.length; i++){
+		var g = games[i];
+		var isP1 = (this_player === g.player1);
+		var myRating = isP1 ? g.p1_rating : g.p2_rating;
+		var oppName = isP1 ? g.player2 : g.player1;
+		var oppRating = isP1 ? g.p2_rating : g.p1_rating;
+		var won = (g.winner === this_player);
+		var annulled = (g.winner === '');
+		var resultClass = annulled ? '' : (won ? 'ah_win' : 'ah_loss');
+		var resultText = annulled ? '-' : (won ? 'W' : 'L');
+		var dateStr = timeSinceShort(new Date(g.updatedAt));
+
+		var ratingStr = myRating != null ? ' (' + myRating + ')' : '';
+		var oppRatingStr = oppRating != null ? ' (' + oppRating + ')' : '';
+
+		html += '<a href="/replay/' + g.game_id + '" class="ah_row">'
+			+ '<span class="ah_players"><span class="ah_players_bold">' + this_player + ratingStr + '</span>'
+			+ ' vs. <span class="ah_players_bold">' + oppName + oppRatingStr + '</span></span>'
+			+ '<span class="ah_date">' + dateStr + '</span>'
+			+ '<span class="ah_result ' + resultClass + '">' + resultText + '</span>'
+			+ '</a>';
+	}
+	tbl.innerHTML = html;
 }
 
 function resizing(){
@@ -1783,7 +1852,7 @@ function game_switch_view(){
 	if (switcher.classList.contains('switch_switched')){
 		switcher.classList.remove('switch_switched');
 		panel.style.display = "block";
-		panel.style.backgroundColor = "rgba(12, 10, 16, 0.96)";
+		panel.style.backgroundColor = "rgba(4, 2, 8, 0.9)";
 	} else {
 		switcher.classList.add('switch_switched');
 		panel.style.display = "none";
@@ -1843,6 +1912,16 @@ try {
 
 document.getElementById('overlay').addEventListener('click', dismissals, false);
 document.getElementById('signed_in').addEventListener('click', user_links, false);
+
+document.getElementById('account_overlay').addEventListener('click', function(e){
+	if (e.target.closest('.ah_row')) return;
+	close_account_overlay();
+}, false);
+
+document.getElementById('account_logout').addEventListener('click', function(e){
+	e.preventDefault();
+	logout();
+}, false);
 
 try {
 	document.getElementById('over_new_account').addEventListener('click', new_account, false);

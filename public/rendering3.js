@@ -22,20 +22,11 @@ var pointing_at_y = 0;
 
 function offsetUpdate(){
 	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
-	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
 	c_base.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
 	c_base.translate(offsetX, offsetY);
 	
-	if (live_render == 0) draw_boxsand_bg();
-	if (live_render == 1) draw_bg_grad();
-	
-	for (i = 0; i < barricades.length; i++){
-		draw_barricade(barricades[i]);
-	}
-	for (i = 0; i < pods.length; i++){
-		draw_pod(pods[i]);
-	}
+	_blitBase();
 }
 
 function zoomUpdate(){
@@ -43,12 +34,7 @@ function zoomUpdate(){
 	c_base.translate(offsetX, offsetY);
 	c_base.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.1, main_canvas.height * multiplier * 1.1);
 	
-	for (i = 0; i < barricades.length; i++){
-		draw_barricade(barricades[i]);
-	}
-	for (i = 0; i < pods.length; i++){
-		draw_pod(pods[i]);
-	}
+	_blitBase();
 }
 
 function rgb_to_hsl(r,g,b) {
@@ -103,21 +89,16 @@ function draw_boxsand_bg(){
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 }
 
+var _cachedGradient = null;
+
 function draw_bg_grad(){
-	
-	//let corner1_parts
-	
-	var grdddd = c.createLinearGradient(-650, -480, 480, 650);
-	//grdddd.addColorStop(0, "hsla(0, 50%, 20%, 1)");
-	//grdddd.addColorStop(1, "hsla(50, 50%, 40%, 1)");
-	
-	grdddd.addColorStop(0, "hsla(" + corner1_parts_hsl[0] + "," + corner1_parts_hsl[1] + "% ," + 4 + "% ," + (corner1_parts[3] - 0.2) + ")");
-	grdddd.addColorStop(1, "hsla(" + corner2_parts_hsl[0] + "," + corner2_parts_hsl[1] + "% ," + 4 + "% ," + (corner2_parts[3] - 0.2) + ")");
-	
-	c.fillStyle = grdddd;
-	//c.fillRect(-2000, -2000, 2000, 2000);
+	if (!_cachedGradient) {
+		_cachedGradient = c.createLinearGradient(-650, -480, 480, 650);
+		_cachedGradient.addColorStop(0, "hsla(" + corner1_parts_hsl[0] + "," + corner1_parts_hsl[1] + "% ," + 4 + "% ," + (corner1_parts[3] - 0.2) + ")");
+		_cachedGradient.addColorStop(1, "hsla(" + corner2_parts_hsl[0] + "," + corner2_parts_hsl[1] + "% ," + 4 + "% ," + (corner2_parts[3] - 0.2) + ")");
+	}
+	c.fillStyle = _cachedGradient;
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
-	
 }
 
 function draw_circle_zone(radius){
@@ -326,11 +307,17 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			}
 		}
 	
-		for (s = 0; s < barricades.length; s++){
-			if (Math.abs(barricades[s][0] - board_xx) <= 80 && Math.abs(barricades[s][1] - board_yy) <= 80){
-				hover_content.push(['barricade', 'barricade']);
-			}
+	for (s = 0; s < barricades.length; s++){
+		if (Math.abs(barricades[s][0] - board_xx) <= 80 && Math.abs(barricades[s][1] - board_yy) <= 80){
+			hover_content.push(['barricade', 'barricade']);
 		}
+	}
+
+	for (s = 0; s < pods.length; s++){
+		if (Math.abs(pods[s][0] - board_xx) <= 30 && Math.abs(pods[s][1] - board_yy) <= 30){
+			hover_content.push(['pod', 'pod']);
+		}
+	}
 	
 	
 		if (hover_content.length == 0){
@@ -339,11 +326,15 @@ function fill_hover_thing(xx, yy, board_xx, board_yy){
 			show_hover();
 		if (hover_content[0][0] == 'cat'){
 			hoveroid.innerHTML = "<span class='cat_id'>" + hover_content[0][1] + "</span><span class='cat_energy'>" + hover_content[0][2] + " <span class='lowlight'>energy</span></span>";
-		} else if (hover_content[0][0] == 'barricade'){
-			hoveroid.innerHTML = "<span class='barricade_id'>" + hover_content[0][1] + "</span>";
-			hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
-			hoveroid.style.left = xx - 20 + 'px';
-		}
+	} else if (hover_content[0][0] == 'barricade'){
+		hoveroid.innerHTML = "<span class='barricade_id'>" + hover_content[0][1] + "</span>";
+		hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+		hoveroid.style.left = xx - 20 + 'px';
+	} else if (hover_content[0][0] == 'pod'){
+		hoveroid.innerHTML = "<span class='barricade_id'>" + hover_content[0][1] + "</span>";
+		hoveroid.style.bottom = window.innerHeight - yy + 10 + 'px';
+		hoveroid.style.left = xx - 20 + 'px';
+	}
 		} else if (hover_content.length > 4){
 			show_hover();
 			var total_eng = 0;
@@ -443,7 +434,7 @@ var panel_el_widtho = 0;
 try {
 	document.getElementById("panel").addEventListener("mouseenter", function(e) {
 		if (mousey != 1){
-			document.getElementById("panel").style.backgroundColor = "hsla(234, 20%, 12%, 0.95)";
+			document.getElementById("panel").style.backgroundColor = "rgba(4, 2, 8, 0.9)";
 			//document.getElementById("panel").style.backdropFilter = "blur(12px)";
 		}
 
@@ -451,7 +442,7 @@ try {
 
 	document.getElementById("panel").addEventListener("mousedown", function(e) {
 		if (mousey != 1){
-			document.getElementById("panel").style.backgroundColor = "hsla(234, 20%, 12%, 0.95)";
+			document.getElementById("panel").style.backgroundColor = "rgba(4, 2, 8, 0.9)";
 			//document.getElementById("panel").style.backdropFilter = "blur(12px)";
 		}
 
@@ -459,7 +450,7 @@ try {
 
 	document.getElementById("panel").addEventListener("mouseleave", function(e) {
 		if (mousey != 1){
-			document.getElementById("panel").style.backgroundColor = "hsla(234, 20%, 12%, 0.95)";
+			document.getElementById("panel").style.backgroundColor = "rgba(4, 2, 8, 0.9)";
 			//document.getElementById("panel").style.backdropFilter = "blur(12px)";
 		}
 
@@ -496,6 +487,11 @@ base_canvas.style.width = innerWidth + 'px';
 base_canvas.style.height = innerHeight + 'px';
 c.scale(dpr, dpr);
 c_base.scale(dpr, dpr);
+
+var _offscreenBase = document.createElement('canvas');
+var _offscreenBaseCtx = _offscreenBase.getContext('2d');
+var _offscreenBaseDirty = true;
+var _offscreenBaseScale = -1;
 
 //c.globalCompositeOperation = 'screen';
 
@@ -634,6 +630,8 @@ function game_over(winner){
 	  	  document.getElementById('player1_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color1'] + "'></span>";
 	  	  document.getElementById('player2_shape').innerHTML = "<span class='ico_triangles' style='background-color: " + colors['color2'] + "'></span>";
 		  
+		  var _is_bot = pla1.indexOf('-bot') !== -1 || pla2.indexOf('-bot') !== -1;
+		  if (!_is_bot) {
 		  setTimeout(function(){
 		  	
   	    	fetch('/playerinfo', {
@@ -674,6 +672,7 @@ function game_over(winner){
   	    	  });
 			
 		  }, 1000);
+		  }
 		  
 	    	
   	  })
@@ -702,7 +701,12 @@ function game_over(winner){
 		document.getElementById('over_login').style.display = 'none';
 	}
 	
-	if (pla2 == 'medium-bot') document.getElementById('ranked_nonranked').innerHTML = 'Non-ranked';
+	var is_bot_game = pla1.indexOf('-bot') !== -1 || pla2.indexOf('-bot') !== -1;
+	if (is_bot_game) {
+		document.getElementById('ranked_nonranked').innerHTML = 'Unranked';
+		document.getElementById('player1_rating').innerHTML = '';
+		document.getElementById('player2_rating').innerHTML = '';
+	}
 	
 	document.getElementById('player1_name').innerHTML = pla1;
 	document.getElementById('player2_name').innerHTML = pla2;
@@ -769,6 +773,11 @@ function getCatImages(colorStoreStr) {
 }
 
 
+function _parseColor(colorStr) {
+	var p = colorStr.match(/[.?\d]+/g);
+	return [Number(p[0]), Number(p[1]), Number(p[2]), Number(p[3])];
+}
+
 class Cat {
 	constructor(id, position, energy, player, color, hp = 1){
 		this.id = id
@@ -776,6 +785,8 @@ class Cat {
 		this.energy = energy;
 		this.color = color;
 		this.color_store = color;
+		this._colorParts = _parseColor(color);
+		this._colorStoreParts = this._colorParts;
 		
 		//const properties
 		this.hp = hp;
@@ -825,6 +836,7 @@ class Cat {
 			this.dying = 0;
 			this.energy = new_energy;
 			this.color = this.color_store;
+			this._colorParts = this._colorStoreParts;
 		}
 		
 	}
@@ -867,26 +879,15 @@ class Cat {
 	}
 	
 	explode(){
-		var color_parts = this.color.match(/[.?\d]+/g);
+		var cp = this._colorParts;
 		if (!explosions[this.id]) explosions[this.id] = 4;
 		explosions[this.id] *= 1.1;
-		//let that = this;
-		//let counter_explosion = 0;
-		//
-		//let interval_explosion = setInterval(function() {
-		//	if (counter_explosion > 30){
-		//		clearInterval(interval_explosion);
-		//		that.hp = 0;
-		//	}
-		//	that.size += 1;
-		//	
-		//}, 16);
-		var draw_alpha = color_parts[3] * (1 - explosions[this.id] / 100);
+		var draw_alpha = cp[3] * (1 - explosions[this.id] / 100);
 		if (explosions[this.id] >= 100) draw_alpha = 0;
 		
 		c.beginPath();
 		c.arc(this.position[0], this.position[1], explosions[this.id], 0, Math.PI * 2, false);
-		c.fillStyle = 'rgba(' + color_parts[0] + ', ' + color_parts[1] + ', ' + color_parts[2] + ', ' + draw_alpha + ')';
+		c.fillStyle = 'rgba(' + cp[0] + ',' + cp[1] + ',' + cp[2] + ',' + draw_alpha + ')';
 		c.fill();
 	}
 	
@@ -908,10 +909,10 @@ class Cat {
 				return;
 			}
 			var t = dt / duration;
-			var cp = this.color_store.match(/[.?\d]+/g);
-			var r = Number(cp[0]);
-			var g = Number(cp[1]);
-			var b = Number(cp[2]);
+			var cp = this._colorStoreParts;
+			var r = cp[0];
+			var g = cp[1];
+			var b = cp[2];
 
 			var scale_factor = 1 + t * 1.05;
 			var fade = t < 0.08 ? 1 : 1 - Math.pow((t - 0.08) / 0.92, 0.6);
@@ -955,7 +956,7 @@ class Cat {
 		}
 
 		if (this.hp != 0){
-			var color_parts = this.color.match(/[.?\d]+/g);
+			var cp = this._colorParts;
 			var cat_percent_energy = this.energy / this.energy_capacity;
 			if (cat_percent_energy > 1) cat_percent_energy = 1;
 			if (cat_percent_energy < 0) cat_percent_energy = 0;
@@ -963,7 +964,7 @@ class Cat {
 			var imgs = getCatImages(this.color_store);
 			var drawSize = 20;
 			var halfSize = drawSize / 2;
-			var baseAlpha = parseFloat(color_parts[3]);
+			var baseAlpha = cp[3];
 
 			c.save();
 			c.translate(this.position[0], this.position[1]);
@@ -989,7 +990,7 @@ class Cat {
 					shouting_helper[this.id] -= 1;
 				}
 				c.font = '13px sans-serif';
-				c.fillStyle = 'rgba(' + color_parts[0] * 1.4 + ', ' + color_parts[1] * 1.4 + ', ' + color_parts[2] * 1.4 + ', ' + color_parts[3] * (shouting_helper[this.id] / 180) + ')';
+				c.fillStyle = 'rgba(' + (cp[0] * 1.4) + ',' + (cp[1] * 1.4) + ',' + (cp[2] * 1.4) + ',' + (cp[3] * (shouting_helper[this.id] / 180)) + ')';
 				c.textAlign = 'center';
 				c.fillText(this.shout, this.position[0], this.position[1] - halfSize - 4);
 			}
@@ -997,32 +998,86 @@ class Cat {
 	}
 }
 
-function draw_barricade(pos){
-	c_base.save();
-	c_base.beginPath();
-	c_base.arc(pos[0], pos[1], 80, 0, Math.PI * 2, false);
-	c_base.clip();
-	c_base.beginPath();
-	c_base.arc(pos[0], pos[1], 88, 0, Math.PI * 2, false);
-	c_base.strokeStyle = 'rgba(255,255,255,1)';
-	c_base.shadowColor = 'rgba(225, 250, 255, 0.4)';
-	c_base.shadowBlur = 32 / (multiplier / 2.5);
-	c_base.lineWidth = 8;
-	c_base.stroke();
-	c_base.shadowColor = null;
-	c_base.shadowBlur = null;
-	c_base.restore();
+function draw_barricade(pos, ctx){
+	ctx = ctx || c_base;
+	ctx.save();
+	ctx.beginPath();
+	ctx.arc(pos[0], pos[1], 80, 0, Math.PI * 2, false);
+	ctx.clip();
+	ctx.beginPath();
+	ctx.arc(pos[0], pos[1], 88, 0, Math.PI * 2, false);
+	ctx.strokeStyle = 'rgba(255,255,255,1)';
+	ctx.shadowColor = 'rgba(225, 250, 255, 0.4)';
+	ctx.shadowBlur = 32 / (multiplier / 2.5);
+	ctx.lineWidth = 8;
+	ctx.stroke();
+	ctx.shadowColor = null;
+	ctx.shadowBlur = null;
+	ctx.restore();
 }
 
-function draw_pod(pos){
-	c_base.save();
-	c_base.fillStyle = 'hsla(130, 99%, 76%, 0.12)';
-	c_base.strokeStyle = 'hsla(130, 99%, 76%, 0.12)';
-	c_base.lineWidth = 2;
-	c_base.roundRect(pos[0] - 20, pos[1] - 20, 40, 40, 12);
-	c_base.fill();
-	c_base.stroke();
-	c_base.restore();
+function draw_pod(pos, ctx){
+	ctx = ctx || c_base;
+	ctx.save();
+	ctx.fillStyle = 'hsla(130, 99%, 76%, 0.12)';
+	ctx.strokeStyle = 'hsla(130, 99%, 76%, 0.12)';
+	ctx.lineWidth = 2;
+	ctx.roundRect(pos[0] - 20, pos[1] - 20, 40, 40, 12);
+	ctx.fill();
+	ctx.stroke();
+	ctx.restore();
+}
+
+function _renderOffscreenBase(){
+	var margin = 200;
+	var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+	for (var i = 0; i < barricades.length; i++){
+		var bx = barricades[i][0], by = barricades[i][1];
+		if (bx - 100 < minX) minX = bx - 100;
+		if (by - 100 < minY) minY = by - 100;
+		if (bx + 100 > maxX) maxX = bx + 100;
+		if (by + 100 > maxY) maxY = by + 100;
+	}
+	for (var i = 0; i < pods.length; i++){
+		var px = pods[i][0], py = pods[i][1];
+		if (px - 30 < minX) minX = px - 30;
+		if (py - 30 < minY) minY = py - 30;
+		if (px + 30 > maxX) maxX = px + 30;
+		if (py + 30 > maxY) maxY = py + 30;
+	}
+	minX -= margin; minY -= margin; maxX += margin; maxY += margin;
+
+	var w = (maxX - minX) * dpr;
+	var h = (maxY - minY) * dpr;
+	_offscreenBase.width = w;
+	_offscreenBase.height = h;
+	_offscreenBase._originX = minX;
+	_offscreenBase._originY = minY;
+
+	_offscreenBaseCtx.scale(dpr, dpr);
+	_offscreenBaseCtx.translate(-minX, -minY);
+
+	for (var i = 0; i < barricades.length; i++){
+		draw_barricade(barricades[i], _offscreenBaseCtx);
+	}
+	for (var i = 0; i < pods.length; i++){
+		draw_pod(pods[i], _offscreenBaseCtx);
+	}
+
+	_offscreenBaseDirty = false;
+	_offscreenBaseScale = scale;
+}
+
+function _blitBase(){
+	if (_offscreenBaseDirty || _offscreenBaseScale !== scale){
+		_renderOffscreenBase();
+	}
+	c_base.drawImage(
+		_offscreenBase,
+		0, 0, _offscreenBase.width, _offscreenBase.height,
+		_offscreenBase._originX, _offscreenBase._originY,
+		_offscreenBase.width / dpr, _offscreenBase.height / dpr
+	);
 }
 
 function mapValues(the_number, in_min, in_max, out_min, out_max) {
@@ -1054,13 +1109,15 @@ function _beam_points(ox, oy, tx, ty, segments, amplitude, time, seed, hash){
 	return pts;
 }
 
-function draw_splash_beam(origin, primary_target, splash_target, energy_strength, color, hash){
+var _frameTime = 0;
+
+function draw_splash_beam(origin, primary_target, splash_target, energy_strength, color, hash, colorParts){
 	if (energy_strength == 0) return;
-	var color_parts = color.match(/[.?\d]+/g);
-	var r = Number(color_parts[0]);
-	var g = Number(color_parts[1]);
-	var b = Number(color_parts[2]);
-	var a = Number(color_parts[3]);
+	var cp = colorParts || _parseColor(color);
+	var r = cp[0];
+	var g = cp[1];
+	var b = cp[2];
+	var a = cp[3];
 
 	var mx = (origin[0] + primary_target[0]) * 0.5;
 	var my = (origin[1] + primary_target[1]) * 0.5;
@@ -1070,14 +1127,13 @@ function draw_splash_beam(origin, primary_target, splash_target, energy_strength
 	var dist = Math.sqrt(dx * dx + dy * dy);
 	var segments = Math.max(3, Math.round(dist / 15));
 	var amplitude = Math.min(dist * 0.06, 3);
-	var time = performance.now() / 1000;
 	if (!hash) hash = 0;
 
 	var br = Math.min(255, r + 80);
 	var bg = Math.min(255, g + 60);
 	var bb = Math.min(255, b + 60);
 
-	var pts = _beam_points(mx, my, splash_target[0], splash_target[1], segments, amplitude, time, 3, hash);
+	var pts = _beam_points(mx, my, splash_target[0], splash_target[1], segments, amplitude, _frameTime, 3, hash);
 
 	c.beginPath();
 	c.moveTo(pts[0][0], pts[0][1]);
@@ -1089,11 +1145,6 @@ function draw_splash_beam(origin, primary_target, splash_target, energy_strength
 	c.globalAlpha = 0.5;
 	c.stroke();
 
-	c.beginPath();
-	c.moveTo(pts[0][0], pts[0][1]);
-	for (var p = 1; p < pts.length; p++){
-		c.lineTo(pts[p][0], pts[p][1]);
-	}
 	c.lineWidth = 0.7;
 	c.strokeStyle = 'rgba(' + br + ',' + bg + ',' + bb + ',' + a + ')';
 	c.globalAlpha = 0.75;
@@ -1101,13 +1152,13 @@ function draw_splash_beam(origin, primary_target, splash_target, energy_strength
 	c.globalAlpha = 1;
 }
 
-function draw_pew(origin, target, energy_strength, color, friendly, hash){
+function draw_pew(origin, target, energy_strength, color, friendly, hash, colorParts){
 	if (energy_strength == 0) return;
-	var color_parts = color.match(/[.?\d]+/g);
-	var r = Number(color_parts[0]);
-	var g = Number(color_parts[1]);
-	var b = Number(color_parts[2]);
-	var a = Number(color_parts[3]);
+	var cp = colorParts || _parseColor(color);
+	var r = cp[0];
+	var g = cp[1];
+	var b = cp[2];
+	var a = cp[3];
 
 	if (friendly){
 		c.beginPath();
@@ -1126,7 +1177,6 @@ function draw_pew(origin, target, energy_strength, color, friendly, hash){
 	var dist = Math.sqrt(dx * dx + dy * dy);
 	var segments = Math.max(5, Math.round(dist / 20));
 	var amplitude = Math.min(dist * 0.04, 3);
-	var time = performance.now() / 1000;
 	if (!hash) hash = 0;
 
 	var br = Math.min(255, r + 80);
@@ -1134,7 +1184,7 @@ function draw_pew(origin, target, energy_strength, color, friendly, hash){
 	var bb = Math.min(255, b + 60);
 
 	for (var bolt = 0; bolt < 2; bolt++){
-		var pts = _beam_points(origin[0], origin[1], target[0], target[1], segments, amplitude, time, bolt + 1, hash);
+		var pts = _beam_points(origin[0], origin[1], target[0], target[1], segments, amplitude, _frameTime, bolt + 1, hash);
 
 		c.beginPath();
 		c.moveTo(pts[0][0], pts[0][1]);
@@ -1146,11 +1196,6 @@ function draw_pew(origin, target, energy_strength, color, friendly, hash){
 		c.globalAlpha = 0.55;
 		c.stroke();
 
-		c.beginPath();
-		c.moveTo(pts[0][0], pts[0][1]);
-		for (var p = 1; p < pts.length; p++){
-			c.lineTo(pts[p][0], pts[p][1]);
-		}
 		c.lineWidth = 1.0 - bolt * 0.2;
 		c.strokeStyle = 'rgba(' + br + ',' + bg + ',' + bb + ',' + a + ')';
 		c.globalAlpha = 0.9;
@@ -1160,23 +1205,15 @@ function draw_pew(origin, target, energy_strength, color, friendly, hash){
 }
 
 function initiate_world(){
+	_offscreenBaseDirty = true;
 	offsetUpdate();
-
-	for (var bi = 0; bi < barricades.length; bi++){
-		draw_barricade(barricades[bi]);
-	}
-	for (var pi = 0; pi < pods.length; pi++){
-		draw_pod(pods[pi]);
-	}
-	
-	offsetUpdate();
-	
 	
 	corner1_parts = colors['color1'].match(/[.?\d]+/g);
 	corner2_parts = colors['color2'].match(/[.?\d]+/g);
 
 	corner1_parts_hsl = rgb_to_hsl(corner1_parts[0], corner1_parts[1], corner1_parts[2]);
 	corner2_parts_hsl = rgb_to_hsl(corner2_parts[0], corner2_parts[1], corner2_parts[2]);
+	_cachedGradient = null;
 	
 	world_initiated = 1;
 }
@@ -1187,6 +1224,7 @@ function initiate_from_sandbox(){
 
 	corner1_parts_hsl = rgb_to_hsl(corner1_parts[0], corner1_parts[1], corner1_parts[2]);
 	corner2_parts_hsl = rgb_to_hsl(corner2_parts[0], corner2_parts[1], corner2_parts[2]);
+	_cachedGradient = null;
 	
 	try { document.getElementById('modules_plate').style.display = 'block'; } catch(e){}
 }
@@ -1201,7 +1239,7 @@ function handle_shout(spir_id, shout_msg){
 	
 }
 
-function drawgqueue(gqueue) {
+function drawgqueue(gqueue, vpL, vpR, vpT, vpB) {
 	for(const g of gqueue) {
 		switch(g[0]) {
 			case 'st':
@@ -1211,17 +1249,23 @@ function drawgqueue(gqueue) {
 				c.lineWidth = g[1];
 				break;
 			case 'c':
+				if (g[1] + g[3] < vpL || g[1] - g[3] > vpR || g[2] + g[3] < vpT || g[2] - g[3] > vpB) break;
 				c.beginPath();
 				c.arc(g[1], g[2], g[3], 0, Math.PI * 2, false);
 				c.stroke();
 				break;
 			case 'l':
+				if (g[1] < vpL && g[3] < vpL) break;
+				if (g[1] > vpR && g[3] > vpR) break;
+				if (g[2] < vpT && g[4] < vpT) break;
+				if (g[2] > vpB && g[4] > vpB) break;
 				c.beginPath();
 				c.moveTo(g[1], g[2]);
 				c.lineTo(g[3], g[4]);
 				c.stroke();
 				break;
 			case 's':
+				if (g[1] + g[3] < vpL || g[1] > vpR || g[2] + g[4] < vpT || g[2] > vpB) break;
 				c.strokeRect(g[1], g[2], g[3], g[4]);
 				break;
 		}
@@ -1230,6 +1274,7 @@ function drawgqueue(gqueue) {
 
 
 function render_state(timestamp){
+	_frameTime = (timestamp || performance.now()) / 1000;
 	
 	if (isNaN(timestamp)){
 		
@@ -1255,8 +1300,7 @@ function render_state(timestamp){
 	c.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
 	c.translate(offsetX, offsetY);
 	
-	if (live_render == 0) draw_boxsand_bg();
-	if (live_render == 1) draw_bg_grad();
+	draw_bg_grad();
 	
 	if (panning == 1){
 		offsetUpdate();
@@ -1266,7 +1310,11 @@ function render_state(timestamp){
 		initiate_world();
 	}
 	
-	//all_living = living_cats.length;
+	var _vpPad = 60;
+	var _vpLeft = -offsetX - _vpPad;
+	var _vpTop = -offsetY - _vpPad;
+	var _vpRight = -offsetX + main_canvas.width * multiplier + _vpPad;
+	var _vpBottom = -offsetY + main_canvas.height * multiplier + _vpPad;
 	
 	var _gb = game_blocks[active_block];
 	if (_gb && _gb.units) {
@@ -1280,27 +1328,35 @@ function render_state(timestamp){
 	
 	for (i = 0; i < all_cats.length; i++){
 		if (!cats[all_cats[i]]) continue;
+		var _cat = cats[all_cats[i]];
 		if (_gb) {
-			if (cats[all_cats[i]].player_id == players['player1'] && _gb.p1 && _gb.p1[all_cats[i]]){
+			if (_cat.player_id == players['player1'] && _gb.p1 && _gb.p1[all_cats[i]]){
 				try {
-					cats[all_cats[i]].move([_gb.p1[all_cats[i]][0][4], _gb.p1[all_cats[i]][0][5]], [_gb.p1[all_cats[i]][0][2], _gb.p1[all_cats[i]][0][3]]);
-					cats[all_cats[i]].pew(_gb.p1[all_cats[i]][3], _gb.p1[all_cats[i]][1], _gb.p1[all_cats[i]][2]);
+					_cat.move([_gb.p1[all_cats[i]][0][4], _gb.p1[all_cats[i]][0][5]], [_gb.p1[all_cats[i]][0][2], _gb.p1[all_cats[i]][0][3]]);
+					_cat.pew(_gb.p1[all_cats[i]][3], _gb.p1[all_cats[i]][1], _gb.p1[all_cats[i]][2]);
 				} catch (e) {
 				}
-			} else if (cats[all_cats[i]].player_id == players['player2'] && _gb.p2 && _gb.p2[all_cats[i]]){
+			} else if (_cat.player_id == players['player2'] && _gb.p2 && _gb.p2[all_cats[i]]){
 				try {
-					cats[all_cats[i]].move([_gb.p2[all_cats[i]][0][4], _gb.p2[all_cats[i]][0][5]], [_gb.p2[all_cats[i]][0][2], _gb.p2[all_cats[i]][0][3]]);
-					cats[all_cats[i]].pew(_gb.p2[all_cats[i]][3], _gb.p2[all_cats[i]][1], _gb.p2[all_cats[i]][2]);
+					_cat.move([_gb.p2[all_cats[i]][0][4], _gb.p2[all_cats[i]][0][5]], [_gb.p2[all_cats[i]][0][2], _gb.p2[all_cats[i]][0][3]]);
+					_cat.pew(_gb.p2[all_cats[i]][3], _gb.p2[all_cats[i]][1], _gb.p2[all_cats[i]][2]);
 				} catch (e) {
 				}
 			}
 		}
-		cats[all_cats[i]].draw();
+		var _cx = _cat.position[0], _cy = _cat.position[1];
+		if (_cx >= _vpLeft && _cx <= _vpRight && _cy >= _vpTop && _cy <= _vpBottom){
+			_cat.draw();
+		}
 	}
 	
 	for (var _lc = 0; _lc < living_cats.length; _lc++){
 		if (living_cats[_lc].dying && !_active_ids[living_cats[_lc].id]){
-			living_cats[_lc].draw();
+			var _dlc = living_cats[_lc];
+			var _dx = _dlc.position[0], _dy = _dlc.position[1];
+			if (_dx >= _vpLeft && _dx <= _vpRight && _dy >= _vpTop && _dy <= _vpBottom){
+				_dlc.draw();
+			}
 		}
 	}
 	
@@ -1323,6 +1379,7 @@ function render_state(timestamp){
 	}
 	
 if (_gb) {
+var _colorPartsCache = {};
 try{
 	if (energy_blocks) {
 	for (i = 0; i < energy_blocks.length; i++){
@@ -1348,7 +1405,12 @@ try{
 		_ehash = Math.abs(_ehash);
 		
 		if (energy_origin.hp != 0 && energy_target.hp != 0){
-			draw_pew(eori, etar, energy_blocks[i][2], energy_color, is_friendly, _ehash);
+			if ((eori[0] >= _vpLeft && eori[0] <= _vpRight && eori[1] >= _vpTop && eori[1] <= _vpBottom) ||
+				(etar[0] >= _vpLeft && etar[0] <= _vpRight && etar[1] >= _vpTop && etar[1] <= _vpBottom)){
+				var _ecp = energy_origin._colorParts || energy_target._colorParts || _colorPartsCache[energy_color];
+				if (!_ecp && energy_color) { _ecp = _parseColor(energy_color); _colorPartsCache[energy_color] = _ecp; }
+				draw_pew(eori, etar, energy_blocks[i][2], energy_color, is_friendly, _ehash, _ecp);
+			}
 		}
 	}
 	}
@@ -1372,7 +1434,12 @@ try{
 		_sphash = Math.abs(_sphash);
 
 		if (sp_source.hp != 0 && sp_splash.hp != 0){
-			draw_splash_beam(sp_ori, sp_pri, sp_spl, splash_beams[i][3], sp_color, _sphash);
+			if ((sp_spl[0] >= _vpLeft && sp_spl[0] <= _vpRight && sp_spl[1] >= _vpTop && sp_spl[1] <= _vpBottom) ||
+				(sp_ori[0] >= _vpLeft && sp_ori[0] <= _vpRight && sp_ori[1] >= _vpTop && sp_ori[1] <= _vpBottom)){
+				var _spcp = sp_source._colorParts || _colorPartsCache[sp_color];
+				if (!_spcp && sp_color) { _spcp = _parseColor(sp_color); _colorPartsCache[sp_color] = _spcp; }
+				draw_splash_beam(sp_ori, sp_pri, sp_spl, splash_beams[i][3], sp_color, _sphash, _spcp);
+			}
 		}
 	}
 	}
@@ -1410,28 +1477,27 @@ try{
 	
 	
 	try {
-		drawgqueue(_gb.graphics);
+		drawgqueue(_gb.graphics, _vpLeft, _vpRight, _vpTop, _vpBottom);
 	} catch (e) {
 	}
 }
 	
 	try {
-		for (draw_func in module_draw){
-			module_draw[draw_func]();
+		var _mdKeys = Object.keys(module_draw);
+		for (var _mk = 0; _mk < _mdKeys.length; _mk++){
+			module_draw[_mdKeys[_mk]]();
 		}
 	} catch (e) {
 	}
 
-	try {
-		let event = new CustomEvent('yare-post-render', {detail: {ctx: c}});
-		document.dispatchEvent(event);
-	} catch (e) {
-
+	if (dumb_cycler % 4 === 0) {
+		try {
+			document.dispatchEvent(new CustomEvent('yare-post-render', {detail: {ctx: c}}));
+		} catch (e) {
+		}
 	}
 
-	setTimeout(() => {
-		requestAnimationFrame(render_state);
-	});
+	requestAnimationFrame(render_state);
 	
 }
 
@@ -1463,8 +1529,7 @@ Cat.prototype.move = function() {
 	const NOISESPEED = 10000; // minimum time
 	const NOISESPEED2 = NOISESPEED * (2 - 1); //variance in time
 
-	// const time = tick_local * 1000 + total_time; // time in ms
-	const time = new Date().getTime(); // the one above jumps around when the client rubberbands, we cannot allow this or else everything teleports everywhere
+	const time = performance.now();
 
 	if (!this.noiseB) { // move this to the constructor instead of checking if it exists
 		this.noiseA = this.noiseB = [0, 0];

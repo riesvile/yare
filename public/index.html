@@ -95,18 +95,34 @@
 
   <!-- Header -->
   <div id="hector">
-	  <h1 id="logo"><a href="/">yare.io</a></h1>
+	  <h1 id="logo"><a href="/">yare</a></h1>
 	  <div class="menu">
 		  <a href="/documentation" class="menu_link" id="link_howtoplay">How to play</a>
 		  <div class="menu_link" id="login">Sign in</div>
 		  <div class="menu_link new_acc" id="new_account">Create account</div>
-		  <div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
+		  <div class="menu_link" id="signed_in"><span id="the_name">username</span></div>
 	  </div>
   </div>
 
   <div id="modules_plate"></div>
 
   <div id="overlay"></div>
+
+  <div id="account_overlay">
+	<div id="account_overlay_content">
+		<div id="account_header">
+			<a href="#" id="account_logout">Log out</a>
+			<span id="account_username">username</span>
+			<span id="account_rating">1500</span>
+		</div>
+		<div id="account_history">
+			<span id="account_history_label">Game history</span>
+			<div id="account_history_table"></div>
+		</div>
+	</div>
+  </div>
+
+  <div id="game_transition_overlay"></div>
 
 
   <!-- Canvas (game rendering) -->
@@ -119,12 +135,38 @@
 	  <div id="landing_content">
 		  <p class="landing_text">Kill all enemy cats to win.</p>
 		  <p class="landing_text">You can <span class="landing_code">move()</span> and <span class="landing_code">pew()</span> and</p>
-		  <p class="landing_text">access <span class="landing_link">all relevant game data</span>.</p>
+		  <p class="landing_text">access <a href='/documentation' class="landing_link">all relevant game data</a>.</p>
 		  <p class="landing_text landing_gap">Good luck.</p>
 
-		  <div id="landing_start_btn">Start game</div>
+		  
+	  </div>
 
-		  <p id="landing_create_prompt">Or <a href="#" id="landing_create_link">Create an account</a> to play against other<br>humans and stronger bots</p>
+	  <div class="game_start_section">
+		<div id="game_start_row">
+			<div id="landing_start_btn">Start game</div>
+			<span id="vs_label">vs.</span>
+			<div id="mode_tabs">
+				<div class="mode_tab" id="tab_player">Another player</div>
+				<div class="mode_tab active" id="tab_bot">Bot</div>
+				<div class="mode_tab" id="tab_friend">Friend</div>
+			</div>
+		</div>
+		<div id="mode_sub_content">
+			<div class="sub_panel" id="sub_player">
+				<span id="match_status"></span>
+				<span id="queue_waiting_text">Waiting...</span>
+			</div>
+			<div class="sub_panel sub_panel_active" id="sub_bot">
+				<div class="bot_tab active" id="sel_muffin_bot" data-bot="muffin-bot">muffin-bot</div>
+				<div class="bot_tab" id="sel_cleo_bot" data-bot="cleo-bot">cleo-bot</div>
+			</div>
+			<div class="sub_panel" id="sub_friend">
+				<span id="challenge_link_text"></span>
+				<span id="copy_link_btn">Copy link</span>
+				<p id="waiting_text">Waiting for a friend to connect...</p>
+			</div>
+		</div>
+		<p id="landing_create_prompt">Or <a href="#" id="landing_create_link">Create an account</a> to play against other<br>humans and stronger bots</p>
 	  </div>
 
 	  <div id="landing_footer">
@@ -160,8 +202,8 @@
   </div>
 
   <div id="update_switch_wrapper" style="display: none;">
-    <a href="#" id="update_code"><span>UPDATE CODE</span></a>
-    <div id="shortcut_info">SHIFT + ENTER</div>
+    <a href="#" id="update_code"><span>Run code</span></a>
+    <div id="shortcut_info">CMD + S</div>
     <div id="switch_view" class="mobile_only"><span class="switch_ico">{ }</span></div>
   </div>
 
@@ -172,7 +214,7 @@
   <div id="game_over_overlay"></div>
   <div id="game_over_block">
 	  <p id="game_result">You won</p>
-	  <div id="ranked_nonranked">Sandbox</div>
+	  <div id="ranked_nonranked">Unranked</div>
 	  <div class="game_table">
 		  <div class="gt_row">
 			  <div class="gt_row_in">
@@ -236,7 +278,7 @@
   </div>
 	<div id='ch_link'>https:/blablabla.bla</div>
 	<div id='button_prompt'><span id='choose_prompt'>CHOOSE A SHAPE</span></div>
-	<div id='main_button' class='normal_ready'><span id='main_button_lbl'>Start game</span><span id='main_button_versus'><span id='vs_name' class='no_events'>medium-bot</span><span class='bs_player_dropdown versus_dropdown no_events'></span></span></div>
+	<div id='main_button' class='normal_ready'><span id='main_button_lbl'>Start game</span><span id='main_button_versus'><span id='vs_name' class='no_events'>cleo-bot</span><span class='bs_player_dropdown versus_dropdown no_events'></span></span></div>
 	<div id='cncl_button'>Cancel</div>
 	<span id='create_acc_prompt'><a href='#' id='new_acc_link'>Create an account</a>to play against other humans</span>
   </div>
@@ -253,8 +295,8 @@
 	  </div>
 	  <div id="ps_bot_index_options">
 		  <span id="ps_type_lbl" class="ps_type_lbl">Bots</span>
-		  <div id="ps_dumb-bot" class="ps_card ps_bot_card"><div class="ps_shape_in_card_wrap"><div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div></div><h3 class="ps_p_name">dumb-bot</h3><p class="ps_p_desc">Peaceful bot that doesn't attack, only defends itself</p></div>
-		  <div id="ps_medium-bot" class="ps_card ps_bot_card"><div class="ps_shape_in_card_wrap"><div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div></div><h3 class="ps_p_name">medium-bot</h3><p class="ps_p_desc">Beat it and you might be ready for human players</p></div>
+		  <div id="ps_muffin-bot" class="ps_card ps_bot_card"><div class="ps_shape_in_card_wrap"><div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div></div><h3 class="ps_p_name">muffin-bot</h3><p class="ps_p_desc">Peaceful bot that doesn't attack, only defends itself</p></div>
+		  <div id="ps_cleo-bot" class="ps_card ps_bot_card"><div class="ps_shape_in_card_wrap"><div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div></div><h3 class="ps_p_name">cleo-bot</h3><p class="ps_p_desc">Beat it and you might be ready for human players</p></div>
 		  <div id="ps_hard-bot" class="ps_card ps_bot_card"><div class="ps_shape_in_card_wrap"><div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div></div><h3 class="ps_p_name">hard-bot</h3><p class="ps_p_desc">Hard to break through its defense</p></div>
 		  <div id="ps_lego-bot" class="ps_card ps_bot_card"><div class="ps_shape_in_card_wrap"><div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div></div><h3 class="ps_p_name">lego-bot</h3><p class="ps_p_desc">Rush bot. Goes after your throat right away.</p></div>
 		  <div id="ps_andersgee-bot" class="ps_card ps_bot_card"><div class="ps_shape_in_card_wrap"><div class="ps_bot_shape"><span class="ico_sh_triangles"></span></div></div><h3 class="ps_p_name">andersgee-bot</h3><p class="ps_p_desc">Super strong sniper bot.</p></div>

@@ -914,8 +914,14 @@ span.lb_num {
 	position: absolute;
 	left: 7vw;
 	top: 50%;
-	transform: translateY(-50%);
+	transform: translateY(-60%);
 	max-width: 460px;
+}
+
+.game_start_section {
+	position: absolute;
+	left: 7vw;
+	bottom: 7vw;
 }
 
 .landing_text {
@@ -936,6 +942,14 @@ span.lb_num {
 	font-weight: 500;
 }
 
+.landing_link {
+	color: rgba(180, 188, 255, 0.88);
+}
+
+.landing_code:hover, .landing_link:hover {
+	color: rgba(180, 188, 255, 1);
+}
+
 .landing_bold {
 	font-weight: 600;
 	color: rgba(242, 246, 250, 0.92);
@@ -946,31 +960,28 @@ span.lb_num {
 	margin-top: 40px;
 	padding: 14px 32px;
 	border-radius: 12px;
-	border: 1px solid rgba(148, 158, 255, 0.6);
-	background-color: rgba(148, 158, 255, 0.1);
-	font-size: 13px;
+	border: none;
+	background-color: hsla(217, 100%, 84%, 1);
+	font-size: 15px;
 	font-weight: 500;
-	letter-spacing: 0.5px;
-	color: rgba(181, 188, 255, 0.96);
+	color: black;
 	cursor: pointer;
-	transition: all 0.25s;
 }
 
 #landing_start_btn:hover {
-	background-color: rgba(128, 138, 255, 0.22);
-	border-color: rgba(148, 158, 255, 0.8);
+	background-color: hsla(217, 100%, 100%, 1);
 }
 
 #landing_create_prompt {
 	margin-top: 20px;
 	font-size: 13px;
 	font-weight: 400;
-	color: rgba(242, 246, 250, 0.35);
+	color: rgba(242, 246, 250, 0.48);
 	line-height: 20px;
 }
 
 #landing_create_link {
-	color: rgba(181, 188, 255, 0.65);
+	color: rgba(181, 188, 255, 0.86);
 	text-decoration: none;
 	padding: 2px;
 }
@@ -996,5 +1007,175 @@ span.lb_num {
 
 .landing_footer_link:hover {
 	color: rgba(242, 246, 250, 0.7);
+}
+
+
+#game_transition_overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 99999;
+	transition: opacity 2s ease;
+}
+
+#game_transition_overlay.active {
+	opacity: 1;
+}
+
+
+/* =============================================
+   SIGNED-IN: Game mode tabs
+   ============================================= */
+
+#vs_label,
+#mode_tabs,
+#mode_sub_content {
+	display: none;
+}
+
+.signed_in_mode #game_start_row {
+	display: flex;
+	align-items: center;
+}
+
+.signed_in_mode #landing_start_btn {
+	margin-top: 0;
+}
+
+.signed_in_mode #vs_label {
+	display: inline-block;
+	font-size: 14px;
+	font-weight: 400;
+	color: hsla(217, 20%, 80%, 0.52);
+	margin: 0 20px;
+	user-select: none;
+}
+
+.signed_in_mode #mode_tabs {
+	display: flex;
+	gap: 6px;
+}
+
+.signed_in_mode #mode_sub_content {
+	display: block;
+	margin-top: 16px;
+	min-height: 28px;
+}
+
+.signed_in_mode #landing_create_prompt {
+	display: none;
+}
+
+.mode_tab {
+	height: 32px;
+	line-height: 32px;
+	padding: 0 14px;
+	font-size: 13px;
+	font-weight: 400;
+	border-radius: 8px;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.2s, color 0.2s;
+	background-color: hsla(217, 100%, 84%, 0.08);
+	color: hsla(217, 100%, 84%, 0.68);
+	white-space: nowrap;
+}
+
+.mode_tab:hover {
+	background-color: hsla(217, 100%, 84%, 0.14);
+}
+
+.mode_tab.active {
+	background-color: hsla(217, 100%, 84%, 0.24);
+	color: hsla(217, 100%, 84%, 1);
+}
+
+.sub_panel {
+	display: none;
+}
+
+.sub_panel.sub_panel_active {
+	display: block;
+}
+
+.bot_tab {
+	display: inline-block;
+	height: 28px;
+	line-height: 28px;
+	padding: 0 12px;
+	font-size: 12px;
+	font-weight: 400;
+	border-radius: 6px;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.2s, color 0.2s;
+	background-color: hsla(217, 100%, 84%, 0.08);
+	color: hsla(217, 100%, 84%, 0.68);
+	margin-right: 6px;
+	white-space: nowrap;
+}
+
+.bot_tab:hover {
+	background-color: hsla(217, 100%, 84%, 0.14);
+}
+
+.bot_tab.active {
+	background-color: hsla(217, 100%, 84%, 0.24);
+	color: hsla(217, 100%, 84%, 1);
+}
+
+.signed_in_mode #landing_start_btn.btn_waiting {
+	background-color: hsla(217, 100%, 84%, 0.08);
+	color: hsla(217, 100%, 84%, 1);
+}
+
+.signed_in_mode #landing_start_btn.btn_waiting:hover {
+	background-color: hsla(217, 100%, 84%, 0.14);
+}
+
+#match_status {
+	font-size: 13px;
+	font-weight: 400;
+	color: hsla(217, 20%, 80%, 0.52);
+}
+
+#queue_waiting_text {
+	display: none;
+	font-size: 13px;
+	font-weight: 400;
+	color: hsla(217, 20%, 80%, 0.42);
+}
+
+#challenge_link_text {
+	font-size: 13px;
+	font-weight: 400;
+	color: hsla(217, 20%, 80%, 0.62);
+	margin-right: 16px;
+}
+
+#copy_link_btn {
+	font-size: 13px;
+	font-weight: 400;
+	color: hsla(217, 100%, 84%, 0.86);
+	cursor: pointer;
+	user-select: none;
+	transition: color 0.2s;
+}
+
+#copy_link_btn:hover {
+	color: hsla(217, 100%, 84%, 1);
+}
+
+#waiting_text {
+	display: block;
+	margin-top: 8px;
+	font-size: 13px;
+	font-weight: 400;
+	color: hsla(217, 20%, 80%, 0.42);
 }
 

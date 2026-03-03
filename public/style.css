@@ -161,7 +161,7 @@ div.tutorial_editor {
 #update_code {
 	width: 212px;
 	height: 67px;
-	background-color: rgba(42, 46, 78, 1);
+	background-color: hsla(217, 100%, 84%, 1);
 	line-height: 67px;
 	border-radius: 12px;
 	cursor: pointer;
@@ -169,8 +169,6 @@ div.tutorial_editor {
 	z-index: 2000;
 	float: left;
 	pointer-events: auto;
-	/*transform-origin: top left;
-	transform: translate(10vw, -20vh);*/
 }
 
 .update_code_real {
@@ -182,8 +180,8 @@ div.tutorial_editor {
 #update_code span {
 	font-size: 13px;
 	font-weight: 500;
-	color: rgba(242, 246, 250, 0.86);
-	letter-spacing: 1px;
+	color: black;
+	letter-spacing: 0;
 	text-align: center;
 	display: block;
 	padding-top: 1px;
@@ -194,7 +192,7 @@ div.tutorial_editor {
 	height: 67px;
 	font-size: 13px;
 	font-weight: 500;
-	letter-spacing: 1px;
+	letter-spacing: 0;
 	color: rgba(242, 246, 250, 0.49);
 	line-height: 67px;
 	float: left;
@@ -368,16 +366,16 @@ input:focus {
 }
 
 h1#logo {
-	font-size: 18px;
+	font-size: 14px;
 	font-weight: 500;
-	color: rgba(242, 246, 250, 1);
+	color: rgba(255, 255, 255, 0.86);
 	margin-left: 40px;
 	margin-top: 16px;
 	line-height: 44px;
 }
 
 #logo a {
-	color: rgba(242, 246, 250, 1);
+	color: rgba(255, 255, 255, 0.86);
 }
 
 .logo_lowlight, .resume_lowlight {
@@ -392,7 +390,7 @@ h1#logo {
 }
 
 .menu .menu_link {
-	font-weight: 500;
+	font-weight: 400;
 	font-size: 14px;
 	line-height: 44px;
 	display: block;
@@ -1321,35 +1319,133 @@ input[type=submit] {
 
 #signed_in {
 	display: none;
-	background-color: rgba(54, 51, 64, 0.69);
-	color: rgba(216, 232, 251, 1);
-	padding: 0 24px 1px 48px;
-	border-radius: 16px;
-	line-height: 43px;
+	color: rgba(242, 246, 250, 0.69);
+	line-height: 44px;
 	position: relative;
-	top: 1px;
 	margin-left: 22px;
 }
 
 #signed_in:hover {
-	background-color: rgba(54, 51, 64, 0.76);
-	color: rgba(224, 240, 255, 1);
+	color: rgba(242, 246, 250, 1);
 }
 
-#signed_in:hover #module_ico {
-	opacity: 0.6;
+
+/* ----- Account overlay ----- */
+
+#account_overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(40px);
+	-webkit-backdrop-filter: blur(40px);
+	z-index: 20000;
+	opacity: 0;
+	pointer-events: none;
 }
 
-#module_ico {
-	display: block;
+#account_overlay_content {
 	position: absolute;
-	top: 12px;
-	left: 15px;
-	width: 20px;
-	height: 20px;
-	background: url('./asset/ico_modules.png');
-	background-size: cover;
-	opacity: 0.5;
+	top: 40px;
+	right: 40px;
+	text-align: right;
+}
+
+#account_header {
+	margin-bottom: 32px;
+}
+
+#account_logout {
+	font-size: 14px;
+	font-weight: 400;
+	color: rgba(133, 186, 234, 1);
+	display: block;
+	text-align: right;
+	margin-bottom: 20px;
+	cursor: pointer;
+}
+
+#account_logout:hover {
+	color: rgba(159, 198, 238, 1);
+}
+
+#account_username {
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	display: block;
+	text-align: right;
+}
+
+#account_rating {
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(242, 246, 250, 1);
+	display: block;
+	text-align: right;
+}
+
+#account_history {
+	margin-top: 24px;
+}
+
+#account_history_label {
+	font-size: 12px;
+	font-weight: 400;
+	color: rgba(242, 246, 250, 0.49);
+	display: block;
+	text-align: right;
+	margin-bottom: 8px;
+}
+
+#account_history_table {
+	text-align: right;
+}
+
+.ah_row {
+	display: block;
+	height: 32px;
+	line-height: 32px;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.ah_row:hover .ah_players {
+	color: rgba(242, 246, 250, 1);
+}
+
+.ah_players {
+	font-size: 14px;
+	font-weight: 400;
+	color: rgba(242, 246, 250, 0.69);
+}
+
+.ah_players_bold {
+	font-weight: 500;
+	color: rgba(242, 246, 250, 0.89);
+}
+
+.ah_date {
+	font-size: 14px;
+	font-weight: 400;
+	color: rgba(242, 246, 250, 0.38);
+	margin-left: 16px;
+}
+
+.ah_result {
+	font-size: 14px;
+	font-weight: 500;
+	margin-left: 12px;
+}
+
+.ah_win {
+	color: rgba(133, 234, 143, 1);
+}
+
+.ah_loss {
+	color: rgba(234, 133, 133, 1);
 }
 
 #new_g {

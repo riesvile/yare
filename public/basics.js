@@ -104,7 +104,7 @@ function new_game(type){
 			 //window.location.href = './' + response.server + 'n/' + response.g_id;
 		  	 window.location.href = './' + response.server + 'n/' + response.g_id;
 			 //document.location.reload(true);
-		  } else if (response.meta == 'medium-bot'){
+		  } else if (response.meta == 'cleo-bot'){
 			  window.location.href = './' + response.server + 'n/' + response.g_id;
 		  } else if (response.meta == 'waiting for p2'){
 			  waiting_for_p2(response.g_id);
@@ -254,6 +254,7 @@ function get_elo(){
       .then(response => {
 		  if (response.data == "all good"){
 			  document.getElementById('acc_info_elo').innerHTML = response.rating;
+			  document.getElementById('account_rating').textContent = response.rating;
 		  } 
 	  })
       .catch(err => {

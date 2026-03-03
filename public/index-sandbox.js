@@ -54,7 +54,7 @@ var game_ended = 0;
 
 var boxsanded = {
 	pl1: 'live-input',
-	pl2: 'dumb-bot',
+	pl2: 'muffin-bot',
 	barricades: [[0, -200], [0, 200], [370, 0], [-370, 0]],
 	pods: [[-110, -300], [110, -300], [-260, 320], [260, 320], [-500, 84], [500, 84]],
 	p1_units: [],
@@ -479,6 +479,211 @@ document.getElementById('c2_close').addEventListener('click', console_window_clo
 document.getElementById('c2_option_current').addEventListener('click', console_view_current, false);
 document.getElementById('c2_option_all').addEventListener('click', console_view_all, false);
 document.getElementById('update_code').addEventListener("click", update_code, false);
+
+
+// --- Signed-in game mode ---
+
+var mp_socket = null;
+var active_mode = 'bot';
+var selected_bot = 'muffin-bot';
+var challenge_sent = 0;
+var mp_friendly = 0;
+var in_queue = 0;
+
+function _readCookie(name){
+	var nameEQ = name + '=';
+	var ca = document.cookie.split(';');
+	for (var i = 0; i < ca.length; i++){
+		var c = ca[i];
+		while (c.charAt(0) === ' ') c = c.substring(1);
+		if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+	}
+	return null;
+}
+
+(function(){
+	var uid = _readCookie('user_id');
+	if (!uid || uid === 'anonymous') return;
+
+	var section = document.querySelector('.game_start_section');
+	section.classList.add('signed_in_mode');
+
+	var savedMode = localStorage.getItem('game_mode');
+	if (savedMode && { player:1, bot:1, friend:1 }[savedMode]) {
+		active_mode = savedMode;
+	}
+	var savedBot = localStorage.getItem('selected_bot');
+	var saved_bot_el = null;
+	if (savedBot) {
+		selected_bot = savedBot;
+		saved_bot_el = document.querySelector('.bot_tab[data-bot="' + savedBot + '"]');
+	}
+
+	mp_socket = new WebSocket(location.origin.replace(/^http/, 'ws') + '/');
+
+	var joinSound = new Audio('/sound/join_game.mp3');
+
+	mp_socket.onmessage = function(event){
+		var message = JSON.parse(event.data);
+		switch (message.type) {
+			case 'automatch-status':
+				if (!in_queue) {
+					var n = message.data.peopleAutomatching || 0;
+					var statusEl = document.getElementById('match_status');
+					if (n > 0) {
+						statusEl.textContent = n + ' player' + (n > 1 ? 's' : '') + ' in queue';
+					} else {
+						statusEl.textContent = '';
+					}
+				}
+				break;
+			case 'challenge-wait':
+				mp_friendly = 1;
+				var link = location.origin + '/challenge/' + message.data.game_id;
+				document.getElementById('challenge_link_text').textContent = link;
+				document.getElementById('waiting_text').style.display = 'block';
+				document.getElementById('copy_link_btn').style.display = 'inline';
+				break;
+			case 'match-found':
+				joinSound.play();
+				document.getElementById('game_transition_overlay').classList.add('active');
+				setTimeout(function(){
+					window.location.href = '/' + message.data.server + 'n/' + message.data.game_id;
+				}, 2000);
+				break;
+		}
+	};
+
+	function enterQueue(){
+		in_queue = 1;
+		var btn = document.getElementById('landing_start_btn');
+		btn.textContent = 'Cancel';
+		btn.classList.add('btn_waiting');
+		document.getElementById('vs_label').style.display = 'none';
+		document.getElementById('mode_tabs').style.display = 'none';
+		document.getElementById('match_status').style.display = 'none';
+		document.getElementById('queue_waiting_text').style.display = 'inline';
+		sendJoin('ranked');
+	}
+
+	function exitQueue(){
+		in_queue = 0;
+		var btn = document.getElementById('landing_start_btn');
+		btn.textContent = 'Start game';
+		btn.classList.remove('btn_waiting');
+		document.getElementById('match_status').style.display = 'inline';
+		document.getElementById('queue_waiting_text').style.display = 'none';
+		location.reload();
+	}
+
+	function setActiveMode(mode, skipReload){
+		if (in_queue && !skipReload) exitQueue();
+		active_mode = mode;
+		localStorage.setItem('game_mode', mode);
+		challenge_sent = 0;
+		mp_friendly = 0;
+
+		document.querySelectorAll('.mode_tab').forEach(function(tab){
+			tab.classList.remove('active');
+		});
+		document.getElementById('tab_' + mode).classList.add('active');
+
+		document.querySelectorAll('.sub_panel').forEach(function(p){
+			p.classList.remove('sub_panel_active');
+		});
+		var panelMap = { player: 'sub_player', bot: 'sub_bot', friend: 'sub_friend' };
+		document.getElementById(panelMap[mode]).classList.add('sub_panel_active');
+
+		if (mode === 'friend') {
+			document.getElementById('challenge_link_text').textContent = '';
+			document.getElementById('copy_link_btn').style.display = 'none';
+			document.getElementById('waiting_text').style.display = 'none';
+			sendJoin('challenge');
+			challenge_sent = 1;
+		}
+	}
+
+	document.getElementById('tab_player').addEventListener('click', function(){ setActiveMode('player'); });
+	document.getElementById('tab_bot').addEventListener('click', function(){ setActiveMode('bot'); });
+	document.getElementById('tab_friend').addEventListener('click', function(){ setActiveMode('friend'); });
+
+	document.querySelectorAll('.bot_tab').forEach(function(tab){
+		tab.addEventListener('click', function(){
+			document.querySelectorAll('.bot_tab').forEach(function(t){ t.classList.remove('active'); });
+			tab.classList.add('active');
+			selected_bot = tab.getAttribute('data-bot');
+			localStorage.setItem('selected_bot', selected_bot);
+		});
+	});
+
+	document.getElementById('copy_link_btn').addEventListener('click', function(){
+		var text = document.getElementById('challenge_link_text').textContent;
+		if (text) copyToClipboard(text);
+	});
+
+	function sendJoin(type){
+		if (!mp_socket || mp_socket.readyState !== WebSocket.OPEN) return;
+		mp_socket.send(JSON.stringify({
+			type: 'join',
+			data: {
+				user_id: _readCookie('user_id'),
+				user_color: localStorage.getItem('chosen_color') || 'default',
+				session_id: _readCookie('session_id'),
+				type: type
+			}
+		}));
+	}
+
+	function copyToClipboard(text){
+		var ta = document.createElement('textarea');
+		ta.value = text;
+		ta.style.position = 'fixed';
+		ta.style.opacity = '0';
+		document.body.appendChild(ta);
+		ta.select();
+		try { document.execCommand('copy'); } catch(e) {}
+		document.body.removeChild(ta);
+	}
+
+	document.getElementById('landing_start_btn').removeEventListener('click', landing_start_game);
+	document.getElementById('landing_start_btn').addEventListener('click', function(){
+		if (active_mode === 'player') {
+			if (in_queue) {
+				exitQueue();
+			} else {
+				enterQueue();
+			}
+		} else if (active_mode === 'bot') {
+			sendJoin(selected_bot);
+		} else if (active_mode === 'friend') {
+			if (mp_friendly) {
+				var text = document.getElementById('challenge_link_text').textContent;
+				if (text) copyToClipboard(text);
+			}
+		}
+	});
+
+	// Restore saved mode and bot selection
+	if (active_mode !== 'bot') {
+		if (active_mode === 'friend') {
+			mp_socket.addEventListener('open', function(){
+				setActiveMode('friend', true);
+			});
+		} else {
+			setActiveMode(active_mode, true);
+		}
+	}
+	if (saved_bot_el) {
+		document.querySelectorAll('.bot_tab').forEach(function(t){ t.classList.remove('active'); });
+		saved_bot_el.classList.add('active');
+	}
+
+	setInterval(function(){
+		if (mp_socket && mp_socket.readyState === WebSocket.OPEN) {
+			mp_socket.send(JSON.stringify({ type: 'heartbeat', data: { type: 'heartbeat' } }));
+		}
+	}, 3000);
+})();
 
 
 // --- Canvas resize ---
