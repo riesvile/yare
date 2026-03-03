@@ -125,32 +125,32 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 			
 			
 				logger.debug('result');
-				if (result[0]['ranked'] == 0) {
-					Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
-						.then((qq) => {
-							logger.debug('winner updated to ' + gameWinner);
-							setTimeout(function(){
-								process.exit(0);
-							}, 1000);
-						});	
-				} else if (result[0]['ranked'] == 1){
-				
-					Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
-						.then((qq) => {
-							logger.debug('winner updated to ' + gameWinner);
-							User.updateOne({user_id: gameWinner}, {rating: newWinnerRating}, {upsert: true})
-								.then((qq) => {
-									logger.debug('winner rating updated');
-									User.updateOne({user_id: gameLoser}, {rating: newLoserRating}, {upsert: true})
-										.then((qq) => {
-											logger.debug('loser rating updated');
-											setTimeout(function(){
-												process.exit(0);
-											}, 1000);
-										});	
-								});	
-						});	
-				}
+			if (result[0]['ranked'] == 0) {
+				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
+					.then((qq) => {
+						logger.debug('winner updated to ' + gameWinner);
+						setTimeout(function(){
+							process.exit(0);
+						}, 1000);
+					});	
+			} else if (result[0]['ranked'] == 1){
+			
+				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
+					.then((qq) => {
+						logger.debug('winner updated to ' + gameWinner);
+						User.updateOne({user_id: gameWinner}, {$set: {rating: newWinnerRating}, $inc: {games_count: 1}}, {upsert: true})
+							.then((qq) => {
+								logger.debug('winner rating updated');
+								User.updateOne({user_id: gameLoser}, {$set: {rating: newLoserRating}, $inc: {games_count: 1}}, {upsert: true})
+									.then((qq) => {
+										logger.debug('loser rating updated');
+										setTimeout(function(){
+											process.exit(0);
+										}, 1000);
+									});	
+							});	
+					});	
+			}
 			
 			})
 			.catch((error) => {
@@ -258,11 +258,13 @@ parentPort.on("message", message => {
 		}
 		
 		var start_num = 9;
+		var x_offsets = [10, 0, -10, 0];
 		init_data.initial_cats = { p1: [], p2: [] };
 		for (var si = 1; si <= start_num; si++){
 			var sy = -100 + (si - 1) * 25;
-			init_data.initial_cats.p1.push({ id: init_data.players[0] + '_' + si, position: [-200, sy] });
-			init_data.initial_cats.p2.push({ id: init_data.players[1] + '_' + si, position: [200, sy] });
+			var xo = x_offsets[(si - 1) % 4];
+			init_data.initial_cats.p1.push({ id: init_data.players[0] + '_' + si, position: [-200 + xo, sy] });
+			init_data.initial_cats.p2.push({ id: init_data.players[1] + '_' + si, position: [200 - xo, sy] });
 		}
 		
 		parentPort.postMessage({data: JSON.stringify({meta: "initiate", data: init_data}), game_id: workerData[0], meta: 'initiate', client: message.client});
@@ -699,7 +701,15 @@ class Sandbox {
 			this.script = this.isolate.compileScriptSync(code, {filename: "~sandbox/user.js"});
 			this.successful_compile = true;
 		}catch(err) {
-			this.last_compile_err = "Submitted code has a compile error:\n    " + err.message;
+			let lineInfo = '';
+			if (err.stack) {
+				let match = err.stack.match(/user\.js:(\d+)(?::(\d+))?/);
+				if (match) {
+					lineInfo = '\n    at line ' + match[1];
+					if (match[2]) lineInfo += ', column ' + match[2];
+				}
+			}
+			this.last_compile_err = "Submitted code has a compile error:\n    " + err.message + lineInfo;
 			if(this.successful_compile)
 				this.last_compile_err += "\nRunning Your previous valid code instead!!!\n"
 		}

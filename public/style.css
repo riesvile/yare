@@ -162,6 +162,7 @@ div.tutorial_editor {
 	width: 212px;
 	height: 67px;
 	background-color: hsla(217, 100%, 84%, 1);
+	color: black;
 	line-height: 67px;
 	border-radius: 12px;
 	cursor: pointer;
@@ -180,7 +181,7 @@ div.tutorial_editor {
 #update_code span {
 	font-size: 13px;
 	font-weight: 500;
-	color: black;
+	color: inherit;
 	letter-spacing: 0;
 	text-align: center;
 	display: block;

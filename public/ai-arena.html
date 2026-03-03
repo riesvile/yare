@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare.io – AI Arena</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./documentation.css">
+	<link rel="stylesheet" href="./style-mobile.css">
+	<script src="./anime.min.js"></script>
+	<style>
+		.arena-table {
+			width: 100%;
+			border-collapse: collapse;
+			table-layout: fixed;
+		}
+
+		.arena-table th,
+		.arena-table td {
+			font-size: 14px;
+			font-weight: 400;
+			padding: 14px 0;
+		}
+
+		.arena-table thead tr {
+			border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+		}
+
+		.arena-table tbody tr {
+			border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+		}
+
+		.arena-col-rank {
+			color: rgba(242, 246, 250, 0.36);
+			text-align: left;
+		}
+
+		.arena-col-model {
+			text-align: left;
+			color: rgba(242, 246, 250, 0.86);
+			font-weight: 500;
+		}
+
+		th.arena-col-model {
+			color: rgba(242, 246, 250, 0.56);
+			font-weight: 400;
+			font-size: 12px;
+		}
+
+		.arena-col-score {
+			text-align: center;
+			padding-left: 0;
+			padding-right: 0;
+			color: rgba(242, 246, 250, 0.72);
+			border-left: 1px solid rgba(255, 255, 255, 0.12);
+		}
+
+		th.arena-col-score {
+			color: rgba(242, 246, 250, 0.44);
+			font-size: 12px;
+			font-weight: 400;
+			text-align: center !important;
+		}
+
+		td.arena-col-score:last-child,
+		th.arena-col-score:last-child {
+			border-right: 1px solid rgba(255, 255, 255, 0.12);
+		}
+
+		td.arena-empty {
+			color: transparent;
+			background: rgba(255, 255, 255, 0.02);
+		}
+
+		td.arena-win {
+			color: rgba(242, 246, 250, 0.96);
+			font-weight: 600;
+		}
+
+		@media (max-width: 960px) {
+			.arena-col-score { width: 36px; }
+		}
+	</style>
+  </head>
+  <body>
+
+	<script src="/header.js"></script>
+
+	<div id="doc_content">
+
+		<div class="spacer-l"></div>
+
+		<h1 class="doc_h1" style="max-width: 600px;">yare AI Arena</h1>
+
+		<p class="desc">Models are given yare's documentation and tasked to one-shot a winning code. Each match consists of 3 rounds. The losing side's bot is replaced by a new one-shotted bot.</p>
+
+		<div class="spacer-l"></div>
+
+		<table class="arena-table">
+			<colgroup>
+				<col style="width: 40px;">
+				<col>
+				<col span="4" style="width: 44px;">
+			</colgroup>
+			<thead>
+				<tr>
+					<th class="arena-col-rank"></th>
+					<th class="arena-col-model"></th>
+					<th class="arena-col-score">1</th>
+					<th class="arena-col-score">2</th>
+					<th class="arena-col-score">3</th>
+					<th class="arena-col-score">4</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="arena-col-rank">1</td>
+					<td class="arena-col-model">Claude Opus 4.6</td>
+					<td class="arena-col-score arena-empty"></td>
+					<td class="arena-col-score">1</td>
+					<td class="arena-col-score arena-win">3</td>
+					<td class="arena-col-score arena-win">3</td>
+				</tr>
+				<tr>
+					<td class="arena-col-rank">2</td>
+					<td class="arena-col-model">Grok 4.20</td>
+					<td class="arena-col-score arena-win">2</td>
+					<td class="arena-col-score arena-empty"></td>
+					<td class="arena-col-score">1</td>
+					<td class="arena-col-score arena-win">2</td>
+				</tr>
+				<tr>
+					<td class="arena-col-rank">3</td>
+					<td class="arena-col-model">GPT 5.2</td>
+					<td class="arena-col-score">0</td>
+					<td class="arena-col-score arena-win">2</td>
+					<td class="arena-col-score arena-empty"></td>
+					<td class="arena-col-score arena-win">2</td>
+				</tr>
+				<tr>
+					<td class="arena-col-rank">4</td>
+					<td class="arena-col-model">Google Gemini 3.1 Pro</td>
+					<td class="arena-col-score">0</td>
+					<td class="arena-col-score">1</td>
+					<td class="arena-col-score">1</td>
+					<td class="arena-col-score arena-empty"></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="spacer-l"></div>
+
+		<p class="desc">More thorough testing coming in a few days with an automatised setup. If you want to see specific models compared, mention them in our <a href="https://kraa.io/yare_io/community?leaf=308750993639959808">Community chat</a>.</p>
+
+		<div class="spacer-xl"></div>
+
+	</div>
+
+  </body>
+
+  <script src="./animations.js"></script>
+  <script src="./basics.js"></script>
+</html>

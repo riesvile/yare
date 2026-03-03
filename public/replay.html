@@ -135,7 +135,22 @@
   </div>
 	  
   <div id="modules_plate"></div>
-	  
+
+  <div id="overlay"></div>
+
+  <div id="account_overlay">
+	<div id="account_overlay_content">
+		<div id="account_header">
+			<a href="#" id="account_logout">Log out</a>
+			<span id="account_username">username</span>
+			<span id="account_rating">1500</span>
+		</div>
+		<div id="account_history">
+			<span id="account_history_label">Game history</span>
+			<div id="account_history_table"></div>
+		</div>
+	</div>
+  </div>
 	  
   <canvas id='main_canvas'></canvas>
   <canvas id='base_canvas'></canvas>
@@ -1215,7 +1230,7 @@
 					 game_type = 'tutorial';
 					 document.getElementById('resign_game').style.display = 'none';
 					 if (tutorial_started == 0){
-					 	document.getElementById('update_code').innerHTML = "<span>SEND CODE</span>";
+					 	document.getElementById('update_code').innerHTML = "<span>Run code</span>";
 					 }
 					 
 				 } else {

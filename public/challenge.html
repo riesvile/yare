@@ -3,574 +3,226 @@
   <head>
     <title>yare.io · challenge</title>
 	<style>
+		#landing_start_btn {
+			transition: background-color 0.2s, color 0.2s;
+		}
+		#challenge_status {
+			display: block;
+			margin-top: 12px;
+			font-size: 13px;
+			font-weight: 400;
+			color: rgba(242, 246, 250, 0.52);
+		}
 	</style>
 	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
 	<link rel="stylesheet" href="../colors.css">
 	<link rel="stylesheet" href="../style.css">
+	<link rel="stylesheet" href="../index_style.css">
 	<link rel="stylesheet" href="../style-mobile.css">
-	<script src="../src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../anime.min.js"></script>
   </head>
-  <body>
-	  
-	  <div id="module_edit_mode">
-		<input type="text" id="module_name_input" placeholder="Module name">
-	
-		<div id="file_uploads_wrap">
-			<label class="file_upload_label">
-				<input type="file" id="file_script_client" class="file_upload" accept=".js">
-				<span class="lbl_type">Client</span>
-				<span class="lbl_name" id="client_file_name">Upload script</span>
-			</label>
-	
-			<label class="file_upload_label">
-				<input type="file" id="file_script_server" class="file_upload" accept=".js">
-				<span class="lbl_type">Server</span>
-				<span class="lbl_name" id="server_file_name">Upload script</span>
-			</label>
-		</div>
-	
-		<span id="modules_server_message" class="srv_ok">Module updated. Check browser console for errors.</span>
-		<span id="modules_server_message_loader"></span>
-	
-		<div id="create_module_btn">Create module</div>
-		<div id="update_module_btn">Update module</div>
-		<a id="close_module_edit" href="#">Close</a>
-	  </div>
-  
-	  <div id="profile_links"> 
-		    <div id="acc_basics"> 
-				<div class="basics_bg"></div>
-		  		<span class="acc_info"><span id="acc_info_name">levmiseri · </span><span id="acc_info_elo">1954</span></span>
-		  		<a href="/hub" class="profile_link" id="hub_link">Game history</a>
-		  		<a href="#" class="profile_link" id="log_out">Log out</a>
-		    </div>
-		
-			<div id="audio_settings">
-				<div id="music_slider_wrap" class="pref_slider_item">
-					<div id="music_value" class="slider_value"></div>
-					<span class="set_label" id="set_label_music">Music</span><span class="set_value" id="set_value_music">68%</span>
-				</div>
-		
-				<div id="sound_slider_wrap" class="pref_slider_item">
-					<div id="sound_value" class="slider_value"></div>
-					<span class="set_label" id="set_label_sound">Sound</span><span class="set_value" id="set_value_sound">32%</span>
-				</div>
+  <body style="overflow:hidden;">
+
+  <!-- Auth modals -->
+  <div id="new_account_wrap">
+	  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
+		  <span id="user_err_message">Something's wrong</span>
+	  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
+		  <span id="password_err_message">Something's wrong</span>
+		  <br>
+		   <p id="email_snippet"><span class="par_highlight">We don't want your email.</span> Just bear in mind that if you forget your password, you'll need to create a new account</p>
+	  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
+	  </form>
+  </div>
+
+  <div id="login_wrap">
+	  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
+	  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
+	  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
+		  <span id="login_err_message">Something's wrong</span>
+		  <br>
+	  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
+	  </form>
+  </div>
+
+  <!-- Profile links panel -->
+  <div id="profile_links">
+	    <div id="acc_basics">
+			<div class="basics_bg"></div>
+	  		<span class="acc_info"><span id="acc_info_name">levmiseri · </span><span id="acc_info_elo">1954</span></span>
+	  		<a href="/hub" class="profile_link" id="hub_link">Game history</a>
+	  		<a href="#" class="profile_link" id="log_out">Log out</a>
+	    </div>
+		<div id="audio_settings">
+			<div id="music_slider_wrap" class="pref_slider_item">
+				<div id="music_value" class="slider_value"></div>
+				<span class="set_label" id="set_label_music">Music</span><span class="set_value" id="set_value_music">68%</span>
 			</div>
-		
-			<!--<span class="pref_section_label">LANGUAGE</span>-->
-		
-			<div id="language_settings">
-				<div class="lang_chip lang_on" id="lang_js">JavaScript</div>
-				<div class="lang_chip" id="lang_ts">TypeScript</div>
-				<div class="lang_chip" id="lang_py">Python</div>
+			<div id="sound_slider_wrap" class="pref_slider_item">
+				<div id="sound_value" class="slider_value"></div>
+				<span class="set_label" id="set_label_sound">Sound</span><span class="set_value" id="set_value_sound">32%</span>
 			</div>
-		
-			<div class="sep_medium"></div>
-		
-		
-		
-		
-			<div class="sep_medium" id="dismiss"></div>
-			<div class="sep_medium" id="dismiss"></div>
-		
-		
-			<!--
-		
-				-->
-	  </div>
-  
-  
-	  <div id="hector">
-		  <h1 id="logo"><a href="/">yare</a></h1>
-		  <div class="menu">
-			  <a href="/documentation" class="menu_link"><span class="desktop_only">Documentation</span></a>
-			  <div class="menu_line desktop_only"></div>
-			  <div class="menu_link new_acc" id="new_account">New account</div>
-			  <div class="menu_link" id="login">Log in</div>
-			  <div class="menu_link" id="signed_in"><span id="module_ico"></span><span id="the_name">username</span></div>
-		  </div>
-	  </div>
-	  
-	  <div id="modules_plate"></div>
-	  
-	  <div id="overlay"></div>
-	  
-	  <div id="newgame_wrap">
-		  
-	  	<div id="user_selections">
-		  
-		  <h1 id="challenge_head">Challenge · <span id="challenge_p1">player 1</span> vs <span id="challenge_p2">player 2</span>
-		  
-		
-		  <div id="choose_color_block">
-			    <h2 class="deer_h">Choose a color</h2>
-				<div class="color_option" id="color_gblue_border">
-					<div id="color_gblue"></div>
-				</div>
-				<div class="color_option" id="color_purply_border">
-					<div id="color_purply"></div>
-				</div>
-				<div class="color_option" id="color_redish_border">
-					<div id="color_redish"></div>
-				</div>
-				<div class="color_option" id="color_yerange_border">
-					<div id="color_yerange"></div>
-				</div>
-				
-				<div class="extra_colors">
-					
-					<div class="color_option ex_c_1 no_sell" id="color_pistagre_border">
-						<div id="color_pistagre"></div>
-					</div>
-					
-					<div class="color_option ex_c_2 no_sell" id="color_wirple_border">
-						<div id="color_wirple"></div>
-					</div>
-					
-					<div class="color_option ex_c_3 no_sell" id="color_magion_border">
-						<div id="color_magion"></div>
-					</div>
-					
-					<div class="color_option ex_c_9 no_sell" id="color_rozblue_border">
-						<div id="color_rozblue"></div>
-					</div>
-					
-					<div id="paid_colors">
-					
-						<a href="https://priceblocs.com/links/fdXKQbJvNu47jMgeikZZX?client_reference_id=brigenta," class="color_option ex_c_4 buy" id="color_brigenta_border">
-							<div id="color_brigenta"></div>
-							<span class="color_price">€1</span>
-						</a>
-					
-						<a href="https://priceblocs.com/links/MwO4M8L-bUfh6XRi4Qf1J?client_reference_id=greson," class="color_option ex_c_5 buy" id="color_greson_border">
-							<div id="color_greson"></div>
-							<span class="color_price">€2</span>
-						</a>
-					
-						<a href="https://priceblocs.com/links/zeHSXBTCLsVYgvIDjK3g9?client_reference_id=mmmsalmon," class="color_option ex_c_6 buy" id="color_mmmsalmon_border">
-							<div id="color_mmmsalmon"></div>
-							<span class="color_price">€5</span>
-						</a>
-					
-						<a href="https://priceblocs.com/links/kZpt2mxFap0v41WhpaaT6?client_reference_id=skyblue," class="color_option ex_c_7 buy" id="color_skyblue_border">
-							<div id="color_skyblue"></div>
-							<span class="color_price">€20</span>
-						</a>
-						<a href="https://priceblocs.com/links/oT-VSUaKH_bUVfCus-nhy?client_reference_id=toored," class="color_option ex_c_8 buy" id="color_toored_border">
-							<div id="color_toored"></div>
-							<span class="color_price">€30</span>
-						</a>
-					
-					</div>
-					
-				</div>
-				
-				<div id="buy_more_colors"><span>Buy more colors<span></div>
-			  
-		  </div>
-		  
-	  	</div>
-		
-		<div id="waiting_for_opponent">
-			<div id="waiting_illu"></div>
-			<h2 class="deer_h" id="waiting_head_text">Looking for an opponent</h2>
-			<p class="deer_p" id="waiting_secondary_text">Average time: 1 minute</p>
 		</div>
-		  
-		  
-		  
-		  
-		  <div id="start_area">
-			  <div id="pre_game">
-				  <div id="start_game_btn" onclick="p2_ready()">Accept challenge</div>
-		  	  </div>
-			  <div id="waiting_game">
-				  <div id="game_starting">Game is starting...</div>
-			  </div>
-		  </div>
-		  
-		  
+		<div id="language_settings">
+			<div class="lang_chip lang_on" id="lang_js">JavaScript</div>
+			<div class="lang_chip" id="lang_ts">TypeScript</div>
+			<div class="lang_chip" id="lang_py">Python</div>
+		</div>
+		<div class="sep_medium"></div>
+		<div class="sep_medium" id="dismiss"></div>
+		<div class="sep_medium" id="dismiss"></div>
+  </div>
+
+  <!-- Header -->
+  <div id="hector">
+	  <h1 id="logo"><a href="/">yare</a></h1>
+	  <div class="menu">
+		  <a href="/documentation" class="menu_link" id="link_howtoplay">How to play</a>
+		  <div class="menu_link" id="login">Sign in</div>
+		  <div class="menu_link new_acc" id="new_account">Create account</div>
+		  <div class="menu_link" id="signed_in"><span id="the_name">username</span></div>
 	  </div>
-	  
-	  
-		  
-	  <a href="#" id="get_in" onclick="get_in()">Start game</a>
-	  
-  	  
+  </div>
+
+  <!-- Module edit mode (needed by basics.js) -->
+  <div id="module_edit_mode">
+	<input type="text" id="module_name_input" placeholder="Module name">
+	<div id="file_uploads_wrap">
+		<label class="file_upload_label">
+			<input type="file" id="file_script_client" class="file_upload" accept=".js">
+			<span class="lbl_type">Client</span>
+			<span class="lbl_name" id="client_file_name">Upload script</span>
+		</label>
+		<label class="file_upload_label">
+			<input type="file" id="file_script_server" class="file_upload" accept=".js">
+			<span class="lbl_type">Server</span>
+			<span class="lbl_name" id="server_file_name">Upload script</span>
+		</label>
+	</div>
+	<span id="modules_server_message" class="srv_ok">Module updated. Check browser console for errors.</span>
+	<span id="modules_server_message_loader"></span>
+	<div id="create_module_btn">Create module</div>
+	<div id="update_module_btn">Update module</div>
+	<a id="close_module_edit" href="#">Close</a>
+  </div>
+
+  <div id="modules_plate"></div>
+  <div id="overlay"></div>
+
+  <div id="account_overlay">
+	<div id="account_overlay_content">
+		<div id="account_header">
+			<a href="#" id="account_logout">Log out</a>
+			<span id="account_username">username</span>
+			<span id="account_rating">1500</span>
+		</div>
+		<div id="account_history">
+			<span id="account_history_label">Game history</span>
+			<div id="account_history_table"></div>
+		</div>
+	</div>
+  </div>
+
+  <!-- Challenge overlay (same layout as landing) -->
+  <div id="landing_overlay">
+	  <div id="landing_content">
+		  <p class="landing_text">You have been challenged to a match</p>
+		  <p class="landing_text">by <span id="challenge_opponent">{username}</span></p>
+	  </div>
+
+	  <div class="game_start_section">
+		  <div id="landing_start_btn" onclick="accept_challenge()">Accept challenge</div>
+		  <p id="challenge_status"></p>
+	  </div>
+
+	  <div id="landing_footer">
+		  <a href="https://kraa.io/yare_io/community?leaf=308750993639959808" class="landing_footer_link">Community chat</a>
+		  <a href="/leaderboard" class="landing_footer_link">Leaderboard</a>
+	  </div>
+  </div>
+
   </body>
-  
-  <script>
-	  
-	  var color_table = {
-		  'default': ['rgba(242, 246, 250, 0.32)', 'rgba(242, 246, 250, 0.32)'],
-		  'gblue': ['rgba(28, 196, 240, 1)', 'rgba(48, 216, 260, 1)'],
-		  'purply': ['rgba(128, 140, 255, 1)', 'rgba(168, 180, 255, 1)'],
-		  'redish': ['rgba(235, 119, 103, 1)', 'rgba(255, 139, 123, 1)'],
-		  'yerange': ['rgba(218, 183, 96, 1)', 'rgba(238, 203, 116, 1)'],
-		  'wirple': ['rgba(120,12,196,1)', 'rgba(150,52,236,1)'],
-		  'pistagre': ['rgba(148, 176, 108, 1)', 'rgba(168, 196, 128, 1)'],
-		  'magion': ['rgba(180, 27, 227, 1)', 'rgba(200, 57, 247, 1)'],
-		  'rozblue': ['rgba(18, 255, 248, 1)', 'rgba(28, 255, 254, 1)'],
-		  'brigenta': ['rgba(198, 166, 224, 1)', 'rgba(218, 174, 240, 1)'],
-		  'greson': ['rgba(138, 228, 122, 1)', 'rgba(158, 248, 142, 1)'],
-		  'mmmsalmon': ['rgba(232, 198, 179, 1)', 'rgba(252, 218, 199, 1)'],
-		  'skyblue': ['rgba(78, 142, 250, 1)', 'rgba(108, 152, 255, 1)'],
-		  'toored': ['rgba(240, 70, 60, 1)', 'rgba(250, 90, 80, 1)']
-		  
-	  };
-	  
-	  function getCookie(name) {
-	      var nameEQ = name + "=";
-	      var ca = document.cookie.split(';');
-	      for(var i=0;i < ca.length;i++) {
-	          var c = ca[i];
-	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
-	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	      }
-	      return null;
-	  }
-	  
-	  function eraseCookie(name) {   
-	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-	  }
 
-
-
-
-	  function copyTextToClipboard(text, target) {
-		  var copyTextArea = document.createElement("textarea");
-		  copyTextArea.style.position = 'fixed';
-		  copyTextArea.style.top = 0;
-		  copyTextArea.style.left = 0;
-		  copyTextArea.style.width = '2em';
-		  copyTextArea.style.height = '2em';
-		  copyTextArea.style.border = 'none';
-		  copyTextArea.style.outline = 'none';
-		  copyTextArea.style.boxShadow = 'none';
-		  copyTextArea.style.background = 'transparent';
-		  copyTextArea.value = text;
-		  document.body.appendChild(copyTextArea);
-		  copyTextArea.focus();
-		  copyTextArea.select();
-		  
-		  try {
-		      var successful = document.execCommand('copy');
-		      var msg = successful ? 'successful' : 'unsuccessful';
-		      code_copy_success(target);
-		    } catch (err) {
-		      console.error(err);
-		    }
-		
-		  document.body.removeChild(copyTextArea);
-	  }
-	  
-	  copy_elements = document.getElementsByClassName('copy_code');
-	  for (ce = 0; ce < copy_elements.length; ce++){
-	  	copy_elements[ce].addEventListener('click', function(){
-			code_to_copy = this.getAttribute('code');
-			copyTextToClipboard(code_to_copy, this);
-	    }, false);
-	  }
-
-
-	  function update_links(){
-		  let buy_links = document.querySelectorAll("a.buy");
-		  let this_user = getCookie('user_id');
-		  for (link of buy_links){
-			  link.href += this_user;
-		  }
-	  }
-
-	  //colors
-	  
-	  function draw_bord(clr){
-	  	
-	  }
-	  
-	  function draw_borders(ele){
-		  
-		  ele.style.borderWidth = '2px';
-		  ele.style.borderColor = color_table[chosen_color][0];
-		  
-	  }
-	  
-	  function color_selection(ch_color){
-		  
-		  gblue_el.style.borderWidth = '1px';
-		  gblue_el.style.borderColor = color_table['default'][0];
-		  purply_el.style.borderWidth = '1px';
-		  purply_el.style.borderColor = color_table['default'][0];
-		  redish_el.style.borderWidth = '1px';
-		  redish_el.style.borderColor = color_table['default'][0];
-		  yerange_el.style.borderWidth = '1px';
-		  yerange_el.style.borderColor = color_table['default'][0];
-		  pistagre_el.style.borderWidth = '1px';
-		  pistagre_el.style.borderColor = color_table['default'][0];
-		  wirple_el.style.borderWidth = '1px';
-		  wirple_el.style.borderColor = color_table['default'][0];
-		  magion_el.style.borderWidth = '1px';
-		  magion_el.style.borderColor = color_table['default'][0];
-		  rozblue_el.style.borderWidth = '1px';
-		  rozblue_el.style.borderColor = color_table['default'][0];
-		  brigenta_el.style.borderWidth = '1px';
-		  brigenta_el.style.borderColor = color_table['default'][0];
-		  greson_el.style.borderWidth = '1px';
-		  greson_el.style.borderColor = color_table['default'][0];
-		  mmmsalmon_el.style.borderWidth = '1px';
-		  mmmsalmon_el.style.borderColor = color_table['default'][0];
-		  skyblue_el.style.borderWidth = '1px';
-		  skyblue_el.style.borderColor = color_table['default'][0];
-		  toored_el.style.borderWidth = '1px';
-		  toored_el.style.borderColor = color_table['default'][0];
-		  
-
-		  localStorage.setItem('chosen_color', ch_color);
-		  
-		  chosen_color = ch_color;
-		  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
-		  draw_borders(current_color_el);
-		  
-		  document.getElementById('color_' + chosen_color + '_border').style.borderWidth = '2px';
-		  document.getElementById('color_' + chosen_color + '_border').style.borderColor = color_table[chosen_color][0];
-		  
-	  }
-	  
-	  
-	  function pre_select_bot(){
-		  expand_bot_selection();
-	  }
-	  
-	  function get_user_colors(){
-		  //let temp_clr_arr = [1, 2, 3, 4, 5, 6, 8];
-		  
-	  	fetch('/get_colors', {
-	  	        method: "POST",
-	  	        headers: {
-	  	          Accept: "application/json",
-	  	          "Content-Type": "application/json"
-	  	        },
-	  	        body: JSON.stringify({
-	  		        user_id: getCookie('user_id'),
-	  		        session_id: getCookie('session_id')
-	  		    })
-
-	      }).then(response => response.json())
-	        .then(response => {
-	  		  if (response.data == "no user found"){
-	  		  } else if (response.data == "something went wrong"){
-			  } else {
-				  let clr_arr = response.data;
-				  
-				  for (clr_code of clr_arr){
-					  if (clr_code > 4) {
-						  els = document.getElementsByClassName('ex_c_' + (clr_code - 4));
-						  els[0].style.opacity = 1;
-						  els[0].style.display = "block";
-						  els[0].style.pointerEvents = "auto";
-						  els[0].href = "#";
-						  try {
-						  	document.querySelector('.ex_c_' + (clr_code - 4) + ' .color_price').style.display = 'none';
-						  } catch (e) {
-						  	
-						  }
-						  
-					  }
-				  	  
-				  }
-	  		  	  //add_user_colors(response.data)
-	  		  }
-	  	  })
-	        .catch(err => {
-	  		  console.error(err);
-	  	  });
-	  }
-	  
-	  function show_paid_colors(){
-		  document.getElementById("paid_colors").style.pointerEvents = "auto";
-		  document.getElementById("buy_more_colors").style.display = "none";
-		  
-		  let buy_colors = document.querySelectorAll("a.buy");
-		  for (clr of buy_colors){
-			  clr.style.opacity = 1;
-			  clr.style.display = "block";
-			  clr.style.pointerEvents = "auto";
-		  }
-		  
-	  }
-	  
-	  
-	  
-	  function start_game(type){
-		  
-  		if (getCookie('user_id') == undefined || getCookie('user_id') == "anonymous"){
-  			alert('please login first!');
-  			return;
-	  	}
-		
-		wait_opponent_view();
-		  
-	  	fetch('/new-game', {
-	          method: "POST",
-	          headers: {
-	            Accept: "application/json",
-	            "Content-Type": "application/json"
-	          },
-	          body: JSON.stringify({
-	  	        user_id: getCookie('user_id'),
-			    user_color: chosen_color,
-	  	        session_id: getCookie('session_id'),
-	  			type: type
-	  	    })
-	  	}).then(response => response.json())
-	        .then(response => {
-	  		  game_id = response.g_id;
-	  		  if (response.meta == 'easy-bot'){
-	  			 setCookie('game_id', game_id);
-	  		  	 window.location.href = './t1/' + response.g_id;
-	  			 //document.location.reload(true);
-	  		  } else if (response.meta == 'waiting for p2'){
-	  			  waiting_for_p2(response.g_id);
-	  		  }
-		  
-		 
-	  	  })
-	        .catch(err => {
-	  		  console.error(err);
-	  	  });
-	  }
-	  
-	  
-	  function p2_ready(){
-		wait_start_view();
-		  
-	  	fetch('/confirm-challenge/' + game_id, {
-	  	        method: "POST",
-	  	        headers: {
-	  	          Accept: "application/json",
-	  	          "Content-Type": "application/json"
-	  	        },
-	  	        body: JSON.stringify({
-	  		        user_id: getCookie('user_id'),
-			   	 	user_color: chosen_color,
-	  		        session_id: getCookie('session_id'),
-	  		    })
-
-	      }).then(response => response.json())
-	        .then(response => {
-	  		  if (response.data == "own challenge"){
-	  		  } else if (response.data == "accepted"){
-	  		  	  window.location = '/' + response.server + 'n/' + game_id
-	  		  } else if (response.data == "waiting for p1 to start"){
-	  		  }
-	  	  })
-	        .catch(err => {
-	  		  console.error(err);
-	  	  });
-	  
-	  }
-	  
-	  
-	  
-	  
-	  
-	  function challenge_friend(){
-	  }
-	  
-	  function get_in(){
-	  	fetch('/confirm-challenge/' + game_id, {
-	  	        method: "POST",
-	  	        headers: {
-	  	          Accept: "application/json",
-	  	          "Content-Type": "application/json"
-	  	        },
-	  	        body: JSON.stringify({
-	  		        user_id: getCookie('user_id'),
-	  		        session_id: getCookie('session_id'),
-	  		    })
-
-	      }).then(response => response.json())
-	        .then(response => {
-	  		  if (response.data == "start"){
-	  			  window.location = './' + response.server + 'n/' + game_id;
-	  			  //location.reload();
-	  	
-	  		  }
-	  	  })
-	        .catch(err => {
-	  		  console.error(err);
-	  	  });
-	  }
-	  
-	  
-	  var gblue_el = document.getElementById('color_gblue_border');
-	  var purply_el = document.getElementById('color_purply_border');
-	  var redish_el = document.getElementById('color_redish_border');
-	  var yerange_el = document.getElementById('color_yerange_border');
-	  var pistagre_el = document.getElementById('color_pistagre_border');
-	  var wirple_el = document.getElementById('color_wirple_border');
-	  var magion_el = document.getElementById('color_magion_border');
-	  var rozblue_el = document.getElementById('color_rozblue_border');
-	  var brigenta_el = document.getElementById('color_brigenta_border');
-	  var greson_el = document.getElementById('color_greson_border');
-	  var mmmsalmon_el = document.getElementById('color_mmmsalmon_border');
-	  var skyblue_el = document.getElementById('color_skyblue_border');
-	  var toored_el = document.getElementById('color_toored_border');
-	  
-	  document.getElementById('color_gblue').style.backgroundColor = color_table['gblue'][0];
-	  document.getElementById('color_purply').style.backgroundColor = color_table['purply'][0];
-	  document.getElementById('color_redish').style.backgroundColor = color_table['redish'][0];
-	  document.getElementById('color_yerange').style.backgroundColor = color_table['yerange'][0];
-	  document.getElementById('color_pistagre').style.backgroundColor = color_table['pistagre'][0];
-	  document.getElementById('color_wirple').style.backgroundColor = color_table['wirple'][0];
-	  document.getElementById('color_magion').style.backgroundColor = color_table['magion'][0];
-	  document.getElementById('color_rozblue').style.backgroundColor = color_table['rozblue'][0];
-	  document.getElementById('color_brigenta').style.backgroundColor = color_table['brigenta'][0];
-	  document.getElementById('color_greson').style.backgroundColor = color_table['greson'][0];
-	  document.getElementById('color_mmmsalmon').style.backgroundColor = color_table['mmmsalmon'][0];
-	  document.getElementById('color_skyblue').style.backgroundColor = color_table['skyblue'][0];
-	  document.getElementById('color_toored').style.backgroundColor = color_table['toored'][0];
-	  
-	  
-	  //document.getElementById('play_bot_btn').addEventListener('click', start_game.bind(null, 'cleo-bot'), false);
-	  
-	  //bots
-	  
-	  gblue_el.addEventListener('click', color_selection.bind(null, 'gblue'), false);
-	  purply_el.addEventListener('click', color_selection.bind(null, 'purply'), false);
-	  redish_el.addEventListener('click', color_selection.bind(null, 'redish'), false);
-	  yerange_el.addEventListener('click', color_selection.bind(null, 'yerange'), false);
-	  pistagre_el.addEventListener('click', color_selection.bind(null, 'pistagre'), false);
-	  wirple_el.addEventListener('click', color_selection.bind(null, 'wirple'), false);
-	  magion_el.addEventListener('click', color_selection.bind(null, 'magion'), false);
-	  rozblue_el.addEventListener('click', color_selection.bind(null, 'rozblue'), false);
-	  brigenta_el.addEventListener('click', color_selection.bind(null, 'brigenta'), false);
-	  greson_el.addEventListener('click', color_selection.bind(null, 'greson'), false);
-	  mmmsalmon_el.addEventListener('click', color_selection.bind(null, 'mmmsalmon'), false);
-	  skyblue_el.addEventListener('click', color_selection.bind(null, 'skyblue'), false);
-	  toored_el.addEventListener('click', color_selection.bind(null, 'toored'), false);
-	  
-	  var chosen_color = 'purply';
-	  if(localStorage.getItem('chosen_color') != null){
-		  chosen_color = localStorage.getItem('chosen_color');
-	  }
-	  let current_color_el = document.getElementById('color_' + chosen_color + '_border');
-		draw_borders(current_color_el);
-	  
-	  //document.getElementById('color_gblue_border').addEventListener('click', chosencolor, false)
-		
-	  document.getElementById('buy_more_colors').addEventListener('click', show_paid_colors, false);
-	  
-	  get_user_colors();
-	  update_links();
-	  
-	  //document.getElementById('color_gblue_border').addEventListener('click', chosencolor, false)
-	  
-  
-  
-  
-  </script>
-  
   <script src="../animations.js"></script>
-    <script src="../challenge.js"></script>
-  </html>
+  <script src="../basics.js"></script>
+  <script>
+
+  (function() {
+	  var tempURLThing = document.URL.replace('#', '');
+	  game_id = /[^/]*$/.exec(tempURLThing)[0];
+
+	  if (getCookie('session_id') != null && getCookie('user_id') != null) {
+		  if (getCookie('user_id') != "anonymous") {
+			  fetch('/validate-challenge/' + game_id, {
+				  method: "POST",
+				  headers: {
+					  Accept: "application/json",
+					  "Content-Type": "application/json"
+				  },
+				  body: JSON.stringify({
+					  user_id: getCookie('user_id'),
+					  session_id: getCookie('session_id'),
+				  })
+			  }).then(function(response) { return response.json(); })
+				.then(function(response) {
+					if (response.challenger) {
+						document.getElementById('challenge_opponent').textContent = response.challenger;
+					}
+				})
+				.catch(function(err) {
+					console.error(err);
+				});
+		  }
+	  }
+  })();
+
+  function accept_challenge() {
+	  var btn = document.getElementById('landing_start_btn');
+	  var status = document.getElementById('challenge_status');
+	  btn.style.backgroundColor = 'hsla(217, 100%, 84%, 0.08)';
+	  btn.style.color = 'hsla(217, 100%, 84%, 1)';
+	  btn.textContent = 'Connecting...';
+	  btn.style.pointerEvents = 'none';
+
+	  fetch('/confirm-challenge/' + game_id, {
+		  method: "POST",
+		  headers: {
+			  Accept: "application/json",
+			  "Content-Type": "application/json"
+		  },
+		  body: JSON.stringify({
+			  user_id: getCookie('user_id'),
+			  user_color: localStorage.getItem('chosen_color') || 'purply',
+			  session_id: getCookie('session_id'),
+		  })
+	  }).then(function(response) { return response.json(); })
+		.then(function(response) {
+			if (response.data == "own challenge") {
+				status.textContent = "You can't accept your own challenge";
+				btn.textContent = 'Accept challenge';
+				btn.style.backgroundColor = '';
+				btn.style.color = '';
+				btn.style.pointerEvents = '';
+			} else if (response.data == "accepted") {
+				window.location = '/' + response.server + 'n/' + game_id;
+			} else if (response.data == "waiting for p1 to start") {
+				btn.textContent = 'Waiting for opponent...';
+			}
+		})
+		.catch(function(err) {
+			console.error(err);
+			status.textContent = 'Something went wrong';
+			btn.textContent = 'Accept challenge';
+			btn.style.backgroundColor = '';
+			btn.style.color = '';
+			btn.style.pointerEvents = '';
+		});
+  }
+
+  </script>
+</html>

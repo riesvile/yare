@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+  <head>
+    <title>yare.io</title>
+	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="stylesheet" href="/colors.css">
+	<link rel="stylesheet" href="/style.css">
+	<link rel="stylesheet" href="/style-mobile.css">
+	<script src="/anime.min.js"></script>
+	<style>
+		body {
+			overflow-y: auto;
+		}
+		#profile_wrap {
+			width: 68%;
+			margin: 0 auto;
+			padding-top: 120px;
+			padding-bottom: 100px;
+		}
+		#profile_username {
+			font-size: 48px;
+			font-weight: 500;
+			color: #fff;
+			margin-bottom: 8px;
+		}
+		#profile_rating {
+			font-size: 16px;
+			color: rgba(242, 246, 250, 0.5);
+			margin-bottom: 48px;
+		}
+		#profile_games {
+			width: 100%;
+			font-size: 15px;
+			font-weight: 500;
+			color: rgba(242, 246, 250, 0.69);
+		}
+		.pg_row {
+			display: flex;
+			align-items: center;
+			height: 56px;
+			border-top: 1px solid rgba(242, 246, 250, 0.12);
+		}
+		.pg_row:hover {
+			background: rgba(255,255,255,0.03);
+		}
+		.pg_players {
+			flex: 1;
+			color: rgba(242, 246, 250, 0.86);
+		}
+		.pg_players .pg_rating {
+			color: rgba(242, 246, 250, 0.4);
+		}
+		.pg_date {
+			width: 100px;
+			text-align: right;
+			color: rgba(242, 246, 250, 0.4);
+			margin-right: 24px;
+		}
+		.pg_result {
+			width: 24px;
+			text-align: right;
+		}
+		.pg_win { color: rgba(133, 234, 143, 1); }
+		.pg_loss { color: rgba(234, 133, 133, 1); }
+		.pg_draw { color: rgba(242, 246, 250, 0.4); }
+		.pg_row a {
+			color: inherit;
+			text-decoration: none;
+		}
+		#profile_empty {
+			color: rgba(242, 246, 250, 0.3);
+			padding-top: 24px;
+		}
+		@media (max-width: 800px) {
+			#profile_wrap { width: 88%; }
+			#profile_username { font-size: 32px; }
+		}
+	</style>
+  </head>
+  <body>
+
+  <script src="/header.js"></script>
+
+  <div id="profile_wrap">
+	  <div id="profile_username"></div>
+	  <div id="profile_rating"></div>
+	  <div id="profile_games"></div>
+  </div>
+
+  </body>
+
+  <script>
+	function timeSince(date) {
+		var seconds = Math.floor((new Date() - date) / 1000);
+		var interval = Math.floor(seconds / 31536000);
+		if (interval >= 1) return interval + "y ago";
+		interval = Math.floor(seconds / 2592000);
+		if (interval >= 1) return interval + "mo ago";
+		interval = Math.floor(seconds / 86400);
+		if (interval >= 1) return interval + "d ago";
+		interval = Math.floor(seconds / 3600);
+		if (interval >= 1) return interval + "h ago";
+		interval = Math.floor(seconds / 60);
+		if (interval >= 1) return interval + "m ago";
+		return "just now";
+	}
+
+	var username = window.location.pathname.replace(/^\//, '');
+
+	fetch('/api/user-profile/' + encodeURIComponent(username))
+		.then(function(r) { return r.json(); })
+		.then(function(data) {
+			if (data.data !== 'ok') return;
+
+			document.title = data.user.user_id + ' - yare.io';
+			document.getElementById('profile_username').textContent = data.user.user_id;
+
+			if (data.user.rating != null) {
+				document.getElementById('profile_rating').textContent = data.user.rating + ' rating';
+			}
+
+			var container = document.getElementById('profile_games');
+			if (!data.games || data.games.length === 0) {
+				container.innerHTML = '<div id="profile_empty">No games yet</div>';
+				return;
+			}
+
+			var html = '';
+			for (var i = 0; i < data.games.length; i++) {
+				var g = data.games[i];
+				var p1 = g.player1;
+				var p2 = g.player2;
+				var r1 = g.p1_rating != null ? ' (' + g.p1_rating + ')' : '';
+				var r2 = g.p2_rating != null ? ' (' + g.p2_rating + ')' : '';
+				var dateStr = timeSince(new Date(g.updatedAt));
+
+				var resultClass, resultText;
+				if (g.winner === username) {
+					resultClass = 'pg_win';
+					resultText = 'W';
+				} else if (g.winner === '') {
+					resultClass = 'pg_draw';
+					resultText = '-';
+				} else {
+					resultClass = 'pg_loss';
+					resultText = 'L';
+				}
+
+				html += '<a href="/replay/' + g.game_id + '" class="pg_row">'
+					+ '<span class="pg_players">'
+					+ p1 + '<span class="pg_rating">' + r1 + '</span>'
+					+ ' vs. '
+					+ p2 + '<span class="pg_rating">' + r2 + '</span>'
+					+ '</span>'
+					+ '<span class="pg_date">' + dateStr + '</span>'
+					+ '<span class="pg_result ' + resultClass + '">' + resultText + '</span>'
+					+ '</a>';
+			}
+			container.innerHTML = html;
+		})
+		.catch(function(err) {
+			console.error(err);
+		});
+  </script>
+
+  <script src="/animations.js"></script>
+  <script src="/basics.js"></script>
+</html>

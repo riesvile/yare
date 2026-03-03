@@ -311,6 +311,7 @@
 
 			<div class="code-tabs">
 				<div class="code-tab active" data-tab="starter">Simple starter code</div>
+				<div class="code-tab" data-tab="closest">Attack closest cat</div>
 			</div>
 
 			<div class="code-panel active" id="tab-starter">
@@ -318,6 +319,35 @@
     if (cat.sight.enemies.length == 0) continue;
 
     let enemy = cats[cat.sight.enemies[0]];
+    cat.move(enemy.position);
+    cat.pew(enemy);
+}</pre>
+			</div>
+
+			<div class="code-panel" id="tab-closest">
+<pre>function distance(a, b) {
+    let dx = a[0] - b[0];
+    let dy = a[1] - b[1];
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function closest_enemy(cat) {
+    let best = null;
+    let best_dist = Infinity;
+    for (let id of cat.sight.enemies) {
+        let d = distance(cat.position, cats[id].position);
+        if (d < best_dist) {
+            best_dist = d;
+            best = cats[id];
+        }
+    }
+    return best;
+}
+
+for (let cat of my_cats) {
+    let enemy = closest_enemy(cat);
+    if (!enemy) continue;
+
     cat.move(enemy.position);
     cat.pew(enemy);
 }</pre>

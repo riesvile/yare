@@ -290,13 +290,15 @@ function delete_all_cats(){
 function fill_defaults(pl2 = 1){
   let start_num_cats = 9;
   
+  let x_offsets = [10, 0, -10, 0];
   if (pl2 == 0){
 	  boxsanded['p1_units'] = [];
 	  game_blocks[active_block]['p1'] = {};
 	  for (let s = 1; s <= start_num_cats; s++){
 		  let y = -100 + (s - 1) * 25;
-		  game_blocks[active_block]['p1'][players['player1'] + '_' + s] = [[-200, y], 10, 1, 10];
-		  boxsanded['p1_units'].push([s, [-200, y], 10, 1]);
+		  let x = -200 + x_offsets[(s - 1) % 4];
+		  game_blocks[active_block]['p1'][players['player1'] + '_' + s] = [[x, y], 10, 1, 10];
+		  boxsanded['p1_units'].push([s, [x, y], 10, 1]);
 		  
 		  let newLoc = game_blocks[active_block].p1[players['player1'] + '_' + s][0];
 		  let oldEnergy = game_blocks[active_block].p1[players['player1'] + '_' + s][1];
@@ -312,8 +314,9 @@ function fill_defaults(pl2 = 1){
 	  game_blocks[active_block]['p2'] = {};
 	  for (let q = 1; q <= start_num_cats; q++){
 		  let y = -100 + (q - 1) * 25;
-		  game_blocks[active_block]['p2'][players['player2'] + '_' + q] = [[200, y], 10, 1, 10];
-		  boxsanded['p2_units'].push([q, [200, y], 10, 1]);
+		  let x = 200 - x_offsets[(q - 1) % 4];
+		  game_blocks[active_block]['p2'][players['player2'] + '_' + q] = [[x, y], 10, 1, 10];
+		  boxsanded['p2_units'].push([q, [x, y], 10, 1]);
 		  
 		  let newLoc = game_blocks[active_block].p2[players['player2'] + '_' + q][0];
 		  let oldEnergy = game_blocks[active_block].p2[players['player2'] + '_' + q][1];

@@ -1550,6 +1550,16 @@ wss.on("connection", (ws)=>{
 	})
 })
 
+// User profile page: /{username}
+app.get('/:username', (req, res, next) => {
+	const username = req.params.username;
+	if (!username || username.length > 40) return next();
+	User.findOne({user_id: username}).then((user) => {
+		if (!user) return next();
+		res.sendFile(__dirname + '/public/profile.html');
+	}).catch(() => next());
+});
+
 // Route not found (404)
 app.use((req,res,next)=>{
   return res.status(404).send("404: Not Found");

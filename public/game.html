@@ -141,7 +141,23 @@
 	  
   <div id="modules_plate">
     
-  </div>	  
+  </div>
+
+  <div id="overlay"></div>
+
+  <div id="account_overlay">
+	<div id="account_overlay_content">
+		<div id="account_header">
+			<a href="#" id="account_logout">Log out</a>
+			<span id="account_username">username</span>
+			<span id="account_rating">1500</span>
+		</div>
+		<div id="account_history">
+			<span id="account_history_label">Game history</span>
+			<div id="account_history_table"></div>
+		</div>
+	</div>
+  </div>
 	  
   <canvas id='main_canvas'></canvas>
   <canvas id='base_canvas'></canvas>
@@ -253,7 +269,7 @@
   
   
   <div id="update_switch_wrapper" class='desktop_only'>
-  <a href="#" id="update_code"><span>UPDATE CODE</span></a>
+  <a href="#" id="update_code"><span>Run code</span></a>
   <div id="shortcut_info">SHIFT + ENTER</div>
   <div id="switch_view" class="mobile_only"><span class="switch_ico">{ }</span></div>
   </div>
@@ -917,7 +933,7 @@ var basic_code =
 				game_type = 'tutorial';
 				document.getElementById('resign_game').style.display = 'none';
 				if (tutorial_started == 0){
-				document.getElementById('update_code').innerHTML = "<span>SEND CODE</span>";
+				document.getElementById('update_code').innerHTML = "<span>Run code</span>";
 				}
 				
 			} else {
@@ -1001,7 +1017,7 @@ var basic_code =
 		  update_success();
 		  if (tutorial_started == 0){
 			  tutorial_started = 1;
-			  document.getElementById('update_code').innerHTML = "<span>UPDATE CODE</span>";
+			  document.getElementById('update_code').innerHTML = "<span>Run code</span>";
 			  tut_start();
 		  }
 		  user_code = editor.getValue();

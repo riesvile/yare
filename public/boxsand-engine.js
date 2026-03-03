@@ -744,6 +744,31 @@ function initiate_world(){
 
 
 
+function getSyntaxErrorLine(code) {
+	try {
+		eval('(function(){\n' + code + '\n})');
+		return null;
+	} catch (e) {
+		if (typeof e.lineNumber === 'number') {
+			return e.lineNumber - 1;
+		}
+		var match = (e.stack || '').match(/<anonymous>:(\d+):(\d+)/);
+		if (match) {
+			return parseInt(match[1]) - 1;
+		}
+		return null;
+	}
+}
+
+function getRuntimeErrorLine(e) {
+	var trace = (e.stack || '').split('\n')[1] || '';
+	var match = trace.match(/:(\d+):(\d+)\)$/);
+	if (match) {
+		return parseInt(match[1]) - 2;
+	}
+	return null;
+}
+
 function run_code(){
 	//user_code in game.js
 	yd.commands = {
@@ -755,28 +780,48 @@ function run_code(){
 	yd.logs = [];
 	all_commands = {};
 	
+	var pl1_code = player_codes['pl1_code'] + "memory1 = memory;";
+	var fn1;
 	try {
-		Function(player_codes['pl1_code'] + "memory1 = memory;")(
-			memory = memory1, cats = rawCats1, my_cats = my_cats1, this_player_id = players['p1'], ttick = 't' + tick
-		);
-		all_commands[players['p1']] = yd.commands;
-	} catch (e){
-		var trace = (e.stack || '').split('\n')[1] || '';
-		var fixed = trace.replace(/:(\d+):(\d+)\)$/, function(m, line, col) { return ':' + (line - 2) + ':' + col + ')'; });
-		yd.errors.push(e.message + ' ' + fixed.trim());
+		fn1 = Function(pl1_code);
+	} catch (e) {
+		var line = getSyntaxErrorLine(pl1_code);
+		yd.errors.push(e.message + (line !== null ? ' (line ' + line + ')' : ''));
+		fn1 = null;
+	}
+	if (fn1) {
+		try {
+			fn1(
+				memory = memory1, cats = rawCats1, my_cats = my_cats1, this_player_id = players['p1'], ttick = 't' + tick
+			);
+			all_commands[players['p1']] = yd.commands;
+		} catch (e) {
+			var line = getRuntimeErrorLine(e);
+			yd.errors.push(e.message + (line !== null ? ' (line ' + line + ')' : ''));
+		}
 	}
 	
 	
 	
+	var pl2_code = player_codes['pl2_code'] + "memory2 = memory;";
+	var fn2;
 	try {
-		Function(player_codes['pl2_code'] + "memory2 = memory;")(
-			memory = memory2, cats = rawCats2, my_cats = my_cats2, this_player_id = players['p2'], ttick = 't' + tick
-		);
-		all_commands[players['p2']] = yd.commands;
-	} catch (e){
-		var trace = (e.stack || '').split('\n')[1] || '';
-		var fixed = trace.replace(/:(\d+):(\d+)\)$/, function(m, line, col) { return ':' + (line - 2) + ':' + col + ')'; });
-		yd.errors.push(e.message + ' ' + fixed.trim());
+		fn2 = Function(pl2_code);
+	} catch (e) {
+		var line = getSyntaxErrorLine(pl2_code);
+		yd.errors.push(e.message + (line !== null ? ' (line ' + line + ')' : ''));
+		fn2 = null;
+	}
+	if (fn2) {
+		try {
+			fn2(
+				memory = memory2, cats = rawCats2, my_cats = my_cats2, this_player_id = players['p2'], ttick = 't' + tick
+			);
+			all_commands[players['p2']] = yd.commands;
+		} catch (e) {
+			var line = getRuntimeErrorLine(e);
+			yd.errors.push(e.message + (line !== null ? ' (line ' + line + ')' : ''));
+		}
 	}
 	
 }

@@ -130,7 +130,7 @@ module.exports = function createMiscRoutes({ logger, check_limiter }) {
 
 		User.find({})
 			.sort({rating:'desc'})
-			.limit(20)
+			.limit(100)
 			.exec()
 			.then((result) => {
 				if (result.length == 0){
@@ -148,6 +148,52 @@ module.exports = function createMiscRoutes({ logger, check_limiter }) {
 			.catch((error) => {
 				logger.error(error);
 			})
+	});
+
+	router.get('/api/user-profile/:username', (req, res) => {
+		if (check_limiter(req.ip)){
+			res.status(200).send({ data: 'no!' });
+			return;
+		}
+
+		const username = req.params.username;
+		User.findOne({user_id: username})
+			.then((user) => {
+				if (!user) {
+					return res.status(404).send({ data: "no user found" });
+				}
+				Game.find({$or:[{player1: username},{player2: username}], active: 0})
+					.sort({updatedAt:'desc'})
+					.limit(20)
+					.exec()
+					.then((games) => {
+						const sanitized = games.map(g => ({
+							game_id: g.game_id,
+							player1: g.player1,
+							player2: g.player2,
+							p1_color: g.p1_color,
+							p2_color: g.p2_color,
+							p1_rating: g.p1_rating,
+							p2_rating: g.p2_rating,
+							winner: g.winner,
+							ranked: g.ranked,
+							updatedAt: g.updatedAt,
+						}));
+						res.status(200).send({
+							data: "ok",
+							user: { user_id: user.user_id, rating: user.rating },
+							games: sanitized
+						});
+					})
+					.catch((error) => {
+						logger.error(error);
+						res.status(500).send({ data: "error" });
+					});
+			})
+			.catch((error) => {
+				logger.error(error);
+				res.status(500).send({ data: "error" });
+			});
 	});
 
 	router.post('/stripe-payment', (req, res) => {

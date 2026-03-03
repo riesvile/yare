@@ -1,261 +1,88 @@
 <!doctype html>
 <html>
   <head>
-    <title>yare.io</title>
-	<style>
-	</style>
-	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=0">
+    <title>yare.io – Leaderboard</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-	<link rel="stylesheet" href="./colors.css">
 	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./documentation.css">
 	<link rel="stylesheet" href="./style-mobile.css">
-	<script src="./src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./anime.min.js"></script>
+	<style>
+		.col-rank { width: 6%; }
+		.col-player { width: 48%; }
+		.col-games { width: 24%; }
+		.col-elo { width: 22%; text-align: right; }
+		.cell-rank { color: rgba(242, 246, 250, 0.36); }
+		.cell-player { color: rgba(242, 246, 250, 0.86); font-weight: 500; }
+		.cell-games { color: rgba(242, 246, 250, 0.44); }
+		.cell-elo { color: rgba(242, 246, 250, 0.86); text-align: right; }
+		#lbfill tr { cursor: pointer; }
+		#lbfill tr:hover td { color: rgba(242, 246, 250, 1); }
+	</style>
   </head>
   <body>
-	  
-	  <div id="new_account_wrap">
-		  <form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
-		  	  <input type="text" id="new_user_name" name="user[name]" placeholder="Username">
-			  <span id="user_err_message">Something's wrong</span>
-		  	  <input type="password" id="new_user_password" name="user[password]" placeholder="Password">
-			  <span id="password_err_message">Something's wrong</span>
-			  <br>
-			   <p id="email_snippet"><span class="par_highlight">We don’t want your email.</span> Just bear in mind that if you forget your password, you’ll need to create a new account</p>
-		  	  <input type="submit" value="Create new account" id="new_acc_submit"><div id="loader_new_acc"></div>
-		  </form>
-	  </div>
-  
-	  <div id="login_wrap">
-		  <form action="/validate" method="post" id="login_form" autocomplete="off" onsumbit="submit_test()">
-		  	  <input type="text" id="user_name" name="user[name]" placeholder="Username">
-		  	  <input type="password" id="user_password" name="user[password]" placeholder="Password">
-			  <span id="login_err_message">Something's wrong</span>
-			  <br>
-		  	  <input type="submit" value="Log in" id="login_submit"><div id="loader_login"></div>
-		  </form>
-	  </div>
-  
-	  <div id="profile_links">  
-		  	<a href="/hub" class="profile_link" id="hub_link">Profile hub</a>
-		  	<a href="#" class="profile_link" id="preferences_link">Preferences</a>
-		  	<a href="#" class="profile_link" id="log_out">Log out</a>
-	  </div>
-  
-  
-	  <div id="hector">
-		  <h1 id="logo"><a href="/">yare</a></h1>
-		  <div class="menu">
-			  <a href="/documentation" class="menu_link" style="visibility: hidden;"><span class="desktop_only">Documentation</span></a>
-			  <div class="menu_line desktop_only"></div>
-			  <div class="menu_link new_acc" id="new_account">New account</div>
-			  <div class="menu_link" id="login">Log in</div>
-			  <div class="menu_link" id="signed_in">username</div>
-		  </div>
-	  </div>
-	  
-	  
-	  <h1 class="page_head">Leaderboard</h1>
-	  
-	  <div id="overlay"></div>
-	  <div id="grad_top2"></div>
-	  
-	  <div id="info_box">
-	  	<div id="info_box_content">
-			
-		</div>
-	  </div>
-	  
-	  
-	  <div class="table t_leaderboard" id="lbfill">
-	  	<div class="row lb_row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div>
-	  	<div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div>
-	  	<div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">999</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div><div class="row">
-			<div class="row_in">
-				<span class="table_lb_rank">1</span>
-				<span class="table_lb_player">levmiseri</span>
-				<span class="table_lb_fav_shape"></span>
-				<span class="table_lb_games">72 games</span>
-				<span class="table_lb_winrate">59% winrate</span>
-				<span class="table_lb_rating">1957</span>
-			</div>
-		</div>
-	  </div>
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-		
-		
-		
-	  
-	  
-	  
+
+	<script src="/header.js"></script>
+
+	<div id="doc_content">
+
+		<div class="spacer-l"></div>
+
+		<h1 class="doc_h1">Leaderboard</h1>
+
+		<table>
+			<thead>
+				<tr>
+					<th class="col-rank"></th>
+					<th class="col-player">Player</th>
+					<th class="col-games">Games</th>
+					<th class="col-elo" style="text-align: right;">Elo</th>
+				</tr>
+			</thead>
+			<tbody id="lbfill">
+			</tbody>
+		</table>
+
+		<div class="spacer-xl"></div>
+
+	</div>
+
   </body>
-  
+
   <script>
-	  
-	  function getCookie(name){
-	      var nameEQ = name + "=";
-	      var ca = document.cookie.split(';');
-	      for(var i=0;i < ca.length;i++) {
-	          var c = ca[i];
-	          while (c.charAt(0)==' ') c = c.substring(1,c.length);
-	          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	      }
-	      return null;
-	  }
-	  
-	  function eraseCookie(name){   
-	      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-	  }
-	  
-	  
-	  function fill_leaderboard(lb_data){
-		  //console.log(lb_data);
-		  var tbl = document.getElementById('lbfill');
-		  var tbl_data = '';
-		  
-		  for (i = 0; i < lb_data.length; i++){
-		  	tbl_data += "<div class='row lb_row'>							<div class='row_in'>								<span class='table_lb_rank'>" + (i + 1) + "</span>								<span class='table_lb_player'>" + lb_data[i]['user_id'] + "</span>								<span class='table_lb_fav_shape'></span>								<span class='table_lb_games'>" + lb_data[i]['games_count'] + "</span>								<span class='table_lb_winrate'>-%</span>								<span class='table_lb_rating'>" + lb_data[i]['rating'] + "</span>							</div>						</div>"
-		  } 
-		  
-		  tbl.innerHTML = tbl_data;
-		  
-	  }
-	  
-	  
-	  
-		fetch('/populate-leaderboard', {
-		        method: "POST",
-		        headers: {
-		          Accept: "application/json",
-		          "Content-Type": "application/json"
-		        },
-		        body: JSON.stringify({
-			        meta: 'top100'
-			    })
-
-	    }).then(response => response.json())
-	      .then(response => {
-			  //console.log(response);
-		  if (response.data == 'no results'){
-		  } else {
-			  //console.log('populate table');
-			  fill_leaderboard(response.stream);
-		  }
-	  })
-	  .catch(error => {
-		  console.error(error);
-	  })
-	  
-	  
-
-	  
-	  
-	  
-  
+	fetch('/populate-leaderboard', {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({ meta: 'top100' })
+	}).then(function(r) { return r.json(); })
+	  .then(function(response) {
+		if (response.data === 'no results') return;
+		var tbody = document.getElementById('lbfill');
+		var html = '';
+		for (var i = 0; i < response.stream.length; i++) {
+			var u = response.stream[i];
+			var games = u.games_count != null ? u.games_count : '';
+			html += '<tr onclick="window.location=\'/' + u.user_id + '\'">'
+				+ '<td class="cell-rank">' + (i + 1) + '</td>'
+				+ '<td class="cell-player">' + u.user_id + '</td>'
+				+ '<td class="cell-games">' + games + '</td>'
+				+ '<td class="cell-elo">' + u.rating + '</td>'
+				+ '</tr>';
+		}
+		tbody.innerHTML = html;
+	}).catch(function(err) {
+		console.error(err);
+	});
   </script>
-  
+
   <script src="./animations.js"></script>
   <script src="./basics.js"></script>
-  </html>
+</html>

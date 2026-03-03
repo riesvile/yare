@@ -178,13 +178,15 @@ function set_stage(){
 function fill_defaults(pl2){
 	var start_num_cats = 9;
 
+	var x_offsets = [10, 0, -10, 0];
 	if (pl2 == 0){
 		boxsanded['p1_units'] = [];
 		game_blocks[active_block]['p1'] = {};
 		for (var s = 1; s <= start_num_cats; s++){
 			var yy = -100 + (s - 1) * 25;
-			game_blocks[active_block]['p1'][players['player1'] + '_' + s] = [[-200, yy], 10, 1, 10];
-			boxsanded['p1_units'].push([s, [-200, yy], 10, 1]);
+			var xx = -200 + x_offsets[(s - 1) % 4];
+			game_blocks[active_block]['p1'][players['player1'] + '_' + s] = [[xx, yy], 10, 1, 10];
+			boxsanded['p1_units'].push([s, [xx, yy], 10, 1]);
 
 			var newLoc = game_blocks[active_block].p1[players['player1'] + '_' + s][0];
 			var oldEnergy = game_blocks[active_block].p1[players['player1'] + '_' + s][1];
@@ -199,8 +201,9 @@ function fill_defaults(pl2){
 		game_blocks[active_block]['p2'] = {};
 		for (var q = 1; q <= start_num_cats; q++){
 			var yy = -100 + (q - 1) * 25;
-			game_blocks[active_block]['p2'][players['player2'] + '_' + q] = [[200, yy], 10, 1, 10];
-			boxsanded['p2_units'].push([q, [200, yy], 10, 1]);
+			var xx = 200 - x_offsets[(q - 1) % 4];
+			game_blocks[active_block]['p2'][players['player2'] + '_' + q] = [[xx, yy], 10, 1, 10];
+			boxsanded['p2_units'].push([q, [xx, yy], 10, 1]);
 
 			var newLoc = game_blocks[active_block].p2[players['player2'] + '_' + q][0];
 			var oldEnergy = game_blocks[active_block].p2[players['player2'] + '_' + q][1];
@@ -224,7 +227,8 @@ function start_engine(){
 
 	initiate_from_sandbox();
 
-	document.getElementById('panel').style.display = 'block';
+	var isMobile = window.matchMedia('(max-width: 880px)').matches;
+	document.getElementById('panel').style.display = isMobile ? 'none' : 'block';
 	document.getElementById('update_switch_wrapper').style.display = 'block';
 	document.getElementById('update_switch_wrapper').classList.add('update_switch_wrapper_real');
 	document.getElementById('update_code').classList.add('update_code_real');
@@ -482,6 +486,20 @@ document.getElementById('c2_close').addEventListener('click', console_window_clo
 document.getElementById('c2_option_current').addEventListener('click', console_view_current, false);
 document.getElementById('c2_option_all').addEventListener('click', console_view_all, false);
 document.getElementById('update_code').addEventListener("click", update_code, false);
+
+document.getElementById('switch_view').addEventListener('click', function(){
+	var panel = document.getElementById('panel');
+	var opening = panel.style.display === 'none' || panel.style.display === '';
+	this.classList.toggle('switch_switched');
+	if (opening) {
+		panel.style.display = 'block';
+		editor.resize();
+		editor.focus();
+	} else {
+		panel.style.display = 'none';
+		update_code();
+	}
+}, false);
 
 
 // --- Signed-in game mode ---
