@@ -11,25 +11,25 @@ module.exports = function createMiscRoutes({ logger, check_limiter }) {
 			return;
 		}
 
-		let p111_rating = 0;
-		let p222_rating = 0;
+		let p1_rating = 0;
+		let p2_rating = 0;
 
 		User.find({user_id: req.body.pla1})
 			.then((result) => {
 				if (result.length == 0){
 					res.status(200).send({ data: "no user found" });
 				} else if (result[0]['rating'] != undefined && result[0]['rating'] != ''){
-					p111_rating = result[0]['rating'];
+					p1_rating = result[0]['rating'];
 					if (req.body.pla2){
 						User.find({user_id: req.body.pla2})
 							.then((result2) => {
 								if (result2.length == 0){
 									res.status(200).send({ data: "no user found" });
 								} else if (result2[0]['rating'] != undefined && result2[0]['rating'] != ''){
-									p222_rating = result2[0]['rating'];
+									p2_rating = result2[0]['rating'];
 									res.status(200).send({
-										pla1_rating: p111_rating,
-										pla2_rating: p222_rating
+										pla1_rating: p1_rating,
+										pla2_rating: p2_rating
 									});
 								} else {
 									res.status(200).send({ data: "something went wrong" });
@@ -39,7 +39,7 @@ module.exports = function createMiscRoutes({ logger, check_limiter }) {
 								logger.error(error);
 							})
 					} else {
-						res.status(200).send({ pla1_rating: p111_rating });
+						res.status(200).send({ pla1_rating: p1_rating });
 					}
 				} else {
 					res.status(200).send({ data: "something went wrong" });
@@ -201,10 +201,6 @@ module.exports = function createMiscRoutes({ logger, check_limiter }) {
 			res.status(200).send({ data: 'no!' });
 			return;
 		}
-
-		logger.debug('stripe pay');
-		logger.debug(req.body);
-
 		res.status(200).send({ data: 'done' });
 	});
 

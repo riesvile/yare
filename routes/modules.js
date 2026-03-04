@@ -35,9 +35,6 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 			return;
 		}
 
-		logger.debug('module_id = ' + req.body.module_id);
-		logger.debug('fold = ' + req.body.script_type);
-
 		Session.find({session_id: req.body.session_id})
 			.then((result) => {
 				if (result.length == 0){
@@ -66,8 +63,6 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 
 		let module_id = req.body.module_id;
 		let script_type = req.body.script_type + '/';
-		logger.debug("downloading " + script_type + " script of module " + module_id);
-
 		try {
 			let data = await s3client.getObject({
 				Bucket: config.s3.bucket,
@@ -75,7 +70,7 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 			}).promise();
 			res.status(200).send({
 				data: data.Body.toString('utf8'),
-				meta: 'script retreived'
+				meta: 'script retrieved'
 			});
 			return;
 		} catch (err) {
@@ -88,8 +83,6 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 			res.status(200).send({ data: 'no!' });
 			return;
 		}
-
-		logger.debug('updating a module');
 
 		if (typeof req.body.session_id !== 'string'){
 			res.status(200).send({ data: 'invalid request' });
@@ -126,7 +119,7 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 							res.status(200).send({ data: "module updated" });
 						});
 				} else {
-					res.status(200).send({ data: "somethiinnng went wrong - probably not the author of the module" });
+					res.status(200).send({ data: "not the author of this module" });
 				}
 			})
 			.catch((error) => {
@@ -181,7 +174,6 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 
 		Module.find({module_id: module_id})
 			.then((result) => {
-				logger.debug('updating module');
 				if (result.length == 0){
 					res.status(200).send({ data: "no module found" });
 				} else if (result[0]['author'] != req.body.user_name){
@@ -233,7 +225,6 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 			]
 			})
 			.then((result) => {
-				logger.debug('getting available modules');
 				if (result.length == 0){
 					res.status(200).send({ data: "no module found" });
 				} else {
@@ -252,7 +243,7 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 						}
 						result_array.push(temp_obj);
 					}
-					res.status(200).send({ data: "modules retreived", stream: result_array });
+					res.status(200).send({ data: "modules retrieved", stream: result_array });
 				}
 			})
 			.catch((error) => {
@@ -268,12 +259,11 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 
 		User.find({user_id: req.body.user_name})
 			.then((result) => {
-				logger.debug('getting active modules');
 				if (result.length == 0){
 					res.status(200).send({ data: "no module found" });
 				} else if (result[0]['rating'] != undefined){
 					res.status(200).send({
-						data: "modules retreived",
+						data: "modules retrieved",
 						visible_modules: result[0]['visible_modules'],
 						active_modules: result[0]['active_modules']
 					});
@@ -294,7 +284,6 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 
 		User.find({user_id: req.body.user_name})
 			.then((result) => {
-				logger.debug('setting active modules');
 				if (result.length == 0){
 					res.status(200).send({ data: "no module found" });
 				} else if (result[0]['rating'] != undefined){
@@ -319,18 +308,17 @@ module.exports = function createModuleRoutes({ logger, check_limiter, s3client, 
 
 		Module.find({module_id: req.body.module_id})
 			.then((result) => {
-				logger.debug('getting modules info');
 				if (result.length == 0){
 					res.status(200).send({ data: "no module found" });
 				} else if (result[0]['name'] != undefined){
 					res.status(200).send({
-						data: "module info retreived",
+						data: "module info retrieved",
 						m_type: result[0]['type'],
 						m_name: result[0]['name'],
 						m_description: result[0]['description']
 					});
 				} else {
-					res.status(200).send({ data: "somethinnnng went wrong" });
+					res.status(200).send({ data: "something went wrong" });
 				}
 			})
 			.catch((error) => {

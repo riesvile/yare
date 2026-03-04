@@ -522,12 +522,110 @@ function _readCookie(name){
 	return null;
 }
 
+var COLOR_NUM_TO_NAME = {
+	1: 'purply', 2: 'redish', 3: 'gblue', 4: 'yerange',
+	5: 'wirple', 6: 'pistagre', 7: 'magion', 8: 'brigenta',
+	9: 'greson', 10: 'mmmsalmon', 11: 'skyblue', 12: 'toored',
+	13: 'rozblue', 14: 'legorange', 15: 'lolight'
+};
+
+var COLOR_RGBA = {
+	1: 'rgba(128,140,255,1)', 2: 'rgba(232,97,97,1)',
+	3: 'rgba(58,197,240,1)', 4: 'rgba(201,161,101,1)',
+	5: 'rgba(120,12,196,1)', 6: 'rgba(148,176,108,1)',
+	7: 'rgba(180,27,227,1)', 8: 'rgba(198,166,224,1)',
+	9: 'rgba(138,228,122,1)', 10: 'rgba(232,198,179,1)',
+	11: 'rgba(78,142,250,1)', 12: 'rgba(240,70,60,1)',
+	13: 'rgba(18,255,248,1)', 14: 'rgba(235,93,0,1)',
+	15: 'rgba(255,255,255,1)'
+};
+
+var DEFAULT_COLORS = [1, 2, 3, 4];
+
+function arraysEqual(a, b) {
+	if (a.length !== b.length) return false;
+	var sa = a.slice().sort(), sb = b.slice().sort();
+	for (var i = 0; i < sa.length; i++) { if (sa[i] !== sb[i]) return false; }
+	return true;
+}
+
+function initColorPicker(colors) {
+	if (arraysEqual(colors, DEFAULT_COLORS)) return;
+
+	var container = document.getElementById('color_picker');
+	container.style.display = 'block';
+	container.innerHTML = '';
+
+	var saved = localStorage.getItem('chosen_color');
+	var validSaved = false;
+
+	for (var i = 0; i < colors.length; i++) {
+		var num = colors[i];
+		var name = COLOR_NUM_TO_NAME[num];
+		if (!name) continue;
+		if (saved === name) validSaved = true;
+	}
+
+	if (!validSaved && colors.length > 0) {
+		var firstName = COLOR_NUM_TO_NAME[colors[0]];
+		if (firstName) {
+			localStorage.setItem('chosen_color', firstName);
+			saved = firstName;
+		}
+	}
+
+	for (var j = 0; j < colors.length; j++) {
+		var cnum = colors[j];
+		var cname = COLOR_NUM_TO_NAME[cnum];
+		var rgba = COLOR_RGBA[cnum];
+		if (!cname || !rgba) continue;
+
+		var circle = document.createElement('div');
+		circle.className = 'cpick_circle';
+		circle.dataset.colorName = cname;
+		circle.style.setProperty('--cpick-color', rgba);
+
+		var inner = document.createElement('div');
+		inner.className = 'cpick_circle_inner';
+		inner.style.backgroundColor = rgba;
+		circle.appendChild(inner);
+
+		if (saved === cname) {
+			circle.classList.add('cpick_selected');
+		}
+
+		circle.addEventListener('click', (function(n) {
+			return function() {
+				localStorage.setItem('chosen_color', n);
+				var all = container.querySelectorAll('.cpick_circle');
+				for (var k = 0; k < all.length; k++) all[k].classList.remove('cpick_selected');
+				this.classList.add('cpick_selected');
+			};
+		})(cname));
+
+		container.appendChild(circle);
+	}
+}
+
 (function(){
 	var uid = _readCookie('user_id');
 	if (!uid || uid === 'anonymous') return;
 
 	var section = document.querySelector('.game_start_section');
 	section.classList.add('signed_in_mode');
+
+	fetch('/get_colors', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ user_id: uid })
+	})
+	.then(function(r) { return r.json(); })
+	.then(function(res) {
+		if (Array.isArray(res.data)) {
+			initColorPicker(res.data);
+		}
+	})
+	.catch(function() {});
 
 	var savedMode = localStorage.getItem('game_mode');
 	if (savedMode && { player:1, bot:1, friend:1 }[savedMode]) {

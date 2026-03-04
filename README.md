@@ -17,6 +17,7 @@ yare/
 ├── addons/              # Game addons/modules (console, graphics)
 ├── compress/            # Replay compression
 ├── config/              # Environment-based configuration
+├── routes/              # Express route handlers
 ├── public/              # Static frontend (HTML, JS, CSS)
 │   ├── rendering3.js    # Canvas-based game renderer
 │   ├── game.html        # Main game page
@@ -95,6 +96,8 @@ See [`.env.example`](.env.example) for all available variables:
 | `S3_ENDPOINT`               | S3 endpoint URL                   |
 | `S3_BUCKET_ENDPOINT`        | Use bucket-style endpoint (true/false) |
 | `FRONTEND_ADDRESS`          | Public frontend URL               |
+| `ADMINPANEL_PASSWORD`       | Admin panel password              |
+| `TRANSPILER_SECRET`         | Shared secret for transpiler auth |
 
 ## Development
 
@@ -105,3 +108,11 @@ npm install
 # Run linter
 npm run lint
 ```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is open source. See the [LICENSE](LICENSE) file for details.

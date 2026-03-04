@@ -268,16 +268,6 @@
 				</tr>
 			</thead>
 			<tbody>
-			<tr class="no-border-bottom">
-				<td class="cell-primary">move(<span class="arg">target</span>)</td>
-				<td class="cell-secondary"><span class="arg">target</span> is [x, y] array</td>
-				<td class="cell-code col-last">my_cats[0].move([100,100])</td>
-			</tr>
-			<tr class="method-detail-row">
-				<td colspan="3">
-					<p>Cats move by max. 20 units per tick</p>
-				</td>
-			</tr>
 		<tr class="no-border-bottom">
 			<td class="cell-primary">pew(<span class="arg">target</span>)</td>
 			<td class="cell-secondary"><span class="arg">target</span> is a cat object within 200 units</td>
@@ -287,6 +277,16 @@
 				<td colspan="3">
 					<p>Costs 1 energy per tick. When an enemy cat is hit, it loses 2 energy. When a friendly cat is hit, it restores 1 energy.</p>
 					<p class="pew-highlight">If there are other enemy cats within 20 units radius of the target, they are hit as well <span class="pew-highlight-dim">(all lose 2 energy per tick)</span></p>
+				</td>
+			</tr>
+			<tr class="no-border-bottom double-border-row">
+				<td class="cell-primary">move(<span class="arg">target</span>)</td>
+				<td class="cell-secondary"><span class="arg">target</span> is [x, y] array</td>
+				<td class="cell-code col-last">my_cats[0].move([100,100])</td>
+			</tr>
+			<tr class="method-detail-row">
+				<td colspan="3">
+					<p>Cats move by max. 20 units per tick</p>
 				</td>
 			</tr>
 			<tr class="double-border-row">
@@ -302,7 +302,33 @@
 			</tbody>
 		</table>
 
-		<p class='desc_small'>This is also the order of operations. Cats first move, then pew (within the cycle of one tick)</p>
+		<p class='desc_small'>This is also the order of operations. Cats first pew, then move (within the cycle of one tick) <span id="ops_toggle" class="sight-toggle">more details</span></p>
+
+		<div id="ops_details" class="ops-details">
+			<p class="ops-heading">Distance between cats</p>
+<pre>function dist_sq(pos1, pos2) {
+    return (pos2[0]-pos1[0])**2 + (pos2[1]-pos1[1])**2;
+}
+
+// pew hits if dist_sq(from, to) <= range**2
+// where range = 200</pre>
+
+			<p class="ops-heading">Position / move calculations</p>
+<pre>let direction = [target[0] - pos[0], target[1] - pos[1]];
+let len_sq = direction[0]**2 + direction[1]**2;
+
+if (len_sq > speed**2) {
+    let len = Math.sqrt(len_sq);
+    direction = [speed / len * direction[0], speed / len * direction[1]];
+}
+
+position = [pos[0] + direction[0], pos[1] + direction[1]];
+// speed = 20 units per tick</pre>
+
+			<p class="ops-heading">Rounding of positions</p>
+<pre>// After each move, both x and y are rounded to 5 decimal places:
+position = position.map(c => +c.toFixed(5));</pre>
+		</div>
 
 		<div class="spacer-xl"></div>
 
@@ -376,6 +402,11 @@ for (let cat of my_cats) {
 		var ex = document.getElementById('sight_example');
 		var isOpen = ex.classList.toggle('open');
 		this.textContent = isOpen ? 'hide example' : 'show example';
+	});
+	document.getElementById('ops_toggle').addEventListener('click', function() {
+		var ex = document.getElementById('ops_details');
+		var isOpen = ex.classList.toggle('open');
+		this.textContent = isOpen ? 'hide details' : 'more details';
 	});
 	</script>
 

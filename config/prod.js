@@ -1,4 +1,4 @@
-var config = require('./global');
+const config = require('./global');
 
 if (!process.env.S3_BUCKET) {
     config.s3.bucket = 'yare';

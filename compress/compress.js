@@ -1,38 +1,11 @@
-/*
-render_data3 = {
-            't': 0,
-            'pl1': players['p1'],
-            'pl2': players['p2'],
-            'p1': [],
-            'p2': [],
-            'st': [],
-            'e': [],
-            's': [],
-            'a': [],
-            'cr': circle_radius,
-            'end': end_winner
-        };
-
-        render_data3.p1.push([cutoff_id, [x, y], spt.energy, spt.hp]);
-        render_data3.e.push([from_id, to_id, strength]);
-        render_data3.a.push([from_id, to_id, splash_id, strength]);
-
-        render_data3.s.push(['sh', cat, commands[cat].shout]);
-        render_data3.s.push(['m', s.id, t.id]);
-        render_data3.s.push(['d', orig.id]);
-        render_data3.s.push(['j', cat]);
-        render_data3.s.push(['ex', cat]);
-*/
-
-var round = n => Math.round(n * 100) / 100;
-
-var compressjs = require('compressjs');
+const round = n => Math.round(n * 100) / 100;
+const compressjs = require('compressjs');
 
 function compress(orig) {
-    var namesToIDs = {};
-    var IDsToNames = {};
+    const namesToIDs = {};
+    const IDsToNames = {};
 
-    var mapName = name => {
+    const mapName = name => {
         if (namesToIDs[name] === undefined) {
             namesToIDs[name] = Object.keys(namesToIDs).length;
             IDsToNames[namesToIDs[name]] = name;
@@ -40,10 +13,10 @@ function compress(orig) {
         return namesToIDs[name];
     }
 
-    var filter_cat = s => s[3] > 0.5;
-    var map_cat = s => [mapName(s[0]), [round(s[1][0]), round(s[1][1])], s[2], s[3]];
-    var new_frames = [];
-    var i = 0;
+    const filter_cat = s => s[3] > 0.5;
+    const map_cat = s => [mapName(s[0]), [round(s[1][0]), round(s[1][1])], s[2], s[3]];
+    const new_frames = [];
+    let i = 0;
     for(let frame of orig) {
         let new_frame = {
             t: i++,
@@ -73,7 +46,7 @@ function compress(orig) {
         };
         new_frames.push(new_frame);
     }
-    var out = JSON.stringify({
+    const out = JSON.stringify({
         frames: new_frames,
         IDsToNames: IDsToNames,
     });
@@ -81,12 +54,10 @@ function compress(orig) {
 }
 
 function decompress(comp) {
-    var dec = JSON.parse(new TextDecoder().decode(compressjs.Bzip2.decompressFile(comp)));
-
-    let IDsToNames = dec.IDsToNames;
-
-    var map_cat = s => [IDsToNames[s[0]], s[1], s[2], s[3]];
-    var frames = [];
+    const dec = JSON.parse(new TextDecoder().decode(compressjs.Bzip2.decompressFile(comp)));
+    const IDsToNames = dec.IDsToNames;
+    const map_cat = s => [IDsToNames[s[0]], s[1], s[2], s[3]];
+    const frames = [];
     for(let frame of dec.frames) {
         let new_frame = {
             pl1: frame.pl1,
@@ -118,7 +89,4 @@ function decompress(comp) {
     return frames;
 }
 
-module.exports = {
-    compress: compress,
-    decompress: decompress,
-};
+module.exports = { compress, decompress };

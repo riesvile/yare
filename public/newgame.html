@@ -223,10 +223,14 @@
 				  			<p class="bot_name">muffin-bot</p>
 							<p class="bot_desc">Peaceful bot that doesn’t attack. Only defends itself.</p>
 				  		</div>
-				  		<div class="select_bot_block" id="sel_cleo_bot">
-				  			<p class="bot_name">cleo-bot</p>
-							<p class="bot_desc">Beat it and you might be ready to play against humans.</p>
-				  		</div>
+			  		<div class="select_bot_block" id="sel_cleo_bot">
+			  			<p class="bot_name">cleo-bot</p>
+						<p class="bot_desc">Beat it and you might be ready to play against humans.</p>
+			  		</div>
+			  		<div class="select_bot_block" id="sel_clowder_bot">
+			  			<p class="bot_name">clowder-bot</p>
+						<p class="bot_desc">A pack of cats with distinct personalities. They work together.</p>
+			  		</div>
 				  		<div class="select_bot_block" id="sel_will_bot">
 				  			<p class="bot_name">will-bot</p>
 							<p class="bot_desc">No way you will beat this square bot. Or Will you?</p>
@@ -535,7 +539,7 @@
 		
 		if (type == 'challenge'){
 			wait_challenge_view();
-		} else if (["easy-bot", "muffin-bot", "cleo-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot"].includes(type)){
+		} else if (["easy-bot", "muffin-bot", "cleo-bot", "clowder-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot"].includes(type)){
 			document.getElementById("start_area").classList.add("hidden")
 			document.getElementById("user_selections").classList.add("hidden")
 			document.getElementById("overlay").classList.add("hidden")
@@ -621,6 +625,7 @@
 	  //bots
 	  document.getElementById('sel_muffin_bot').addEventListener('click', start_game.bind(null, 'muffin-bot'), false);
 	  document.getElementById('sel_cleo_bot').addEventListener('click', start_game.bind(null, 'cleo-bot'), false);
+	  document.getElementById('sel_clowder_bot').addEventListener('click', start_game.bind(null, 'clowder-bot'), false);
 	  document.getElementById('sel_will_bot').addEventListener('click', start_game.bind(null, 'will-bot'), false);
 	  document.getElementById('sel_boom_bot').addEventListener('click', start_game.bind(null, 'boom-bot'), false);
 	  

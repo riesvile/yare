@@ -219,6 +219,43 @@ h1.doc_h1 {
 	color: rgba(242, 246, 250, 0.44);
 }
 
+/* ---- Ops details ---- */
+
+.ops-details {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease, padding 0.3s ease;
+	padding: 0 20px;
+	background-color: rgba(242, 246, 250, 0.04);
+	border-radius: 8px;
+	margin-top: 0;
+}
+
+.ops-details.open {
+	max-height: 600px;
+	padding: 20px;
+	margin-top: 12px;
+}
+
+.ops-details pre {
+	font-family: 'Lucida Console', 'Monaco', 'Courier New', monospace;
+	font-size: 13px;
+	line-height: 22px;
+	color: rgba(242, 246, 250, 0.68);
+	white-space: pre;
+	margin-bottom: 16px;
+}
+
+.ops-heading {
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 22px;
+	color: rgba(242, 246, 250, 0.56);
+	margin-bottom: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
 
 /* ---- Code examples ---- */
 

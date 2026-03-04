@@ -106,6 +106,8 @@ function new_game(type){
 			 //document.location.reload(true);
 		  } else if (response.meta == 'cleo-bot'){
 			  window.location.href = './' + response.server + 'n/' + response.g_id;
+		  } else if (response.meta == 'clowder-bot'){
+			  window.location.href = './' + response.server + 'n/' + response.g_id;
 		  } else if (response.meta == 'waiting for p2'){
 			  waiting_for_p2(response.g_id);
 		  } 
@@ -544,11 +546,11 @@ function update_module_info(module_id, delete_module = 0){
 	let session_id = getCookie('session_id');
 	let module_name = document.getElementById("module_name_input").value;
 	
-	let retreived = sessionStorage.getItem('mod_' + module_id);
-	let retreived_parsed = JSON.parse(retreived);
+	let retrieved = sessionStorage.getItem('mod_' + module_id);
+	let retrieved_parsed = JSON.parse(retrieved);
 	
 	//if (modules_local['mod_' + module_id] == undefined || module_name == modules_local['mod_' + module_id]['name']) module_name = '';
-	if (retreived_parsed == undefined || module_name == retreived_parsed['name']) module_name = '';
+	if (retrieved_parsed == undefined || module_name == retrieved_parsed['name']) module_name = '';
 	
 	let client_uploader = document.getElementById("file_script_client");
 	let server_uploader = document.getElementById("file_script_server");
@@ -675,7 +677,7 @@ function download_module_script(module_id, client = 1){
 
      }).then(response => response.json())
        .then(response => {
-	 	  if (response.meta == 'script retreived'){
+	 	  if (response.meta == 'script retrieved'){
 	 		  let temp_user_code = editor.getValue();
 	 		  temp_user_code += "\n" + response.data;
 	 		  editor.setValue(temp_user_code);
@@ -817,7 +819,7 @@ function get_active_modules(){
 
     }).then(response => response.json())
       .then(response => {
-		  if (response.data == "modules retreived"){
+		  if (response.data == "modules retrieved"){
 			  for (let i = 0; i < response.active_modules.length; i++){
 				  modules_local['mod_' + response.active_modules[i]]['active'] = 1;
 				  sessionStorage.setItem('mod_' + response.active_modules[i], JSON.stringify(modules_local['mod_' + response.active_modules[i]]));
@@ -886,7 +888,7 @@ function get_module_info(module_id){
 
     }).then(response => response.json())
       .then(response => {
-		  if (response.data == "module info retreived"){
+		  if (response.data == "module info retrieved"){
 		  } 
 	  })
       .catch(err => {

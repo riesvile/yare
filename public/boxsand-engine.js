@@ -457,7 +457,7 @@ function move_objects(){
 			if(!id || !player_owns_cat(id, player)){
 				//TODO: COMMENTING THIS OUT DOES NOT SOLVE THE ISSUE, MORON!
 				// Figure out why this is firing...
-				//console.log("WTF: null or cheating: player " + player + " calls "  + id + ".move()");
+				// invalid move: player doesn't own this unit
 				return;
 			}
 
@@ -750,11 +750,11 @@ function getSyntaxErrorLine(code) {
 		return null;
 	} catch (e) {
 		if (typeof e.lineNumber === 'number') {
-			return e.lineNumber - 1;
+			return e.lineNumber - 2;
 		}
 		var match = (e.stack || '').match(/<anonymous>:(\d+):(\d+)/);
 		if (match) {
-			return parseInt(match[1]) - 1;
+			return parseInt(match[1]) - 2;
 		}
 		return null;
 	}
@@ -764,7 +764,7 @@ function getRuntimeErrorLine(e) {
 	var trace = (e.stack || '').split('\n')[1] || '';
 	var match = trace.match(/:(\d+):(\d+)\)$/);
 	if (match) {
-		return parseInt(match[1]) - 2;
+		return parseInt(match[1]) - 3;
 	}
 	return null;
 }
@@ -780,7 +780,7 @@ function run_code(){
 	yd.logs = [];
 	all_commands = {};
 	
-	var pl1_code = player_codes['pl1_code'] + "memory1 = memory;";
+	var pl1_code = "{\n" + player_codes['pl1_code'] + "memory1 = memory;\n}";
 	var fn1;
 	try {
 		fn1 = Function(pl1_code);
@@ -803,7 +803,7 @@ function run_code(){
 	
 	
 	
-	var pl2_code = player_codes['pl2_code'] + "memory2 = memory;";
+	var pl2_code = "{\n" + player_codes['pl2_code'] + "memory2 = memory;\n}";
 	var fn2;
 	try {
 		fn2 = Function(pl2_code);

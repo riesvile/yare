@@ -70,15 +70,12 @@ router.get("/languages", (req, res) => {
   res.status(200).send(languages)
 })
 
-// haproxy sends requests starting with /transpiler >:(
-app.use("/transpiler", router)
+// HAProxy sends requests prefixed with /transpiler
+app.use("/transpiler", router);
 
-// Internal server error (500)
-app.use((err,req,res,next)=>{
-	logger.error(err)
-	res.status(500).send("Something blew up, sorry!")
-})
+app.use((err, req, res, next) => {
+	logger.error(err);
+	res.status(500).send("Internal server error");
+});
 
-// listen to 5000
-app.listen(5000)
-logger.info("Listening...")
+app.listen(5000, () => logger.info("Transpiler listening on port :5000"));

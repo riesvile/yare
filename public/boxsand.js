@@ -375,6 +375,7 @@ function reset_upload_name(){
 function reset_bot_sel(){
   document.getElementById('ps_muffin-bot').classList.remove('card_active');
   document.getElementById('ps_cleo-bot').classList.remove('card_active');
+  document.getElementById('ps_clowder-bot').classList.remove('card_active');
   document.getElementById('ps_hard-bot').classList.remove('card_active');
   document.getElementById('ps_lego-bot').classList.remove('card_active');
   document.getElementById('ps_andersgee-bot').classList.remove('card_active');
@@ -426,6 +427,7 @@ function player_selection_crossroad(e){
 	case 'ps_upload-bot':
 	case 'ps_muffin-bot':
   	case 'ps_cleo-bot':
+  	case 'ps_clowder-bot':
 	case 'ps_hard-bot':
 	case 'ps_andersgee-bot':
 	case 'ps_lego-bot':

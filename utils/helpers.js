@@ -70,10 +70,7 @@ function get_color_num(color_name) {
 }
 
 function color_validity(color, clr_array) {
-	let user_color = color.replace("color", "");
-	if (user_color == 6) user_color = 5;
-	if (user_color == 5) user_color = 6;
-
+	let user_color = parseInt(color.replace("color", ""), 10);
 	if (clr_array.includes(user_color)) return true;
 	return false;
 }

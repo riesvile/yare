@@ -70,8 +70,6 @@ module.exports = function createAuthRoutes({ logger, check_limiter }) {
 			return res.status(200).send({ data: 'invalid request' });
 		}
 
-		logger.debug('session was called !!!!!!!');
-
 		Session.find({session_id: req.body.session_id})
 			.then((result) => {
 				if (result.length == 0){
@@ -84,7 +82,7 @@ module.exports = function createAuthRoutes({ logger, check_limiter }) {
 					if ((new Date()).getTime() + (6*24*60*60*1000) > session_expire){
 						session_id = generateSecureString(64);
 						session_expire = ((new Date()).getTime() + (7*24*60*60*1000));
-						logger.debug('creating new session');
+						
 						Session.create({user_id: user_id, session_id: session_id, session_expire: session_expire})
 							.then((qq) => {
 								res.status(200).send({
@@ -117,25 +115,27 @@ module.exports = function createAuthRoutes({ logger, check_limiter }) {
 			res.status(200).send({ data: "tooshort" });
 		} else if (isValid(req.body.user_name) != true){
 			res.status(200).send({ data: "special" });
-		} else if (req.body.password.length < 1){
-			logger.debug('password too short');
-			res.status(200).send({ data: "pass_empty" });
-		} else if ((await User.find({user_id: req.body.user_name})).length !== 0){
-			logger.debug('user with name already exists');
-			res.status(200).send({ data: "exists" });
+	} else if (req.body.password.length < 1){
+		res.status(200).send({ data: "pass_empty" });
+	} else if ((await User.find({user_id: req.body.user_name})).length !== 0){
+		res.status(200).send({ data: "exists" });
 		} else {
 			var session_id = generateSecureString(64);
 			var session_expire = new Date();
 			session_expire = (session_expire.getTime() + (7*24*60*60*1000));
 
-			const user = new User({
-				user_id: req.body.user_name,
-				passwrd: bcrypt.hashSync(req.body.password, hashRounds),
-				rating: 1500,
-				rating_stability: 5,
-				games_count: 0,
-				games_history: '',
-				colors: [1, 2, 3, 4],
+		var userColors = [1, 2, 3, 4];
+		// DEV: give test account a custom color set so the picker appears
+		if (req.body.user_name === 'colortest') userColors = [1, 15];
+
+		const user = new User({
+			user_id: req.body.user_name,
+			passwrd: bcrypt.hashSync(req.body.password, hashRounds),
+			rating: 1500,
+			rating_stability: 5,
+			games_count: 0,
+			games_history: '',
+			colors: userColors,
 				qualified: "",
 				goodenough: 0,
 				email: "",
@@ -177,7 +177,7 @@ module.exports = function createAuthRoutes({ logger, check_limiter }) {
 				} else if (result[0]['lang_preference'] != undefined){
 					res.status(200).send({ data: "lang incoming", lang: result[0]['lang_preference'] });
 				} else {
-					res.status(200).send({ data: "somethiinnng went wrong -" });
+					res.status(200).send({ data: "something went wrong" });
 				}
 			})
 			.catch((error) => {

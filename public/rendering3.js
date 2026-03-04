@@ -375,7 +375,7 @@ function zoom(event) {
 	  
 	  //(mousePos.x * scale) - (mousePos.x * prevScale)
   
-  	 //!!!!!!!!! IT's a LOGARITMIC SCALE not linear!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  	 // logarithmic scale, not linear
   
   
 	  //offsetX += (mousePos.x * prevScale) - (mousePos.x * scale);
@@ -1503,67 +1503,67 @@ try{
 
 
 
-(function(){
-
-// perlin noise resources:
-// https://codepen.io/OliverBalfour/post/procedural-generation-part-1-1d-perlin-noise
-// https://www.michaelbromley.co.uk/blog/simple-1d-noise-in-javascript/
-
-
-
-
-// hook into render function
-if (!window._move)
-	window._move = Cat.prototype.move;
-
-
-function lerp(a, b, t) {
-	return a * (1 - t) + b * t;
-};
-
-
-Cat.prototype.move = function() {
-	if (live_render == 0) return;
-	window._move.apply(this, arguments);
-	
-	const NOISESPEED = 10000; // minimum time
-	const NOISESPEED2 = NOISESPEED * (2 - 1); //variance in time
-
-	const time = performance.now();
-
-	if (!this.noiseB) { // move this to the constructor instead of checking if it exists
-		this.noiseA = this.noiseB = [0, 0];
-		this.noiseNext = time;
-		this.noiseLen = NOISESPEED;
-	}
-
-	let t = time - this.noiseNext;
-	if (t >= 0) {
-		// make random point in unit circle
-		const NOISERADIUS = 8 * 1.3; // 20 because thats the distance traveled in 1 tick, 1.3 because circle
-		let x, y;
-		do {
-			x = Math.random()-.5;
-			y = Math.random()-.5;
-		} while (x*x + y*y > 1/4);
-
-		this.noiseLen = NOISESPEED + NOISESPEED2 * Math.random();
-		this.noiseNext = Math.max(this.noiseNext + this.noiseLen, time);
-		t = time - this.noiseNext;
-		this.noiseA = this.noiseB;
-		this.noiseB = [x * NOISERADIUS, y * NOISERADIUS];
-	}
-
-	t /= -this.noiseLen;
-	const tSmooth = t * t * (3 - 2 * t);
-	this.position[0] += lerp(this.noiseB[0], this.noiseA[0], tSmooth);
-	this.position[1] += lerp(this.noiseB[1], this.noiseA[1], tSmooth);
-}
-
-for (const cat of Object.values(cats))
-	cat.move = Cat.prototype.move;
-
-})();
+// (function(){
+//
+// // perlin noise resources:
+// // https://codepen.io/OliverBalfour/post/procedural-generation-part-1-1d-perlin-noise
+// // https://www.michaelbromley.co.uk/blog/simple-1d-noise-in-javascript/
+//
+//
+//
+//
+// // hook into render function
+// if (!window._move)
+// 	window._move = Cat.prototype.move;
+//
+//
+// function lerp(a, b, t) {
+// 	return a * (1 - t) + b * t;
+// };
+//
+//
+// Cat.prototype.move = function() {
+// 	if (live_render == 0) return;
+// 	window._move.apply(this, arguments);
+//
+// 	const NOISESPEED = 10000; // minimum time
+// 	const NOISESPEED2 = NOISESPEED * (2 - 1); //variance in time
+//
+// 	const time = performance.now();
+//
+// 	if (!this.noiseB) { // move this to the constructor instead of checking if it exists
+// 		this.noiseA = this.noiseB = [0, 0];
+// 		this.noiseNext = time;
+// 		this.noiseLen = NOISESPEED;
+// 	}
+//
+// 	let t = time - this.noiseNext;
+// 	if (t >= 0) {
+// 		// make random point in unit circle
+// 		const NOISERADIUS = 8 * 1.3; // 20 because thats the distance traveled in 1 tick, 1.3 because circle
+// 		let x, y;
+// 		do {
+// 			x = Math.random()-.5;
+// 			y = Math.random()-.5;
+// 		} while (x*x + y*y > 1/4);
+//
+// 		this.noiseLen = NOISESPEED + NOISESPEED2 * Math.random();
+// 		this.noiseNext = Math.max(this.noiseNext + this.noiseLen, time);
+// 		t = time - this.noiseNext;
+// 		this.noiseA = this.noiseB;
+// 		this.noiseB = [x * NOISERADIUS, y * NOISERADIUS];
+// 	}
+//
+// 	t /= -this.noiseLen;
+// 	const tSmooth = t * t * (3 - 2 * t);
+// 	this.position[0] += lerp(this.noiseB[0], this.noiseA[0], tSmooth);
+// 	this.position[1] += lerp(this.noiseB[1], this.noiseA[1], tSmooth);
+// }
+//
+// for (const cat of Object.values(cats))
+// 	cat.move = Cat.prototype.move;
+//
+// })();
 
 
 

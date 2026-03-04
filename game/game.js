@@ -1,5 +1,3 @@
-// just some elo stuff here
-
 function getRatingDelta(playerRating, opponentRating, playerResult) {
 	if ([0, 0.5, 1].indexOf(playerResult) === -1) {
 		return null;
@@ -11,8 +9,6 @@ function getRatingDelta(playerRating, opponentRating, playerResult) {
 function getNewRating(playerRating, opponentRating, playerResult) {
 	return playerRating + getRatingDelta(playerRating, opponentRating, playerResult);
 }
-
-//
 
 function cancel_game(){
 	setTimeout(function(){
@@ -45,15 +41,12 @@ const s3client = new AWS.S3({
 });
 
 const pino = require('pino')
-let logger; // this is pretty bad but idk any other way 🤷
+let logger;
 
 async function end_game(was_p1 = 0, was_p2 = 0){
-	logger.debug('END OF GAME INITIALIZED ------- STEP 1')
 	game_finished = 1;
 	const game_data = JSON.stringify(game_file);
-
 	const compressed = compress.compress(game_file);
-	const game_history = 'test';
 	
 	
 	let p1won = was_p1;
@@ -74,11 +67,8 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		cancel_game();
 		return;
 	}
-	
-	logger.debug('END OF GAME INITIALIZED ------- STEP 3')
-	
-	//to handle client
-	end_winner = gameWinner
+
+	end_winner = gameWinner;
 
 	await s3client.putObject({
 		Body: game_data,
@@ -92,73 +82,40 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		Bucket: config.s3.bucket,
 		Key: 'replays/' + workerData[0] + '.json.comp',
 	}).promise().catch(err => logger.error(err)).finally(() => {
-
 		Game.find({game_id: workerData[0]})
 			.then(async (result) => {
-				logger.debug('END OF GAME INITIALIZED ------- STEP 4')
 				if (p2won == 1){
 					gameWinner = players['p2'];
 					winnerRating = result[0]['p2_rating'];
 					gameLoser = players['p1'];
 					loserRating = result[0]['p1_rating'];
-				
-					newWinnerRating = getNewRating(winnerRating, loserRating, 1);
-					newLoserRating = getNewRating(loserRating, winnerRating, 0);
-					logger.debug('newWinnerRating');
-					logger.debug(newWinnerRating);
-					logger.debug('newLoserRating');
-					logger.debug(newLoserRating);
 				} else {
-				gameWinner = players['p1'];
-				winnerRating = result[0]['p1_rating'];
+					gameWinner = players['p1'];
+					winnerRating = result[0]['p1_rating'];
 					gameLoser = players['p2'];
 					loserRating = result[0]['p2_rating'];
-				
-					newWinnerRating = getNewRating(winnerRating, loserRating, 1);
-					newLoserRating = getNewRating(loserRating, winnerRating, 0);
-					logger.debug('newWinnerRating');
-					logger.debug(newWinnerRating);
-					logger.debug('newLoserRating');
-					logger.debug(newLoserRating);
 				}
 
-			
-			
-				logger.debug('result');
-			if (result[0]['ranked'] == 0) {
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
-					.then((qq) => {
-						logger.debug('winner updated to ' + gameWinner);
-						setTimeout(function(){
-							process.exit(0);
-						}, 1000);
-					});	
-			} else if (result[0]['ranked'] == 1){
-			
-				Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner, game_history: game_history}, {upsert: true})
-					.then((qq) => {
-						logger.debug('winner updated to ' + gameWinner);
-						User.updateOne({user_id: gameWinner}, {$set: {rating: newWinnerRating}, $inc: {games_count: 1}}, {upsert: true})
-							.then((qq) => {
-								logger.debug('winner rating updated');
-								User.updateOne({user_id: gameLoser}, {$set: {rating: newLoserRating}, $inc: {games_count: 1}}, {upsert: true})
-									.then((qq) => {
-										logger.debug('loser rating updated');
-										setTimeout(function(){
-											process.exit(0);
-										}, 1000);
-									});	
-							});	
-					});	
-			}
-			
+				newWinnerRating = getNewRating(winnerRating, loserRating, 1);
+				newLoserRating = getNewRating(loserRating, winnerRating, 0);
+				logger.info('Game ended: winner=%s (%d->%d), loser=%s (%d->%d)',
+					gameWinner, winnerRating, newWinnerRating,
+					gameLoser, loserRating, newLoserRating);
+
+				if (result[0]['ranked'] == 0) {
+					await Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true});
+					setTimeout(() => process.exit(0), 1000);
+				} else if (result[0]['ranked'] == 1){
+					await Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true});
+					await User.updateOne({user_id: gameWinner}, {$set: {rating: newWinnerRating}, $inc: {games_count: 1}}, {upsert: true});
+					await User.updateOne({user_id: gameLoser}, {$set: {rating: newLoserRating}, $inc: {games_count: 1}}, {upsert: true});
+					setTimeout(() => process.exit(0), 1000);
+				}
 			})
 			.catch((error) => {
 				logger.error(error);
-			setTimeout(function(){
-				process.exit(0);
-			}, 3000);
-			}) 
+				setTimeout(() => process.exit(0), 3000);
+			});
 	});
 }
 
@@ -166,21 +123,16 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 
 
 const { parentPort, workerData, isMainThread } = require("worker_threads");
-
-
-const zlib = require('zlib');
-
 const botCodes = require('../bot-codes');
-const util = require('util');
 const mongoose = require('mongoose');
 const {User, Session} = require('../models/users.js');
 const Game = require('../models/newgame.js');
-const {SourceMapConsumer} = require("source-map")
+const {SourceMapConsumer} = require("source-map");
 
 
 const dbURI = config.mongo;
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-	.then((result) => logger.info('connected to db'))
+	.then(() => logger.info('Connected to MongoDB'))
 	.catch((error) => logger.error(error));
 
 
@@ -201,7 +153,7 @@ const GAME_CONSTANTS = {
 	BARRICADE_SIZE: 100,
 	WAITING_TICKS: 500,
 	ELO_K_FACTOR: 32,
-	AOE_RADIUS: 10,
+	AOE_RADIUS: 20,
 	CIRCLE_START_RADIUS: 1200,
 	CIRCLE_MIN_RADIUS: 50,
 	CIRCLE_SHRINK_RATE: 2,
@@ -217,6 +169,8 @@ function setBotCode(name, sand) {
 		sand.setPlayerCode(botCodes['muffin-bot']);
 	} else if (name == 'cleo-bot'){
 		sand.setPlayerCode(botCodes['cleo-bot']);
+	} else if (name == 'clowder-bot'){
+		sand.setPlayerCode(botCodes['clowder-bot']);
 	}
 }
 
@@ -257,12 +211,12 @@ parentPort.on("message", message => {
 			init_data.players[0] = players_update['p1'];
 		}
 		
-		var start_num = 9;
-		var x_offsets = [10, 0, -10, 0];
+		let start_num = 9;
+		let x_offsets = [10, 0, -10, 0];
 		init_data.initial_cats = { p1: [], p2: [] };
-		for (var si = 1; si <= start_num; si++){
-			var sy = -100 + (si - 1) * 25;
-			var xo = x_offsets[(si - 1) % 4];
+		for (let si = 1; si <= start_num; si++){
+			let sy = -100 + (si - 1) * 25;
+			let xo = x_offsets[(si - 1) % 4];
 			init_data.initial_cats.p1.push({ id: init_data.players[0] + '_' + si, position: [-200 + xo, sy] });
 			init_data.initial_cats.p2.push({ id: init_data.players[1] + '_' + si, position: [200 - xo, sy] });
 		}
@@ -275,19 +229,18 @@ parentPort.on("message", message => {
 			  player1_code = message.pl_code;
 			  sand1.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
-				logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+				logger.info('%s is resigning', message.pl_id);
 				end_game(0, 1);
 			}
 		  } else {
 			  Session.findOne({"session_id": message.session_id}).then((session) => {
 				  if (session){
 					  if (session.user_id == message.pl_id){
-						  //all good, update session id and prolong expiration date
 						player1_code = message.pl_code;
-		  				player1_session = message.session_id;
+						player1_session = message.session_id;
 						sand1.setPlayerCode(message.pl_code);
 						if (message.resigning == 1){
-							logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+							logger.info('%s is resigning', message.pl_id);
 							end_game(0, 1);
 						}
 		  			} else { 
@@ -305,19 +258,18 @@ parentPort.on("message", message => {
 			  player2_code = message.pl_code;
 			  sand2.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
-				logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+				logger.info('%s is resigning', message.pl_id);
 				end_game(1, 0);
 			}
 		  } else {
 			Session.findOne({"session_id": message.session_id}).then((session) => {
 				if (session){
 					if (session.user_id == message.pl_id){
-						//all good, update session id and prolong expiration date
 					  player2_code = message.pl_code;
 						player2_session = message.session_id;
 					  sand2.setPlayerCode(message.pl_code);
 					  if (message.resigning == 1){
-						  logger.info(message.pl_id + 'is resigning !!!!!!!!!!!');
+						  logger.info('%s is resigning', message.pl_id);
 						  end_game(1, 0);
 					  }
 					} else { 
@@ -338,23 +290,17 @@ parentPort.on("message", message => {
 	  colors['player2'] = color_palettes[message.p2_color];
 	  sand1.init(message.player1);
 	  sand2.init(message.player2);
-	  //tutorial
 	if (workerData[1] == 'tutorial'){
 		tutorial_phase = [0, 0, 0, 0, 0, 0, 0, 0];
 		tutorial_flag1 = 0;
-		let cat_p2_cost = 30; // eslint-disable-line no-unused-vars
 		sand2.setPlayerCode(botCodes['tutorial0']);
 	}
 	  game_start(); // eslint-disable-line no-undef
-	  
+
 	  Game.find({game_id: workerData[0]})
-	  	.then((result) => {
-
+		.then((result) => {
 			setBotCode(result[0].player1, sand1);
-
 			setBotCode(result[0].player2, sand2);
-
-			logger.debug('starting rating update');
 			User.find({user_id: {$in: [players['p1'], players['p2']]}})
 				.then((results) => {
 				let updates = {};
@@ -367,9 +313,9 @@ parentPort.on("message", message => {
 					}
 				}
 				Game.updateOne({game_id: workerData[0]}, updates, {upsert: true})
-						.then((qq) => {
-							logger.debug('p1 and p2 ratings updated');
-						});	
+						.catch((error) => {
+							logger.error(error, 'Failed to update ratings');
+						});
 					
 				})
 				.catch((error) => {
@@ -396,9 +342,13 @@ function to_html(txt){
 	return txt.toString().replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
 }
 
+function adjustUserJsLines(str) {
+	return str.replace(/user\.js:(\d+)/g, (m, line) => 'user.js:' + (parseInt(line) - 1));
+}
+
 async function clean_error(error, sourcemap){
 	if(!(error instanceof Error)) {
-		return String(error);
+		return adjustUserJsLines(String(error));
 	}
 	let message = "" + error;
 	
@@ -408,7 +358,7 @@ async function clean_error(error, sourcemap){
 	if (sourcemap !== null) {
 		stack = await Promise.all(stack.map(async l => {
 			let coords = l.match(/\d+:\d+/)[0].split(":");
-			let line = +coords[0];
+			let line = +coords[0] - 1;
 			let col = +coords[1];
 
 			let base64SourceMap = sourcemap.split(/^data:(application|text)\/json;base64,/)[2]
@@ -425,6 +375,8 @@ async function clean_error(error, sourcemap){
 			})
 			return l.replace(/\d+:\d+/, `${originalPosition.line}:${originalPosition.column}`)
 		}))
+	} else {
+		stack = stack.map(l => adjustUserJsLines(l));
 	}
 	
 	message += "\n" + stack.join("\n");
@@ -475,6 +427,9 @@ async function user_code(){
 		log1 = out.logs;
 		user_error1 = out.errors.map(clean_error);
 		chan1 = out.channels;
+		if (chan1.err) {
+			chan1.err = chan1.err.map(adjustUserJsLines);
+		}
 
 		// log compile err first, as that corresponds to the latest
 		// user submitted code
@@ -510,6 +465,9 @@ async function user_code(){
 		log2 = out.logs;
 		user_error2 = out.errors.map(clean_error);
 		chan2 = out.channels;
+		if (chan2.err) {
+			chan2.err = chan2.err.map(adjustUserJsLines);
+		}
 
 		if(sand2.last_compile_err){
 			if(sand2.last_compile_err instanceof Error){
@@ -557,7 +515,6 @@ players_update['p1'] = 'old';
 let game_file = [];
 
 
-let temp_flag = 0;
 let end_winner = 0;
 
 let tutorial_phase;
@@ -588,10 +545,7 @@ color_palettes['color12'] = 'rgba(240, 70, 60, 1)';
 
 color_palettes['color13'] = 'rgba(18, 255, 248, 1)';
 color_palettes['color14'] = 'rgba(235, 93, 0, 1)';
-color_palettes['color15'] = 'rgba(212, 212, 212, 1)';
-
-
-
+color_palettes['color15'] = 'rgba(255, 255, 255, 1)';
 
 const rawCats = {};
 
@@ -698,14 +652,14 @@ class Sandbox {
 		this.last_compile_err = null;
 		try {
 			this.currentCode = code
-			this.script = this.isolate.compileScriptSync(code, {filename: "~sandbox/user.js"});
+			this.script = this.isolate.compileScriptSync("{\n" + code + "\n}", {filename: "~sandbox/user.js"});
 			this.successful_compile = true;
 		}catch(err) {
 			let lineInfo = '';
 			if (err.stack) {
 				let match = err.stack.match(/user\.js:(\d+)(?::(\d+))?/);
 				if (match) {
-					lineInfo = '\n    at line ' + match[1];
+					lineInfo = '\n    at line ' + (parseInt(match[1]) - 1);
 					if (match[2]) lineInfo += ', column ' + match[2];
 				}
 			}
@@ -727,13 +681,10 @@ class Sandbox {
 	async run() {
 		try {
 			await this.loadData();
-			let pre = this.isolate.cpuTime;
 			await this.script.run(this.context, {timeout: 220});
-			let post = this.isolate.cpuTime;
 		} catch (e) {
 			this.last_compile_err = e;
 		}
-		
 	}
 
 	async output() {
@@ -779,7 +730,6 @@ if (!isMainThread){
 	
 
 	function initiate_world(ws){
-		logger.debug(init_data);
 		ws.send(JSON.stringify(init_data));
 	}
 
@@ -1057,9 +1007,7 @@ if (!isMainThread){
 	}
 
 
-	function progress_tut(phase_done, log=false){
-		if(log)
-		logger.debug('tutorial phase ' + phase_done +' done');
+	function progress_tut(phase_done){
 		let i = phase_done - 1;
 
 		try {
@@ -1069,9 +1017,8 @@ if (!isMainThread){
 				parentPort.postMessage({data: i+1, game_id: workerData[0], meta: 'monitoring'});
 			}
 		} catch (error){
-			logger.error('ERROR progress tutorial error, phase_done = ' + phase_done);
-			logger.error(error);
-				}
+			logger.error(error, 'Tutorial progress error at phase %d', phase_done);
+		}
 	}
 
 	function player_owns_cat(id, name){
@@ -1090,8 +1037,7 @@ if (!isMainThread){
 
 			Object.keys(queue).forEach((id) => {
 				if(!id || !player_owns_cat(id, player)){
-					logger.info("WTF: null or possible hack: player " + player + 
-						" calls "  + id + ".move()");
+					logger.info("Invalid move: player %s tried to move %s", player, id);
 					return;
 				}
 
@@ -1108,7 +1054,7 @@ if (!isMainThread){
 					if (tpos[0] == 1000 && tpos[1] == 1000){
 						progress_tut(1);
 					} else if (tpos[0] == 1600 && tpos[1] == 700){
-						progress_tut(3, true);
+						progress_tut(3);
 					}
 				}
 				
@@ -1162,8 +1108,7 @@ if (!isMainThread){
 					return;
 				} 
 				if(!from_id || !player_owns_cat(from_id, player) || !to_id){
-					logger.info("WTF: null or possible hack player " + player + 
-						" calls "  + from_id + ".pew(" + to_id+")");
+					logger.info("Invalid pew: player %s tried %s.pew(%s)", player, from_id, to_id);
 					return;
 				}
 
@@ -1311,7 +1256,7 @@ if (!isMainThread){
 		for (let i = death_queue.length - 1; i >= 0; i--){
 			if (workerData[1] == 'tutorial'){
 				if (death_queue[i].id == 'easy-bot_2')
-					progress_tut(8, true);
+					progress_tut(8);
 			}
 			death_queue[i].hp = 0;
 			death_queue.splice(i, 1);
@@ -1320,40 +1265,26 @@ if (!isMainThread){
 		
 		
 		
-		let sight_t0 = process.hrtime();
 		get_sight_fast();
-
 	}
 
 	function update_vm_sandbox(){
 		let p1_living = 0;
 		let p2_living = 0;
-		if (temp_flag == 0){
 		for (let i = 0; i < living_cats.length; i++){
 			let spt = living_cats[i];
-				let cutoff_parts = spt.id.split('_');
-				let cutoff_id = cutoff_parts.pop();
-				if (spt.player_id == players['p2']){
-					render_data3.p2.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.energy, spt.hp]);
-
-					if (spt.hp == 1){
-						p2_living++;
-					}
-
-				} else if (spt.player_id == players['p1']) {
-					render_data3.p1.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.energy, spt.hp]);
-
-					if (spt.hp == 1){
-						p1_living++;
-					}
-					
-				}
-				const tempJSON = JSON.stringify(spt);
-				rawCats[spt.id] = JSON.parse(tempJSON);
+			let cutoff_parts = spt.id.split('_');
+			let cutoff_id = cutoff_parts.pop();
+			if (spt.player_id == players['p2']){
+				render_data3.p2.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.energy, spt.hp]);
+				if (spt.hp == 1) p2_living++;
+			} else if (spt.player_id == players['p1']) {
+				render_data3.p1.push([cutoff_id, [Math.round(spt.position[0] * 100) / 100, Math.round(spt.position[1] * 100) / 100], spt.energy, spt.hp]);
+				if (spt.hp == 1) p1_living++;
 			}
-			temp_flag = 0;
+			rawCats[spt.id] = JSON.parse(JSON.stringify(spt));
 		}
-		
+
 		if (p1_living == 0) end_game(0, 1);
 		if (p2_living == 0) end_game(1, 0);
 	}
@@ -1363,7 +1294,6 @@ if (!isMainThread){
 		if (waiting_time >= 0) waiting_time--;
 		let update_t0 = process.hrtime();
 		game_duration++;
-		
 
 		if (game_duration == 1 && !(sand1.successful_compile && sand2.successful_compile) && waiting_time >= 0) {
 			game_duration = 0;
@@ -1451,7 +1381,6 @@ if (!isMainThread){
 			user_error1 = [];
 			user_error2 = [];
 		
-			//tutorial data update
 			if (workerData[1] == 'tutorial'){
 				render_data3.tutorial.push(tutorial_phase);
 			}
@@ -1471,7 +1400,6 @@ if (!isMainThread){
 			log1 = [];
 			log2 = [];
 
-			let update_no_players = elapsed_ms_from(update_t0);
 			await user_code();
 			let update_total = elapsed_ms_from(update_t0);
 

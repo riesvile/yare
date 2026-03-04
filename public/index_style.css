@@ -924,6 +924,38 @@ span.lb_num {
 	bottom: 7vw;
 }
 
+#color_picker {
+	display: none;
+	margin-bottom: 16px;
+}
+
+.cpick_circle {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	display: inline-block;
+	position: relative;
+	margin-right: 10px;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.cpick_circle_inner {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+
+.cpick_circle.cpick_selected {
+	border-color: var(--cpick-color);
+}
+
 .landing_text {
 	font-size: 16px;
 	font-weight: 400;
