@@ -1211,3 +1211,335 @@ span.lb_num {
 	color: hsla(217, 20%, 80%, 0.42);
 }
 
+
+/* ========================================
+   LIGHT THEME OVERRIDES (index_style)
+   ======================================== */
+
+body.light-theme #game_window {
+	background-color: #f2f3f5;
+}
+
+body.light-theme span.shape_name {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #main_button.normal_ready {
+	background-color: rgba(20, 24, 30, 0.92);
+}
+
+body.light-theme #main_button.normal_ready:hover {
+	background-color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #main_button_lbl {
+	color: rgba(255, 255, 255, 1);
+}
+
+body.light-theme #main_button_versus {
+	color: rgba(255, 255, 255, 0.86);
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme #main_button_versus:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+body.light-theme #landing_start_btn {
+	background-color: rgba(20, 24, 30, 0.92);
+	color: white;
+}
+
+body.light-theme #landing_start_btn:hover {
+	background-color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .signed_in_mode #landing_start_btn.btn_waiting {
+	background-color: rgba(20, 24, 30, 0.08);
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .signed_in_mode #landing_start_btn.btn_waiting:hover {
+	background-color: rgba(20, 24, 30, 0.14);
+}
+
+body.light-theme #cncl_button {
+	border: 1px solid rgba(70, 80, 200, 0.12);
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme #cncl_button:hover {
+	color: rgba(180, 80, 70, 0.69);
+	border: 1px solid rgba(180, 100, 110, 0.32);
+}
+
+body.light-theme #create_acc_prompt {
+	color: rgba(20, 24, 30, 0.4);
+}
+
+body.light-theme #new_acc_link {
+	color: rgba(60, 70, 180, 0.69);
+}
+
+body.light-theme #new_acc_link:hover {
+	color: rgba(60, 70, 180, 0.89);
+}
+
+body.light-theme .playstyle_option {
+	background-color: rgba(20, 24, 30, 0.06);
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme .playstyle_option:hover {
+	background-color: rgba(20, 24, 30, 0.12);
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .playstyle_option.playstyle_active {
+	background-color: rgba(20, 24, 30, 0.88);
+	color: rgba(255, 255, 255, 1);
+}
+
+body.light-theme #ch_link {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme .color_option {
+	border: 1px rgba(20, 24, 30, 0.32) solid;
+}
+
+body.light-theme .color_option:hover {
+	border: 1px rgba(20, 24, 30, 0.49) solid;
+}
+
+body.light-theme .color_price {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme #buy_more_colors {
+	border: 1px solid rgba(20, 24, 30, 0.32);
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme #buy_more_colors:hover {
+	border: 1px solid rgba(20, 24, 30, 0.49);
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme #index_container {
+	background: rgb(235,232,238);
+	background: linear-gradient(164deg, rgba(235,232,238,1) 0%, rgba(242,243,245,1) 39%);
+}
+
+body.light-theme #index_intro {
+	color: rgba(20, 24, 30, 1);
+	background: linear-gradient(132deg, rgba(20,24,30,1) 0%, rgba(20,24,30,0.69) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+body.light-theme .play_type {
+	background: linear-gradient(132deg, rgba(40,60,160,1) 0%, rgba(80,50,160,1) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+body.light-theme #mechanics_block {
+	background-color: rgba(235, 232, 238, 0.8);
+	background: linear-gradient(132deg, rgba(240,240,246,1) 0%, rgba(230,228,234,1) 100%);
+}
+
+body.light-theme .mech_p {
+	color: rgba(20, 24, 30, 0.96);
+}
+
+body.light-theme h5.allcapi {
+	color: rgba(20, 24, 30, 0.98);
+}
+
+body.light-theme .mech_faction_desc, body.light-theme .mech_ability_name, body.light-theme .mech_ability_desc, body.light-theme .mech_unique_lbl {
+	color: rgba(20, 24, 30, 0.96);
+}
+
+body.light-theme .mech_ability_desc {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme .mech_unique_lbl {
+	color: rgba(20, 24, 30, 0.49);
+}
+
+body.light-theme .mech_ability_name {
+	color: rgba(50, 60, 140, 1);
+}
+
+body.light-theme #mechanics_close_btn {
+	border: 2px solid rgba(20, 24, 30, 0.16);
+}
+
+body.light-theme #mechanics_close_btn:hover {
+	border: 2px solid rgba(20, 24, 30, 0.24);
+}
+
+body.light-theme h3.head_norm {
+	color: rgba(20, 24, 30, 0.88);
+}
+
+body.light-theme .tab_row {
+	border-bottom: 1px solid rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme .lb_item {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme span.lb_num {
+	color: rgba(20, 24, 30, 0.68);
+}
+
+body.light-theme .lb_showmore {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .lb_showmore:hover {
+	color: rgba(40, 50, 140, 0.72);
+}
+
+body.light-theme .footer_link {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .footer_link:hover {
+	color: rgba(40, 80, 180, 0.92);
+}
+
+body.light-theme .t_small {
+	color: rgba(20, 24, 30, 0.96);
+}
+
+body.light-theme .index_head {
+	color: rgba(20, 24, 30, 0.76);
+}
+
+body.light-theme #index_trailer_bg {
+	background: linear-gradient(90deg, rgba(230,232,240,1) 0%, rgba(235,228,235,1) 100%);
+}
+
+body.light-theme #index_expl_text {
+	color: rgba(20, 24, 30, 0.76);
+}
+
+body.light-theme #trailer_layer {
+	background-color: rgba(255, 255, 255, 0.8);
+}
+
+body.light-theme #landing_overlay {
+	background-color: rgba(242, 243, 245, 0.99);
+}
+
+body.light-theme .landing_text {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .landing_code {
+	color: rgba(60, 70, 180, 0.88);
+}
+
+body.light-theme .landing_link {
+	color: rgba(60, 70, 180, 0.88);
+}
+
+body.light-theme .landing_code:hover, body.light-theme .landing_link:hover {
+	color: rgba(60, 70, 180, 1);
+}
+
+body.light-theme .landing_bold {
+	color: rgba(20, 24, 30, 0.92);
+}
+
+body.light-theme #landing_create_prompt {
+	color: rgba(20, 24, 30, 0.68);
+}
+
+body.light-theme #landing_create_link {
+	color: rgba(60, 70, 180, 0.86);
+}
+
+body.light-theme #landing_create_link:hover {
+	color: rgba(60, 70, 180, 0.88);
+}
+
+body.light-theme .landing_footer_link {
+	color: rgba(20, 24, 30, 0.62);
+}
+
+body.light-theme .landing_footer_link:hover {
+	color: rgba(20, 24, 30, 0.88);
+}
+
+body.light-theme #game_transition_overlay {
+	background-color: white;
+}
+
+body.light-theme .mode_tab {
+	background-color: rgba(20, 24, 30, 0.06);
+	color: rgba(20, 24, 30, 0.52);
+}
+
+body.light-theme .mode_tab:hover {
+	background-color: rgba(20, 24, 30, 0.12);
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .mode_tab.active {
+	background-color: rgba(20, 24, 30, 0.9);
+	color: rgba(255, 255, 255, 1);
+}
+
+body.light-theme .bot_tab {
+	background-color: rgba(20, 24, 30, 0.06);
+	color: rgba(20, 24, 30, 0.52);
+}
+
+body.light-theme .bot_tab:hover {
+	background-color: rgba(20, 24, 30, 0.12);
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .bot_tab.active {
+	background-color: rgba(20, 24, 30, 0.9);
+	color: rgba(255, 255, 255, 1);
+}
+
+body.light-theme #vs_label {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme #match_status {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme #queue_waiting_text {
+	color: rgba(20, 24, 30, 0.62);
+}
+
+body.light-theme #challenge_link_text {
+	color: rgba(20, 24, 30, 0.78);
+}
+
+body.light-theme #copy_link_btn {
+	color: rgba(40, 80, 180, 0.86);
+}
+
+body.light-theme #copy_link_btn:hover {
+	color: rgba(40, 80, 180, 1);
+}
+
+body.light-theme #waiting_text {
+	color: rgba(20, 24, 30, 0.62);
+}
+
+body.light-theme .cpick_circle {
+	border: 1px solid rgba(20, 24, 30, 0.12);
+}
+

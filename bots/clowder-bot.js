@@ -829,6 +829,24 @@ function mind(cat) {
     const me = identity(cat);
     if (!me || cat.hp === 0) return;
 
+    // ── Death circle guardrail: clamp ALL movement to stay 10 units inside ──
+    const safeRadius = death_circle - 10;
+    const rawMove = cat.move.bind(cat);
+    cat.move = function(target) {
+        const d = dist(target, [0, 0]);
+        if (d > safeRadius) {
+            rawMove(towards(target, [0, 0], d - safeRadius));
+        } else {
+            rawMove(target);
+        }
+    };
+
+    // If already outside or too close to edge, rush inward immediately
+    if (dist(cat.position, [0, 0]) > safeRadius) {
+        cat.move(towards(cat.position, [0, 0], 50));
+        return;
+    }
+
     cat.set_mark(me.name);
 
     if (tick <= 3) {
@@ -837,11 +855,6 @@ function mind(cat) {
     }
 
     handleShouts(cat, me);
-
-    if (isOutsideCircle(cat.position)) {
-        cat.move(towards(cat.position, [0, 0], 40));
-        return;
-    }
 
     // ── Phase 1: ENEMY PEW (always top priority for every cat) ──
     let pewedEnemy = false;

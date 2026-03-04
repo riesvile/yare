@@ -97,6 +97,7 @@
 	+       '<div id="account_history_table"></div>'
 	+     '</div>'
 	+   '</div>'
+	+   '<span id="theme_toggle"></span>'
 	+ '</div>';
 
 	document.body.insertAdjacentHTML('afterbegin', html);

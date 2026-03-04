@@ -368,9 +368,10 @@ function game_over_box(){
 		duration: 900
 	});
 	
+	var _goLight = (window.yareTheme === 'light');
 	anime({
 		targets: '#game_over_overlay',
-		backgroundColor: 'rgba(0, 0, 0, 0.39)',
+		backgroundColor: _goLight ? 'rgba(255, 255, 255, 0.72)' : 'rgba(0, 0, 0, 0.39)',
 		backdropFilter: 'blur(12px)',
 		"-webkit-backdrop-filter": 'blur(12px)',
 		easing: 'easeOutQuad',

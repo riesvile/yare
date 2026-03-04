@@ -109,7 +109,7 @@ class Cat {
 
     /**
      * Transfers 1 energy unit from itself into target. Max distance of the energy transfer is 200 units.
-     * If target is an enemy cat, the target takes damage of 2 energy. Nearby enemies within 10 units of the target also take splash damage.
+     * If target is an enemy cat, the target takes damage of 2 energy. Nearby enemies within 20 units of the target also take splash damage.
      * @param {Cat} target - target to pew
      */
     pew(target) {		

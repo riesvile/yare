@@ -257,6 +257,29 @@ h1.doc_h1 {
 }
 
 
+/* ---- Constants section ---- */
+
+.constants-details {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease, padding 0.3s ease;
+	padding: 0 20px;
+	background-color: rgba(242, 246, 250, 0.04);
+	border-radius: 8px;
+	margin-top: 0;
+}
+
+.constants-details.open {
+	max-height: 1200px;
+	padding: 20px;
+	margin-top: 12px;
+}
+
+.constants-details table {
+	margin: 0;
+}
+
+
 /* ---- Code examples ---- */
 
 .code-tabs {
@@ -374,4 +397,144 @@ h1.doc_h1 {
 	.cell-code {
 		font-size: 11px;
 	}
+}
+
+
+/* ========================================
+   LIGHT THEME OVERRIDES (documentation)
+   ======================================== */
+
+body.light-theme h1.doc_h1 {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .desc {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .desc_small {
+	color: rgba(20, 24, 30, 0.82);
+}
+
+body.light-theme .semi-headline {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .text-bright {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #doc_content thead tr {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+body.light-theme #doc_content th {
+	color: rgba(20, 24, 30, 0.78);
+}
+
+body.light-theme #doc_content tbody tr {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+body.light-theme .cell-primary {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .cell-secondary {
+	color: rgba(20, 24, 30, 0.76);
+}
+
+body.light-theme .cell-code {
+	color: rgba(20, 24, 30, 0.76);
+}
+
+body.light-theme .arg {
+	color: rgba(20, 24, 30, 0.62);
+}
+
+body.light-theme .method-detail-row p,
+body.light-theme .pew-detail-row p {
+	color: rgba(20, 24, 30, 0.76);
+}
+
+body.light-theme .pew-highlight {
+	color: rgba(180, 30, 30, 1) !important;
+}
+
+body.light-theme .pew-highlight-dim {
+	color: rgba(20, 24, 30, 0.62);
+}
+
+body.light-theme .double-border-row {
+	border-top: 3px double rgba(0, 0, 0, 0.12) !important;
+}
+
+body.light-theme .sight-toggle {
+	color: rgba(20, 24, 30, 0.52);
+}
+
+body.light-theme .sight-toggle:hover {
+	color: rgba(20, 24, 30, 0.76);
+}
+
+body.light-theme .sight-example {
+	background-color: rgba(20, 24, 30, 0.04);
+}
+
+body.light-theme .sight-example pre {
+	color: rgba(20, 24, 30, 0.82);
+}
+
+body.light-theme .sight-example p {
+	color: rgba(20, 24, 30, 0.62);
+}
+
+body.light-theme .ops-details {
+	background-color: rgba(20, 24, 30, 0.04);
+}
+
+body.light-theme .ops-details pre {
+	color: rgba(20, 24, 30, 0.82);
+}
+
+body.light-theme .ops-heading {
+	color: rgba(20, 24, 30, 0.76);
+}
+
+body.light-theme .constants-details {
+	background-color: rgba(20, 24, 30, 0.04);
+}
+
+body.light-theme .code-tab {
+	color: rgba(20, 24, 30, 0.62);
+	background-color: rgba(20, 24, 30, 0.05);
+}
+
+body.light-theme .code-tab:hover {
+	color: rgba(20, 24, 30, 0.82);
+	background-color: rgba(20, 24, 30, 0.08);
+}
+
+body.light-theme .code-tab.active {
+	color: rgba(20, 24, 30, 0.96);
+	background-color: rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme .code-panel {
+	background-color: rgba(20, 24, 30, 0.05);
+}
+
+body.light-theme .code-panel pre {
+	color: rgba(20, 24, 30, 0.82);
+}
+
+body.light-theme .credit-tooltip {
+	background-color: rgba(240, 242, 246, 0.96);
+	color: rgba(20, 24, 30, 0.78);
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .credit-tooltip::after {
+	border-color: rgba(240, 242, 246, 0.96) transparent transparent transparent;
 }

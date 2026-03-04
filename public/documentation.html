@@ -14,6 +14,7 @@
 	<script src="./anime.min.js"></script>
   </head>
   <body>
+  <script src="./theme.js"></script>
 
 	<div id="new_account_wrap">
 		<form action="/add-user" method="post" id="new_acc_form" autocomplete="off" onsumbit="submit_test()">
@@ -98,6 +99,7 @@
 				<div id="account_history_table"></div>
 			</div>
 		</div>
+		<span id="theme_toggle"></span>
 	</div>
 
 	<div id="doc_content">
@@ -133,12 +135,12 @@
 				<tr>
 					<td class="cell-primary">barricades</td>
 					<td class="cell-secondary">array</td>
-					<td class="cell-secondary col-last"><strong>Array of [x, y] coordinates of the barricade's center.</strong> Barricade is an obstacle with a radius 100 units from its center that cats have to walk around.</td>
+					<td class="cell-secondary col-last"><strong>Array of [x, y] coordinates of the barricade's center.</strong> Barricades are circular obstacles that cats have to walk around.</td>
 				</tr>
 				<tr>
 					<td class="cell-primary">pods</td>
 					<td class="cell-secondary">array</td>
-					<td class="cell-secondary col-last"><strong>Array of [x, y] coordinates of the pod's center.</strong> Pod is an area of 40x40 unit. Any cat inside this area gets 1 energy per tick.</td>
+					<td class="cell-secondary col-last"><strong>Array of [x, y] coordinates of the pod's center.</strong> Cats inside or on the edge of a pod replenish energy.</td>
 				</tr>
 			</tbody>
 		</table>
@@ -174,12 +176,17 @@
 			<tr>
 				<td class="cell-primary">tick</td>
 				<td class="cell-secondary">number</td>
-				<td class="cell-secondary col-last">Current game tick (e.g. 75). 1 tick = 500ms</td>
+				<td class="cell-secondary col-last">Current game tick (e.g. 75)</td>
 			</tr>
 			<tr>
 				<td class="cell-primary">death_circle</td>
 				<td class="cell-secondary">number</td>
-				<td class="cell-secondary col-last">Shrinking circle centered on the map. Cats outside it lose 1 energy per tick. Starts at 1200 radius, shrinks by 2/tick, stops at 50.</td>
+				<td class="cell-secondary col-last">Current radius of the shrinking circle centered on the map</td>
+			</tr>
+			<tr>
+				<td class="cell-primary">this_player_id</td>
+				<td class="cell-secondary">string</td>
+				<td class="cell-secondary col-last">Your username</td>
 			</tr>
 			</tbody>
 		</table>
@@ -206,11 +213,6 @@
 					<td class="cell-primary">position</td>
 					<td class="cell-secondary">array</td>
 					<td class="cell-secondary col-last">cat's [x, y] coordinates, e.g. [750, 900]</td>
-				</tr>
-				<tr>
-					<td class="cell-primary">energy_capacity</td>
-					<td class="cell-secondary">number</td>
-					<td class="cell-secondary col-last">10</td>
 				</tr>
 				<tr>
 					<td class="cell-primary">energy</td>
@@ -332,6 +334,95 @@ position = position.map(c => +c.toFixed(5));</pre>
 
 		<div class="spacer-xl"></div>
 
+		<p class="semi-headline"><span class="text-bright">Game Constants</span> <span id="constants_toggle" class="sight-toggle">show all</span></p>
+
+		<div id="constants_details" class="constants-details">
+			<table>
+				<thead>
+					<tr>
+						<th style="width:60%; text-align:left;">Constant</th>
+						<th style="width:40%; text-align:right;">Value</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="cell-primary">Movement speed</td>
+						<td class="cell-secondary col-last">20 units/tick</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Pew range</td>
+						<td class="cell-secondary col-last">200 units (inclusive)</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Pew cost</td>
+						<td class="cell-secondary col-last">1 energy/tick</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Pew enemy damage</td>
+						<td class="cell-secondary col-last">2 energy</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Pew friendly heal</td>
+						<td class="cell-secondary col-last">1 energy</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Splash (AOE) radius</td>
+						<td class="cell-secondary col-last">20 units (inclusive)</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Sight range</td>
+						<td class="cell-secondary col-last">400 units (inclusive)</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Energy capacity</td>
+						<td class="cell-secondary col-last">10</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Starting energy</td>
+						<td class="cell-secondary col-last">10</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Cats per player</td>
+						<td class="cell-secondary col-last">9</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Barricade collision radius</td>
+						<td class="cell-secondary col-last">100 units (exclusive)</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Pod area</td>
+						<td class="cell-secondary col-last">40&times;40 units (inclusive)</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Pod heal</td>
+						<td class="cell-secondary col-last">1 energy/tick</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Death circle start radius</td>
+						<td class="cell-secondary col-last">1200</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Death circle min radius</td>
+						<td class="cell-secondary col-last">50</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Death circle shrink rate</td>
+						<td class="cell-secondary col-last">2 units/tick</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Death circle drain</td>
+						<td class="cell-secondary col-last">2 energy/tick</td>
+					</tr>
+					<tr>
+						<td class="cell-primary">Tick duration</td>
+						<td class="cell-secondary col-last">500ms</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="spacer-xl"></div>
+
 		<section id="doc_code_examples">
 			<p class="semi-headline"><span class="text-bright">Code examples</span></p>
 
@@ -407,6 +498,11 @@ for (let cat of my_cats) {
 		var ex = document.getElementById('ops_details');
 		var isOpen = ex.classList.toggle('open');
 		this.textContent = isOpen ? 'hide details' : 'more details';
+	});
+	document.getElementById('constants_toggle').addEventListener('click', function() {
+		var ex = document.getElementById('constants_details');
+		var isOpen = ex.classList.toggle('open');
+		this.textContent = isOpen ? 'hide' : 'show all';
 	});
 	</script>
 

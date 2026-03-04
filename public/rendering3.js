@@ -85,7 +85,7 @@ function rgb_to_hsl(r,g,b) {
 }
 
 function draw_boxsand_bg(){
-	c.fillStyle = 'black';
+	c.fillStyle = (window.yareTheme === 'light') ? '#f2f3f5' : 'black';
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 }
 
@@ -93,9 +93,11 @@ var _cachedGradient = null;
 
 function draw_bg_grad(){
 	if (!_cachedGradient) {
+		var _lightness = (window.yareTheme === 'light') ? 94 : 4;
+		var _alphaShift = (window.yareTheme === 'light') ? 0.1 : 0.2;
 		_cachedGradient = c.createLinearGradient(-650, -480, 480, 650);
-		_cachedGradient.addColorStop(0, "hsla(" + corner1_parts_hsl[0] + "," + corner1_parts_hsl[1] + "% ," + 4 + "% ," + (corner1_parts[3] - 0.2) + ")");
-		_cachedGradient.addColorStop(1, "hsla(" + corner2_parts_hsl[0] + "," + corner2_parts_hsl[1] + "% ," + 4 + "% ," + (corner2_parts[3] - 0.2) + ")");
+		_cachedGradient.addColorStop(0, "hsla(" + corner1_parts_hsl[0] + "," + corner1_parts_hsl[1] + "% ," + _lightness + "% ," + Math.max(0, corner1_parts[3] - _alphaShift) + ")");
+		_cachedGradient.addColorStop(1, "hsla(" + corner2_parts_hsl[0] + "," + corner2_parts_hsl[1] + "% ," + _lightness + "% ," + Math.max(0, corner2_parts[3] - _alphaShift) + ")");
 	}
 	c.fillStyle = _cachedGradient;
 	c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
@@ -109,7 +111,7 @@ function draw_circle_zone(radius){
 	var vh = main_canvas.height * multiplier * 1.2;
 	c.rect(-offsetX, -offsetY, vw, vh);
 	c.arc(0, 0, radius, 0, Math.PI * 2, true);
-	c.fillStyle = 'hsla(1, 100%, 72%, 0.12)';
+	c.fillStyle = (window.yareTheme === 'light') ? 'hsla(1, 80%, 55%, 0.1)' : 'hsla(1, 100%, 72%, 0.12)';
 	c.fill();
 	c.restore();
 }
@@ -1000,16 +1002,24 @@ class Cat {
 
 function draw_barricade(pos, ctx){
 	ctx = ctx || c_base;
+	var _isLight = (window.yareTheme === 'light');
 	ctx.save();
+	if (_isLight) {
+		ctx.beginPath();
+		ctx.arc(pos[0], pos[1], 80, 0, Math.PI * 2, false);
+		ctx.strokeStyle = 'rgba(20, 24, 30, 0.12)';
+		ctx.lineWidth = 2;
+		ctx.stroke();
+	}
 	ctx.beginPath();
 	ctx.arc(pos[0], pos[1], 80, 0, Math.PI * 2, false);
 	ctx.clip();
 	ctx.beginPath();
 	ctx.arc(pos[0], pos[1], 88, 0, Math.PI * 2, false);
-	ctx.strokeStyle = 'rgba(255,255,255,1)';
-	ctx.shadowColor = 'rgba(225, 250, 255, 0.4)';
-	ctx.shadowBlur = 32 / (multiplier / 2.5);
-	ctx.lineWidth = 8;
+	ctx.strokeStyle = _isLight ? 'rgba(20,20,20,1)' : 'rgba(255,255,255,1)';
+	ctx.shadowColor = _isLight ? 'rgba(0, 10, 30, 0.6)' : 'rgba(225, 250, 255, 0.4)';
+	ctx.shadowBlur = _isLight ? 48 / (multiplier / 2.5) : 32 / (multiplier / 2.5);
+	ctx.lineWidth = _isLight ? 12 : 8;
 	ctx.stroke();
 	ctx.shadowColor = null;
 	ctx.shadowBlur = null;
@@ -1018,10 +1028,11 @@ function draw_barricade(pos, ctx){
 
 function draw_pod(pos, ctx){
 	ctx = ctx || c_base;
+	var _isLight = (window.yareTheme === 'light');
 	ctx.save();
-	ctx.fillStyle = 'hsla(130, 99%, 76%, 0.12)';
-	ctx.strokeStyle = 'hsla(130, 99%, 76%, 0.12)';
-	ctx.lineWidth = 2;
+	ctx.fillStyle = _isLight ? 'hsla(130, 70%, 32%, 0.32)' : 'hsla(130, 99%, 76%, 0.12)';
+	ctx.strokeStyle = _isLight ? 'hsla(130, 70%, 32%, 0.4)' : 'hsla(130, 99%, 76%, 0.12)';
+	ctx.lineWidth = _isLight ? 3 : 2;
 	ctx.roundRect(pos[0] - 20, pos[1] - 20, 40, 40, 12);
 	ctx.fill();
 	ctx.stroke();
@@ -1206,6 +1217,11 @@ function draw_pew(origin, target, energy_strength, color, friendly, hash, colorP
 
 function initiate_world(){
 	_offscreenBaseDirty = true;
+
+	if (!_darkColor1 && colors['color1']) _darkColor1 = colors['color1'];
+	if (!_darkColor2 && colors['color2']) _darkColor2 = colors['color2'];
+	_remapAllColors();
+
 	offsetUpdate();
 	
 	corner1_parts = colors['color1'].match(/[.?\d]+/g);
@@ -1218,7 +1234,82 @@ function initiate_world(){
 	world_initiated = 1;
 }
 
+var _darkColor1 = null;
+var _darkColor2 = null;
+
+var _DARK_TO_LIGHT = {
+	'rgba(128,140,255,1)': 'rgba(45,55,200,1)',
+	'rgba(232,97,97,1)': 'rgba(175,30,30,1)',
+	'rgba(58,197,240,1)': 'rgba(5,115,175,1)',
+	'rgba(201,161,101,1)': 'rgba(145,100,25,1)',
+	'rgba(120,12,196,1)': 'rgba(75,0,148,1)',
+	'rgba(148,176,108,1)': 'rgba(60,105,30,1)',
+	'rgba(148, 176, 108, 1)': 'rgba(60,105,30,1)',
+	'rgba(180,27,227,1)': 'rgba(120,0,175,1)',
+	'rgba(180, 27, 227, 1)': 'rgba(120,0,175,1)',
+	'rgba(198,166,224,1)': 'rgba(105,65,155,1)',
+	'rgba(198, 166, 224, 1)': 'rgba(105,65,155,1)',
+	'rgba(138,228,122,1)': 'rgba(30,140,20,1)',
+	'rgba(138, 228, 122, 1)': 'rgba(30,140,20,1)',
+	'rgba(232,198,179,1)': 'rgba(160,95,55,1)',
+	'rgba(232, 198, 179, 1)': 'rgba(160,95,55,1)',
+	'rgba(78,142,250,1)': 'rgba(15,65,195,1)',
+	'rgba(78, 142, 250, 1)': 'rgba(15,65,195,1)',
+	'rgba(240,70,60,1)': 'rgba(185,15,5,1)',
+	'rgba(240, 70, 60, 1)': 'rgba(185,15,5,1)',
+	'rgba(18,255,248,1)': 'rgba(0,130,125,1)',
+	'rgba(18, 255, 248, 1)': 'rgba(0,130,125,1)',
+	'rgba(235,93,0,1)': 'rgba(178,50,0,1)',
+	'rgba(235, 93, 0, 1)': 'rgba(178,50,0,1)',
+	'rgba(255,255,255,1)': 'rgba(15,15,15,1)',
+	'rgba(255, 255, 255, 1)': 'rgba(15,15,15,1)'
+};
+
+function _mapColorForTheme(darkColor){
+	if (window.yareTheme === 'light' && _DARK_TO_LIGHT[darkColor]) {
+		return _DARK_TO_LIGHT[darkColor];
+	}
+	return darkColor;
+}
+
+function _remapAllColors(){
+	if (!_darkColor1 && colors['color1']) _darkColor1 = colors['color1'];
+	if (!_darkColor2 && colors['color2']) _darkColor2 = colors['color2'];
+
+	if (_darkColor1) colors['color1'] = _mapColorForTheme(_darkColor1);
+	if (_darkColor2) colors['color2'] = _mapColorForTheme(_darkColor2);
+
+	for (var id in cats){
+		if (!cats[id]) continue;
+		var cat = cats[id];
+		if (!cat._darkColorStore) cat._darkColorStore = cat.color_store;
+		var newColor = _mapColorForTheme(cat._darkColorStore);
+		cat.color = newColor;
+		cat.color_store = newColor;
+		cat._colorParts = _parseColor(newColor);
+		cat._colorStoreParts = cat._colorParts;
+	}
+}
+
+document.addEventListener('yare-theme-change', function(){
+	_remapAllColors();
+	_cachedGradient = null;
+	_offscreenBaseDirty = true;
+	_catImageCache = {};
+
+	corner1_parts = colors['color1'].match(/[.?\d]+/g);
+	corner2_parts = colors['color2'].match(/[.?\d]+/g);
+	corner1_parts_hsl = rgb_to_hsl(corner1_parts[0], corner1_parts[1], corner1_parts[2]);
+	corner2_parts_hsl = rgb_to_hsl(corner2_parts[0], corner2_parts[1], corner2_parts[2]);
+
+	try { offsetUpdate(); } catch(e){}
+});
+
 function initiate_from_sandbox(){
+	if (!_darkColor1 && colors['color1']) _darkColor1 = colors['color1'];
+	if (!_darkColor2 && colors['color2']) _darkColor2 = colors['color2'];
+	_remapAllColors();
+
 	corner1_parts = colors['color1'].match(/[.?\d]+/g);
 	corner2_parts = colors['color2'].match(/[.?\d]+/g);
 
@@ -1292,15 +1383,13 @@ function render_state(timestamp){
 		fill_hover_thing(pointing_at_x, pointing_at_y, board_x, board_y);
 	}
 	
-	//c.clearRect(0, 0, main_canvas.width, main_canvas.height);
-	c.fillStyle = 'rgba(6,8,10,1)';
-	//c.fillRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
+	c.fillStyle = (window.yareTheme === 'light') ? 'rgba(242,243,245,1)' : 'rgba(6,8,10,1)';
 	c.clearRect(-offsetX, -offsetY, main_canvas.width * multiplier * 1.2, main_canvas.height * multiplier * 1.2);
 	
 	c.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
 	c.translate(offsetX, offsetY);
 	
-	draw_bg_grad();
+	if (window.yareTheme !== 'light') draw_bg_grad();
 	
 	if (panning == 1){
 		offsetUpdate();

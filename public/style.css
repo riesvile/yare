@@ -3825,7 +3825,936 @@ p.ps_p_desc {
 }
 
 
+/* ========================================
+   LIGHT THEME OVERRIDES
+   ======================================== */
 
+body.light-theme {
+	background-color: #f2f3f5;
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme a {
+	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme h1.page_head {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme code {
+	color: rgba(50, 58, 70, 1);
+}
+
+body.light-theme .highlight {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .lowlight {
+	color: rgba(20, 24, 30, 0.72) !important;
+}
+
+body.light-theme .lowlightish {
+	color: rgba(20, 24, 30, 0.82);
+}
+
+body.light-theme .par_highlight {
+	color: rgba(20, 24, 30, 0.96);
+}
+
+body.light-theme #game_hover {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .new_when {
+	color: rgba(20, 24, 30, 0.49);
+}
+
+body.light-theme .under_attack {
+	color: rgba(180, 40, 40, 0.89);
+}
+
+body.light-theme #info_player1_name, body.light-theme #info_player2_name {
+	color: rgba(20, 24, 30, 0.92);
+}
+
+body.light-theme #resign_game {
+	background-color: rgba(240, 220, 218, 0.69);
+	color: rgba(180, 60, 60, 0.69);
+}
+
+body.light-theme #pre_resign_btn:hover, body.light-theme #resign_btn:hover {
+	color: rgba(180, 60, 60, 0.89);
+}
+
+body.light-theme .cancel_lbl {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .you_sure_lbl {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme h1#logo {
+	color: rgba(0, 0, 0, 1);
+}
+
+body.light-theme #logo a {
+	color: rgba(0, 0, 0, 1);
+}
+
+body.light-theme .logo_lowlight, body.light-theme .resume_lowlight {
+	color: rgba(20, 24, 30, 0.48) !important;
+}
+
+body.light-theme .menu_link {
+	color: rgba(20, 24, 30, 0.88);
+}
+
+body.light-theme .menu_line {
+	background-color: rgba(20, 24, 30, 0.2);
+}
+
+body.light-theme #resign_game_menu {
+	color: rgba(180, 60, 60, 0.89);
+}
+
+body.light-theme #resign_game_menu span.cancel_lbl {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme .profile_link {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .acc_info {
+	color: rgba(40, 60, 90, 0.69);
+}
+
+body.light-theme #acc_info_name {
+	color: rgba(40, 60, 90, 0.45);
+}
+
+body.light-theme #log_out {
+	color: rgba(180, 60, 60, 0.8);
+}
+
+body.light-theme .new_acc {
+	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme #new_account_wrap, body.light-theme #login_wrap, body.light-theme #preferences_wrap {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme .basics_bg {
+	background: rgb(242,243,245);
+	background: linear-gradient(133deg, rgba(242,243,245,0) 40%, rgba(242,243,245,1) 100%);
+}
+
+body.light-theme .pref_slider_item {
+	background-color: rgba(210, 212, 220, 0.9);
+}
+
+body.light-theme .slider_value {
+	background-color: rgba(160, 155, 190, 0.9);
+}
+
+body.light-theme .set_label {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .set_value {
+	color: rgba(20, 24, 30, 0.49);
+}
+
+body.light-theme .pref_section_label {
+	color: rgba(20, 24, 30, 0.48);
+}
+
+body.light-theme .lang_chip {
+	background-color: rgba(210, 212, 220, 0.9);
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .lang_chip:hover {
+	background-color: rgba(200, 202, 210, 0.96);
+}
+
+body.light-theme #language_settings div.lang_on {
+	background-color: rgba(120, 125, 170, 0.96);
+	color: rgba(255, 255, 255, 0.96);
+}
+
+body.light-theme .module_card, body.light-theme .module_card_mine {
+	background-color: rgba(210, 212, 220, 0.9);
+}
+
+body.light-theme .module_main_tag {
+	color: rgba(20, 24, 30, 0.48);
+}
+
+body.light-theme .module_desc {
+	color: rgba(20, 24, 30, 0.96);
+}
+
+body.light-theme .module_toggle {
+	border: 1px solid rgba(20, 24, 30, 0.48);
+}
+
+body.light-theme .module_off .module_toggle .the_toggle {
+	background-color: rgba(20, 24, 30, 0.48);
+}
+
+body.light-theme .module_on .module_toggle {
+	background-color: rgba(20, 24, 30, 0.48);
+	border: 1px solid rgba(20, 24, 30, 0);
+}
+
+body.light-theme .module_on .module_toggle .the_toggle {
+	background-color: rgba(255, 255, 255, 1);
+}
+
+body.light-theme .module_options_btn {
+	color: rgba(20, 24, 30, 0.69);
+	background-color: rgba(20, 24, 30, 0.08);
+}
+
+body.light-theme .module_options_btn:hover {
+	background-color: rgba(20, 24, 30, 0.12);
+}
+
+body.light-theme #module_expanded {
+	background-color: rgba(235, 237, 240, 1);
+}
+
+body.light-theme .btn_expanded {
+	background-color: rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme #module_name_input {
+	background-color: rgba(245, 245, 248, 0.96);
+	color: rgba(20, 24, 30, 0.89);
+	border: 1px solid rgba(80, 100, 140, 0.2);
+}
+
+body.light-theme #module_name_input::placeholder {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme .file_upload_label {
+	background-color: rgba(180, 182, 196, 1);
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme .file_upload_label:hover {
+	background-color: rgba(170, 172, 186, 1);
+}
+
+body.light-theme .lbl_type {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme .lbl_name {
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme .bot_upload_btn {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme .upload_bot_label {
+	background-color: rgba(20, 24, 30, 0.08);
+}
+
+body.light-theme .upload_bot_label:hover {
+	background-color: rgba(20, 24, 30, 0.12);
+}
+
+body.light-theme a#close_module_edit {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #create_module_btn, body.light-theme #update_module_btn {
+	color: rgba(255, 255, 255, 1);
+}
+
+body.light-theme .srv_ok {
+	color: rgba(40, 120, 50, 1);
+}
+
+body.light-theme .srv_err {
+	color: rgba(180, 50, 40, 1);
+}
+
+body.light-theme .pref_toggle {
+	background-color: rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme .toggle_desc {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #new_user_name, body.light-theme #new_user_password,
+body.light-theme #user_name, body.light-theme #user_password {
+	background-color: rgba(200, 198, 210, 0.55);
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme #new_user_name:focus, body.light-theme #new_user_password:focus,
+body.light-theme #user_name:focus, body.light-theme #user_password:focus {
+	background-color: rgba(180, 178, 195, 0.55) !important;
+}
+
+body.light-theme #user_err_message, body.light-theme #password_err_message, body.light-theme #login_err_message {
+	color: rgba(180, 60, 60, 0.69);
+}
+
+body.light-theme input[type=submit] {
+	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme #signed_in {
+	color: rgba(20, 24, 30, 0.88);
+}
+
+body.light-theme #signed_in:hover {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #account_overlay {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+body.light-theme #account_logout {
+	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme #account_logout:hover {
+	color: rgba(60, 120, 200, 1);
+}
+
+body.light-theme #account_username, body.light-theme #account_rating {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #account_history_label {
+	color: rgba(20, 24, 30, 0.49);
+}
+
+body.light-theme .ah_row:hover .ah_players {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .ah_players {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme .ah_players_bold {
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme .ah_date {
+	color: rgba(20, 24, 30, 0.38);
+}
+
+body.light-theme .ah_win {
+	color: rgba(30, 140, 40, 1);
+}
+
+body.light-theme .ah_loss {
+	color: rgba(200, 50, 50, 1);
+}
+
+body.light-theme #new_g {
+	color: rgba(180, 120, 60, 1);
+}
+
+body.light-theme #panel {
+	border: 1px solid rgba(100, 80, 160, 0.2);
+}
+
+body.light-theme #panel_dragger {
+	background-color: rgba(20, 24, 30, 0.005);
+}
+
+body.light-theme #drag_line1, body.light-theme #drag_line2 {
+	background-color: rgba(20, 24, 30, 0.36);
+}
+
+body.light-theme #grad_top {
+	background: linear-gradient(0deg, rgba(242,243,245,0) 0%, rgba(242,243,245,1) 100%);
+}
+
+body.light-theme #grad_top2 {
+	background: linear-gradient(0deg, rgba(242,243,245,0) 0%, rgba(242,243,245,0.69) 80%);
+}
+
+body.light-theme #grad_bottom {
+	background: linear-gradient(180deg, rgba(242,243,245,0) 0%, rgba(242,243,245,1) 100%);
+}
+
+body.light-theme #console {
+	background-color: rgba(225, 222, 230, 1);
+}
+
+body.light-theme span#console_lbl {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme #console_open {
+	background-color: rgba(225, 222, 230, 1);
+}
+
+body.light-theme .waiting_for {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #countdown_num {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #waiting_for_what {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme #console2_window {
+	background-color: rgba(240, 240, 245, 0.96);
+	border: 1px solid rgba(100, 80, 160, 0.2);
+}
+
+body.light-theme #c2_header {
+	background-color: rgba(240, 240, 245, 0.96);
+	border-bottom: 1px solid rgba(100, 80, 160, 0.16);
+}
+
+body.light-theme .c2_option {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .c2_option_active {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .c2_option:hover {
+	color: rgba(20, 24, 30, 1) !important;
+}
+
+body.light-theme #c2_close {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme #c2_close:hover {
+	color: rgba(20, 24, 30, 0.8);
+}
+
+body.light-theme #console2_all_in, body.light-theme #console2_tick_in {
+	background-color: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .console_item {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .console_item_group {
+	border-bottom: 1px solid rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme .console_item_tick {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .tick_error {
+	color: rgba(200, 50, 50, 0.69);
+}
+
+body.light-theme .console_error {
+	color: rgba(200, 50, 50, 1) !important;
+}
+
+body.light-theme #console2_view_toggle {
+	background-color: rgba(20, 24, 30, 0.06);
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme .c2_view_open {
+	background-color: rgba(20, 24, 30, 0.12) !important;
+}
+
+body.light-theme .game_table {
+	border-top: 1px solid rgba(20, 24, 30, 0.1);
+	border-bottom: 1px solid rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme #tutorial_over, body.light-theme #over_message {
+	color: rgba(20, 24, 30, 0.92);
+}
+
+body.light-theme #ranked_nonranked {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .player_delta {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .delta_positive {
+	color: rgba(30, 140, 40, 1);
+}
+
+body.light-theme .delta_negative {
+	color: rgba(200, 50, 50, 1);
+}
+
+body.light-theme a.game_over_link {
+	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme #back_to_new {
+	color: rgba(180, 120, 60, 1);
+}
+
+body.light-theme p.tutorial_text {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme #overlay_start {
+	background-color: rgba(242, 243, 245, 1);
+}
+
+body.light-theme #overlay_pre_start {
+	background-color: rgba(242, 243, 245, 1);
+}
+
+body.light-theme #tutorial_infobox {
+	background-color: rgba(230, 232, 236, 0.32);
+}
+
+body.light-theme .info_h {
+	color: rgba(20, 24, 30, 0.92);
+}
+
+body.light-theme .info_p {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme #send_intro {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme #shortcut_info {
+	color: rgba(20, 24, 30, 0.49);
+}
+
+body.light-theme span#hub_username {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme span#user_hub_stats {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme span#hub_logout {
+	color: rgba(40, 100, 180, 0.69);
+}
+
+body.light-theme span#hub_logout:hover {
+	color: rgba(100, 80, 180, 1);
+}
+
+body.light-theme #hub_menu a {
+	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme #hub_menu a:hover {
+	color: rgba(180, 120, 60, 1);
+}
+
+body.light-theme #hub_menu #hub_documentation, body.light-theme #hub_menu #hub_leaderboard {
+	color: rgba(40, 100, 180, 0.55);
+}
+
+body.light-theme #hub_menu #hub_documentation:hover, body.light-theme #hub_menu #hub_leaderboard:hover,
+body.light-theme #hub_menu #hub_reddit:hover, body.light-theme #hub_menu #hub_discord:hover {
+	color: rgba(100, 80, 180, 1);
+}
+
+body.light-theme #hub_menu #hub_reddit, body.light-theme #hub_menu #hub_discord {
+	color: rgba(40, 100, 180, 0.55);
+}
+
+body.light-theme #hub_resume_info {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme #hub_resume_players {
+	color: rgba(20, 24, 30, 0.82);
+}
+
+body.light-theme #hub_resume_resign {
+	color: rgba(200, 50, 50, 1) !important;
+}
+
+body.light-theme .table {
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .row {
+	border-bottom: 1px solid rgba(20, 24, 30, 0.12);
+}
+
+body.light-theme .table_game_date {
+	color: rgba(20, 24, 30, 0.68);
+}
+
+body.light-theme .table_player1, body.light-theme .table_player2 {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .versus {
+	color: rgba(20, 24, 30, 0.68);
+}
+
+body.light-theme .result_win {
+	color: rgba(30, 140, 40, 1);
+}
+
+body.light-theme .result_loss {
+	color: rgba(200, 50, 50, 1);
+}
+
+body.light-theme .result_nada {
+	color: rgba(20, 24, 30, 0.4);
+}
+
+body.light-theme .table_game_eloresult {
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme .lb_row {
+	border-top: 1px solid rgba(20, 24, 30, 0.12);
+}
+
+body.light-theme .table_lb_player {
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme .table_lb_rating {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .deer_h {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .deer_p {
+	color: rgba(20, 24, 30, 0.68);
+}
+
+body.light-theme .deer_p a {
+	color: rgba(40, 100, 180, 0.86);
+}
+
+body.light-theme .action_desc {
+	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme #action_start_playing .action_desc {
+	color: rgba(70, 80, 210, 1);
+}
+
+body.light-theme .action_block:hover .action_desc {
+	color: rgba(180, 120, 60, 1) !important;
+}
+
+body.light-theme .index_sep_line, body.light-theme .sep_line_full {
+	background-color: rgba(20, 24, 30, 0.15);
+}
+
+body.light-theme .index_head_trailer, body.light-theme .action_head {
+	color: rgba(20, 24, 30, 0.72);
+}
+
+body.light-theme .index_outro p {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme a.index_link:hover {
+	color: rgba(100, 80, 180, 1);
+}
+
+body.light-theme #tournament_block {
+	background-color: rgba(230, 230, 245, 1);
+}
+
+body.light-theme #tournament_block:hover {
+	background-color: rgba(220, 220, 240, 1);
+}
+
+body.light-theme .tournament_banner_h, body.light-theme .tournament_banner_date {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #overlay_trailer {
+	background-color: rgba(255, 255, 255, 1);
+}
+
+body.light-theme #wg_game_stats {
+	background-color: rgba(230, 232, 236, 0.89);
+}
+
+body.light-theme .gs_player_name {
+	color: rgba(20, 24, 30, 1) !important;
+}
+
+body.light-theme .gs_unit_count_desc, body.light-theme .gs_energy_count_desc {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme #gs_vert_sep_line {
+	background-color: rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme #replay_timeline {
+	background-color: rgba(220, 222, 228, 0.86);
+}
+
+body.light-theme #replay_current_tick {
+	background-color: rgba(160, 162, 172, 0.86);
+}
+
+body.light-theme #replay_current_tick_lbl {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #replay_total_ticks {
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme #replay_play_btn {
+	background-color: rgba(220, 222, 228, 0.86);
+}
+
+body.light-theme #replay_play_btn:hover {
+	background-color: rgba(200, 202, 210, 0.86);
+}
+
+body.light-theme .tick_rate_select {
+	background-color: rgba(220, 222, 228, 0.86);
+}
+
+body.light-theme .tick_rate_select:hover, body.light-theme .tick_rate_active {
+	background-color: rgba(200, 202, 210, 0.86);
+}
+
+body.light-theme #tick_sec_desc {
+	background-color: rgba(220, 222, 228, 0.86);
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme #loading_msg {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme h1#pnf {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme #load_para {
+	color: rgba(20, 24, 30, 0.28);
+}
+
+body.light-theme .qq_h1 {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .qq_table {
+	border-top: 1px solid rgba(20, 24, 30, 0.16);
+}
+
+body.light-theme .qq_table_row, body.light-theme .qq_table_row_meh {
+	border-bottom: 1px solid rgba(20, 24, 30, 0.16);
+	color: rgba(20, 24, 30, 0.89);
+}
+
+body.light-theme .qq_table_row:hover {
+	background-color: rgba(20, 24, 30, 0.04);
+}
+
+body.light-theme #early_access {
+	background-color: rgba(150, 140, 190, 0.2);
+	color: rgba(70, 50, 140, 1);
+}
+
+body.light-theme h3.bs_heading {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme .bs_lbl {
+	color: rgba(20, 24, 30, 0.45);
+}
+
+body.light-theme .bs_select_element {
+	background-color: rgba(20, 24, 30, 0.06);
+}
+
+body.light-theme .bs_select_element:hover {
+	background-color: rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme .ele_active {
+	background-color: rgba(20, 24, 30, 0.1);
+	border: 2px solid rgba(20, 24, 30, 0.3);
+}
+
+body.light-theme .bs_player_selection {
+	background-color: rgba(20, 24, 30, 0.08);
+}
+
+body.light-theme .bs_player_selection:hover {
+	background-color: rgba(20, 24, 30, 0.1);
+}
+
+body.light-theme #bs_load_prev {
+	background-color: rgba(20, 24, 30, 0.06);
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme #bs_load_prev:hover {
+	background-color: rgba(20, 24, 30, 0.1);
+	color: rgba(20, 24, 30, 0.69);
+}
+
+body.light-theme .ps_p_lbl {
+	color: rgba(20, 24, 30, 1);
+}
+
+body.light-theme .ps_type_lbl {
+	color: rgba(20, 24, 30, 0.96);
+}
+
+body.light-theme .ps_card {
+	background-color: rgba(20, 24, 30, 0.06);
+	border: 2px solid rgba(20, 24, 30, 0);
+}
+
+body.light-theme .ps_card:hover {
+	background-color: rgba(20, 24, 30, 0.09);
+}
+
+body.light-theme .card_active {
+	border: 2px solid rgba(20, 24, 30, 0.3);
+	background-color: rgba(20, 24, 30, 0.12) !important;
+}
+
+body.light-theme p.ps_p_desc {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme .beta_badge {
+	color: rgba(20, 24, 30, 0.86);
+	border: 1px solid rgba(20, 24, 30, 0.4);
+}
+
+body.light-theme #game_transition_overlay {
+	background-color: white;
+}
+
+body.light-theme .select_bot_block {
+	border-bottom: 1px solid rgba(100, 100, 160, 0.3);
+}
+
+body.light-theme .select_bot_block:hover {
+	background-color: rgba(100, 100, 200, 0.08);
+}
+
+body.light-theme p.bot_desc {
+	color: rgba(60, 60, 100, 0.55);
+}
+
+body.light-theme p.btn_desc {
+	color: rgba(20, 24, 30, 0.55);
+}
+
+body.light-theme #someone_in_queue {
+	color: rgba(30, 140, 40, 1);
+}
+
+body.light-theme #cancel_game_btn, body.light-theme #cancel_challenge_btn {
+	background-color: rgba(70, 80, 210, 0.08);
+	color: rgba(20, 24, 30, 0.86);
+}
+
+body.light-theme .copy_code {
+	border: 1px solid rgba(80, 90, 110, 0.48);
+	color: rgba(80, 90, 110, 0.92);
+	background-color: rgba(80, 90, 110, 0.08);
+}
+
+body.light-theme .copy_code:hover {
+	border: 1px solid rgba(80, 90, 150, 0.55);
+	color: rgba(60, 60, 130, 0.92);
+	background-color: rgba(80, 90, 150, 0.08);
+}
+
+body.light-theme .img_description {
+	color: rgba(80, 90, 110, 1);
+}
+
+body.light-theme #bs_start_boxsand {
+	border: 2px solid rgba(40, 80, 160, 1);
+	background-color: rgba(40, 80, 160, 0.1);
+	color: rgba(40, 80, 160, 1);
+}
+
+body.light-theme #bs_start_boxsand:hover {
+	background-color: rgba(40, 80, 160, 1);
+	color: rgba(255, 255, 255, 1);
+	border: 2px solid rgba(40, 80, 160, 1);
+}
+
+body.light-theme .bs_tick_sec_block #tick_sec_desc {
+	color: rgba(20, 24, 30, 0.49);
+}
+
+body.light-theme #stop_bs {
+	color: rgba(200, 60, 60, 1);
+}
+
+
+/* Theme toggle (shared across pages) */
+
+#theme_toggle {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: rgba(242, 246, 250, 0.55);
+	cursor: pointer;
+	vertical-align: middle;
+	padding: 6px;
+	background-clip: content-box;
+	transition: background 0.3s;
+	position: absolute;
+	bottom: 28px;
+	right: 28px;
+	pointer-events: auto;
+}
+
+#theme_toggle:hover {
+	background: rgba(242, 246, 250, 0.8);
+	background-clip: content-box;
+}
+
+body.light-theme #theme_toggle {
+	background: rgba(20, 24, 30, 0.45);
+	background-clip: content-box;
+}
+
+body.light-theme #theme_toggle:hover {
+	background: rgba(20, 24, 30, 0.7);
+	background-clip: content-box;
+}
 
 
 

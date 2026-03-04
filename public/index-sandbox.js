@@ -574,10 +574,11 @@ function initColorPicker(colors) {
 		}
 	}
 
+	var _themeRGBA = (window.yareThemeColorRGBA && window.yareThemeColorRGBA()) || null;
 	for (var j = 0; j < colors.length; j++) {
 		var cnum = colors[j];
 		var cname = COLOR_NUM_TO_NAME[cnum];
-		var rgba = COLOR_RGBA[cnum];
+		var rgba = (_themeRGBA && _themeRGBA[cnum]) || COLOR_RGBA[cnum];
 		if (!cname || !rgba) continue;
 
 		var circle = document.createElement('div');
