@@ -75,9 +75,9 @@
 	<div id="hector">
 		<h1 id="logo"><a href="/">yare</a></h1>
 		<div class="menu">
-			<a href="/documentation" class="menu_link" id="link_howtoplay">How to play</a>
+			<a href="/documentation" class="menu_link" id="link_howtoplay"><span class="desktop_only_inline">How to play</span><span class="mobile_only_inline">Docs</span></a>
 			<div class="menu_link" id="login">Sign in</div>
-			<div class="menu_link new_acc" id="new_account">Create account</div>
+			<div class="menu_link new_acc" id="new_account">New account</div>
 			<div class="menu_link" id="signed_in"><span id="the_name">username</span></div>
 		</div>
 	</div>
@@ -393,5 +393,7 @@ for (let cat of my_cats) {
 	<script src="../animations.js"></script>
 	<script src="../basics.js"></script>
 
+  <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
   </body>
 </html>

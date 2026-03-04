@@ -108,6 +108,14 @@
 	
 .desktop_only {
 	display: none;
+}
+
+.desktop_only_inline {
+	display: none;
+}
+
+.mobile_only_inline {
+	display: inline;
 }	
 
 #editor_container {
@@ -135,8 +143,26 @@
 }
 
 
-#update_code {
-	display: none !important;
+#update_code, #update_code.update_code_real {
+	display: block !important;
+	width: auto !important;
+	height: 56px !important;
+	line-height: 56px !important;
+	padding: 0 20px;
+	background-color: hsla(217, 100%, 84%, 1);
+	border-radius: 12px;
+	position: fixed;
+	bottom: 20px;
+	left: 88px;
+	right: auto;
+	font-size: 13px;
+	font-weight: 600;
+	text-align: center;
+	pointer-events: auto;
+	z-index: 10001;
+	float: none;
+	box-sizing: border-box;
+	color: black;
 }
 
 #shortcut_info {
@@ -363,20 +389,48 @@ input[type=submit] {
 }
 
 #console2 {
-	position: absolute;
-	bottom: 84px;
-	right: 16px;
-	left: 16px;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	left: auto;
+	z-index: 10001;
 }
 
 #console2_window {
-	width: calc(100vw - 32px);
-	height: 50vh;
+	width: 100vw;
+	height: 100vh;
 	position: fixed;
+	top: 0;
 	bottom: 0;
 	right: 0;
 	left: 0;
-	border-radius: 12px 12px 0 0;
+	border-radius: 0;
+	z-index: 10003;
+	background-color: hsla(234, 14%, 8%, 0.98);
+}
+
+#console2_window #c2_header {
+	border-radius: 0;
+	height: 56px;
+	padding-top: env(safe-area-inset-top, 0px);
+}
+
+#console2_window .c2_option {
+	line-height: 56px;
+	font-size: 14px;
+}
+
+#console2_window #c2_close {
+	line-height: 56px;
+	font-size: 14px;
+	right: 24px;
+}
+
+#console2_window #console2_all_in,
+#console2_window #console2_tick_in {
+	top: 56px;
+	height: calc(100% - 68px);
+	padding-top: env(safe-area-inset-top, 0px);
 }
 
 #console2_view_toggle {

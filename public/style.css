@@ -49,6 +49,14 @@
 	display: none;
 }
 
+.mobile_only_inline {
+	display: none;
+}
+
+.desktop_only_inline {
+	display: inline;
+}
+
 .desktop_only {
 	display: block;
 }
