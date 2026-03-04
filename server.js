@@ -172,7 +172,12 @@ function matchmake(){
 		users_joining_match[user1.id] = {game_id, server: chosen_server};
 		users_joining_match[user2.id] = {game_id, server: chosen_server};
 		
-		update_game_db(game_id, chosen_server, user1.id, user2.id, user1.color, user2.color, user1.rating, user2.rating);
+		let p1_color = user1.color;
+		let p2_color = 'color2';
+		if (p1_color === 'color2') {
+			p1_color = 'color1';
+		}
+		update_game_db(game_id, chosen_server, user1.id, user2.id, p1_color, p2_color, user1.rating, user2.rating);
 	}
 
 	for (let x of Object.entries(users_joining_match)) {
