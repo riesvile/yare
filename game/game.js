@@ -70,6 +70,22 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 
 	end_winner = gameWinner;
 
+	let loserName = p2won ? players['p1'] : players['p2'];
+	let winnerCodeCount = p2won ? p2_code_count : p1_code_count;
+	let winnerCode = p2won ? player2_code : player1_code;
+
+	if (loserName === 'champion-bot' && winnerCodeCount === 1 && winnerCode) {
+		end_champion_eligible = true;
+		s3client.putObject({
+			Body: winnerCode,
+			Bucket: config.s3.bucket,
+			Key: 'champion-eligible/' + workerData[0] + '.js',
+		}).promise().catch(err => logger.error(err));
+
+		Game.updateOne({game_id: workerData[0]}, {champion_eligible: true})
+			.catch(err => logger.error(err));
+	}
+
 	await s3client.putObject({
 		Body: game_data,
 		Bucket: config.s3.bucket,
@@ -127,6 +143,7 @@ const botCodes = require('../bot-codes');
 const mongoose = require('mongoose');
 const {User, Session} = require('../models/users.js');
 const Game = require('../models/newgame.js');
+const ChampionBot = require('../models/champion-bot.js');
 const {SourceMapConsumer} = require("source-map");
 
 
@@ -171,6 +188,8 @@ function setBotCode(name, sand) {
 		sand.setPlayerCode(botCodes['cleo-bot']);
 	} else if (name == 'clowder-bot'){
 		sand.setPlayerCode(botCodes['clowder-bot']);
+	} else if (name == 'champion-bot' && botCodes['champion-bot']){
+		sand.setPlayerCode(botCodes['champion-bot']);
 	}
 }
 
@@ -223,10 +242,10 @@ parentPort.on("message", message => {
 		
 		parentPort.postMessage({data: JSON.stringify({meta: "initiate", data: init_data}), game_id: workerData[0], meta: 'initiate', client: message.client});
   } else if (message.data == "player code"){
-	  //check who's code it is here
 	  if (message.pl_num == "player1"){
 		  if (message.session_id == player1_session || message.pl_id == 'anonymous'){
 			  player1_code = message.pl_code;
+			  p1_code_count++;
 			  sand1.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
 				logger.info('%s is resigning', message.pl_id);
@@ -237,6 +256,7 @@ parentPort.on("message", message => {
 				  if (session){
 					  if (session.user_id == message.pl_id){
 						player1_code = message.pl_code;
+						p1_code_count++;
 						player1_session = message.session_id;
 						sand1.setPlayerCode(message.pl_code);
 						if (message.resigning == 1){
@@ -256,6 +276,7 @@ parentPort.on("message", message => {
 	  } else if (message.pl_num == "player2"){
 		  if (message.session_id == player2_session || message.pl_id == 'anonymous'){
 			  player2_code = message.pl_code;
+			  p2_code_count++;
 			  sand2.setPlayerCode(message.pl_code);
 			if (message.resigning == 1){
 				logger.info('%s is resigning', message.pl_id);
@@ -266,6 +287,7 @@ parentPort.on("message", message => {
 				if (session){
 					if (session.user_id == message.pl_id){
 					  player2_code = message.pl_code;
+					  p2_code_count++;
 						player2_session = message.session_id;
 					  sand2.setPlayerCode(message.pl_code);
 					  if (message.resigning == 1){
@@ -298,7 +320,13 @@ parentPort.on("message", message => {
 	  game_start(); // eslint-disable-line no-undef
 
 	  Game.find({game_id: workerData[0]})
-		.then((result) => {
+		.then(async (result) => {
+			if (result[0].player1 === 'champion-bot' || result[0].player2 === 'champion-bot') {
+				const champ = await ChampionBot.findOne().sort({createdAt: -1});
+				if (champ) {
+					botCodes['champion-bot'] = champ.code;
+				}
+			}
 			setBotCode(result[0].player1, sand1);
 			setBotCode(result[0].player2, sand2);
 			User.find({user_id: {$in: [players['p1'], players['p2']]}})
@@ -516,6 +544,10 @@ let game_file = [];
 
 
 let end_winner = 0;
+let end_champion_eligible = false;
+
+let p1_code_count = 0;
+let p2_code_count = 0;
 
 let tutorial_phase;
 let tutorial_flag1;
@@ -1311,7 +1343,8 @@ if (!isMainThread){
 				's': [],
 				'a': [],
 				'cr': circle_radius,
-				'end': end_winner
+				'end': end_winner,
+				'champion_eligible': end_champion_eligible
 			};
 			
 			
@@ -1362,7 +1395,8 @@ if (!isMainThread){
 					's': [],
 					'a': [],
 					'cr': circle_radius,
-					'end': end_winner
+					'end': end_winner,
+					'champion_eligible': end_champion_eligible
 				};
 				if (game_duration == 2000){
 					if (top_s == 11){

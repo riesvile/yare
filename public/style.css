@@ -1974,6 +1974,15 @@ a.game_over_link {
 	margin-bottom: 12px;
 }
 
+a#claim_champion_btn {
+	color: rgba(170, 220, 140, 1);
+}
+
+a#claim_champion_btn.claim_done {
+	color: rgba(170, 220, 140, 0.6);
+	pointer-events: none;
+}
+
 a#back_to_hub {
 	margin-top: 28px;
 }
@@ -4308,6 +4317,10 @@ body.light-theme .delta_negative {
 
 body.light-theme a.game_over_link {
 	color: rgba(40, 100, 180, 1);
+}
+
+body.light-theme a#claim_champion_btn {
+	color: rgba(40, 130, 60, 1);
 }
 
 body.light-theme #back_to_new {

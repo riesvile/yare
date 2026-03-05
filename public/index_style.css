@@ -1140,7 +1140,7 @@ span.lb_num {
 	vertical-align: top;
 	width: 160px;
 	height: 72px;
-	padding: 12px;
+	padding: 8px 12px;
 	box-sizing: border-box;
 	font-size: 12px;
 	font-weight: 400;
@@ -1150,19 +1150,19 @@ span.lb_num {
 	transition: background-color 0.2s, color 0.2s;
 	background-color: hsla(217, 100%, 84%, 0.08);
 	color: hsla(217, 100%, 84%, 0.68);
-	margin-right: 6px;
+	margin-right: 4px;
 }
 
 .bot_tab_name {
 	display: block;
 	font-weight: 500;
-	margin-bottom: 4px;
+	margin-bottom: 2px;
 }
 
 .bot_tab_desc {
 	display: block;
-	font-size: 11px;
-	line-height: 1.3;
+	font-size: 12px;
+	line-height: 1.4;
 	opacity: 0.7;
 }
 

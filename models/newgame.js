@@ -30,6 +30,8 @@ const game_schema = new Schema({
 	observers: Number,
 	game_file: String,
 	last_update: Number,
+	champion_eligible: Boolean,
+	champion_claimed: Boolean,
 }, {timestamps: true});
 
 

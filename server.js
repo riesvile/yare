@@ -205,11 +205,22 @@ const user_sessions = {};
 const mongoose = require('mongoose');
 const {User, Session} = require('./models/users.js');
 const Game = require('./models/newgame.js');
+const ChampionBot = require('./models/champion-bot.js');
 const Server = require('./models/servers.js');
 const dbURI = config.mongo;
 mongoose.set('useCreateIndex', true);
 mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-	.then((result) => logger.info('Connected to MongoDB'))
+	.then(() => {
+		logger.info('Connected to MongoDB');
+		ChampionBot.findOne().sort({createdAt: -1}).then(champ => {
+			if (!champ) {
+				const cleoCode = fs.readFileSync(__dirname + '/bots/cleo-bot.js', 'utf8');
+				new ChampionBot({ author: 'champion', bot_name: 'champion-bot', code: cleoCode, game_id: 'seed' }).save()
+					.then(() => logger.info('Auto-seeded initial champion bot'))
+					.catch(err => logger.error(err, 'Failed to seed champion bot'));
+			}
+		});
+	})
 	.catch((error) => logger.error(error));
 
 function updateServers() {
@@ -415,6 +426,15 @@ function clowder_bot_game(data){
 		id: 'clowder-bot',
 		session_id: 'bot',
 		rating: 800,
+		color: 'color2'
+	});
+}
+
+function champion_bot_game(data){
+	return bot_game(data, {
+		id: 'champion-bot',
+		session_id: 'bot',
+		rating: 1000,
 		color: 'color2'
 	});
 }
@@ -706,7 +726,9 @@ app.post('/gameinfo', (req, res) => {
 					p2: result[0]['player2'],
 					p2_color: result[0]['p2_color'],
 					p2_rating: result[0]['p2_rating'],
-					c_day: result[0]['createdAt']
+					c_day: result[0]['createdAt'],
+					champion_eligible: result[0]['champion_eligible'] || false,
+					champion_claimed: result[0]['champion_claimed'] || false
 				});
 			} else {
 				res.status(200).send({ data: "something went wrong" });
@@ -716,6 +738,98 @@ app.post('/gameinfo', (req, res) => {
 			logger.error(error);
 		});
 
+});
+
+app.get('/champion-bot-info', async (req, res) => {
+	try {
+		const champ = await ChampionBot.findOne().sort({createdAt: -1});
+		if (!champ) {
+			res.status(200).send({ exists: false });
+		} else {
+			res.status(200).send({
+				exists: true,
+				bot_name: champ.bot_name,
+				author: champ.author
+			});
+		}
+	} catch (err) {
+		logger.error(err);
+		res.status(500).send({ data: 'error' });
+	}
+});
+
+app.post('/claim-champion-bot', async (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(200).send({ data: 'rate limited' });
+		return;
+	}
+
+	const { game_id, session_id, user_id } = req.body;
+	if (!game_id || !session_id || !user_id) {
+		res.status(400).send({ data: 'missing fields' });
+		return;
+	}
+
+	try {
+		const session = await Session.findOne({ session_id });
+		if (!session || session.user_id !== user_id) {
+			res.status(403).send({ data: 'invalid session' });
+			return;
+		}
+
+		const games = await Game.find({ game_id });
+		if (games.length === 0) {
+			res.status(404).send({ data: 'game not found' });
+			return;
+		}
+
+		const game = games[0];
+		if (game.winner !== user_id) {
+			res.status(403).send({ data: 'not the winner' });
+			return;
+		}
+
+		const opponent = game.player1 === user_id ? game.player2 : game.player1;
+		if (opponent !== 'champion-bot') {
+			res.status(403).send({ data: 'opponent was not champion-bot' });
+			return;
+		}
+
+		if (!game.champion_eligible) {
+			res.status(403).send({ data: 'not eligible' });
+			return;
+		}
+
+		if (game.champion_claimed) {
+			res.status(409).send({ data: 'already claimed' });
+			return;
+		}
+
+		const s3Obj = await s3client.getObject({
+			Bucket: config.s3.bucket,
+			Key: 'champion-eligible/' + game_id + '.js',
+		}).promise();
+
+		const code = s3Obj.Body.toString();
+		const bot_name = user_id + '-bot';
+
+		const newChamp = new ChampionBot({
+			author: user_id,
+			bot_name: bot_name,
+			code: code,
+			game_id: game_id
+		});
+		await newChamp.save();
+
+		await Game.updateOne({ game_id }, { champion_claimed: true });
+
+		logger.info('Champion bot replaced: %s by %s (game %s)', bot_name, user_id, game_id);
+		res.status(200).send({ success: true, bot_name: bot_name });
+
+	} catch (err) {
+		logger.error(err, 'claim-champion-bot error');
+		res.status(500).send({ data: 'server error' });
+	}
 });
 
 const AWS = require('aws-sdk');
@@ -1221,6 +1335,16 @@ async function newGame(data, socket){
 			break;
 		case "clowder-bot":
 			response = clowder_bot_game(data)
+			socket.send(JSON.stringify({
+				type: "match-found",
+				data: {
+					server: response.server,
+					game_id: response.g_id
+				}
+			}))
+			break;
+		case "champion-bot":
+			response = champion_bot_game(data)
 			socket.send(JSON.stringify({
 				type: "match-found",
 				data: {

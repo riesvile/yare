@@ -602,8 +602,7 @@ function calcAngleDegrees(x, y) {
 }
 
 
-function game_over(winner){
-	//alert('game over, ' + winner + ' won');
+function game_over(winner, champion_eligible){
 	if (game_ended == 1){
 		return;
 	}
@@ -712,6 +711,37 @@ function game_over(winner){
 	
 	document.getElementById('player1_name').innerHTML = pla1;
 	document.getElementById('player2_name').innerHTML = pla2;
+
+	var my_user_id = getCookie('user_id');
+	if (champion_eligible && winner === my_user_id) {
+		var claimBtn = document.getElementById('claim_champion_btn');
+		claimBtn.style.display = 'inline-block';
+		claimBtn.addEventListener('click', function(e){
+			e.preventDefault();
+			if (claimBtn.classList.contains('claim_done')) return;
+			claimBtn.innerHTML = 'Claiming...';
+			fetch('/claim-champion-bot', {
+				method: 'POST',
+				headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					game_id: this_game_id,
+					session_id: getCookie('session_id'),
+					user_id: my_user_id
+				})
+			}).then(function(r){ return r.json(); })
+			  .then(function(resp){
+				if (resp.success) {
+					claimBtn.innerHTML = 'You are the strongest bot now';
+					claimBtn.classList.add('claim_done');
+				} else {
+					claimBtn.innerHTML = resp.data || 'Failed';
+				}
+			}).catch(function(){
+				claimBtn.innerHTML = 'Error, try again';
+			});
+		});
+	}
+
 	game_over_box();
 	game_active = 0;
 	

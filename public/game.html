@@ -305,6 +305,8 @@
 		  </div>
 	  </div>
 	  
+	  <a class="game_over_link" id="claim_champion_btn" href="#" style="display:none">Replace strongest bot with mine</a>
+	  
 	  <a class="game_over_link" id="watch_replay" href="#">Watch replay</a>
 	  <a class="game_over_link" id="back_to_new" href="../">New game</a>
 	  
@@ -798,7 +800,7 @@ var basic_code =
 				
 				 
 				 if (incoming.end != 0 && incoming.end != undefined){
-				 	game_over(incoming.end)
+				 	game_over(incoming.end, incoming.champion_eligible)
 				 }
 				 
 				 

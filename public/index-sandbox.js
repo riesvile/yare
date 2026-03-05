@@ -736,6 +736,15 @@ function initColorPicker(colors) {
 		});
 	});
 
+	fetch('/champion-bot-info')
+		.then(function(r){ return r.json(); })
+		.then(function(data){
+			if (data.exists) {
+				document.getElementById('champion_bot_name').textContent = data.bot_name;
+				document.getElementById('sel_champion_bot').style.display = '';
+			}
+		}).catch(function(){});
+
 	document.getElementById('copy_link_btn').addEventListener('click', function(){
 		var text = document.getElementById('challenge_link_text').textContent;
 		if (text) copyToClipboard(text);
