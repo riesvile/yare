@@ -24,6 +24,31 @@ function isValid(str) {
 	return /^\w+$/.test(str);
 }
 
+const RESERVED_USERNAMES = new Set([
+	// Static pages (public/*.html)
+	'index', 'documentation', 'leaderboard', 'ai_arena',
+	'challenge', 'game', 'boxsand', 'hub', 'newgame', 'wait',
+	'nope', 'profile', 'tournament', 'qqmonitoring', 'est',
+	'replay', 'modules_documentation',
+	// Explicit routes
+	'admin_panel', 'stripe', 'api', 'monitor',
+	'validate', 'session', 'add_user',
+	'gameinfo', 'get_replay', 'deactivate',
+	'upload_script', 'download_script', 'new_module', 'edit_module',
+	'playerinfo', 'check_status', 'active_games', 'resume_game',
+	'set_muffin', 'set_email', 'game_status',
+	// Common reserved words
+	'admin', 'root', 'system', 'moderator', 'mod',
+	'support', 'help', 'info', 'about', 'contact',
+	'login', 'logout', 'signup', 'register', 'settings',
+	'account', 'dashboard', 'null', 'undefined',
+	'www', 'mail', 'ftp', 'static', 'assets', 'css', 'js',
+]);
+
+function isReservedUsername(name) {
+	return RESERVED_USERNAMES.has(name.toLowerCase().replace(/-/g, '_'));
+}
+
 const COLOR_MAP = {
 	'gblue': 'color3',
 	'purply': 'color1',
@@ -80,6 +105,7 @@ module.exports = {
 	generateUniqueString,
 	generateSecureString,
 	isValid,
+	isReservedUsername,
 	get_color,
 	get_color_num,
 	color_validity,

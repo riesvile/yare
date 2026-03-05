@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const sha256 = hash_string => crypto.createHash('sha256').update(hash_string, 'utf8').digest('hex');
 const {User, Session} = require('../models/users.js');
-const { generateSecureString, isValid } = require('../utils/helpers');
+const { generateSecureString, isValid, isReservedUsername } = require('../utils/helpers');
 
 const hashRounds = 10;
 
@@ -113,8 +113,10 @@ module.exports = function createAuthRoutes({ logger, check_limiter }) {
 			res.status(200).send({ data: "toolong", data2: req.body.user_name.length });
 		} else if (req.body.user_name.length < 3){
 			res.status(200).send({ data: "tooshort" });
-		} else if (isValid(req.body.user_name) != true){
-			res.status(200).send({ data: "special" });
+	} else if (isValid(req.body.user_name) != true){
+		res.status(200).send({ data: "special" });
+	} else if (isReservedUsername(req.body.user_name)){
+		res.status(200).send({ data: "reserved" });
 	} else if (req.body.password.length < 1){
 		res.status(200).send({ data: "pass_empty" });
 	} else if ((await User.find({user_id: req.body.user_name})).length !== 0){

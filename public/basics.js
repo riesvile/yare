@@ -978,10 +978,13 @@ try {
 			  } else if (response.data == "tooshort"){
 				  username_error('Must be at least 3 characters long');
 				  resume_client();
-			  } else if (response.data == "special"){
-				  username_error('Only letters, numbers and underscore allowed');
-				  resume_client();
-			  } else if (response.data == "pass_empty"){
+		  } else if (response.data == "special"){
+			  username_error('Only letters, numbers and underscore allowed');
+			  resume_client();
+		  } else if (response.data == "reserved"){
+			  username_error('This username is reserved and cannot be used');
+			  resume_client();
+		  } else if (response.data == "pass_empty"){
 				  password_error("Whatever you want, but at least 1 character");
 				  resume_client();
 			  } else {
