@@ -68,6 +68,19 @@ function energyDiff() {
     return ours - theirs;
 }
 
+function energyAdvantageRatio() {
+    let ours = 0, theirs = 0;
+    for (const id in cats) {
+        const c = cats[id];
+        if (c.hp === 0) continue;
+        if (c.player_id === this_player_id) ours += c.energy;
+        else theirs += c.energy;
+    }
+    const total = ours + theirs;
+    if (total === 0) return 0;
+    return (ours - theirs) / total;
+}
+
 function endgameState() {
     let ours = 0, theirs = 0;
     for (const id in cats) {
@@ -324,8 +337,10 @@ function thinkShadow(cat) {
 
     const enemies = livingEnemies();
     const adj = aggressionMod();
-    const nearbyEnemies = enemiesInRange(cat.position, 220 + adj);
-    const alliesHere = friendsInRange(cat.position, 260);
+    const closestEnemy = closestTo(cat.position, enemies);
+    const podBonus = (closestEnemy && isOnPod(closestEnemy.position)) ? 20 : 0;
+    const nearbyEnemies = enemiesInRange(cat.position, 225 + adj + podBonus);
+    const alliesHere = friendsInRange(cat.position, 265);
 
     if (nearbyEnemies >= 2 && alliesHere <= nearbyEnemies) {
         const healers = catsByRole('healer');
@@ -339,7 +354,7 @@ function thinkShadow(cat) {
     if (enemies.length > 0) {
         const threat = closestTo(luna.position, enemies);
         if (threat) {
-            const behindDist = Math.max(25, 50 + adj);
+            const behindDist = Math.max(25, 50 + adj + podBonus);
             cat.move(away(luna.position, threat.position, behindDist));
             return;
         }
@@ -392,8 +407,9 @@ function thinkAggro(cat) {
     }
 
     // TEAM ENGAGE: if the team has converged and has numbers, strike
+    // (skip if target is camping a pod — let the circle flush them out)
     const sharedTarget = aggroSharedTarget();
-    if (sharedTarget && teamCanEngage(sharedTarget)) {
+    if (sharedTarget && teamCanEngage(sharedTarget) && !isOnPod(sharedTarget.position)) {
         const d = dist(cat.position, sharedTarget.position);
         if (d > 190) cat.move(sharedTarget.position);
         return;
@@ -403,13 +419,14 @@ function thinkAggro(cat) {
     const myTarget = closestTo(cat.position, enemies);
     if (!myTarget) return;
 
+    const podBonus = isOnPod(myTarget.position) ? 20 : 0;
     let minSafe, maxSafe;
     if (alliesHere > effectiveThreats) {
-        minSafe = 220 + adj; maxSafe = 250 + adj;
+        minSafe = 225 + adj + podBonus; maxSafe = 255 + adj + podBonus;
     } else if (alliesHere >= effectiveThreats) {
-        minSafe = 245 + adj; maxSafe = 275 + adj;
+        minSafe = 250 + adj + podBonus; maxSafe = 280 + adj + podBonus;
     } else {
-        minSafe = 275 + adj; maxSafe = 305 + adj;
+        minSafe = 280 + adj + podBonus; maxSafe = 310 + adj + podBonus;
     }
 
     if (closestDist < minSafe) {
@@ -488,7 +505,7 @@ function thinkCrazy(cat) {
 
     if (others.length > 0) {
         const closestOther = closestTo(cat.position, others);
-        if (closestOther && dist(cat.position, closestOther.position) < 230) {
+        if (closestOther && dist(cat.position, closestOther.position) < 235) {
             cat.move(away(cat.position, closestOther.position, 25));
             return;
         }
@@ -507,7 +524,7 @@ function thinkCrazy(cat) {
 
     function isSafe(pos) {
         for (const e of others) {
-            if (dist(pos, e.position) < 230) return false;
+            if (dist(pos, e.position) < 235) return false;
         }
         return true;
     }
@@ -822,6 +839,63 @@ function handleShouts(cat, me) {
 }
 
 // ============================================================
+//  All-In Mode — 12%+ energy advantage: press the kill
+// ============================================================
+
+function allInTarget() {
+    const enemies = livingEnemies();
+    if (enemies.length === 0) return null;
+
+    let bestTarget = null, bestScore = -Infinity;
+    for (const e of enemies) {
+        const projected = pewLedger[e.id] !== undefined ? pewLedger[e.id] : e.energy;
+        if (projected <= -1) continue;
+        const aoe = aoeNeighbors(e);
+        const score = (10 - projected) * 3 + aoe * 8;
+        if (score > bestScore) { bestScore = score; bestTarget = e; }
+    }
+    return bestTarget || weakestOf(enemies);
+}
+
+function thinkAllInCombat(cat) {
+    const target = allInTarget();
+    if (!target) { cat.move([0, 0]); return; }
+
+    const d = dist(cat.position, target.position);
+    if (d > 185) {
+        cat.move(target.position);
+    }
+}
+
+function thinkAllInConnector(cat) {
+    const aggroCats = catsByRole('aggro');
+    const healerCats = catsByRole('healer');
+    if (aggroCats.length === 0 || healerCats.length === 0) {
+        thinkAllInCombat(cat);
+        return;
+    }
+    const aggroCenter = centroid(aggroCats.map(c => c.position));
+    const healerCenter = centroid(healerCats.map(c => c.position));
+    const me = identity(cat);
+    const t = me.name === 'Claw' ? 0.8 : 0.5;
+    const bridgePoint = [
+        healerCenter[0] + (aggroCenter[0] - healerCenter[0]) * t,
+        healerCenter[1] + (aggroCenter[1] - healerCenter[1]) * t,
+    ];
+    if (dist(cat.position, bridgePoint) > 15) cat.move(bridgePoint);
+}
+
+function thinkAllInHealer(cat) {
+    const aggroCats = catsByRole('aggro');
+    if (aggroCats.length === 0) return;
+    const aggroCenter = centroid(aggroCats.map(c => c.position));
+    const bestPod = nearestPod(aggroCenter);
+    if (!isOnPod(cat.position) || dist(cat.position, bestPod) > 30) {
+        cat.move(bestPod);
+    }
+}
+
+// ============================================================
 //  The Mind — pew → evade → charge → role movement
 // ============================================================
 
@@ -829,15 +903,31 @@ function mind(cat) {
     const me = identity(cat);
     if (!me || cat.hp === 0) return;
 
-    // ── Death circle guardrail: clamp ALL movement to stay 10 units inside ──
+    // ── Death circle guardrail + anti-splash spacing ──
     const safeRadius = death_circle - 10;
     const rawMove = cat.move.bind(cat);
+    const inCombat = enemiesInRange(cat.position, 300) > 0;
     cat.move = function(target) {
-        const d = dist(target, [0, 0]);
+        let t = target;
+
+        if (inCombat) {
+            let closestAlly = null, closestAllyDist = Infinity;
+            for (const f of aliveOf(my_cats)) {
+                if (f.id === cat.id) continue;
+                const d = dist(cat.position, f.position);
+                if (d < closestAllyDist) { closestAllyDist = d; closestAlly = f; }
+            }
+            if (closestAlly && closestAllyDist < 25) {
+                const nudge = away(t, closestAlly.position, 25 - closestAllyDist);
+                t = nudge;
+            }
+        }
+
+        const d = dist(t, [0, 0]);
         if (d > safeRadius) {
-            rawMove(towards(target, [0, 0], d - safeRadius));
+            rawMove(towards(t, [0, 0], d - safeRadius));
         } else {
-            rawMove(target);
+            rawMove(t);
         }
     };
 
@@ -867,11 +957,38 @@ function mind(cat) {
     // ── Phase 2: FRIENDLY PEW (heal / relay, only when no enemy pewed) ──
     if (!pewedEnemy) supportPew(cat, me);
 
+    // ── Phase 2.1: PATIENCE MODE — enemy mass-camping pods, wait for circle ──
+    {
+        const enemies = livingEnemies();
+        let enemiesOnPods = 0;
+        for (const e of enemies) if (isOnPod(e.position)) enemiesOnPods++;
+        if (enemiesOnPods >= 3) {
+            const safeBuffer = enemiesOnPods >= 5 ? 40 : 20;
+            const nearest = closestTo(cat.position, enemies);
+            if (nearest && dist(cat.position, nearest.position) < 200 + safeBuffer) {
+                cat.move(away(cat.position, nearest.position, 30));
+            }
+            return;
+        }
+    }
+
+    // ── Phase 2.5: ALL-IN MODE when 12%+ energy advantage ──
+    if (energyAdvantageRatio() >= 0.12) {
+        switch (me.role) {
+            case 'healer':    thinkAllInHealer(cat);    break;
+            case 'connector': thinkAllInConnector(cat);  break;
+            default:          thinkAllInCombat(cat);     break;
+        }
+        return;
+    }
+
     // ── Phase 3: DANGER EVASION (non-frontline cats) ──
     if (me.role !== 'aggro' && me.role !== 'crazy' && me.role !== 'support') {
         const enemies = livingEnemies();
         const adj = aggressionMod();
-        const fleeRange = 250 + adj;
+        const nearestE = closestTo(cat.position, enemies);
+        const podBon = (nearestE && isOnPod(nearestE.position)) ? 20 : 0;
+        const fleeRange = 255 + adj + podBon;
         const threats = enemies.filter(e => dist(cat.position, e.position) < fleeRange);
         if (threats.length > 0) {
             const alliesHere = friendsInRange(cat.position, 260);
@@ -887,6 +1004,13 @@ function mind(cat) {
     if (isOnPod(cat.position) && cat.energy < cat.energy_capacity
         && enemiesInRange(cat.position, 200) === 0) {
         return;
+    }
+    if (cat.energy < 5 && !isOnPod(cat.position)) {
+        const pod = nearestPod(cat.position);
+        if (dist(cat.position, pod) <= 80 && enemiesInRange(pod, 200) === 0) {
+            cat.move(pod);
+            return;
+        }
     }
 
     // ── Phase 5: ROLE MOVEMENT ──

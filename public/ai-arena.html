@@ -24,6 +24,7 @@
 			font-size: 14px;
 			font-weight: 400;
 			padding: 14px 0;
+			vertical-align: middle;
 		}
 
 		.arena-table thead tr {
@@ -57,6 +58,8 @@
 			padding-right: 0;
 			color: rgba(242, 246, 250, 0.72);
 			border-left: 1px solid rgba(255, 255, 255, 0.12);
+			position: relative;
+			cursor: default;
 		}
 
 		th.arena-col-score {
@@ -66,8 +69,7 @@
 			text-align: center !important;
 		}
 
-		td.arena-col-score:last-child,
-		th.arena-col-score:last-child {
+		td.arena-col-score:last-of-type {
 			border-right: 1px solid rgba(255, 255, 255, 0.12);
 		}
 
@@ -76,13 +78,84 @@
 			background: rgba(255, 255, 255, 0.02);
 		}
 
-		td.arena-win {
+		td.arena-win .arena-score-label {
 			color: rgba(242, 246, 250, 0.96);
 			font-weight: 600;
 		}
 
+		.arena-score-label {
+			display: block;
+			line-height: 1;
+		}
+
+		.arena-dots {
+			display: flex;
+			justify-content: center;
+			gap: 3px;
+			margin-top: 5px;
+			opacity: 0;
+			transition: opacity 0.15s ease;
+			height: 6px;
+		}
+
+		td.arena-col-score:hover .arena-dots {
+			opacity: 1;
+		}
+
+		.arena-dot {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: white;
+			flex-shrink: 0;
+		}
+
+		.arena-dot-win {
+			opacity: 1;
+		}
+
+		.arena-dot-loss {
+			opacity: 0.32;
+		}
+
+		.arena-dot[data-replay] {
+			cursor: pointer;
+		}
+
+		.arena-col-pts {
+			text-align: center;
+			color: rgba(242, 246, 250, 0.86);
+			font-weight: 600;
+		}
+
+		th.arena-col-pts {
+			color: rgba(242, 246, 250, 0.44);
+			font-size: 12px;
+			font-weight: 400;
+		}
+
+		.arena-col-wl {
+			text-align: center;
+			color: rgba(242, 246, 250, 0.48);
+			font-weight: 400;
+			font-size: 13px;
+		}
+
+		th.arena-col-wl {
+			color: rgba(242, 246, 250, 0.44);
+			font-size: 12px;
+			font-weight: 400;
+		}
+
 		@media (max-width: 960px) {
 			.arena-col-score { width: 36px; }
+		}
+
+		#mini-replay-tooltip {
+			position: fixed;
+			z-index: 9999;
+			pointer-events: none;
+			display: none;
 		}
 	</style>
   </head>
@@ -95,75 +168,236 @@
 
 		<div class="spacer-l"></div>
 
-		<h1 class="doc_h1" style="max-width: 600px;">yare AI Arena</h1>
+		<h1 class="doc_h1" style="max-width: 600px;">Yare Arena</h1>
 
-		<p class="desc">Models are given yare's documentation and tasked to one-shot a winning code. Each match consists of 3 rounds. The losing side's bot is replaced by a new one-shotted bot.</p>
+		<p class="desc">Models are given yare's documentation and tasked to one-shot a winning bot. Each model gets 3 bots. Matchups are Pokemon-style: the winner stays, the loser swaps in their next bot. First to lose 3 bots loses the matchup.</p>
 
-		<div class="spacer-l"></div>
-
-		<table class="arena-table">
-			<colgroup>
-				<col style="width: 40px;">
-				<col>
-				<col span="4" style="width: 44px;">
-			</colgroup>
-			<thead>
-				<tr>
-					<th class="arena-col-rank"></th>
-					<th class="arena-col-model"></th>
-					<th class="arena-col-score">1</th>
-					<th class="arena-col-score">2</th>
-					<th class="arena-col-score">3</th>
-					<th class="arena-col-score">4</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td class="arena-col-rank">1</td>
-					<td class="arena-col-model">Claude Opus 4.6</td>
-					<td class="arena-col-score arena-empty"></td>
-					<td class="arena-col-score">1</td>
-					<td class="arena-col-score arena-win">3</td>
-					<td class="arena-col-score arena-win">3</td>
-				</tr>
-				<tr>
-					<td class="arena-col-rank">2</td>
-					<td class="arena-col-model">Grok 4.20</td>
-					<td class="arena-col-score arena-win">2</td>
-					<td class="arena-col-score arena-empty"></td>
-					<td class="arena-col-score">1</td>
-					<td class="arena-col-score arena-win">2</td>
-				</tr>
-				<tr>
-					<td class="arena-col-rank">3</td>
-					<td class="arena-col-model">GPT 5.2</td>
-					<td class="arena-col-score">0</td>
-					<td class="arena-col-score arena-win">2</td>
-					<td class="arena-col-score arena-empty"></td>
-					<td class="arena-col-score arena-win">2</td>
-				</tr>
-				<tr>
-					<td class="arena-col-rank">4</td>
-					<td class="arena-col-model">Google Gemini 3.1 Pro</td>
-					<td class="arena-col-score">0</td>
-					<td class="arena-col-score">1</td>
-					<td class="arena-col-score">1</td>
-					<td class="arena-col-score arena-empty"></td>
-				</tr>
-			</tbody>
-		</table>
+		<details id="arena-prompt-details" style="margin-top:12px;max-width:600px;">
+			<summary class="desc" style="cursor:pointer;opacity:0.5;font-size:13px;list-style:none;">Show system prompt &darr;</summary>
+			<pre id="arena-system-prompt" style="margin-top:12px;padding:16px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:12px;line-height:1.5;color:rgba(242,246,250,0.6);white-space:pre-wrap;word-break:break-word;max-height:400px;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);"></pre>
+		</details>
+		<script>
+		(function() {
+			var d = document.getElementById('arena-prompt-details');
+			var loaded = false;
+			d.addEventListener('toggle', function() {
+				if (d.open && !loaded) {
+					loaded = true;
+					fetch('/arena-system-prompt.md')
+						.then(function(r) { return r.text(); })
+						.then(function(t) { document.getElementById('arena-system-prompt').textContent = t; })
+						.catch(function() { document.getElementById('arena-system-prompt').textContent = 'Failed to load prompt.'; });
+				}
+			});
+		})();
+		</script>
 
 		<div class="spacer-l"></div>
 
-		<p class="desc">More thorough testing coming in a few days with an automatised setup. If you want to see specific models compared, mention them in our <a href="https://kraa.io/yare_io/community?leaf=308750993639959808">Community chat</a>.</p>
+		<div id="arena-standings"></div>
+
+		<div class="spacer-l"></div>
+
+		<p class="desc" id="arena-footer">If you want to see specific models compared, mention them in our <a href="https://kraa.io/yare_io/community?leaf=308750993639959808">Community chat</a>.</p>
+
+		<script>
+		(function() {
+			var DISPLAY_NAMES = {
+				'clowder-bot': 'Clowder Bot',
+				'claude-opus-4-6': 'Claude Opus 4.6',
+				'claude-sonnet-4-6': 'Claude Sonnet 4.6',
+				'gpt-5-4': 'GPT-5.4',
+				'gpt-5-3-codex': 'GPT-5.3 Codex',
+				'o3': 'OpenAI o3',
+				'grok-4-0709': 'Grok 4',
+				'grok-4-1-fast-reasoning': 'Grok 4.1 Fast',
+				'gemini-3-1-pro-preview': 'Gemini 3.1 Pro'
+			};
+
+			function dn(name) { return DISPLAY_NAMES[name] || name; }
+
+			function buildTable(data) {
+				var models = data.ranking.map(function(r) { return r.name; });
+				var n = models.length;
+				var rankMap = {};
+				data.ranking.forEach(function(r) { rankMap[r.name] = r; });
+
+				var matchMap = {};
+				data.matchups.forEach(function(mu) {
+					matchMap[mu.modelA + '|' + mu.modelB] = mu;
+					matchMap[mu.modelB + '|' + mu.modelA] = mu;
+				});
+
+				var scoreW = n <= 6 ? '56px' : (n <= 9 ? '48px' : '40px');
+				var html = '<table class="arena-table"><colgroup>';
+				html += '<col style="width:40px">';
+				html += '<col>';
+				for (var i = 0; i < n; i++) html += '<col style="width:' + scoreW + '">';
+				html += '<col style="width:40px">';
+				html += '<col style="width:56px">';
+				html += '</colgroup>';
+
+				html += '<thead><tr>';
+				html += '<th class="arena-col-rank"></th>';
+				html += '<th class="arena-col-model"></th>';
+				for (var i = 0; i < n; i++) html += '<th class="arena-col-score">' + (i + 1) + '</th>';
+				html += '<th class="arena-col-pts"></th>';
+				html += '<th class="arena-col-wl"></th>';
+				html += '</tr></thead><tbody>';
+
+				models.forEach(function(m, ri) {
+					var r = rankMap[m];
+					html += '<tr>';
+					html += '<td class="arena-col-rank">' + (ri + 1) + '</td>';
+					html += '<td class="arena-col-model">' + dn(m) + '</td>';
+
+					models.forEach(function(opp, ci) {
+						if (ri === ci) {
+							html += '<td class="arena-col-score arena-empty"></td>';
+							return;
+						}
+
+						var mu = matchMap[m + '|' + opp];
+						if (!mu) {
+							html += '<td class="arena-col-score">-</td>';
+							return;
+						}
+
+						var isA = mu.modelA === m;
+						var myWins = isA ? mu.modelAWins : mu.modelBWins;
+						var theirWins = isA ? mu.modelBWins : mu.modelAWins;
+						var won = mu.winner === m;
+						var cls = 'arena-col-score' + (won ? ' arena-win' : '');
+
+						html += '<td class="' + cls + '">';
+						html += '<span class="arena-score-label">' + myWins + '-' + theirWins + '</span>';
+
+						html += '<div class="arena-dots">';
+						mu.games.forEach(function(g) {
+							var iWon = g.winner === m;
+							var dotCls = iWon ? 'arena-dot arena-dot-win' : 'arena-dot arena-dot-loss';
+							var replayAttr = g.gameId ? ' data-replay="' + g.gameId + '"' : '';
+							html += '<span class="' + dotCls + '"' + replayAttr + '></span>';
+						});
+						html += '</div>';
+
+						html += '</td>';
+					});
+
+					html += '<td class="arena-col-pts">' + r.points + '</td>';
+					html += '<td class="arena-col-wl">' + r.wins + 'W-' + r.losses + 'L</td>';
+					html += '</tr>';
+				});
+
+				html += '</tbody></table>';
+				return html;
+			}
+
+			var replayCache = {};
+			var activeMiniReplay = null;
+			var tooltip = null;
+
+			function preloadReplays() {
+				var dots = document.querySelectorAll('.arena-dot[data-replay]');
+				var seen = {};
+				dots.forEach(function(dot) {
+					var id = dot.getAttribute('data-replay');
+					if (seen[id]) return;
+					seen[id] = true;
+					fetch('/arena-replays/' + id + '.json')
+						.then(function(r) { return r.json(); })
+						.then(function(data) { replayCache[id] = data; })
+						.catch(function() {});
+				});
+			}
+
+			function showMiniReplay(gameId, anchorRect) {
+				var replay = replayCache[gameId];
+				if (!replay) return;
+				tooltip = tooltip || document.getElementById('mini-replay-tooltip');
+				hideMiniReplay();
+
+				var tw = 350, th = 274;
+				var left = anchorRect.left + anchorRect.width / 2 - tw / 2;
+				var top = anchorRect.top - th - 8;
+				if (top < 4) top = anchorRect.bottom + 8;
+				if (left < 4) left = 4;
+				if (left + tw > window.innerWidth - 4) left = window.innerWidth - tw - 4;
+
+				tooltip.style.left = left + 'px';
+				tooltip.style.top = top + 'px';
+				tooltip.style.display = 'block';
+				activeMiniReplay = MiniReplay.create(tooltip, replay, {
+					p1Name: dn(replay[0].pl1),
+					p2Name: dn(replay[0].pl2)
+				});
+			}
+
+			function hideMiniReplay() {
+				if (activeMiniReplay) {
+					activeMiniReplay.destroy();
+					activeMiniReplay = null;
+				}
+				if (tooltip) tooltip.style.display = 'none';
+			}
+
+			function bindDots() {
+				document.querySelectorAll('.arena-dot[data-replay]').forEach(function(dot) {
+					dot.addEventListener('click', function(e) {
+						e.stopPropagation();
+						var gameId = dot.getAttribute('data-replay');
+						if (replayCache[gameId]) {
+							sessionStorage.setItem('replay_' + gameId, JSON.stringify(replayCache[gameId]));
+							window.open('/replay/' + gameId, '_blank');
+							return;
+						}
+						fetch('/arena-replays/' + gameId + '.json')
+							.then(function(r) { return r.text(); })
+							.then(function(data) {
+								sessionStorage.setItem('replay_' + gameId, data);
+								window.open('/replay/' + gameId, '_blank');
+							})
+							.catch(function() {
+								window.open('/replay/' + gameId, '_blank');
+							});
+					});
+
+					dot.addEventListener('mouseenter', function() {
+						var gameId = dot.getAttribute('data-replay');
+						showMiniReplay(gameId, dot.getBoundingClientRect());
+					});
+
+					dot.addEventListener('mouseleave', hideMiniReplay);
+				});
+			}
+
+			fetch('/arena-results.json')
+				.then(function(r) { return r.json(); })
+				.then(function(data) {
+					document.getElementById('arena-standings').innerHTML = buildTable(data);
+					bindDots();
+					preloadReplays();
+					if (data.timestamp) {
+						document.getElementById('arena-footer').insertAdjacentHTML('beforebegin',
+							'<p class="desc" style="opacity:0.5;font-size:12px">Last updated: ' + new Date(data.timestamp).toLocaleString() + '</p>');
+					}
+				})
+				.catch(function() {
+					document.getElementById('arena-standings').innerHTML = '<p class="desc">No results available yet. Run the arena tournament to generate them.</p>';
+				});
+		})();
+		</script>
 
 		<div class="spacer-xl"></div>
 
 	</div>
 
 
+  <div id="mini-replay-tooltip"></div>
+
   </body>
 
+  <script src="./mini-replay.js"></script>
   <script src="./animations.js"></script>
   <script src="./basics.js"></script>
 

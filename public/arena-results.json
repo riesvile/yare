@@ -1,0 +1,2021 @@
+{
+  "tournamentId": "82e8909dbdd2",
+  "timestamp": "2026-03-05T23:42:41.178Z",
+  "models": [
+    "claude-opus-4-6",
+    "claude-sonnet-4-6",
+    "clowder-bot",
+    "gemini-3-1-pro-preview",
+    "gpt-5-3-codex",
+    "gpt-5-4",
+    "grok-4-0709",
+    "grok-4-1-fast-reasoning",
+    "o3"
+  ],
+  "ranking": [
+    {
+      "name": "clowder-bot",
+      "wins": 8,
+      "losses": 0,
+      "draws": 0,
+      "gameWins": 24,
+      "gameLosses": 0,
+      "points": 24
+    },
+    {
+      "name": "gemini-3-1-pro-preview",
+      "wins": 6,
+      "losses": 2,
+      "draws": 0,
+      "gameWins": 20,
+      "gameLosses": 14,
+      "points": 18
+    },
+    {
+      "name": "o3",
+      "wins": 5,
+      "losses": 3,
+      "draws": 0,
+      "gameWins": 18,
+      "gameLosses": 9,
+      "points": 15
+    },
+    {
+      "name": "grok-4-1-fast-reasoning",
+      "wins": 4,
+      "losses": 4,
+      "draws": 0,
+      "gameWins": 17,
+      "gameLosses": 16,
+      "points": 12
+    },
+    {
+      "name": "gpt-5-4",
+      "wins": 4,
+      "losses": 4,
+      "draws": 0,
+      "gameWins": 15,
+      "gameLosses": 16,
+      "points": 12
+    },
+    {
+      "name": "grok-4-0709",
+      "wins": 3,
+      "losses": 5,
+      "draws": 0,
+      "gameWins": 12,
+      "gameLosses": 17,
+      "points": 9
+    },
+    {
+      "name": "claude-sonnet-4-6",
+      "wins": 3,
+      "losses": 5,
+      "draws": 0,
+      "gameWins": 13,
+      "gameLosses": 21,
+      "points": 9
+    },
+    {
+      "name": "claude-opus-4-6",
+      "wins": 3,
+      "losses": 5,
+      "draws": 0,
+      "gameWins": 12,
+      "gameLosses": 21,
+      "points": 9
+    },
+    {
+      "name": "gpt-5-3-codex",
+      "wins": 0,
+      "losses": 8,
+      "draws": 0,
+      "gameWins": 7,
+      "gameLosses": 24,
+      "points": 0
+    }
+  ],
+  "standings": {
+    "claude-opus-4-6": {
+      "wins": 3,
+      "losses": 5,
+      "draws": 0,
+      "gameWins": 12,
+      "gameLosses": 21
+    },
+    "claude-sonnet-4-6": {
+      "wins": 3,
+      "losses": 5,
+      "draws": 0,
+      "gameWins": 13,
+      "gameLosses": 21
+    },
+    "clowder-bot": {
+      "wins": 8,
+      "losses": 0,
+      "draws": 0,
+      "gameWins": 24,
+      "gameLosses": 0
+    },
+    "gemini-3-1-pro-preview": {
+      "wins": 6,
+      "losses": 2,
+      "draws": 0,
+      "gameWins": 20,
+      "gameLosses": 14
+    },
+    "gpt-5-3-codex": {
+      "wins": 0,
+      "losses": 8,
+      "draws": 0,
+      "gameWins": 7,
+      "gameLosses": 24
+    },
+    "gpt-5-4": {
+      "wins": 4,
+      "losses": 4,
+      "draws": 0,
+      "gameWins": 15,
+      "gameLosses": 16
+    },
+    "grok-4-0709": {
+      "wins": 3,
+      "losses": 5,
+      "draws": 0,
+      "gameWins": 12,
+      "gameLosses": 17
+    },
+    "grok-4-1-fast-reasoning": {
+      "wins": 4,
+      "losses": 4,
+      "draws": 0,
+      "gameWins": 17,
+      "gameLosses": 16
+    },
+    "o3": {
+      "wins": 5,
+      "losses": 3,
+      "draws": 0,
+      "gameWins": 18,
+      "gameLosses": 9
+    }
+  },
+  "matchups": [
+    {
+      "matchupId": "82e8909dbdd2-m1",
+      "modelA": "claude-opus-4-6",
+      "modelB": "claude-sonnet-4-6",
+      "winner": "claude-opus-4-6",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m1-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-sonnet-4-6",
+          "duration": 11,
+          "elapsed": 13,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m1-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m1-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "claude-sonnet-4-6",
+          "duration": 11,
+          "elapsed": 12,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m1-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m1-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "claude-opus-4-6",
+          "duration": 28,
+          "elapsed": 26,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m1-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m1-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "claude-opus-4-6",
+          "duration": 387,
+          "elapsed": 213,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m1-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m1-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "claude-opus-4-6",
+          "duration": 400,
+          "elapsed": 167,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m1-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m2",
+      "modelA": "claude-opus-4-6",
+      "modelB": "clowder-bot",
+      "winner": "clowder-bot",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m2-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 15,
+          "elapsed": 16,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m2-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m2-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 14,
+          "elapsed": 16,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m2-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m2-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 61,
+          "elapsed": 52,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m2-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m3",
+      "modelA": "claude-opus-4-6",
+      "modelB": "gemini-3-1-pro-preview",
+      "winner": "claude-opus-4-6",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m3-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 10,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m3-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m3-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "claude-opus-4-6",
+          "duration": 12,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m3-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m3-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 150,
+          "elapsed": 48,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m3-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m3-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "claude-opus-4-6",
+          "duration": 319,
+          "elapsed": 157,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m3-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m3-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "claude-opus-4-6",
+          "duration": 412,
+          "elapsed": 175,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m3-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m4",
+      "modelA": "claude-opus-4-6",
+      "modelB": "gpt-5-3-codex",
+      "winner": "claude-opus-4-6",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m4-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-opus-4-6",
+          "duration": 10,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m4-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m4-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "gpt-5-3-codex",
+          "duration": 12,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m4-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m4-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "claude-opus-4-6",
+          "duration": 12,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m4-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m4-g4",
+          "gameNum": 4,
+          "aBotIndex": 1,
+          "bBotIndex": 2,
+          "winner": "gpt-5-3-codex",
+          "duration": 16,
+          "elapsed": 17,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m4-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m4-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "claude-opus-4-6",
+          "duration": 152,
+          "elapsed": 66,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m4-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m5",
+      "modelA": "claude-opus-4-6",
+      "modelB": "gpt-5-4",
+      "winner": "gpt-5-4",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m5-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 11,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m5-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m5-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 11,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m5-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m5-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "claude-opus-4-6",
+          "duration": 177,
+          "elapsed": 110,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m5-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m5-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "gpt-5-4",
+          "duration": 484,
+          "elapsed": 194,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m5-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m6",
+      "modelA": "claude-opus-4-6",
+      "modelB": "grok-4-0709",
+      "winner": "grok-4-0709",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m6-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-opus-4-6",
+          "duration": 13,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m6-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m6-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "grok-4-0709",
+          "duration": 11,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m6-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m6-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-0709",
+          "duration": 14,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m6-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m6-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "grok-4-0709",
+          "duration": 35,
+          "elapsed": 19,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m6-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m7",
+      "modelA": "claude-opus-4-6",
+      "modelB": "grok-4-1-fast-reasoning",
+      "winner": "grok-4-1-fast-reasoning",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m7-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-opus-4-6",
+          "duration": 10,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m7-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m7-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 12,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m7-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m7-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 12,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m7-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m7-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 324,
+          "elapsed": 138,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m7-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m8",
+      "modelA": "claude-opus-4-6",
+      "modelB": "o3",
+      "winner": "o3",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m8-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 51,
+          "elapsed": 23,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m8-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m8-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 32,
+          "elapsed": 18,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m8-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m8-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 341,
+          "elapsed": 134,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m8-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m9",
+      "modelA": "claude-sonnet-4-6",
+      "modelB": "clowder-bot",
+      "winner": "clowder-bot",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m9-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 23,
+          "elapsed": 19,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m9-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m9-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 18,
+          "elapsed": 20,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m9-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m9-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 321,
+          "elapsed": 295,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m9-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m10",
+      "modelA": "claude-sonnet-4-6",
+      "modelB": "gemini-3-1-pro-preview",
+      "winner": "gemini-3-1-pro-preview",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m10-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-sonnet-4-6",
+          "duration": 12,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m10-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m10-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 374,
+          "elapsed": 116,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m10-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m10-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 13,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m10-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m10-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 564,
+          "elapsed": 183,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m10-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m11",
+      "modelA": "claude-sonnet-4-6",
+      "modelB": "gpt-5-3-codex",
+      "winner": "claude-sonnet-4-6",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m11-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-sonnet-4-6",
+          "duration": 11,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m11-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m11-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "gpt-5-3-codex",
+          "duration": 14,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m11-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m11-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "gpt-5-3-codex",
+          "duration": 11,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m11-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m11-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "claude-sonnet-4-6",
+          "duration": 87,
+          "elapsed": 35,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m11-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m11-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "claude-sonnet-4-6",
+          "duration": 172,
+          "elapsed": 64,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m11-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m12",
+      "modelA": "claude-sonnet-4-6",
+      "modelB": "gpt-5-4",
+      "winner": "claude-sonnet-4-6",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m12-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 13,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m12-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m12-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 11,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m12-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m12-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "claude-sonnet-4-6",
+          "duration": 151,
+          "elapsed": 76,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m12-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m12-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "claude-sonnet-4-6",
+          "duration": 500,
+          "elapsed": 216,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m12-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m12-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "claude-sonnet-4-6",
+          "duration": 57,
+          "elapsed": 33,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m12-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m13",
+      "modelA": "claude-sonnet-4-6",
+      "modelB": "grok-4-0709",
+      "winner": "grok-4-0709",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m13-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-sonnet-4-6",
+          "duration": 12,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m13-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m13-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "grok-4-0709",
+          "duration": 15,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m13-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m13-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-0709",
+          "duration": 14,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m13-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m13-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "grok-4-0709",
+          "duration": 35,
+          "elapsed": 17,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m13-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m14",
+      "modelA": "claude-sonnet-4-6",
+      "modelB": "grok-4-1-fast-reasoning",
+      "winner": "claude-sonnet-4-6",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m14-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "claude-sonnet-4-6",
+          "duration": 10,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m14-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m14-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 101,
+          "elapsed": 32,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m14-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m14-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 10,
+          "elapsed": 7,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m14-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m14-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "claude-sonnet-4-6",
+          "duration": 404,
+          "elapsed": 116,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m14-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m14-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "claude-sonnet-4-6",
+          "duration": 507,
+          "elapsed": 171,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m14-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m15",
+      "modelA": "claude-sonnet-4-6",
+      "modelB": "o3",
+      "winner": "o3",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m15-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 316,
+          "elapsed": 97,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m15-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m15-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 318,
+          "elapsed": 114,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m15-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m15-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 322,
+          "elapsed": 114,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m15-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m16",
+      "modelA": "clowder-bot",
+      "modelB": "gemini-3-1-pro-preview",
+      "winner": "clowder-bot",
+      "modelAWins": 3,
+      "modelBWins": 0,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m16-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 14,
+          "elapsed": 14,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m16-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m16-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "clowder-bot",
+          "duration": 239,
+          "elapsed": 268,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m16-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m16-g3",
+          "gameNum": 3,
+          "aBotIndex": 0,
+          "bBotIndex": 2,
+          "winner": "clowder-bot",
+          "duration": 381,
+          "elapsed": 213,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m16-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m17",
+      "modelA": "clowder-bot",
+      "modelB": "gpt-5-3-codex",
+      "winner": "clowder-bot",
+      "modelAWins": 3,
+      "modelBWins": 0,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m17-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 14,
+          "elapsed": 16,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m17-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m17-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "clowder-bot",
+          "duration": 14,
+          "elapsed": 13,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m17-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m17-g3",
+          "gameNum": 3,
+          "aBotIndex": 0,
+          "bBotIndex": 2,
+          "winner": "clowder-bot",
+          "duration": 38,
+          "elapsed": 35,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m17-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m18",
+      "modelA": "clowder-bot",
+      "modelB": "gpt-5-4",
+      "winner": "clowder-bot",
+      "modelAWins": 3,
+      "modelBWins": 0,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m18-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 21,
+          "elapsed": 18,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m18-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m18-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "clowder-bot",
+          "duration": 444,
+          "elapsed": 197,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m18-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m18-g3",
+          "gameNum": 3,
+          "aBotIndex": 0,
+          "bBotIndex": 2,
+          "winner": "clowder-bot",
+          "duration": 27,
+          "elapsed": 25,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m18-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m19",
+      "modelA": "clowder-bot",
+      "modelB": "grok-4-0709",
+      "winner": "clowder-bot",
+      "modelAWins": 3,
+      "modelBWins": 0,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m19-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 32,
+          "elapsed": 25,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m19-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m19-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "clowder-bot",
+          "duration": 15,
+          "elapsed": 16,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m19-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m19-g3",
+          "gameNum": 3,
+          "aBotIndex": 0,
+          "bBotIndex": 2,
+          "winner": "clowder-bot",
+          "duration": 401,
+          "elapsed": 257,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m19-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m20",
+      "modelA": "clowder-bot",
+      "modelB": "grok-4-1-fast-reasoning",
+      "winner": "clowder-bot",
+      "modelAWins": 3,
+      "modelBWins": 0,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m20-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 15,
+          "elapsed": 14,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m20-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m20-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "clowder-bot",
+          "duration": 345,
+          "elapsed": 196,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m20-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m20-g3",
+          "gameNum": 3,
+          "aBotIndex": 0,
+          "bBotIndex": 2,
+          "winner": "clowder-bot",
+          "duration": 504,
+          "elapsed": 625,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m20-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m21",
+      "modelA": "clowder-bot",
+      "modelB": "o3",
+      "winner": "clowder-bot",
+      "modelAWins": 3,
+      "modelBWins": 0,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m21-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "clowder-bot",
+          "duration": 314,
+          "elapsed": 202,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m21-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m21-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "clowder-bot",
+          "duration": 405,
+          "elapsed": 146,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m21-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m21-g3",
+          "gameNum": 3,
+          "aBotIndex": 0,
+          "bBotIndex": 2,
+          "winner": "clowder-bot",
+          "duration": 384,
+          "elapsed": 411,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m21-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m22",
+      "modelA": "gemini-3-1-pro-preview",
+      "modelB": "gpt-5-3-codex",
+      "winner": "gemini-3-1-pro-preview",
+      "modelAWins": 3,
+      "modelBWins": 1,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m22-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 10,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m22-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m22-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 12,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m22-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m22-g3",
+          "gameNum": 3,
+          "aBotIndex": 0,
+          "bBotIndex": 2,
+          "winner": "gpt-5-3-codex",
+          "duration": 31,
+          "elapsed": 18,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m22-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m22-g4",
+          "gameNum": 4,
+          "aBotIndex": 1,
+          "bBotIndex": 2,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 399,
+          "elapsed": 122,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m22-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m23",
+      "modelA": "gemini-3-1-pro-preview",
+      "modelB": "gpt-5-4",
+      "winner": "gemini-3-1-pro-preview",
+      "modelAWins": 3,
+      "modelBWins": 1,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m23-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 11,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m23-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m23-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 286,
+          "elapsed": 93,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m23-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m23-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 365,
+          "elapsed": 118,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m23-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m23-g4",
+          "gameNum": 4,
+          "aBotIndex": 1,
+          "bBotIndex": 2,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 51,
+          "elapsed": 33,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m23-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m24",
+      "modelA": "gemini-3-1-pro-preview",
+      "modelB": "grok-4-0709",
+      "winner": "gemini-3-1-pro-preview",
+      "modelAWins": 3,
+      "modelBWins": 1,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m24-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "grok-4-0709",
+          "duration": 11,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m24-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m24-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 359,
+          "elapsed": 105,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m24-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m24-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 73,
+          "elapsed": 25,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m24-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m24-g4",
+          "gameNum": 4,
+          "aBotIndex": 1,
+          "bBotIndex": 2,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 24,
+          "elapsed": 14,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m24-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m25",
+      "modelA": "gemini-3-1-pro-preview",
+      "modelB": "grok-4-1-fast-reasoning",
+      "winner": "gemini-3-1-pro-preview",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m25-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 10,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m25-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m25-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 11,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m25-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m25-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 375,
+          "elapsed": 104,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m25-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m25-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 389,
+          "elapsed": 125,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m25-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m25-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 451,
+          "elapsed": 151,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m25-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m26",
+      "modelA": "gemini-3-1-pro-preview",
+      "modelB": "o3",
+      "winner": "gemini-3-1-pro-preview",
+      "modelAWins": 3,
+      "modelBWins": 2,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m26-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 363,
+          "elapsed": 143,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m26-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m26-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 333,
+          "elapsed": 107,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m26-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m26-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 336,
+          "elapsed": 123,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m26-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m26-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 421,
+          "elapsed": 134,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m26-g4.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m26-g5",
+          "gameNum": 5,
+          "aBotIndex": 2,
+          "bBotIndex": 2,
+          "winner": "gemini-3-1-pro-preview",
+          "duration": 491,
+          "elapsed": 178,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m26-g5.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m27",
+      "modelA": "gpt-5-3-codex",
+      "modelB": "gpt-5-4",
+      "winner": "gpt-5-4",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m27-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 12,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m27-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m27-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 19,
+          "elapsed": 12,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m27-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m27-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "gpt-5-3-codex",
+          "duration": 247,
+          "elapsed": 81,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m27-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m27-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "gpt-5-4",
+          "duration": 153,
+          "elapsed": 57,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m27-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m28",
+      "modelA": "gpt-5-3-codex",
+      "modelB": "grok-4-0709",
+      "winner": "grok-4-0709",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m28-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "grok-4-0709",
+          "duration": 13,
+          "elapsed": 10,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m28-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m28-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "grok-4-0709",
+          "duration": 11,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m28-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m28-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "grok-4-0709",
+          "duration": 354,
+          "elapsed": 106,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m28-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m29",
+      "modelA": "gpt-5-3-codex",
+      "modelB": "grok-4-1-fast-reasoning",
+      "winner": "grok-4-1-fast-reasoning",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m29-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 14,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m29-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m29-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "gpt-5-3-codex",
+          "duration": 14,
+          "elapsed": 9,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m29-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m29-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 361,
+          "elapsed": 104,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m29-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m29-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 34,
+          "elapsed": 16,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m29-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m30",
+      "modelA": "gpt-5-3-codex",
+      "modelB": "o3",
+      "winner": "o3",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m30-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 62,
+          "elapsed": 28,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m30-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m30-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 311,
+          "elapsed": 117,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m30-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m30-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 109,
+          "elapsed": 42,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m30-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m31",
+      "modelA": "gpt-5-4",
+      "modelB": "grok-4-0709",
+      "winner": "gpt-5-4",
+      "modelAWins": 3,
+      "modelBWins": 1,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m31-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": null,
+          "duration": 78,
+          "elapsed": 27,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m31-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m31-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "gpt-5-4",
+          "duration": 16,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m31-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m31-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 2,
+          "winner": "gpt-5-4",
+          "duration": 27,
+          "elapsed": 17,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m31-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m32",
+      "modelA": "gpt-5-4",
+      "modelB": "grok-4-1-fast-reasoning",
+      "winner": "gpt-5-4",
+      "modelAWins": 3,
+      "modelBWins": 1,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m32-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "gpt-5-4",
+          "duration": 13,
+          "elapsed": 12,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m32-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m32-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 304,
+          "elapsed": 94,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m32-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m32-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "gpt-5-4",
+          "duration": 395,
+          "elapsed": 112,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m32-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m32-g4",
+          "gameNum": 4,
+          "aBotIndex": 1,
+          "bBotIndex": 2,
+          "winner": "gpt-5-4",
+          "duration": 62,
+          "elapsed": 30,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m32-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m33",
+      "modelA": "gpt-5-4",
+      "modelB": "o3",
+      "winner": "o3",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m33-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 306,
+          "elapsed": 122,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m33-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m33-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 303,
+          "elapsed": 103,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m33-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m33-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 19,
+          "elapsed": 16,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m33-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m34",
+      "modelA": "grok-4-0709",
+      "modelB": "grok-4-1-fast-reasoning",
+      "winner": "grok-4-1-fast-reasoning",
+      "modelAWins": 1,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m34-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "grok-4-0709",
+          "duration": 11,
+          "elapsed": 8,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m34-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m34-g2",
+          "gameNum": 2,
+          "aBotIndex": 0,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 83,
+          "elapsed": 28,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m34-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m34-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 23,
+          "elapsed": 12,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m34-g3.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m34-g4",
+          "gameNum": 4,
+          "aBotIndex": 2,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 19,
+          "elapsed": 11,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m34-g4.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m35",
+      "modelA": "grok-4-0709",
+      "modelB": "o3",
+      "winner": "o3",
+      "modelAWins": 0,
+      "modelBWins": 3,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m35-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 313,
+          "elapsed": 97,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m35-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m35-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 46,
+          "elapsed": 18,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m35-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m35-g3",
+          "gameNum": 3,
+          "aBotIndex": 2,
+          "bBotIndex": 0,
+          "winner": "o3",
+          "duration": 303,
+          "elapsed": 106,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m35-g3.json"
+        }
+      ]
+    },
+    {
+      "matchupId": "82e8909dbdd2-m36",
+      "modelA": "grok-4-1-fast-reasoning",
+      "modelB": "o3",
+      "winner": "grok-4-1-fast-reasoning",
+      "modelAWins": 3,
+      "modelBWins": 1,
+      "games": [
+        {
+          "gameId": "82e8909dbdd2-m36-g1",
+          "gameNum": 1,
+          "aBotIndex": 0,
+          "bBotIndex": 0,
+          "winner": null,
+          "duration": 332,
+          "elapsed": 102,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m36-g1.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m36-g2",
+          "gameNum": 2,
+          "aBotIndex": 1,
+          "bBotIndex": 1,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 408,
+          "elapsed": 112,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m36-g2.json"
+        },
+        {
+          "gameId": "82e8909dbdd2-m36-g3",
+          "gameNum": 3,
+          "aBotIndex": 1,
+          "bBotIndex": 2,
+          "winner": "grok-4-1-fast-reasoning",
+          "duration": 374,
+          "elapsed": 96,
+          "error": null,
+          "replayFile": "82e8909dbdd2-m36-g3.json"
+        }
+      ]
+    }
+  ]
+}

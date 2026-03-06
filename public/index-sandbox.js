@@ -608,9 +608,15 @@ function initColorPicker(colors) {
 	}
 }
 
-(function(){
+var _signedInSetupDone = false;
+
+function game_window_setup(){
+	if (_signedInSetupDone) return;
+
 	var uid = _readCookie('user_id');
 	if (!uid || uid === 'anonymous') return;
+
+	_signedInSetupDone = true;
 
 	var section = document.querySelector('.game_start_section');
 	section.classList.add('signed_in_mode');
@@ -792,7 +798,6 @@ function initColorPicker(colors) {
 		}
 	});
 
-	// Restore saved mode and bot selection
 	if (active_mode !== 'bot') {
 		if (active_mode === 'friend') {
 			mp_socket.addEventListener('open', function(){
@@ -812,7 +817,9 @@ function initColorPicker(colors) {
 			mp_socket.send(JSON.stringify({ type: 'heartbeat', data: { type: 'heartbeat' } }));
 		}
 	}, 3000);
-})();
+}
+
+game_window_setup();
 
 
 // --- Canvas resize ---
