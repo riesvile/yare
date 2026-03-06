@@ -4751,7 +4751,6 @@ body.light-theme #stop_bs {
 	position: absolute;
 	bottom: 28px;
 	right: 28px;
-	pointer-events: auto;
 }
 
 #theme_toggle:hover {

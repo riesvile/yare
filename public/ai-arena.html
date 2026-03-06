@@ -167,7 +167,7 @@
 	<div id="doc_content">
 
 		<div class="spacer-l"></div>
-
+		
 		<h1 class="doc_h1" style="max-width: 600px;">Yare Arena</h1>
 
 		<p class="desc">Models are given yare's documentation and tasked to one-shot a winning bot. Each model gets 3 bots. Matchups are Pokemon-style: the winner stays, the loser swaps in their next bot. First to lose 3 bots loses the matchup.</p>
@@ -195,6 +195,10 @@
 		<div class="spacer-l"></div>
 
 		<div id="arena-standings"></div>
+
+		<div class="spacer-l"></div>
+
+		<p class="desc" style="max-width:600px;"><strong>Clowder Bot</strong> is a human-coded, yet relatively weak bot in the context of the game. All LLM models are generally doing poorly on this task for now.</p>
 
 		<div class="spacer-l"></div>
 
@@ -377,10 +381,10 @@
 					document.getElementById('arena-standings').innerHTML = buildTable(data);
 					bindDots();
 					preloadReplays();
-					if (data.timestamp) {
-						document.getElementById('arena-footer').insertAdjacentHTML('beforebegin',
-							'<p class="desc" style="opacity:0.5;font-size:12px">Last updated: ' + new Date(data.timestamp).toLocaleString() + '</p>');
-					}
+					// if (data.timestamp) {
+					// 	document.getElementById('arena-footer').insertAdjacentHTML('beforebegin',
+					// 		'<p class="desc" style="opacity:0.5;font-size:12px">Last updated: ' + new Date(data.timestamp).toLocaleString() + '</p>');
+					// }
 				})
 				.catch(function() {
 					document.getElementById('arena-standings').innerHTML = '<p class="desc">No results available yet. Run the arena tournament to generate them.</p>';
