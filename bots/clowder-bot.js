@@ -1005,9 +1005,9 @@ function mind(cat) {
         && enemiesInRange(cat.position, 200) === 0) {
         return;
     }
-    if (cat.energy < 5 && !isOnPod(cat.position)) {
+    if (cat.energy < cat.energy_capacity && !isOnPod(cat.position)) {
         const pod = nearestPod(cat.position);
-        if (dist(cat.position, pod) <= 80 && enemiesInRange(pod, 200) === 0) {
+        if (dist(cat.position, pod) <= 100 && enemiesInRange(pod, 200) === 0) {
             cat.move(pod);
             return;
         }
