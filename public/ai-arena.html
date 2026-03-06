@@ -148,7 +148,22 @@
 		}
 
 		@media (max-width: 960px) {
-			.arena-col-score { width: 36px; }
+			#arena-standings {
+				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
+			}
+			.arena-table {
+				table-layout: auto;
+				width: max-content;
+				min-width: 100%;
+			}
+			.arena-col-model {
+				min-width: 110px;
+				white-space: nowrap;
+			}
+			.arena-col-score {
+				min-width: 48px;
+			}
 		}
 
 		#mini-replay-tooltip {
@@ -202,7 +217,7 @@
 
 		<div class="spacer-l"></div>
 
-		<p class="desc" id="arena-footer">If you want to see specific models compared, mention them in our <a href="https://kraa.io/yare_io/community?leaf=308750993639959808">Community chat</a>.</p>
+		<p class="desc" id="arena-footer">If you want to see specific models compared, mention them in our <a href="https://discord.gg/GJskwRa6">Discord</a>.</p>
 
 		<script>
 		(function() {
