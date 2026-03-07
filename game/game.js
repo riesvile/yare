@@ -1078,6 +1078,7 @@ if (!isMainThread){
 					return;
 				const tpos = queue[id].move;
 				if(!tpos) return;
+				if (!Array.isArray(tpos) || tpos.length !== 2 || !Number.isFinite(tpos[0]) || !Number.isFinite(tpos[1])) return;
 				const pos = cat.position;
 				prev_position[id] = pos;
 

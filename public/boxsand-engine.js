@@ -1,6 +1,8 @@
 
 
 //globals
+// Capture real isFinite at load time (user code cannot override this reference)
+const _isFinite = Number.isFinite;
 
 var client = {};
 
@@ -138,7 +140,7 @@ class Cat {
         const tarX = Number(target[0]);
         const tarY = Number(target[1]);
         
-        if(!Number.isFinite(tarX) || !Number.isFinite(tarY)){
+        if(!_isFinite(tarX) || !_isFinite(tarY)){
             soft_error('.move() arguments must be finite numbers, got ['+ tarX + ", " + tarY + ']');
             return;
         }
@@ -465,6 +467,7 @@ function move_objects(){
 			if (cat.hp == 0)	return;
 			const tpos = queue[id].move;
 			if(!tpos) return;
+			if (!Array.isArray(tpos) || tpos.length !== 2 || !Number.isFinite(tpos[0]) || !Number.isFinite(tpos[1])) return;
 			const pos = cat.position;
 			prev_position[id] = pos;
 
