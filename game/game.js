@@ -1442,18 +1442,22 @@ if (!isMainThread){
 	
 	
 	
+	const KITTEN_START_X_OFFSETS = [10, 0, -10, 0];
+
 	function game_start(){
 	const start_num_cats = GAME_CONSTANTS.START_NUM_KITTENS;
 
 	for (let s = 1; s <= start_num_cats; s++){
 		let y = GAME_CONSTANTS.KITTEN_START_Y_OFFSET + (s - 1) * GAME_CONSTANTS.KITTEN_SPACING;
-		global[players['p1'] + s] = new Cat(players['p1'] + '_' + s, [-GAME_CONSTANTS.KITTEN_START_X, y], players['p1'], colors['player1']);
+		let xo = KITTEN_START_X_OFFSETS[(s - 1) % KITTEN_START_X_OFFSETS.length];
+		global[players['p1'] + s] = new Cat(players['p1'] + '_' + s, [-GAME_CONSTANTS.KITTEN_START_X + xo, y], players['p1'], colors['player1']);
 		top_s = s;
 	}
 
 	for (let q = 1; q <= start_num_cats; q++){
 		let y = GAME_CONSTANTS.KITTEN_START_Y_OFFSET + (q - 1) * GAME_CONSTANTS.KITTEN_SPACING;
-		global[players['p2'] + q] = new Cat(players['p2'] + '_' + q, [GAME_CONSTANTS.KITTEN_START_X, y], players['p2'], colors['player2']);
+		let xo = KITTEN_START_X_OFFSETS[(q - 1) % KITTEN_START_X_OFFSETS.length];
+		global[players['p2'] + q] = new Cat(players['p2'] + '_' + q, [GAME_CONSTANTS.KITTEN_START_X - xo, y], players['p2'], colors['player2']);
 	}
 
 	

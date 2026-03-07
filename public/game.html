@@ -960,15 +960,30 @@ var basic_code =
 			players['player2'] = data.players[1];
 			
 			var pre_ids = [];
-			var start_num = 9;
-			for (var si = 1; si <= start_num; si++) {
-				var sy = -100 + (si - 1) * 25;
-				var p1_id = pla1 + '_' + si;
-				cats[p1_id] = new Cat(p1_id, [-200, sy], 10, pla1, colors['color1'], 1);
-				pre_ids.push(p1_id);
-				var p2_id = pla2 + '_' + si;
-				cats[p2_id] = new Cat(p2_id, [200, sy], 10, pla2, colors['color2'], 1);
-				pre_ids.push(p2_id);
+			var x_offsets = [10, 0, -10, 0];
+			if (data.initial_cats && data.initial_cats.p1 && data.initial_cats.p2) {
+				for (var i = 0; i < data.initial_cats.p1.length; i++) {
+					var c1 = data.initial_cats.p1[i];
+					cats[c1.id] = new Cat(c1.id, c1.position, 10, pla1, colors['color1'], 1);
+					pre_ids.push(c1.id);
+				}
+				for (var j = 0; j < data.initial_cats.p2.length; j++) {
+					var c2 = data.initial_cats.p2[j];
+					cats[c2.id] = new Cat(c2.id, c2.position, 10, pla2, colors['color2'], 1);
+					pre_ids.push(c2.id);
+				}
+			} else {
+				var start_num = 9;
+				for (var si = 1; si <= start_num; si++) {
+					var sy = -100 + (si - 1) * 25;
+					var xo = x_offsets[(si - 1) % x_offsets.length];
+					var p1_id = pla1 + '_' + si;
+					cats[p1_id] = new Cat(p1_id, [-200 + xo, sy], 10, pla1, colors['color1'], 1);
+					pre_ids.push(p1_id);
+					var p2_id = pla2 + '_' + si;
+					cats[p2_id] = new Cat(p2_id, [200 - xo, sy], 10, pla2, colors['color2'], 1);
+					pre_ids.push(p2_id);
+				}
 			}
 			all_cats = pre_ids;
 			render_state();

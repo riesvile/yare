@@ -166,6 +166,17 @@ function isOnPod(pos) {
     return false;
 }
 
+function nearestSafePod(pos, safeRange) {
+    const range = safeRange ?? 200;
+    let best = null, bestD = Infinity;
+    for (const p of pods) {
+        if (enemiesInRange(p, range) > 0) continue;
+        const d = distSq(pos, p);
+        if (d < bestD) { bestD = d; best = p; }
+    }
+    return best;
+}
+
 function isOutsideCircle(pos) {
     return dist(pos, [0, 0]) > death_circle;
 }
@@ -967,6 +978,14 @@ function mind(cat) {
             const nearest = closestTo(cat.position, enemies);
             if (nearest && dist(cat.position, nearest.position) < 200 + safeBuffer) {
                 cat.move(away(cat.position, nearest.position, 30));
+            } else if (cat.energy < cat.energy_capacity && !isOnPod(cat.position)) {
+                // Nothing better to do — charge in a safe pod while waiting
+                const pod = nearestSafePod(cat.position);
+                const lowEnergy = cat.energy < 5 || cat.energy < cat.energy_capacity * 0.3;
+                const closeToPod = pod && dist(cat.position, pod) <= 120;
+                if (lowEnergy && closeToPod) {
+                    cat.move(pod);
+                }
             }
             return;
         }
@@ -1001,15 +1020,28 @@ function mind(cat) {
     }
 
     // ── Phase 4: POD CHARGING (all cats, when safe) ──
+    // General rule: low energy → prioritize charging over role behavior
     if (isOnPod(cat.position) && cat.energy < cat.energy_capacity
         && enemiesInRange(cat.position, 200) === 0) {
         return;
     }
     if (cat.energy < cat.energy_capacity && !isOnPod(cat.position)) {
-        const pod = nearestPod(cat.position);
-        if (dist(cat.position, pod) <= 100 && enemiesInRange(pod, 200) === 0) {
-            cat.move(pod);
-            return;
+        let pod = nearestSafePod(cat.position);
+        if (!pod && (cat.energy < 3 || cat.energy < cat.energy_capacity * 0.2)) {
+            pod = nearestSafePod(cat.position, 150);
+        }
+        if (pod) {
+            const lowEnergy = cat.energy < 5 || cat.energy < cat.energy_capacity * 0.3;
+            if (lowEnergy) {
+                // Low energy: always go charge, no distance limit (overrides connectors, etc.)
+                cat.move(pod);
+                return;
+            }
+            const d = dist(cat.position, pod);
+            if (d <= 100) {
+                cat.move(pod);
+                return;
+            }
         }
     }
 

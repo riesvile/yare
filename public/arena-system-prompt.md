@@ -79,7 +79,7 @@ Set a custom label (string, max 60 chars).
 - Barricade positions: `[0, -200]`, `[0, 200]`, `[370, 0]`, `[-370, 0]`
 - Pod positions: `[-110, -300]`, `[110, -300]`, `[-260, 320]`, `[260, 320]`, `[-500, 84]`, `[500, 84]`
 - Player 1 cats start near x = -200, Player 2 cats start near x = 200
-- Cat y-positions are spaced 25 units apart, centered around y = 0
+- Cat positions are staggered (not in a straight line): y spaced 25 units apart, x varies by ±10
 
 ## Distance calculations
 

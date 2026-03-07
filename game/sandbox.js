@@ -99,8 +99,8 @@ class Cat {
         const tarX = Number(target[0]);
         const tarY = Number(target[1]);
         
-        if(isNaN(tarX) || isNaN(tarY)){
-            soft_error('.move() arguments must be numbers, got ['+ tarX + ", " + tarY + ']');
+        if(!Number.isFinite(tarX) || !Number.isFinite(tarY)){
+            soft_error('.move() arguments must be finite numbers, got ['+ tarX + ", " + tarY + ']');
             return;
         }
 
