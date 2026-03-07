@@ -1408,8 +1408,10 @@ wss.on("connection", (ws) => {
 		try { message = JSON.parse(msg); } catch (e) { return; }
 		switch(message.type){
 			case "join": {
-				let session = await Session.find({session_id: message.data.session_id});
-				if (session.length === 0 && message.data.user_id != 'anonymous') return;
+				if(message.data.user_id !== 'anonymous') {
+					const session = await Session.find({session_id: message.data.session_id});
+					if (session.length === 0 || session[0].user_id !== message.data.user_id) return;
+				}
 				userSocketMap[message.data.user_id] = ws;
 				ws._yare_user_id = message.data.user_id;
 				newGame(message.data, ws);
