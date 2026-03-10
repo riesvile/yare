@@ -822,6 +822,10 @@ app.post('/claim-champion-bot', async (req, res) => {
 		await newChamp.save();
 
 		await Game.updateOne({ game_id }, { champion_claimed: true });
+		await Game.updateMany(
+			{ champion_eligible: true },
+			{ $set: { champion_eligible: false } }
+		);
 
 		logger.info('Champion bot replaced: %s by %s (game %s)', bot_name, user_id, game_id);
 		res.status(200).send({ success: true, bot_name: bot_name });

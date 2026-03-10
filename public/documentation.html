@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <title>yare.io – Documentation</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -117,7 +117,7 @@
 
 		<div class="spacer-l"></div>
 
-		
+
 		<img src="asset/game_map.png" alt="Game map" style="width: 100%; max-width: 700px; border-radius: 12px; margin-top: 0px;">
 
 		<div class="spacer-l"></div>
@@ -446,7 +446,7 @@ position = position.map(c => +c.toFixed(5));</pre>
 <pre>function distance(a, b) {
     let dx = a[0] - b[0];
     let dy = a[1] - b[1];
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.hypot(dx, dy);
 }
 
 function closest_enemy(cat) {

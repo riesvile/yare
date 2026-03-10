@@ -64,6 +64,7 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		gameWinner = players['p1'];
 	} else {
 		end_winner = 'No one';
+		await Game.updateOne({game_id: workerData[0]}, {active: 0, winner: ''}, {upsert: true});
 		cancel_game();
 		return;
 	}
@@ -91,7 +92,7 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 		Bucket: config.s3.bucket,
 		Key: workerData[0] + '.json',
 	}).promise()
-	
+
 
 	s3client.putObject({
 		Body: compressed,
@@ -118,15 +119,15 @@ async function end_game(was_p1 = 0, was_p2 = 0){
 					gameWinner, winnerRating, newWinnerRating,
 					gameLoser, loserRating, newLoserRating);
 
-				if (result[0]['ranked'] == 0) {
-					await Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true});
-					setTimeout(() => process.exit(0), 1000);
-				} else if (result[0]['ranked'] == 1){
-					await Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true});
+				await Game.updateOne({game_id: workerData[0]}, {active: 0, winner: gameWinner}, {upsert: true});
+
+				if (result[0]['ranked'] === 1) {
 					await User.updateOne({user_id: gameWinner}, {$set: {rating: newWinnerRating}, $inc: {games_count: 1}}, {upsert: true});
 					await User.updateOne({user_id: gameLoser}, {$set: {rating: newLoserRating}, $inc: {games_count: 1}}, {upsert: true});
 					setTimeout(() => process.exit(0), 1000);
 				}
+
+				setTimeout(() => process.exit(0), 1000);
 			})
 			.catch((error) => {
 				logger.error(error);
@@ -222,14 +223,14 @@ parentPort.on("message", message => {
 	    }
 		init_data.players[0] = players['p1'];
 		init_data.players[1] = players['p2'];
-		
+
 		init_data.colors[0] = colors['player1'];
 		init_data.colors[1] = colors['player2'];
-		
+
 		if (players_update['p1'] != 'old'){
 			init_data.players[0] = players_update['p1'];
 		}
-		
+
 		let start_num = 9;
 		let x_offsets = [10, 0, -10, 0];
 		init_data.initial_cats = { p1: [], p2: [] };
@@ -239,7 +240,7 @@ parentPort.on("message", message => {
 			init_data.initial_cats.p1.push({ id: init_data.players[0] + '_' + si, position: [-200 + xo, sy] });
 			init_data.initial_cats.p2.push({ id: init_data.players[1] + '_' + si, position: [200 - xo, sy] });
 		}
-		
+
 		parentPort.postMessage({data: JSON.stringify({meta: "initiate", data: init_data}), game_id: workerData[0], meta: 'initiate', client: message.client});
   } else if (message.data == "player code"){
 	  if (message.pl_num == "player1"){
@@ -263,16 +264,16 @@ parentPort.on("message", message => {
 							logger.info('%s is resigning', message.pl_id);
 							end_game(0, 1);
 						}
-		  			} else { 
+		  			} else {
 		  				parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
 		  			}
 				}
 			})
 			.catch((error) => {
 				logger.error(error);
-			}) 
+			})
 		  }
-		  
+
 	  } else if (message.pl_num == "player2"){
 		  if (message.session_id == player2_session || message.pl_id == 'anonymous'){
 			  player2_code = message.pl_code;
@@ -294,14 +295,14 @@ parentPort.on("message", message => {
 						  logger.info('%s is resigning', message.pl_id);
 						  end_game(1, 0);
 					  }
-					} else { 
+					} else {
 						parentPort.postMessage({data: 'session_id mismatch', meta: 'test'});
 					}
 			  	}
 			})
 			.catch((error) => {
 				logger.error(error);
-			}) 
+			})
 		  }
 	  }
   } else if (message.data == "start world"){
@@ -344,17 +345,17 @@ parentPort.on("message", message => {
 						.catch((error) => {
 							logger.error(error, 'Failed to update ratings');
 						});
-					
+
 				})
 				.catch((error) => {
 					logger.error(error);
 				})
-			
-				
+
+
 		})
   		.catch((error) => {
   			logger.error(error);
-  		}) 
+  		})
   } else if (message.data == "update anonymous"){
   	  players_update['p1'] = message.player1;
   } else if (message.data == "channel"){
@@ -379,7 +380,7 @@ async function clean_error(error, sourcemap){
 		return adjustUserJsLines(String(error));
 	}
 	let message = "" + error;
-	
+
 	let stack = error.stack.split("\n");
 
 	stack = stack.filter(l => /~sandbox/.test(l));
@@ -394,7 +395,7 @@ async function clean_error(error, sourcemap){
 			let textSourceMap = Buffer.from(base64SourceMap, 'base64').toString('ascii');
 
 			let rawSourceMap = JSON.parse(textSourceMap)
-	
+
 			let originalPosition = await SourceMapConsumer.with(rawSourceMap, null, consumer => {
 				return consumer.originalPositionFor({
 					line: line,
@@ -406,7 +407,7 @@ async function clean_error(error, sourcemap){
 	} else {
 		stack = stack.map(l => adjustUserJsLines(l));
 	}
-	
+
 	message += "\n" + stack.join("\n");
 
 	return message;
@@ -425,12 +426,12 @@ async function handle_error(error, player, code){
 async function user_code(){
 	if (workerData[1] == 'tutorial'){
 		const helper_count = (player1_code.match(/my_cats/g) || []).length;
-		
+
 		if (helper_count > 0){
 			tutorial_flag1 = 1;
 		}
 	}
-	
+
 	all_commands = {};
 
 	//
@@ -442,7 +443,7 @@ async function user_code(){
 	//
 	// first player
 	//
-	
+
 	let player = players['p1'];
 	try {
 		let run_err = null;
@@ -480,7 +481,7 @@ async function user_code(){
 	// second player
 	//
 
-	
+
 	player = players['p2'];
 	try {
 		let run_err = null;
@@ -743,23 +744,23 @@ if (!isMainThread){
 			this.color = color;
 			this.mark = '';
 			this.range = min_beam;
-		
+
 			this.sight = {
 				friends: [],
 				enemies: [],
 			}
 			this.qcollisions = [];
-		
+
 		this.hp = GAME_CONSTANTS.KITTEN_HP;
 		this.move_speed = GAME_CONSTANTS.KITTEN_MOVE_SPEED;
 		this.player_id = player;
-		
+
 			living_cats.push(this);
 			birth_queue.push(this);
 		}
 	}
 
-	
+
 
 	function initiate_world(ws){
 		ws.send(JSON.stringify(init_data));
@@ -776,7 +777,7 @@ if (!isMainThread){
 	function fast_dist_leq(item1, item2, range){
 		return ((item2[0]-item1[0])**2) + ((item2[1]-item1[1])**2) <= range**2;
 	}
-	
+
 	function fast_dist_simp(item1, item2, range){
 		return ((Math.abs(item1[0] - item2[0]) <= range) && (Math.abs(item1[1] - item2[1]) <= range))
 	}
@@ -810,7 +811,7 @@ if (!isMainThread){
 		return +number.toFixed(places);
 	}
 
-	
+
 	function intersection(x0, y0, r0, x1, y1, r1) {
         let a, dx, dy, d, h, rx, ry;
         let x2, y2;
@@ -836,7 +837,7 @@ if (!isMainThread){
 
         /* 'point 2' is the point where the line through the circle
          * intersection points crosses the line between the circle
-         * centers.  
+         * centers.
          */
 
         /* Determine the distance from point 0 to point 2. */
@@ -865,7 +866,7 @@ if (!isMainThread){
 
         return [[xi, yi], [xi_prime, yi_prime]];
     }
-	
+
 	function is_in_sight(item1, item2, range = GAME_CONSTANTS.SIGHT_RANGE){
 		return fast_dist_leq(item1.position, item2.position, range);
 	}
@@ -934,7 +935,7 @@ if (!isMainThread){
 				hist[[xbin, ybin]] = [[xbin, ybin, -1]];
 			}
 			hist[[xbin, ybin]].push(i);
-			
+
 		}
 
 		// histogram, handle sights for all
@@ -994,9 +995,9 @@ if (!isMainThread){
 				enemies_pewable: [],
 		  }
 		  living_cats[h].qcollisions = [];
-			
+
 		}
-	
+
 	//cats root (it's longer than you think)
 	for (let i = 0; i < living_length; i++){
 		for (let j = i+1; j < living_length; j++){
@@ -1019,7 +1020,7 @@ if (!isMainThread){
 							living_cats[i].sight.enemies.push(living_cats[j].id);
 							living_cats[j].sight.enemies.push(living_cats[i].id);
 						}
-						
+
 					} else if (living_cats[j].player_id == players['p2']){
 						if (living_cats[i].player_id == players['p2']){
 							//is friend
@@ -1033,9 +1034,9 @@ if (!isMainThread){
 					}
 				}
 			}
-		
+
 		}
-		
+
 	}
 
 
@@ -1090,7 +1091,7 @@ if (!isMainThread){
 						progress_tut(3);
 					}
 				}
-				
+
 				let incr = sub(tpos, pos);
 				let len_sq = norm_sq(incr);
 				// work with data only if there is movement
@@ -1108,10 +1109,10 @@ if (!isMainThread){
 							let inter_coor = intersection(pos[0], pos[1], base_speed,
 															object_position[0], object_position[1], BARRICADE_COLLISION_RADIUS);
 							if (inter_coor == false) continue;
-							
+
 							let quick_dist1 = dist_sq(inter_coor[0], tpos);
 							let quick_dist2 = dist_sq(inter_coor[1], tpos);
-							
+
 							let pick_first = quick_dist1 < quick_dist2 || Math.abs(quick_dist1 - quick_dist2) <= 5;
 							cat.position = inter_coor[pick_first ? 0 : 1];
 						}
@@ -1125,7 +1126,7 @@ if (!isMainThread){
 
 	function pew_objects(){
 		let pew_apply = [];
-		
+
 		for(let cat of Object.values(cat_lookup)){
 			cat.last_pewed = '';
 		}
@@ -1139,7 +1140,7 @@ if (!isMainThread){
 
 				if(!to_id){
 					return;
-				} 
+				}
 				if(!from_id || !player_owns_cat(from_id, player) || !to_id){
 					logger.info("Invalid pew: player %s tried %s.pew(%s)", player, from_id, to_id);
 					return;
@@ -1148,7 +1149,7 @@ if (!isMainThread){
 				if(last_beam[from_id] != undefined)
 					return;
 				last_beam[from_id] = to_id;
-				
+
 				const from_obj = cat_lookup[from_id];
 				const to_obj = cat_lookup[to_id];
 
@@ -1159,7 +1160,7 @@ if (!isMainThread){
 				if (from_id == to_id){
 					return;
 				}
-				
+
 				let target_close = fast_dist_leq(from_obj.position, to_obj.position, from_obj.range);
 				if(! target_close){
 					return;
@@ -1201,7 +1202,7 @@ if (!isMainThread){
 		for (let i = pew_apply.length - 1; i >= 0; i--){
 			let target = pew_apply[i][0];
 			let amount = pew_apply[i][1];
-			
+
 			target.energy += amount;
 
 			if(!applied_to[target.id]){
@@ -1223,16 +1224,16 @@ if (!isMainThread){
 	function process_stuff(){
 	let birthlings = birth_queue.length;
 	for (let i = birthlings - 1; i >= 0; i--){
-		let spt = birth_queue[i];	
+		let spt = birth_queue[i];
 			cat_lookup[spt.id] = spt;
 			birth_queue.splice(i, 1);
 		}
-	
-	
+
+
 		//
 		// shout and mark
 		//
-		
+
 		for(let player in all_commands) {
 			let commands = all_commands[player].cat;
 			for(let cat in commands) {
@@ -1245,7 +1246,7 @@ if (!isMainThread){
 		//
 		// objects pew
 		//
-		
+
 		pew_objects();
 
 		//
@@ -1285,7 +1286,7 @@ if (!isMainThread){
 			}
 		}
 
-		
+
 		for (let i = death_queue.length - 1; i >= 0; i--){
 			if (workerData[1] == 'tutorial'){
 				if (death_queue[i].id == 'easy-bot_2')
@@ -1294,10 +1295,10 @@ if (!isMainThread){
 			death_queue[i].hp = 0;
 			death_queue.splice(i, 1);
 		}
-		
-		
-		
-		
+
+
+
+
 		get_sight_fast();
 	}
 
@@ -1321,7 +1322,7 @@ if (!isMainThread){
 		if (p1_living == 0) end_game(0, 1);
 		if (p2_living == 0) end_game(1, 0);
 	}
-			
+
 
 	async function update_state(){
 		if (waiting_time >= 0) waiting_time--;
@@ -1333,7 +1334,7 @@ if (!isMainThread){
 		}
 
 		ticks['now'] = game_duration;
-			
+
 			render_data3 = {
 				't': 0,
 				'pl1': players['p1'],
@@ -1347,10 +1348,10 @@ if (!isMainThread){
 				'end': end_winner,
 				'champion_eligible': end_champion_eligible
 			};
-			
-			
+
+
 			if (workerData[1] == 'tutorial'){
-				
+
 				render_data3 = {
 					't': 0,
 					'pl1': players['p1'],
@@ -1364,7 +1365,7 @@ if (!isMainThread){
 				'tutorial': [],
 				'end': end_winner
 				};
-				
+
 				if (game_duration == 600){
 					if (tutorial_phase[0] == 0){
 						end_game(0, 0);
@@ -1407,19 +1408,19 @@ if (!isMainThread){
 					end_game(0, 0);
 				}
 			}
-			
+
 		if(game_duration > 0) {
 			process_stuff();
 		}
 		update_vm_sandbox();
-			
+
 			user_error1 = [];
 			user_error2 = [];
-		
+
 			if (workerData[1] == 'tutorial'){
 				render_data3.tutorial.push(tutorial_phase);
 			}
-		
+
 			render_data3.t = game_duration;
 
 			let user_data = {};
@@ -1438,7 +1439,10 @@ if (!isMainThread){
 			await user_code();
 			let update_total = elapsed_ms_from(update_t0);
 
-			if (update_total > 1000) cancel_game();
+			if (update_total > 1000) {
+				logger.error('Cancelling game as it took >1s for one tick');
+				cancel_game();
+			}
 	}
 	
 	
