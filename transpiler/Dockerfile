@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:lts-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -6,8 +6,8 @@ WORKDIR /usr/src/app
 # Install python & metapensiero.pj for transpiling from python
 RUN apk add --no-cache python3 python3-dev py3-pip gcc g++ git && \
     git clone https://github.com/azazel75/metapensiero.pj && \
-    python3 -m pip install -r metapensiero.pj/requirements.txt && \
-    python3 -m pip install -e metapensiero.pj
+    python3 -m pip install --break-system-packages -r metapensiero.pj/requirements.txt && \
+    python3 -m pip install --break-system-packages -e metapensiero.pj
 
 # Install app dependencies
 COPY package*.json ./

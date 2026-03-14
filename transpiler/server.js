@@ -1,7 +1,7 @@
 const fs = require('fs');
-const express = require('express')
-const pino = require('pino')
-const app = express()
+const express = require('express');
+const pino = require('pino');
+const app = express();
 
 const logger = pino({
   transport: {

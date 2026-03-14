@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 app.set('trust proxy', true);
-const fetch = require('node-fetch');
 const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });

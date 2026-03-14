@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:lts
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -15,4 +15,4 @@ RUN chown -R node:node /usr/src/app
 USER node
 
 EXPOSE 5000
-CMD [ "node", "--enable-source-maps", "game/game-server.js" ]
+CMD [ "node", "--enable-source-maps", "--no-node-snapshot", "game/game-server.js" ]
