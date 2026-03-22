@@ -821,7 +821,6 @@ function game_window_setup(){
 
 game_window_setup();
 
-
 // --- Canvas resize ---
 
 window.onresize = function(){

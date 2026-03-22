@@ -291,7 +291,7 @@ function start_game(e){
 	if (selected_versus == 'ps_friend') game_type = 'challenge';
 	if (game_type == 'challenge'){
 		wait_challenge_view();
-	} else if (["easy-bot", "muffin-bot", "cleo-bot", "clowder-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot", "andersgee-bot"].includes(game_type)){
+	} else if (["easy-bot", "muffin-bot", "cleo-bot", "clowder-bot", "will-bot", "boom-bot", "hard-bot", "lego-bot", "andersgee-bot"].includes(game_type) || game_type.startsWith('arena-')){
 		//document.getElementById("game_selections").classList.add("hidden")
 		//document.getElementById("choose_playstyle_block").classList.add("hidden")
 		//document.getElementById("choose_color_block").classList.add("hidden")

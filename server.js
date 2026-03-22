@@ -438,6 +438,15 @@ function champion_bot_game(data){
 	});
 }
 
+function arena_bot_game(data, botName){
+	return bot_game(data, {
+		id: botName,
+		session_id: 'bot',
+		rating: 900,
+		color: 'color2'
+	});
+}
+
 function friend_challenge(data){
 	const chosen_server = pick_server('real');
 	const color_code = get_color(data.user_color);
@@ -512,6 +521,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(mongoSanitize());
+
+app.post('/arena-play', (req, res) => {
+	if (check_limiter(req.ip)){
+		res.status(429).json({ error: 'rate limited' });
+		return;
+	}
+	const botName = req.body.bot;
+	if (!botName || typeof botName !== 'string' || !botName.startsWith('arena-')) {
+		res.status(400).json({ error: 'invalid bot' });
+		return;
+	}
+	const data = {
+		user_id: req.body.user_id || 'anonymous',
+		session_id: req.body.session_id || '',
+		user_color: req.body.user_color || 'default'
+	};
+	try {
+		const result = arena_bot_game(data, botName);
+		res.json({ server: result.server, game_id: result.g_id });
+	} catch(e) {
+		logger.error(e, 'arena-play error');
+		res.status(500).json({ error: 'failed to create game' });
+	}
+});
 
 app.post('/check-status/:game_id', (req, res) => {
 	if (check_limiter(req.ip)){
@@ -1399,7 +1432,18 @@ async function newGame(data, socket){
 			break;
 		}
 		default:
-			response = { meta: "unknown request type" };
+			if (typeof data.type === 'string' && data.type.startsWith('arena-')) {
+				response = arena_bot_game(data, data.type);
+				socket.send(JSON.stringify({
+					type: "match-found",
+					data: {
+						server: response.server,
+						game_id: response.g_id
+					}
+				}));
+			} else {
+				response = { meta: "unknown request type" };
+			}
 			break;
 	}
 }

@@ -191,6 +191,8 @@ function setBotCode(name, sand) {
 		sand.setPlayerCode(botCodes['clowder-bot']);
 	} else if (name == 'champion-bot' && botCodes['champion-bot']){
 		sand.setPlayerCode(botCodes['champion-bot']);
+	} else if (name.startsWith('arena-') && botCodes[name]){
+		sand.setPlayerCode(botCodes[name]);
 	}
 }
 

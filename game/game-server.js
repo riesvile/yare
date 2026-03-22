@@ -93,7 +93,7 @@ function create_worker(game_id, game_type) {
 }
 
 function is_bot(id) {
-	return id == "muffin-bot" || id == "cleo-bot" || id == "clowder-bot" || id == "qual-bot";
+	return id == "muffin-bot" || id == "cleo-bot" || id == "clowder-bot" || id == "qual-bot" || (typeof id === 'string' && id.startsWith('arena-'));
 }
 
 function init_game(game_id, pla1, pla2, init_status = 1, server_id = this_server, pla1_color = 'color1', pla2_color = 'color2', game_type = 'tutorial'){
