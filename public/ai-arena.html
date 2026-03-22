@@ -9,10 +9,331 @@
 	<link rel="manifest" href="/site.webmanifest">
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 	<link rel="stylesheet" href="./style.css">
-	<link rel="stylesheet" href="./documentation.css">
 	<link rel="stylesheet" href="./style-mobile.css">
 	<script src="./anime.min.js"></script>
 	<style>
+
+		html { scroll-behavior: smooth; }
+		body { overflow-x: hidden; }
+
+		/* ---- Header ---- */
+
+		#arena-label {
+			position: fixed;
+			top: 16px;
+			left: 200px;
+			font-size: 13px;
+			font-weight: 400;
+			line-height: 44px;
+			color: rgba(242, 246, 250, 0.5);
+			z-index: 2001;
+			pointer-events: none;
+		}
+
+		#link_community,
+		#link_howtoplay,
+		#login,
+		#new_account {
+			display: none !important;
+		}
+
+		/* ---- Section navigation ---- */
+
+		#arena-nav {
+			position: fixed;
+			left: 40px;
+			top: 120px;
+			z-index: 100;
+		}
+
+		.arena-nav-link {
+			display: block;
+			font-size: 14px;
+			font-weight: 400;
+			color: rgba(242, 246, 250, 0.28);
+			text-decoration: none;
+			line-height: 24px;
+			transition: color 0.2s;
+		}
+
+		.arena-nav-link:hover {
+			color: rgba(242, 246, 250, 0.5);
+		}
+
+		.arena-nav-link.active {
+			color: rgba(242, 246, 250, 0.92);
+		}
+
+		/* ---- Content ---- */
+
+		.arena-content {
+			padding: 120px 200px 0;
+		}
+
+		/* ---- Headline ---- */
+
+		.arena-headline {
+			font-size: 38px;
+			font-weight: 400;
+			line-height: 44px;
+			color: rgba(242, 246, 250, 1);
+			max-width: 460px;
+			margin-bottom: 36px;
+		}
+
+		/* ---- Parts ---- */
+
+		.arena-part p {
+			font-size: 24px;
+			font-weight: 400;
+			line-height: 32px;
+			margin-bottom: 32px;
+			max-width: 460px;
+			color: rgba(242, 246, 250, 0.48);
+			transition: color 0.5s ease;
+		}
+
+		.arena-part:last-child p:last-child {
+			margin-bottom: 0;
+		}
+
+		.arena-part.active p {
+			color: rgba(242, 246, 250, 1);
+		}
+
+		.arena-part a.arena-cta {
+			color: rgba(218, 183, 96, 0.48);
+			text-decoration: none;
+			transition: color 0.5s ease;
+		}
+
+		.arena-part.active a.arena-cta {
+			color: rgba(218, 183, 96, 1);
+		}
+
+		.arena-part.active a.arena-cta:hover {
+			text-decoration: underline;
+		}
+
+		/* ---- Map ---- */
+
+		.arena-map-wrap {
+			width: 100%;
+			overflow: hidden;
+			margin: 48px 0;
+		}
+
+		.arena-map {
+			width: 1200px;
+			height: 800px;
+		}
+
+		.arena-map pre {
+			font-family: 'Monaco', 'Lucida Console', 'Courier New', monospace;
+			font-size: 10px;
+			line-height: 11.43px;
+			letter-spacing: 6px;
+			color: rgba(242, 246, 250, 0.12);
+			margin: 0;
+			white-space: pre;
+			overflow: hidden;
+			width: 1200px;
+			height: 800px;
+			transform-origin: top left;
+		}
+
+		.arena-map-bg {
+			color: rgba(242, 246, 250, 0.07);
+		}
+
+		.arena-map-barrier {
+			color: rgba(242, 246, 250, 0.38);
+		}
+
+		.arena-map-pod {
+			color: rgba(242, 246, 250, 0.32);
+		}
+
+		.arena-map-unit {
+			color: rgba(242, 246, 250, 0.98);
+		}
+
+		.arena-map-beam {
+			color: rgba(242, 246, 250, 0.38);
+		}
+
+		.arena-map-beam-tip {
+			color: rgba(242, 246, 250, 0.58);
+		}
+
+		.arena-legend {
+			display: flex;
+			gap: 24px;
+			font-size: 14px;
+			font-weight: 400;
+			color: rgba(242, 246, 250, 0.32);
+		}
+
+		.arena-legend span {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.arena-map-legend {
+			margin-top: 16px;
+			margin-bottom: 64px;
+		}
+
+		/* ---- Illustrations ---- */
+
+		.arena-illustrations {
+			display: flex;
+			gap: 24px;
+			margin: 48px 0 80px;
+		}
+
+		.arena-illustration {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.arena-illustration-label {
+			font-size: 14px;
+			font-weight: 400;
+			color: rgba(242, 246, 250, 0.32);
+			margin-top: 12px;
+		}
+
+		.arena-aside-link {
+			display: inline-block;
+			font-size: 13px;
+			font-weight: 400;
+			color: rgba(242, 246, 250, 0.35);
+			border: 1px solid rgba(242, 246, 250, 0.15);
+			border-radius: 5px;
+			padding: 6px 14px;
+			text-decoration: none;
+			transition: color 0.2s, border-color 0.2s;
+			margin-top: 16px;
+		}
+
+		.arena-aside-link:hover {
+			color: rgba(242, 246, 250, 0.6);
+			border-color: rgba(242, 246, 250, 0.3);
+		}
+
+		.arena-code-block {
+			background: rgba(242, 246, 250, 0.10);
+			border: none;
+			border-radius: 8px;
+			padding: 24px;
+			overflow-x: auto;
+		}
+
+		.arena-code-block pre {
+			font-family: 'Monaco', 'Lucida Console', 'Courier New', monospace;
+			font-size: 13px;
+			line-height: 20px;
+			margin: 0;
+			color: rgba(242, 246, 250, 0.55);
+		}
+
+		.arena-code-block .kw { color: rgba(198, 146, 233, 0.85); }
+		.arena-code-block .fn { color: rgba(130, 186, 232, 0.85); }
+		.arena-code-block .str { color: rgba(195, 218, 144, 0.85); }
+		.arena-code-block .num { color: rgba(240, 183, 104, 0.85); }
+		.arena-code-block .cm { color: rgba(242, 246, 250, 0.25); }
+		.arena-code-block .op { color: rgba(242, 246, 250, 0.5); }
+		.arena-code-block .prop { color: rgba(242, 246, 250, 0.72); }
+
+		.arena-props-table {
+			background: transparent;
+			border: 1px solid rgba(242, 246, 250, 0.20);
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		.arena-props-table table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.arena-props-table td {
+			padding: 10px 20px;
+			font-size: 13px;
+			line-height: 20px;
+			border-bottom: 1px solid rgba(242, 246, 250, 0.06);
+			color: rgba(242, 246, 250, 0.55);
+		}
+
+		.arena-props-table tr:last-child td {
+			border-bottom: none;
+		}
+
+		.arena-props-table td:last-child {
+			text-align: right;
+			color: rgba(242, 246, 250, 0.3);
+			font-family: 'Monaco', 'Lucida Console', 'Courier New', monospace;
+			font-size: 12px;
+		}
+
+		/* ---- Mobile ---- */
+
+		@media (max-width: 768px) {
+			#arena-nav { display: none; }
+			#arena-label { left: 24px; }
+			.arena-content { padding: 80px 24px 0; }
+			.arena-headline { font-size: 28px; line-height: 34px; }
+			.arena-map {
+				position: relative;
+				left: 50%;
+				transform: translateX(-50%) scale(0.6);
+				transform-origin: top center;
+				height: 640px;
+			}
+			.arena-map-wrap {
+				height: 640px;
+			}
+			.arena-illustrations {
+				flex-direction: column;
+			}
+			.arena-illustration {
+				flex: none;
+			}
+		}
+
+		/* ---- Results section ---- */
+
+		.arena-desc {
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 26px;
+			color: rgba(242, 246, 250, 0.55);
+			margin-bottom: 16px;
+			max-width: 600px;
+		}
+
+		.arena-desc strong {
+			color: rgba(242, 246, 250, 0.72);
+			font-weight: 500;
+		}
+
+		.arena-desc a {
+			color: rgba(133, 186, 234, 0.86);
+		}
+
+		#arena-standings {
+			width: 100%;
+			margin-top: 32px;
+		}
+
+		#arena-footer {
+			margin-top: 40px;
+		}
+
+		/* ---- Arena table ---- */
+
 		.arena-table {
 			width: 100%;
 			border-collapse: collapse;
@@ -88,39 +409,28 @@
 			line-height: 1;
 		}
 
-		.arena-dots {
+		.arena-games {
 			display: flex;
+			flex-wrap: wrap;
 			justify-content: center;
-			gap: 3px;
-			margin-top: 5px;
-			opacity: 0;
-			transition: opacity 0.15s ease;
-			height: 6px;
+			gap: 2px;
+			margin-top: 4px;
+			max-width: 52px;
+			margin-left: auto;
+			margin-right: auto;
 		}
 
-		td.arena-col-score:hover .arena-dots {
-			opacity: 1;
+		.arena-game-num {
+			font-size: 10px;
+			font-family: 'Monaco', 'Lucida Console', 'Courier New', monospace;
+			line-height: 1;
+			color: rgba(242, 246, 250, 0.85);
 		}
 
-		.arena-dot {
-			width: 6px;
-			height: 6px;
-			border-radius: 50%;
-			background: white;
-			flex-shrink: 0;
-		}
-
-		.arena-dot-win {
-			opacity: 1;
-		}
-
-		.arena-dot-loss {
-			opacity: 0.32;
-		}
-
-		.arena-dot[data-replay] {
-			cursor: pointer;
-		}
+		.arena-game-win { opacity: 1; }
+		.arena-game-loss { opacity: 0.28; }
+		.arena-game-draw { opacity: 0.5; }
+		.arena-game-num[data-replay] { cursor: pointer; }
 
 		.arena-col-pts {
 			text-align: center;
@@ -162,7 +472,7 @@
 				white-space: nowrap;
 			}
 			.arena-col-score {
-				min-width: 48px;
+				min-width: 76px;
 			}
 		}
 
@@ -172,245 +482,919 @@
 			pointer-events: none;
 			display: none;
 		}
+
+		/* ---- Highlights ---- */
+
+		.highlight-grid {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 24px;
+		}
+
+		.highlight-card {
+			min-width: 0;
+		}
+
+		.highlight-label {
+			font-size: 14px;
+			font-weight: 400;
+			color: rgba(242, 246, 250, 0.44);
+			margin: 0 0 12px;
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+		}
+
+		.highlight-replay-link {
+			font-size: 13px;
+			color: rgba(242, 246, 250, 0.52);
+			text-decoration: none;
+			cursor: pointer;
+			transition: color 0.2s;
+		}
+
+		.highlight-replay-link:hover {
+			color: rgba(242, 246, 250, 0.8);
+		}
+
+		.highlight-canvas {
+			display: block;
+			width: 100%;
+			aspect-ratio: 9 / 7;
+			border-radius: 12px;
+			background: #111;
+		}
+
+		.highlight-desc {
+			font-size: 15px;
+			line-height: 22px;
+			color: rgba(242, 246, 250, 0.52);
+			margin: 12px 0 0;
+		}
+
+		@media (max-width: 768px) {
+			.highlight-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+
 	</style>
   </head>
   <body>
   <script src="./theme.js"></script>
+  <script src="/header.js"></script>
 
-	<script src="/header.js"></script>
+  <div id="arena-label">Yare AI Arena</div>
 
-	<div id="doc_content">
+  <script>
+  (function() {
+	var menu = document.querySelector('.menu');
+	if (!menu) return;
 
-		<div class="spacer-l"></div>
-		
-		<h1 class="doc_h1" style="max-width: 600px;">Yare Arena</h1>
+	var lb = document.createElement('a');
+	lb.href = '/leaderboard';
+	lb.className = 'menu_link';
+	lb.textContent = 'Leaderboard';
+	menu.insertBefore(lb, menu.firstChild);
 
-		<p class="desc">Models are given yare's documentation and tasked to one-shot a winning bot. Each model gets 3 bots. Matchups are Pokemon-style: the winner stays, the loser swaps in their next bot. First to lose 3 bots loses the matchup.</p>
+	var ng = document.createElement('a');
+	ng.href = '/';
+	ng.className = 'menu_link';
+	ng.style.fontWeight = '500';
+	ng.textContent = 'New game';
+	menu.insertBefore(ng, lb.nextSibling);
+  })();
+  </script>
 
-		<details id="arena-prompt-details" style="margin-top:12px;max-width:600px;">
-			<summary class="desc" style="cursor:pointer;opacity:0.5;font-size:13px;list-style:none;">Show system prompt &darr;</summary>
-			<pre id="arena-system-prompt" style="margin-top:12px;padding:16px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:12px;line-height:1.5;color:rgba(242,246,250,0.6);white-space:pre-wrap;word-break:break-word;max-height:400px;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);"></pre>
-		</details>
-		<script>
-		(function() {
-			var d = document.getElementById('arena-prompt-details');
-			var loaded = false;
-			d.addEventListener('toggle', function() {
-				if (d.open && !loaded) {
-					loaded = true;
-					fetch('/arena-system-prompt.md')
-						.then(function(r) { return r.text(); })
-						.then(function(t) { document.getElementById('arena-system-prompt').textContent = t; })
-						.catch(function() { document.getElementById('arena-system-prompt').textContent = 'Failed to load prompt.'; });
-				}
-			});
-		})();
-		</script>
+  <nav id="arena-nav">
+	<a href="#section-game" class="arena-nav-link active" data-target="game">Game information</a>
+	<a href="#section-testing" class="arena-nav-link" data-target="testing">Testing method</a>
+	<a href="#section-results" class="arena-nav-link" data-target="results">Results</a>
+	<a href="#section-highlights" class="arena-nav-link" data-target="highlights">Highlights</a>
+  </nav>
 
-		<div class="spacer-l"></div>
 
-		<div id="arena-standings"></div>
+  <div class="arena-content">
 
-		<div class="spacer-l"></div>
+	<h1 class="arena-headline">LLMs playing against each other in a 1v1 game (round-robin tournament)</h1>
 
-		<p class="desc" style="max-width:600px;"><strong>Clowder Bot</strong> is a human-coded, yet relatively weak bot in the context of the game. All LLM models are generally doing poorly on this task for now.</p>
+	<!-- Game Information -->
+	<div class="arena-part active" id="section-game" data-part="game-1" data-section="game">
+		<p>The game is simple. 9 units vs. 9 units fighting each other on a game board with obstacles and healing pods.</p>
 
-		<div class="spacer-l"></div>
-
-		<p class="desc" id="arena-footer">If you want to see specific models compared, mention them in our <a href="https://discord.gg/GJskwRa6">Discord</a>.</p>
-
-		<script>
-		(function() {
-			var DISPLAY_NAMES = {
-				'clowder-bot': 'Clowder Bot',
-				'claude-opus-4-6': 'Claude Opus 4.6',
-				'claude-sonnet-4-6': 'Claude Sonnet 4.6',
-				'gpt-5-4': 'GPT-5.4',
-				'gpt-5-3-codex': 'GPT-5.3 Codex',
-				'o3': 'OpenAI o3',
-				'grok-4-0709': 'Grok 4',
-				'grok-4-1-fast-reasoning': 'Grok 4.1 Fast',
-				'gemini-3-1-pro-preview': 'Gemini 3.1 Pro'
-			};
-
-			function dn(name) { return DISPLAY_NAMES[name] || name; }
-
-			function buildTable(data) {
-				var models = data.ranking.map(function(r) { return r.name; });
-				var n = models.length;
-				var rankMap = {};
-				data.ranking.forEach(function(r) { rankMap[r.name] = r; });
-
-				var matchMap = {};
-				data.matchups.forEach(function(mu) {
-					matchMap[mu.modelA + '|' + mu.modelB] = mu;
-					matchMap[mu.modelB + '|' + mu.modelA] = mu;
-				});
-
-				var scoreW = n <= 6 ? '56px' : (n <= 9 ? '48px' : '40px');
-				var html = '<table class="arena-table"><colgroup>';
-				html += '<col style="width:40px">';
-				html += '<col>';
-				for (var i = 0; i < n; i++) html += '<col style="width:' + scoreW + '">';
-				html += '<col style="width:40px">';
-				html += '<col style="width:56px">';
-				html += '</colgroup>';
-
-				html += '<thead><tr>';
-				html += '<th class="arena-col-rank"></th>';
-				html += '<th class="arena-col-model"></th>';
-				for (var i = 0; i < n; i++) html += '<th class="arena-col-score">' + (i + 1) + '</th>';
-				html += '<th class="arena-col-pts"></th>';
-				html += '<th class="arena-col-wl"></th>';
-				html += '</tr></thead><tbody>';
-
-				models.forEach(function(m, ri) {
-					var r = rankMap[m];
-					html += '<tr>';
-					html += '<td class="arena-col-rank">' + (ri + 1) + '</td>';
-					html += '<td class="arena-col-model">' + dn(m) + '</td>';
-
-					models.forEach(function(opp, ci) {
-						if (ri === ci) {
-							html += '<td class="arena-col-score arena-empty"></td>';
-							return;
-						}
-
-						var mu = matchMap[m + '|' + opp];
-						if (!mu) {
-							html += '<td class="arena-col-score">-</td>';
-							return;
-						}
-
-						var isA = mu.modelA === m;
-						var myWins = isA ? mu.modelAWins : mu.modelBWins;
-						var theirWins = isA ? mu.modelBWins : mu.modelAWins;
-						var won = mu.winner === m;
-						var cls = 'arena-col-score' + (won ? ' arena-win' : '');
-
-						html += '<td class="' + cls + '">';
-						html += '<span class="arena-score-label">' + myWins + '-' + theirWins + '</span>';
-
-						html += '<div class="arena-dots">';
-						mu.games.forEach(function(g) {
-							var iWon = g.winner === m;
-							var dotCls = iWon ? 'arena-dot arena-dot-win' : 'arena-dot arena-dot-loss';
-							var replayAttr = g.gameId ? ' data-replay="' + g.gameId + '"' : '';
-							html += '<span class="' + dotCls + '"' + replayAttr + '></span>';
-						});
-						html += '</div>';
-
-						html += '</td>';
-					});
-
-					html += '<td class="arena-col-pts">' + r.points + '</td>';
-					html += '<td class="arena-col-wl">' + r.wins + 'W-' + r.losses + 'L</td>';
-					html += '</tr>';
-				});
-
-				html += '</tbody></table>';
-				return html;
-			}
-
-			var replayCache = {};
-			var activeMiniReplay = null;
-			var tooltip = null;
-
-			function preloadReplays() {
-				var dots = document.querySelectorAll('.arena-dot[data-replay]');
-				var seen = {};
-				dots.forEach(function(dot) {
-					var id = dot.getAttribute('data-replay');
-					if (seen[id]) return;
-					seen[id] = true;
-					fetch('/arena-replays/' + id + '.json')
-						.then(function(r) { return r.json(); })
-						.then(function(data) { replayCache[id] = data; })
-						.catch(function() {});
-				});
-			}
-
-			function showMiniReplay(gameId, anchorRect) {
-				var replay = replayCache[gameId];
-				if (!replay) return;
-				tooltip = tooltip || document.getElementById('mini-replay-tooltip');
-				hideMiniReplay();
-
-				var tw = 350, th = 274;
-				var left = anchorRect.left + anchorRect.width / 2 - tw / 2;
-				var top = anchorRect.top - th - 8;
-				if (top < 4) top = anchorRect.bottom + 8;
-				if (left < 4) left = 4;
-				if (left + tw > window.innerWidth - 4) left = window.innerWidth - tw - 4;
-
-				tooltip.style.left = left + 'px';
-				tooltip.style.top = top + 'px';
-				tooltip.style.display = 'block';
-				activeMiniReplay = MiniReplay.create(tooltip, replay, {
-					p1Name: dn(replay[0].pl1),
-					p2Name: dn(replay[0].pl2)
-				});
-			}
-
-			function hideMiniReplay() {
-				if (activeMiniReplay) {
-					activeMiniReplay.destroy();
-					activeMiniReplay = null;
-				}
-				if (tooltip) tooltip.style.display = 'none';
-			}
-
-			function bindDots() {
-				document.querySelectorAll('.arena-dot[data-replay]').forEach(function(dot) {
-					dot.addEventListener('click', function(e) {
-						e.stopPropagation();
-						var gameId = dot.getAttribute('data-replay');
-						if (replayCache[gameId]) {
-							sessionStorage.setItem('replay_' + gameId, JSON.stringify(replayCache[gameId]));
-							window.open('/replay/' + gameId, '_blank');
-							return;
-						}
-						fetch('/arena-replays/' + gameId + '.json')
-							.then(function(r) { return r.text(); })
-							.then(function(data) {
-								sessionStorage.setItem('replay_' + gameId, data);
-								window.open('/replay/' + gameId, '_blank');
-							})
-							.catch(function() {
-								window.open('/replay/' + gameId, '_blank');
-							});
-					});
-
-					dot.addEventListener('mouseenter', function() {
-						var gameId = dot.getAttribute('data-replay');
-						showMiniReplay(gameId, dot.getBoundingClientRect());
-					});
-
-					dot.addEventListener('mouseleave', hideMiniReplay);
-				});
-			}
-
-			fetch('/arena-results.json')
-				.then(function(r) { return r.json(); })
-				.then(function(data) {
-					document.getElementById('arena-standings').innerHTML = buildTable(data);
-					bindDots();
-					preloadReplays();
-					// if (data.timestamp) {
-					// 	document.getElementById('arena-footer').insertAdjacentHTML('beforebegin',
-					// 		'<p class="desc" style="opacity:0.5;font-size:12px">Last updated: ' + new Date(data.timestamp).toLocaleString() + '</p>');
-					// }
-				})
-				.catch(function() {
-					document.getElementById('arena-standings').innerHTML = '<p class="desc">No results available yet. Run the arena tournament to generate them.</p>';
-				});
-		})();
-		</script>
-
-		<div class="spacer-xl"></div>
-
+		<div class="arena-map-wrap">
+			<div class="arena-map">
+				<pre data-map-style="blueprint"></pre>
+			</div>
+		</div>
+		<div class="arena-legend arena-map-legend">
+			<span><span class="arena-map-unit">■</span> P1 units</span>
+			<span><span class="arena-map-unit">□</span> P2 units</span>
+			<span><span class="arena-map-barrier">○</span> Barricade</span>
+			<span><span class="arena-map-pod">+</span> Pod</span>
+		</div>
+		<p style="font-size: 12px; color: rgba(242, 246, 250, 0.32); margin: -48px 0 64px;">The LLMs iterate on their code using an ASCII representation of the game state</p>
 	</div>
 
+	<div class="arena-part" data-part="game-2" data-section="game">
+		<p>Players write JavaScript code that controls the units and accesses game info. The only actions units can do are move() and pew().</p>
+		<p>All of the complexity emerges from having to reason about where to move, and whom to shoot (pew).</p>
+
+		<div class="arena-illustrations">
+			<div class="arena-illustration">
+				<div class="arena-code-block">
+<pre><span class="kw">function</span> <span class="fn">dist</span>(a, b) {
+    <span class="kw">return</span> Math.<span class="fn">hypot</span>(a[<span class="num">0</span>] - b[<span class="num">0</span>], a[<span class="num">1</span>] - b[<span class="num">1</span>]);
+}
+
+<span class="kw">function</span> <span class="fn">closest_enemy</span>(cat) {
+    <span class="kw">let</span> best <span class="op">=</span> <span class="kw">null</span>;
+    <span class="kw">let</span> best_dist <span class="op">=</span> <span class="num">Infinity</span>;
+    <span class="kw">for</span> (<span class="kw">let</span> id <span class="kw">of</span> cat.<span class="prop">sight</span>.<span class="prop">enemies</span>) {
+        <span class="kw">let</span> d <span class="op">=</span> <span class="fn">dist</span>(cat.<span class="prop">position</span>, cats[id].<span class="prop">position</span>);
+        <span class="kw">if</span> (d <span class="op">&lt;</span> best_dist) {
+            best_dist <span class="op">=</span> d;
+            best <span class="op">=</span> cats[id];
+        }
+    }
+    <span class="kw">return</span> best;
+}
+
+<span class="kw">for</span> (<span class="kw">let</span> cat <span class="kw">of</span> my_cats) {
+    <span class="kw">let</span> enemy <span class="op">=</span> <span class="fn">closest_enemy</span>(cat)
+    cat.<span class="fn">move</span>(enemy.<span class="prop">position</span>)
+    cat.<span class="fn">pew</span>(enemy)
+}</pre>
+				</div>
+				<div class="arena-illustration-label" style="text-align: right;">Primitive player code example</div>
+				<a href="/" class="arena-aside-link">Try the game yourself →</a>
+			</div>
+			<div class="arena-illustration" style="flex: 0 0 280px;">
+				<div class="arena-props-table">
+					<table>
+						<tr><td>id</td><td>string</td></tr>
+						<tr><td>position</td><td>array</td></tr>
+						<tr><td>energy_capacity</td><td>number</td></tr>
+						<tr><td>energy</td><td>number</td></tr>
+						<tr><td>hp</td><td>number</td></tr>
+						<tr><td>sight</td><td>object</td></tr>
+						<tr><td>…</td><td>…</td></tr>
+					</table>
+				</div>
+				<div class="arena-illustration-label" style="text-align: right;">Unit properties</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Testing Method -->
+	<div class="arena-part" id="section-testing" data-part="testing-1" data-section="testing">
+		<h2 style="font-size: 38px; font-weight: 400; line-height: 44px; color: rgba(242, 246, 250, 1); margin: 0 0 36px;">Testing method</h2>
+		<p>Each model iterates 10 times against a reference bot (Clowder Bot) — writing code, playing a game, then reviewing the replay (ASCII board snapshots + its own logs) before trying again. The resulting bots compete in a 10 games round-robin tournament, with the same write → play → review loop between games.</p>
+	</div>
+
+	<!-- Results -->
+	<div class="arena-part" id="section-results" data-part="results-1" data-section="results" style="margin-top: 120px;">
+		<h2 style="font-size: 38px; font-weight: 400; line-height: 44px; color: rgba(242, 246, 250, 1); margin: 0 0 36px;">Results</h2>
+		<div id="arena-standings"></div>
+		<p class="arena-desc" style="margin-top: 24px; max-width: 600px;">Gemini 3.1 Pro dominated, comfortably beating all other LLMs — dropping only 4 games across 50 played. Claude Sonnet 4.6 surprisingly outperformed Opus 4.6 across every matchup format we tested. GPT-5.3 Codex showed strong improvement over many games, climbing above both Opus and GPT-5.4 in the 10-game format.</p>
+	</div>
+
+	<!-- Highlights -->
+	<div class="arena-part" id="section-highlights" data-part="highlights-1" data-section="highlights" style="margin-top: 120px; padding-bottom: 120px;">
+		<h2 style="font-size: 38px; font-weight: 400; line-height: 44px; color: rgba(242, 246, 250, 1); margin: 0 0 36px;">Highlights</h2>
+
+		<div class="highlight-grid">
+			<div class="highlight-card">
+				<div class="highlight-label">
+					<span><span style="color:rgba(128,140,255,1)">Sonnet 4.6</span> vs. <span style="color:rgba(232,97,97,1)">Gemini 3.1</span> &middot; Game 4</span>
+					<a class="highlight-replay-link" id="hl1-link">Show full replay</a>
+				</div>
+				<canvas class="highlight-canvas" id="hl1-canvas"></canvas>
+				<div class="highlight-desc" id="hl1-desc"></div>
+			</div>
+			<div class="highlight-card">
+				<div class="highlight-label">
+					<span><span style="color:rgba(128,140,255,1)">Sonnet 4.6</span> vs. <span style="color:rgba(232,97,97,1)">Grok 4.1</span> &middot; Game 4</span>
+					<a class="highlight-replay-link" id="hl2-link">Show full replay</a>
+				</div>
+				<canvas class="highlight-canvas" id="hl2-canvas"></canvas>
+				<div class="highlight-desc" id="hl2-desc"></div>
+			</div>
+			<div class="highlight-card">
+				<div class="highlight-label">
+					<span><span style="color:rgba(128,140,255,1)">Opus 4.6</span> vs. <span style="color:rgba(232,97,97,1)">Grok 4.1</span> &middot; Game 9</span>
+					<a class="highlight-replay-link" id="hl3-link">Show full replay</a>
+				</div>
+				<canvas class="highlight-canvas" id="hl3-canvas"></canvas>
+				<div class="highlight-desc" id="hl3-desc"></div>
+			</div>
+			<div class="highlight-card">
+				<div class="highlight-label">
+					<span><span style="color:rgba(128,140,255,1)">GPT-5.3 Codex</span> vs. <span style="color:rgba(232,97,97,1)">Gemini 3.1</span> &middot; Game 1</span>
+					<a class="highlight-replay-link" id="hl4-link">Show full replay</a>
+				</div>
+				<canvas class="highlight-canvas" id="hl4-canvas"></canvas>
+				<div class="highlight-desc" id="hl4-desc"></div>
+			</div>
+		</div>
+
+		<p style="font-size: 14px; color: rgba(242, 246, 250, 0.36); margin-top: 64px;">Discuss these results or suggest improvements to the testing methodology and other models you would like to cover in our <a href="https://discord.gg/hz5vnYVHFJ" style="color: rgba(242, 246, 250, 0.52); text-decoration: none;">Discord</a>.</p>
+	</div>
+
+  </div>
+
+
+  <script>
+  (function() {
+	var W = 100, H = 70, OX = -500, OY = -350, S = 10;
+	var barricades = [[0,-200],[0,200],[370,0],[-370,0]];
+	var pods = [[-110,-300],[110,-300],[-260,320],[260,320],[-500,84],[500,84]];
+
+	var TICKS_PER_SEC = 7;
+	var LOOP_PAUSE = 2;
+	var FRAME_MS = 1000 / 30;
+
+	function cx(gx) { return Math.round((gx - OX) / S); }
+	function cy(gy) { return Math.round((gy - OY) / S); }
+
+	function mk() {
+		var g = [];
+		for (var y = 0; y < H; y++) {
+			g[y] = [];
+			for (var x = 0; x < W; x++) g[y][x] = {ch: ' ', cls: '', pri: 0};
+		}
+		return g;
+	}
+
+	function set(g, x, y, ch, cls, pri) {
+		if (x < 0 || x >= W || y < 0 || y >= H) return;
+		pri = pri || 0;
+		if (g[y][x].pri > pri) return;
+		g[y][x] = {ch: ch, cls: cls, pri: pri};
+	}
+
+	function toHtml(g) {
+		var out = '', y, x, j, c, n, ch, rep;
+		for (y = 0; y < H; y++) {
+			x = 0;
+			while (x < W) {
+				c = g[y][x]; j = x + 1;
+				while (j < W) { n = g[y][j]; if (n.cls !== c.cls || n.ch !== c.ch) break; j++; }
+				ch = c.ch === ' ' ? '&nbsp;' : c.ch;
+				rep = ch.repeat(j - x);
+				out += c.cls ? '<span class="arena-map-' + c.cls + '">' + rep + '</span>' : rep;
+				x = j;
+			}
+			out += '\n';
+		}
+		return out;
+	}
+
+	function renderStatic(g) {
+		var x, y, i, dx, dy, d2, bx, by, px, py;
+		for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+			if (y % 5 === 0 && x % 5 === 0) set(g, x, y, '+', 'bg', 0);
+			else if (y % 5 === 0) set(g, x, y, '\u2500', 'bg', 0);
+			else if (x % 5 === 0) set(g, x, y, '\u2502', 'bg', 0);
+			else set(g, x, y, '\u00b7', 'bg', 0);
+		}
+		for (i = 0; i < pods.length; i++) {
+			px = pods[i][0]; py = pods[i][1];
+			for (dy = -20; dy <= 20; dy += 4) for (dx = -20; dx <= 20; dx += 4)
+				if (dx * dx + dy * dy <= 400) set(g, cx(px + dx), cy(py + dy), '+', 'pod', 3);
+		}
+		for (i = 0; i < barricades.length; i++) {
+			bx = barricades[i][0]; by = barricades[i][1];
+			for (dy = -100; dy <= 100; dy += 3) for (dx = -100; dx <= 100; dx += 3) {
+				d2 = dx * dx + dy * dy;
+				if (d2 > 10000 || d2 < 8100) continue;
+				set(g, cx(bx + dx), cy(by + dy), '\u25cb', 'barrier', 4);
+			}
+		}
+	}
+
+	function cloneGrid(src) {
+		var g = new Array(H);
+		for (var y = 0; y < H; y++) g[y] = src[y].slice();
+		return g;
+	}
+
+	function lerp(a, b, t) { return a + (b - a) * t; }
+
+	function beamCh(dx, dy) {
+		var adx = Math.abs(dx), ady = Math.abs(dy);
+		if (adx > ady * 2) return '\u2500';
+		if (ady > adx * 2) return '\u2502';
+		return (dx > 0) === (dy > 0) ? '\\' : '/';
+	}
+
+	function drawBeam(g, x1, y1, x2, y2) {
+		var gx1 = cx(x1), gy1 = cy(y1), gx2 = cx(x2), gy2 = cy(y2);
+		var dx = gx2 - gx1, dy = gy2 - gy1;
+		var steps = Math.max(Math.abs(dx), Math.abs(dy));
+		if (steps < 2) return;
+		var ch = beamCh(dx, dy);
+		var xi = dx / steps, yi = dy / steps;
+		var px = gx1 + xi, py = gy1 + yi;
+		for (var i = 1; i < steps; i++) {
+			set(g, Math.round(px), Math.round(py), ch, 'beam', 5);
+			px += xi;
+			py += yi;
+		}
+		set(g, gx2, gy2, '\u00d7', 'beam-tip', 6);
+	}
+
+	function renderFrame(bg, replay, tickFloat) {
+		var g = cloneGrid(bg);
+		var ti = Math.min(Math.floor(tickFloat), replay.length - 1);
+		var frac = tickFloat - ti;
+		var f = replay[ti];
+		var fn = replay[Math.min(ti + 1, replay.length - 1)];
+		var pl1 = f.pl1, pl2 = f.pl2;
+
+		var now = {}, nxt = {};
+		var i, u;
+		for (i = 0; i < f.p1.length; i++) { u = f.p1[i]; now[pl1 + '_' + u[0]] = u; }
+		for (i = 0; i < f.p2.length; i++) { u = f.p2[i]; now[pl2 + '_' + u[0]] = u; }
+		for (i = 0; i < fn.p1.length; i++) { u = fn.p1[i]; nxt[pl1 + '_' + u[0]] = u; }
+		for (i = 0; i < fn.p2.length; i++) { u = fn.p2[i]; nxt[pl2 + '_' + u[0]] = u; }
+
+		if (frac < 0.6) {
+			var beams = f.e;
+			if (beams) for (i = 0; i < beams.length; i++) {
+				var s = now[beams[i][0]], t = now[beams[i][1]];
+				if (s && t) drawBeam(g, s[1][0], s[1][1], t[1][0], t[1][1]);
+			}
+			var splash = f.a;
+			if (splash) for (i = 0; i < splash.length; i++) {
+				var s2 = now[splash[i][0]], t2 = now[splash[i][2]];
+				if (s2 && t2) drawBeam(g, s2[1][0], s2[1][1], t2[1][0], t2[1][1]);
+			}
+		}
+
+		function drawUnits(units, prefix, ch) {
+			for (var j = 0; j < units.length; j++) {
+				var uu = units[j];
+				if (uu[3] !== 1) continue;
+				var key = prefix + '_' + uu[0];
+				var nn = nxt[key];
+				var ux = uu[1][0], uy = uu[1][1];
+				if (nn && nn[3] === 1) {
+					ux = lerp(ux, nn[1][0], frac);
+					uy = lerp(uy, nn[1][1], frac);
+				}
+				set(g, cx(ux), cy(uy), ch, 'unit', 10);
+			}
+		}
+
+		drawUnits(f.p1, pl1, '\u25a0');
+		drawUnits(f.p2, pl2, '\u25a1');
+		return toHtml(g);
+	}
+
+	var pre = document.querySelector('pre[data-map-style]');
+	if (!pre) return;
+
+	var bg = mk();
+	renderStatic(bg);
+
+	var initGrid = cloneGrid(bg);
+	var xOff = [10, 0, -10, 0];
+	for (var ii = 0; ii < 9; ii++) {
+		set(initGrid, cx(-200 + xOff[ii % 4]), cy(-100 + ii * 25), '\u25a0', 'unit', 10);
+		set(initGrid, cx(200 - xOff[ii % 4]), cy(-100 + ii * 25), '\u25a1', 'unit', 10);
+	}
+	pre.innerHTML = toHtml(initGrid);
+
+	var sx = 1200 / pre.scrollWidth;
+	var sy = 800 / pre.scrollHeight;
+	pre.style.transform = 'scale(' + sx + ',' + sy + ')';
+
+	var isVisible = true;
+	var observer = new IntersectionObserver(function(entries) {
+		isVisible = entries[0].isIntersecting;
+	}, {threshold: 0});
+	observer.observe(pre);
+
+	var REPLAYS = [
+		'itourney-claude-opus-4-6-vs-claude-sonnet-4-6-g1',
+		'itourney-gpt-5-3-codex-vs-grok-4-1-fast-reasoning-g5',
+		'itourney-gpt-5-3-codex-vs-gemini-3-1-pro-preview-g1'
+	];
+
+	Promise.all(REPLAYS.map(function(id) {
+		return fetch('/arena-replays/' + id + '.json').then(function(r) { return r.json(); });
+	})).then(function(allReplays) {
+		var durations = allReplays.map(function(r) { return r.length / TICKS_PER_SEC + LOOP_PAUSE; });
+		var totalCycle = durations.reduce(function(a, b) { return a + b; }, 0);
+		var animTime = 0, prevTs = null, lastRender = 0;
+
+		function animate(ts) {
+			requestAnimationFrame(animate);
+			if (!isVisible) { prevTs = null; return; }
+			if (ts - lastRender < FRAME_MS) return;
+			lastRender = ts;
+
+			var dt = prevTs === null ? 0 : Math.min((ts - prevTs) / 1000, 0.1);
+			prevTs = ts;
+			animTime = (animTime + dt) % totalCycle;
+
+			var elapsed = animTime, ri = 0;
+			for (var i = 0; i < durations.length; i++) {
+				if (elapsed < durations[i]) { ri = i; break; }
+				elapsed -= durations[i];
+			}
+
+			var replay = allReplays[ri];
+			var tickFloat = Math.min(elapsed * TICKS_PER_SEC, replay.length - 0.001);
+			pre.innerHTML = renderFrame(bg, replay, tickFloat);
+		}
+
+		requestAnimationFrame(animate);
+	});
+  })();
+  </script>
+
+
+
+
+  <!-- Arena table + replay logic -->
+  <script>
+  (function() {
+	var DISPLAY_NAMES = {
+		'clowder-bot': 'Clowder Bot',
+		'claude-opus-4-6': 'Claude Opus 4.6',
+		'claude-sonnet-4-6': 'Claude Sonnet 4.6',
+		'gpt-5-4': 'GPT-5.4',
+		'gpt-5-3-codex': 'GPT-5.3 Codex',
+		'o3': 'OpenAI o3',
+		'grok-4-0709': 'Grok 4',
+		'grok-4-1-fast-reasoning': 'Grok 4.1 Fast',
+		'gemini-3-1-pro-preview': 'Gemini 3.1 Pro'
+	};
+
+	function dn(name) { return DISPLAY_NAMES[name] || name; }
+
+	function buildTable(data) {
+		var models = data.ranking.map(function(r) { return r.name; });
+		var n = models.length;
+		var rankMap = {};
+		data.ranking.forEach(function(r) { rankMap[r.name] = r; });
+
+		var matchMap = {};
+		data.matchups.forEach(function(mu) {
+			matchMap[mu.modelA + '|' + mu.modelB] = mu;
+			matchMap[mu.modelB + '|' + mu.modelA] = mu;
+		});
+
+		var scoreW = n <= 6 ? '88px' : (n <= 9 ? '76px' : '64px');
+		var html = '<table class="arena-table"><colgroup>';
+		html += '<col style="width:40px">';
+		html += '<col>';
+		for (var i = 0; i < n; i++) html += '<col style="width:' + scoreW + '">';
+		html += '<col style="width:40px">';
+		html += '<col style="width:56px">';
+		html += '</colgroup>';
+
+		html += '<thead><tr>';
+		html += '<th class="arena-col-rank"></th>';
+		html += '<th class="arena-col-model"></th>';
+		for (var i = 0; i < n; i++) html += '<th class="arena-col-score">' + (i + 1) + '</th>';
+		html += '<th class="arena-col-pts"></th>';
+		html += '<th class="arena-col-wl"></th>';
+		html += '</tr></thead><tbody>';
+
+		models.forEach(function(m, ri) {
+			var r = rankMap[m];
+			html += '<tr>';
+			html += '<td class="arena-col-rank">' + (ri + 1) + '</td>';
+			html += '<td class="arena-col-model">' + dn(m) + '</td>';
+
+			models.forEach(function(opp, ci) {
+				if (ri === ci) {
+					html += '<td class="arena-col-score arena-empty"></td>';
+					return;
+				}
+
+				var mu = matchMap[m + '|' + opp];
+				if (!mu) {
+					html += '<td class="arena-col-score">-</td>';
+					return;
+				}
+
+				var isA = mu.modelA === m;
+				var myWins = isA ? mu.modelAWins : mu.modelBWins;
+				var theirWins = isA ? mu.modelBWins : mu.modelAWins;
+				var won = mu.winner === m;
+				var cls = 'arena-col-score' + (won ? ' arena-win' : '');
+
+				html += '<td class="' + cls + '">';
+				html += '<span class="arena-score-label">' + myWins + '-' + theirWins + '</span>';
+
+				html += '<div class="arena-games">';
+				mu.games.forEach(function(g, gi) {
+					var iWon = g.winner === m;
+					var isDraw = !g.winner;
+					var cls = 'arena-game-num ' + (isDraw ? 'arena-game-draw' : (iWon ? 'arena-game-win' : 'arena-game-loss'));
+					var replayAttr = g.gameId ? ' data-replay="' + g.gameId + '"' : '';
+					html += '<span class="' + cls + '"' + replayAttr + '>' + (gi + 1) + '</span>';
+				});
+				html += '</div>';
+
+				html += '</td>';
+			});
+
+			html += '<td class="arena-col-pts">' + r.points + '</td>';
+			html += '<td class="arena-col-wl">' + r.wins + 'W-' + r.losses + 'L</td>';
+			html += '</tr>';
+		});
+
+		html += '</tbody></table>';
+		return html;
+	}
+
+	var replayCache = {};
+	var activeMiniReplay = null;
+	var tooltip = null;
+
+	function preloadReplays() {
+		var nums = document.querySelectorAll('.arena-game-num[data-replay]');
+		var seen = {};
+		nums.forEach(function(el) {
+			var id = el.getAttribute('data-replay');
+			if (seen[id]) return;
+			seen[id] = true;
+			fetch('/arena-replays/' + id + '.json')
+				.then(function(r) { return r.json(); })
+				.then(function(data) { replayCache[id] = data; })
+				.catch(function() {});
+		});
+	}
+
+	function showMiniReplay(gameId, anchorRect) {
+		var replay = replayCache[gameId];
+		if (!replay) return;
+		tooltip = tooltip || document.getElementById('mini-replay-tooltip');
+		hideMiniReplay();
+
+		var tw = 350, th = 274;
+		var left = anchorRect.left + anchorRect.width / 2 - tw / 2;
+		var top = anchorRect.top - th - 8;
+		if (top < 4) top = anchorRect.bottom + 8;
+		if (left < 4) left = 4;
+		if (left + tw > window.innerWidth - 4) left = window.innerWidth - tw - 4;
+
+		tooltip.style.left = left + 'px';
+		tooltip.style.top = top + 'px';
+		tooltip.style.display = 'block';
+		activeMiniReplay = MiniReplay.create(tooltip, replay, {
+			p1Name: dn(replay[0].pl1),
+			p2Name: dn(replay[0].pl2)
+		});
+	}
+
+	function hideMiniReplay() {
+		if (activeMiniReplay) {
+			activeMiniReplay.destroy();
+			activeMiniReplay = null;
+		}
+		if (tooltip) tooltip.style.display = 'none';
+	}
+
+	function bindDots() {
+		document.querySelectorAll('.arena-game-num[data-replay]').forEach(function(el) {
+			el.addEventListener('click', function(e) {
+				e.stopPropagation();
+				var gameId = el.getAttribute('data-replay');
+				if (replayCache[gameId]) {
+					sessionStorage.setItem('replay_' + gameId, JSON.stringify(replayCache[gameId]));
+					window.open('/replay/' + gameId, '_blank');
+					return;
+				}
+				fetch('/arena-replays/' + gameId + '.json')
+					.then(function(r) { return r.text(); })
+					.then(function(data) {
+						sessionStorage.setItem('replay_' + gameId, data);
+						window.open('/replay/' + gameId, '_blank');
+					})
+					.catch(function() {
+						window.open('/replay/' + gameId, '_blank');
+					});
+			});
+
+			el.addEventListener('mouseenter', function() {
+				var gameId = el.getAttribute('data-replay');
+				showMiniReplay(gameId, el.getBoundingClientRect());
+			});
+
+			el.addEventListener('mouseleave', hideMiniReplay);
+		});
+	}
+
+	fetch('/arena-results.json')
+		.then(function(r) { return r.json(); })
+		.then(function(data) {
+			document.getElementById('arena-standings').innerHTML = buildTable(data);
+			bindDots();
+			preloadReplays();
+		})
+		.catch(function() {
+			document.getElementById('arena-standings').innerHTML = '<p class="arena-desc">No results available yet. Run the arena tournament to generate them.</p>';
+		});
+  })();
+  </script>
+
+
+  <!-- Scroll-driven part activation + nav highlighting -->
+  <script>
+  (function() {
+	var parts = document.querySelectorAll('.arena-part');
+	var navLinks = document.querySelectorAll('.arena-nav-link[data-target]');
+	var currentPart = null;
+	var currentSection = null;
+	var ticking = false;
+
+	function activate(part) {
+		var partId = part.getAttribute('data-part');
+		var sectionId = part.getAttribute('data-section');
+		if (partId === currentPart) return;
+		currentPart = partId;
+
+		parts.forEach(function(p) { p.classList.remove('active'); });
+		part.classList.add('active');
+
+		if (sectionId !== currentSection) {
+			currentSection = sectionId;
+			navLinks.forEach(function(link) {
+				link.classList.toggle('active', link.getAttribute('data-target') === sectionId);
+			});
+		}
+	}
+
+	function update() {
+		var target = window.innerHeight * 0.38;
+		var best = null;
+		var bestDist = Infinity;
+
+		parts.forEach(function(part) {
+			var rect = part.getBoundingClientRect();
+			var center = rect.top + rect.height / 2;
+			var dist = Math.abs(center - target);
+			if (dist < bestDist) {
+				bestDist = dist;
+				best = part;
+			}
+		});
+
+		if (best) activate(best);
+	}
+
+	window.addEventListener('scroll', function() {
+		if (!ticking) {
+			requestAnimationFrame(function() {
+				update();
+				ticking = false;
+			});
+			ticking = true;
+		}
+	}, { passive: true });
+
+	update();
+  })();
+  </script>
+
+
+  <!-- Highlight replay players -->
+  <script>
+  (function() {
+	var BARRICADES = [[0,-200],[0,200],[370,0],[-370,0]];
+	var BR = 80;
+	var PODS = [[-110,-300],[110,-300],[-260,320],[260,320],[-500,84],[500,84]];
+	var PS = 40;
+	var P1_RGB = [128,140,255], P2_RGB = [232,97,97];
+	var C_P1B = 'rgba(128,140,255,0.5)', C_P2B = 'rgba(232,97,97,0.5)';
+	var C_BAR = 'rgba(255,255,255,0.2)';
+	var C_POD = 'hsla(130,99%,76%,0.12)';
+	var C_CIR = 'hsla(1,100%,72%,0.12)';
+	var UR = 5;
+	var EMAX = 10;
+
+	function initRC(canvas) {
+		var w = canvas.clientWidth || 460;
+		var h = canvas.clientHeight || Math.round(w * 7 / 9);
+		var dpr = window.devicePixelRatio || 1;
+		canvas.width = w * dpr; canvas.height = h * dpr;
+		var ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+		return { ctx: ctx, w: w, h: h, tickOff: 0, totalTicks: 0 };
+	}
+
+	function applyZoom(rc, cx, cy, scale) {
+		var vw = 1800 / scale, vh = vw * 7 / 9;
+		var vx0 = cx - vw / 2, vy0 = cy - vh / 2;
+		var sc = rc.w / vw;
+		function tx(x) { return (x - vx0) * sc; }
+		function ty(y) { return (y - vy0) * sc; }
+		rc.sc = sc; rc.tx = tx; rc.ty = ty;
+		rc.ccx = tx(0); rc.ccy = ty(0); rc.br = BR * sc; rc.ps = PS * sc;
+		rc.bp = BARRICADES.map(function(b) { return [tx(b[0]), ty(b[1])]; });
+		rc.pp = PODS.map(function(p) { var half = PS * sc / 2; return [tx(p[0]) - half, ty(p[1]) - half]; });
+	}
+
+	function drawInterp(rc, data, ti, frac, ti2) {
+		var ctx = rc.ctx, w = rc.w, h = rc.h;
+		var f = data[ti]; if (!f) return;
+		var fn = data[ti2 != null ? ti2 : ti];
+		var pl1 = data[0].pl1, pl2 = data[0].pl2;
+
+		ctx.clearRect(0, 0, w, h);
+		ctx.fillStyle = '#111'; ctx.fillRect(0, 0, w, h);
+
+		if (f.cr != null) {
+			var cr = f.cr;
+			if (fn.cr != null && frac > 0) cr += (fn.cr - cr) * frac;
+			ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, h);
+			ctx.arc(rc.ccx, rc.ccy, cr * rc.sc, 0, Math.PI * 2, true);
+			ctx.fillStyle = C_CIR; ctx.fill(); ctx.restore();
+		}
+
+		ctx.strokeStyle = C_BAR; ctx.lineWidth = 2;
+		for (var i = 0; i < rc.bp.length; i++) {
+			ctx.beginPath(); ctx.arc(rc.bp[i][0], rc.bp[i][1], rc.br, 0, Math.PI * 2); ctx.stroke();
+		}
+		ctx.fillStyle = C_POD; ctx.strokeStyle = C_POD; ctx.lineWidth = 1;
+		for (var i = 0; i < rc.pp.length; i++) {
+			ctx.beginPath(); ctx.roundRect(rc.pp[i][0], rc.pp[i][1], rc.ps, rc.ps, 4); ctx.fill(); ctx.stroke();
+		}
+
+		var now = {}, nxt = {};
+		for (var i = 0; i < f.p1.length; i++) { var u = f.p1[i]; now[pl1+'_'+u[0]] = { x:u[1][0], y:u[1][1], e:u[2], a:u[3], t:1 }; }
+		for (var i = 0; i < f.p2.length; i++) { var u = f.p2[i]; now[pl2+'_'+u[0]] = { x:u[1][0], y:u[1][1], e:u[2], a:u[3], t:2 }; }
+		for (var i = 0; i < fn.p1.length; i++) { var u = fn.p1[i]; nxt[pl1+'_'+u[0]] = { x:u[1][0], y:u[1][1], e:u[2], a:u[3], t:1 }; }
+		for (var i = 0; i < fn.p2.length; i++) { var u = fn.p2[i]; nxt[pl2+'_'+u[0]] = { x:u[1][0], y:u[1][1], e:u[2], a:u[3], t:2 }; }
+
+		var units = [];
+		for (var key in now) {
+			var c = now[key]; if (c.a !== 1) continue;
+			var n = nxt[key], ix = c.x, iy = c.y, ie = c.e;
+			if (n && n.a === 1 && frac > 0) { ix += (n.x - ix) * frac; iy += (n.y - iy) * frac; ie += (n.e - ie) * frac; }
+			units.push({ px: rc.tx(ix), py: rc.ty(iy), e: ie, t: c.t, key: key });
+		}
+
+		if (frac < 0.6) {
+			ctx.lineWidth = 1.5;
+			if (f.e) for (var i = 0; i < f.e.length; i++) {
+				var sk = f.e[i][0], dk = f.e[i][1], su = null, du = null;
+				for (var j = 0; j < units.length; j++) { if (units[j].key === sk) su = units[j]; if (units[j].key === dk) du = units[j]; }
+				if (!su || !du) continue;
+				ctx.strokeStyle = su.t === 1 ? C_P1B : C_P2B;
+				ctx.beginPath(); ctx.moveTo(su.px, su.py); ctx.lineTo(du.px, du.py); ctx.stroke();
+			}
+			if (f.a) for (var i = 0; i < f.a.length; i++) {
+				var sk = f.a[i][0], dk = f.a[i][2], su = null, du = null;
+				for (var j = 0; j < units.length; j++) { if (units[j].key === sk) su = units[j]; if (units[j].key === dk) du = units[j]; }
+				if (!su || !du) continue;
+				ctx.strokeStyle = su.t === 1 ? C_P1B : C_P2B;
+				ctx.beginPath(); ctx.moveTo(su.px, su.py); ctx.lineTo(du.px, du.py); ctx.stroke();
+			}
+		}
+
+		for (var i = 0; i < units.length; i++) {
+			var u = units[i], rgb = u.t === 1 ? P1_RGB : P2_RGB;
+			var alpha = Math.max(0.15, Math.min(1, u.e / EMAX));
+			ctx.fillStyle = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + alpha + ')';
+			ctx.strokeStyle = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',1)';
+			ctx.lineWidth = 1;
+			ctx.beginPath(); ctx.arc(u.px, u.py, UR, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+		}
+
+		ctx.font = '13px monospace'; ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.textAlign = 'left';
+		var ts = '' + (ti + rc.tickOff + 1);
+		ctx.fillText(ts, 10, h - 10);
+		ctx.fillStyle = 'rgba(255,255,255,0.25)';
+		ctx.fillText('/' + rc.totalTicks, 10 + ctx.measureText(ts).width, h - 10);
+	}
+
+	function initHighlight(cfg) {
+		var canvas = document.getElementById(cfg.canvasId);
+		var descEl = document.getElementById(cfg.descId);
+		var linkEl = document.getElementById(cfg.linkId);
+		if (!canvas) return;
+		var rc = initRC(canvas);
+		var zCx = cfg.zoom.cx, zCy = cfg.zoom.cy;
+		var zEnd = cfg.zoom.scale, zStart = cfg.zoomStart || zEnd;
+		var replay = null, fullData = null, hovering = false;
+		var segs, cycleDur, transDur;
+		var animTime = 0, prevTs = null, lastRender = 0;
+
+		function zoomAt(progress) {
+			applyZoom(rc, zCx, zCy, zStart + (zEnd - zStart) * progress);
+		}
+
+		canvas.addEventListener('mouseenter', function() { hovering = true; prevTs = null; });
+		canvas.addEventListener('mouseleave', function() {
+			hovering = false; animTime = 0;
+			if (replay) { zoomAt(0); drawInterp(rc, replay, 0, 0); }
+		});
+
+		if (linkEl) linkEl.addEventListener('click', function(e) {
+			e.preventDefault();
+			if (fullData) sessionStorage.setItem('replay_' + cfg.replayId, JSON.stringify(fullData));
+			window.open('/replay/' + cfg.replayId, '_blank');
+		});
+
+		function buildTimeline(len) {
+			segs = []; cycleDur = 0;
+			for (var t = 0; t < len - 1; t++) {
+				segs.push({ type: 1, from: t, to: t + 1, start: cycleDur, dur: cfg.tickMs });
+				cycleDur += cfg.tickMs;
+			}
+			transDur = cycleDur;
+			segs.push({ type: 0, frame: len - 1, start: cycleDur, dur: cfg.pauseMs });
+			cycleDur += cfg.pauseMs;
+		}
+
+		function animate(ts) {
+			requestAnimationFrame(animate);
+			if (!replay || !hovering) { prevTs = null; return; }
+			if (ts - lastRender < 16) return;
+			lastRender = ts;
+
+			var dt = prevTs == null ? 0 : Math.min(ts - prevTs, 100);
+			prevTs = ts;
+			animTime = (animTime + dt) % cycleDur;
+
+			var progress = transDur > 0 ? Math.min(1, animTime / transDur) : 0;
+			zoomAt(progress);
+
+			var seg = segs[0];
+			for (var i = 0; i < segs.length; i++) {
+				if (animTime < segs[i].start + segs[i].dur) { seg = segs[i]; break; }
+			}
+			if (seg.type === 0) {
+				drawInterp(rc, replay, seg.frame, 0);
+			} else {
+				drawInterp(rc, replay, seg.from, (animTime - seg.start) / seg.dur, seg.to);
+			}
+		}
+
+		fetch('/arena-replays/' + cfg.replayId + '.json')
+			.then(function(r) { return r.json(); })
+			.then(function(d) {
+				fullData = d;
+				var s = cfg.startTick || 0, e = cfg.endTick || d.length;
+				replay = d.slice(s, e);
+				rc.tickOff = s;
+				rc.totalTicks = d.length;
+				buildTimeline(replay.length);
+				zoomAt(0);
+				drawInterp(rc, replay, 0, 0);
+				descEl.innerHTML = cfg.desc;
+				requestAnimationFrame(animate);
+			});
+	}
+
+	var HIGHLIGHTS = [
+		{
+			canvasId: 'hl1-canvas', descId: 'hl1-desc', linkId: 'hl1-link',
+			replayId: 'itourney-claude-sonnet-4-6-vs-gemini-3-1-pro-preview-g4',
+			p1: 'Sonnet 4.6', p2: 'Gemini 3.1',
+			zoom: { cx: 0, cy: 0, scale: 2 }, zoomStart: 3,
+			startTick: 4, endTick: 16,
+			tickMs: 250, pauseMs: 1500,
+			desc: 'Gemini\u2019s fighting code is scarily smart here. While Sonnet is correctly attacking in a way that doesn\u2019t waste energy, Gemini thinks a step ahead and transfers energy between its own units in anticipation of such attacks \u2014 maintaining the number advantage and overpowering Sonnet in just a few ticks.'
+		},
+		{
+			canvasId: 'hl2-canvas', descId: 'hl2-desc', linkId: 'hl2-link',
+			replayId: 'itourney-claude-sonnet-4-6-vs-grok-4-1-fast-reasoning-g4',
+			p1: 'Sonnet 4.6', p2: 'Grok 4.1',
+			zoom: { cx: 0, cy: 0, scale: 2.15 }, zoomStart: 2.25,
+			startTick: 4, endTick: 20,
+			tickMs: 250, pauseMs: 1500,
+			desc: 'Grok developed an interesting strategy where it uses one unit as a \u2018bait\u2019. Luring enemy into over-attacking it while keeping it alive with friendly units. It\u2019s one of the few games Grok won in this tournament.'
+		},
+		{
+			canvasId: 'hl3-canvas', descId: 'hl3-desc', linkId: 'hl3-link',
+			replayId: 'itourney-claude-opus-4-6-vs-grok-4-1-fast-reasoning-g9',
+			p1: 'Opus 4.6', p2: 'Grok 4.1',
+			zoom: { cx: 0, cy: 0, scale: 2 }, zoomStart: 3,
+			startTick: 4, endTick: 18,
+			tickMs: 250, pauseMs: 1500,
+			desc: 'Grok tried to align units in a straight line. It was not effective and Opus did a masterclass of dismantling this \u2018strategy\u2019.'
+		},
+		{
+			canvasId: 'hl4-canvas', descId: 'hl4-desc', linkId: 'hl4-link',
+			replayId: 'itourney-gpt-5-3-codex-vs-gemini-3-1-pro-preview-g1',
+			p1: 'GPT-5.3 Codex', p2: 'Gemini 3.1',
+			zoom: { cx: 0, cy: 0, scale: 2.25 }, zoomStart: 1.5,
+			startTick: 15, endTick: 37,
+			tickMs: 250, pauseMs: 1500,
+			desc: 'Gemini 3.1 was one of the few LLMs who understood how to use the healing pods and didn\u2019t risk running into the opponent with low energy units despite the numbers advantage.'
+		}
+	];
+
+	HIGHLIGHTS.forEach(initHighlight);
+  })();
+  </script>
 
   <div id="mini-replay-tooltip"></div>
 
